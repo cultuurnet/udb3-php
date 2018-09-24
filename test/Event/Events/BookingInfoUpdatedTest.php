@@ -3,6 +3,9 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class BookingInfoUpdatedTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,24 +51,20 @@ class BookingInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                         'phone' => '0123456789',
                         'email' => 'foo@bar.com',
                         'url' => 'http://foo.bar',
-                        'urlLabel' => 'urlLabel',
-                        'name' => 'name',
-                        'description' => 'description',
-                        'availabilityStarts' => '01/01/2016',
-                        'availabilityEnds' => '31/01/2016'
-                    ]
+                        'urlLabel' => ['nl' => 'urlLabel'],
+                        'availabilityStarts' => '2016-01-01T00:00:00+01:00',
+                        'availabilityEnds' => '2016-01-31T00:00:00+01:00',
+                    ],
                 ],
                 new BookingInfoUpdated(
                     'foo',
                     new BookingInfo(
                         'http://foo.bar',
-                        'urlLabel',
+                        new MultilingualString(new Language('nl'), new StringLiteral('urlLabel')),
                         '0123456789',
                         'foo@bar.com',
-                        '01/01/2016',
-                        '31/01/2016',
-                        'name',
-                        'description'
+                        \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-01T00:00:00+01:00'),
+                        \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-31T00:00:00+01:00')
                     )
                 ),
             ],

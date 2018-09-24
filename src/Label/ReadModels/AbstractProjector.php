@@ -7,10 +7,13 @@ use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\LabelEventInterface;
+use CultuurNet\UDB3\LabelsImportedEventInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded as OfferAbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved as OfferAbstractLabelRemoved;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelsImported;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded as OrganizerLabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved as OrganizerLabelRemoved;
+use CultuurNet\UDB3\Organizer\Events\LabelsImported;
 
 abstract class AbstractProjector implements EventListenerInterface
 {
@@ -30,8 +33,13 @@ abstract class AbstractProjector implements EventListenerInterface
                 $domainMessage->getPayload(),
                 $domainMessage->getMetadata()
             );
-        } else if ($this->isLabelRemoved($payload)) {
+        } elseif ($this->isLabelRemoved($payload)) {
             $this->applyLabelRemoved(
+                $domainMessage->getPayload(),
+                $domainMessage->getMetadata()
+            );
+        } elseif ($this->isLabelsImported($payload)) {
+            $this->applyLabelsImported(
                 $domainMessage->getPayload(),
                 $domainMessage->getMetadata()
             );
@@ -53,6 +61,12 @@ abstract class AbstractProjector implements EventListenerInterface
     abstract public function applyLabelRemoved(LabelEventInterface $labelRemoved, Metadata $metadata);
 
     /**
+     * @param LabelsImportedEventInterface $labelsImported
+     * @param Metadata $metadata
+     */
+    abstract public function applyLabelsImported(LabelsImportedEventInterface $labelsImported, Metadata $metadata);
+
+    /**
      * @param $payload
      * @return bool
      */
@@ -70,5 +84,15 @@ abstract class AbstractProjector implements EventListenerInterface
     {
         return ($payload instanceof OfferAbstractLabelRemoved ||
             $payload instanceof OrganizerLabelRemoved);
+    }
+
+    /**
+     * @param $payload
+     * @return bool
+     */
+    private function isLabelsImported($payload)
+    {
+        return ($payload instanceof AbstractLabelsImported ||
+            $payload instanceof LabelsImported);
     }
 }

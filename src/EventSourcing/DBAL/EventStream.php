@@ -8,8 +8,8 @@ use Broadway\Domain\DomainMessage;
 use Broadway\EventSourcing\EventStreamDecoratorInterface;
 use Broadway\Serializer\SerializerInterface;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Query\QueryBuilder;
 
 class EventStream
 {
@@ -34,24 +34,29 @@ class EventStream
     protected $tableName;
 
     /**
-     * @var QueryBuilder
+     * @var int
      */
-    protected $queryBuilder;
+    protected $startId;
 
     /**
      * @var int
      */
-    protected $previousId;
+    protected $lastProcessedId;
 
     /**
-     * @var string
+     * @var string[]
      */
-    protected $aggregateType;
+    protected $cdbids;
 
     /**
      * @var EventStreamDecoratorInterface
      */
     private $domainEventStreamDecorator;
+
+    /**
+     * @var string
+     */
+    private $aggregateType;
 
     /**
      * @param Connection $connection
@@ -69,10 +74,8 @@ class EventStream
         $this->payloadSerializer = $payloadSerializer;
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName = $tableName;
-        $this->previousId = 0;
-        $this->primaryKey = 'id';
+        $this->startId = 0;
         $this->aggregateType = '';
-        $this->domainEventStreamDecorator = null;
     }
 
     /**
@@ -81,8 +84,16 @@ class EventStream
      */
     public function withStartId($startId)
     {
+        if (!is_int($startId)) {
+            throw new \InvalidArgumentException('StartId should have type int.');
+        }
+
+        if ($startId <= 0) {
+            throw new \InvalidArgumentException('StartId should be higher than 0.');
+        }
+
         $c = clone $this;
-        $c->previousId = $startId - 1;
+        $c->startId = $startId;
         return $c;
     }
 
@@ -94,6 +105,26 @@ class EventStream
     {
         $c = clone $this;
         $c->aggregateType = $aggregateType;
+        return $c;
+    }
+
+
+    /**
+     * @param string[] $cdbids
+     * @return EventStream
+     */
+    public function withCdbids($cdbids)
+    {
+        if (!is_array($cdbids)) {
+            throw new \InvalidArgumentException('Cdbids should have type array.');
+        }
+
+        if (empty($cdbids)) {
+            throw new \InvalidArgumentException('Cdbids can\'t be empty.');
+        }
+
+        $c = clone $this;
+        $c->cdbids = $cdbids;
         return $c;
     }
 
@@ -110,16 +141,15 @@ class EventStream
 
     public function __invoke()
     {
-        $queryBuilder = $this->prepareLoadQuery();
-
         do {
-            $queryBuilder->setParameter(':previousId', $this->previousId);
-            $statement = $queryBuilder->execute();
+            $statement = $this->prepareLoadStatement();
 
             $events = [];
             while ($row = $statement->fetch()) {
                 $events[] = $this->deserializeEvent($row);
-                $this->previousId = $row[$this->primaryKey];
+                $this->lastProcessedId = $row['id'];
+                // Make sure to increment to prevent endless loop.
+                $this->startId = $row['id'] + 1;
             }
 
             /* @var DomainMessage[] $events */
@@ -148,42 +178,43 @@ class EventStream
     /**
      * @return int
      */
-    public function getPreviousId()
+    public function getLastProcessedId()
     {
-        return $this->previousId;
+        return $this->lastProcessedId;
     }
 
     /**
-     * @return QueryBuilder
+     * The load statement can no longer be 'cached' because of using the query
+     * builder. The query builder requires all parameters to be set before
+     * using the execute command. The previous solution used the prepare
+     * statement on the connection, this did not require all parameters to be
+     * set up front.
+     *
+     * @return Statement
      * @throws DBALException
      */
-    protected function prepareLoadQuery()
+    protected function prepareLoadStatement()
     {
-        if (null === $this->queryBuilder) {
-            $this->queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = $this->connection->createQueryBuilder();
 
-            $this->queryBuilder->select(
-                [
-                    $this->primaryKey,
-                    'uuid',
-                    'playhead',
-                    'payload',
-                    'metadata',
-                    'recorded_on'
-                ]
-            )
-                ->from($this->tableName)
-                ->where($this->primaryKey . ' > :previousId')
-                ->orderBy($this->primaryKey, 'ASC')
-                ->setMaxResults(1);
+        $queryBuilder->select('id', 'uuid', 'playhead', 'metadata', 'payload', 'recorded_on')
+            ->from($this->tableName)
+            ->where('id >= :startid')
+            ->setParameter('startid', $this->startId)
+            ->orderBy('id', 'ASC')
+            ->setMaxResults(1);
 
-            if (!empty($this->aggregateType)) {
-                $this->queryBuilder->andWhere('aggregate_type = :aggregate_type');
-                $this->queryBuilder->setParameter('aggregate_type', $this->aggregateType);
-            }
+        if ($this->cdbids) {
+            $queryBuilder->andWhere('uuid IN (:uuids)')
+                ->setParameter('uuids', $this->cdbids, Connection::PARAM_STR_ARRAY);
         }
 
-        return $this->queryBuilder;
+        if (!empty($this->aggregateType)) {
+            $queryBuilder->andWhere('aggregate_type = :aggregate_type');
+            $queryBuilder->setParameter('aggregate_type', $this->aggregateType);
+        }
+
+        return $queryBuilder->execute();
     }
 
     /**

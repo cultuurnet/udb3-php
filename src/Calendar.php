@@ -3,6 +3,13 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Calendar\OpeningHour;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar as Udb3ModelCalendar;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithDateRange;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithOpeningHours;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithSubEvents;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour as Udb3ModelOpeningHour;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
@@ -10,6 +17,7 @@ use InvalidArgumentException;
 
 /**
  * Calendar for events and places.
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar.
  */
 class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
 {
@@ -35,7 +43,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
     protected $timestamps = array();
 
     /**
-     * @var array
+     * @var OpeningHour[]
      */
     protected $openingHours = array();
 
@@ -44,7 +52,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      * @param DateTimeInterface|null $startDate
      * @param DateTimeInterface|null $endDate
      * @param Timestamp[] $timestamps
-     * @param array $openingHours
+     * @param OpeningHour[] $openingHours
      */
     public function __construct(
         CalendarType $type,
@@ -59,6 +67,18 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
 
         if ($type->is(CalendarType::PERIODIC()) && (empty($startDate) || empty($endDate))) {
             throw new \UnexpectedValueException('A period should have a start- and end-date.');
+        }
+
+        foreach ($timestamps as $timestamp) {
+            if (!is_a($timestamp, Timestamp::class)) {
+                throw new \InvalidArgumentException('Timestamps should have type TimeStamp.');
+            }
+        }
+
+        foreach ($openingHours as $openingHour) {
+            if (!is_a($openingHour, OpeningHour::class)) {
+                throw new \InvalidArgumentException('OpeningHours should have type OpeningHour.');
+            }
         }
 
         $this->type = $type->toNative();
@@ -88,6 +108,13 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             $this->timestamps
         );
 
+        $serializedOpeningHours = array_map(
+            function (OpeningHour $openingHour) {
+                return $openingHour->serialize();
+            },
+            $this->openingHours
+        );
+
         $calendar = [
           'type' => $this->type,
         ];
@@ -95,7 +122,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         empty($this->startDate) ?: $calendar['startDate'] = $this->startDate->format(DateTime::ATOM);
         empty($this->endDate) ?: $calendar['endDate'] = $this->endDate->format(DateTime::ATOM);
         empty($serializedTimestamps) ?: $calendar['timestamps'] = $serializedTimestamps;
-        empty($this->openingHours) ?: $calendar['openingHours'] = $this->openingHours;
+        empty($serializedOpeningHours) ?: $calendar['openingHours'] = $serializedOpeningHours;
 
         return $calendar;
     }
@@ -115,7 +142,12 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
                 },
                 $data['timestamps']
             ) : [],
-            !empty($data['openingHours']) ? $data['openingHours'] : []
+            !empty($data['openingHours']) ? array_map(
+                function ($openingHour) {
+                    return OpeningHour::deserialize($openingHour);
+                },
+                $data['openingHours']
+            ) : []
         );
     }
 
@@ -210,9 +242,60 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         // Permanent - with openingtimes
         $openingHours = $this->getOpeningHours();
         if (!empty($openingHours)) {
-            $jsonLd['openingHours'] = (array) $openingHours;
+            $jsonLd['openingHours'] = array();
+            foreach ($openingHours as $openingHour) {
+                $jsonLd['openingHours'][] = $openingHour->serialize();
+            }
         }
 
         return $jsonLd;
+    }
+    
+    /**
+     * @param Calendar $otherCalendar
+     * @return bool
+     */
+    public function sameAs(Calendar $otherCalendar)
+    {
+        return $this->toJsonLd() == $otherCalendar->toJsonLd();
+    }
+
+    /**
+     * @param Udb3ModelCalendar $calendar
+     * @return self
+     */
+    public static function fromUdb3ModelCalendar(Udb3ModelCalendar $calendar)
+    {
+        $type = CalendarType::fromNative($calendar->getType()->toString());
+
+        $startDate = null;
+        $endDate = null;
+        $timestamps = [];
+        $openingHours = [];
+
+        if ($calendar instanceof CalendarWithDateRange) {
+            $startDate = $calendar->getStartDate();
+            $endDate = $calendar->getEndDate();
+        }
+
+        if ($calendar instanceof CalendarWithSubEvents) {
+            $timestamps = array_map(
+                function (DateRange $dateRange) {
+                    return Timestamp::fromUdb3ModelDateRange($dateRange);
+                },
+                $calendar->getSubEvents()->toArray()
+            );
+        }
+
+        if ($calendar instanceof CalendarWithOpeningHours) {
+            $openingHours = array_map(
+                function (Udb3ModelOpeningHour $openingHour) {
+                    return OpeningHour::fromUdb3ModelOpeningHour($openingHour);
+                },
+                $calendar->getOpeningHours()->toArray()
+            );
+        }
+
+        return new self($type, $startDate, $endDate, $timestamps, $openingHours);
     }
 }

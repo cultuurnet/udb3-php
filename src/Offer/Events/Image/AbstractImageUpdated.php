@@ -82,7 +82,7 @@ class AbstractImageUpdated extends AbstractEvent
         return parent::serialize() +  array(
             'media_object_id' => (string) $this->mediaObjectId,
             'description' => (string) $this->description,
-            'copyright_holder' => (string) $this->copyrightHolder
+            'copyright_holder' => (string) $this->copyrightHolder,
         );
     }
 

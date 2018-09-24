@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Language;
-use ValueObjects\StringLiteral\StringLiteral;
+use CultuurNet\UDB3\Title;
 
 class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
 {
@@ -12,16 +12,16 @@ class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
     /**
      * @param string $itemId
      * @param Language $language
-     * @param StringLiteral $title
+     * @param Title $title
      */
-    public function __construct($itemId, Language $language, StringLiteral $title)
+    public function __construct($itemId, Language $language, Title $title)
     {
         parent::__construct($itemId, $language);
         $this->title = $title;
     }
 
     /**
-     * @return String
+     * @return Title
      */
     public function getTitle()
     {
@@ -48,7 +48,7 @@ class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
         return new static(
             $data['item_id'],
             new Language($data['language']),
-            new StringLiteral($data['title'])
+            new Title($data['title'])
         );
     }
 }

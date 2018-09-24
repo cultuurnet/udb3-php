@@ -88,7 +88,7 @@ class RoleCreatedTest extends \PHPUnit_Framework_TestCase
     {
         return [
             'uuid' => $this->roleCreated->getUuid()->toNative(),
-            'name' => $this->roleCreated->getName()->toNative()
+            'name' => $this->roleCreated->getName()->toNative(),
         ];
     }
 }

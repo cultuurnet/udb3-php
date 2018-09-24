@@ -22,10 +22,9 @@ interface RepositoryInterface
 
     /**
      * @param string $eventId
-     * @param string $relationType
-     * @param string $itemId
+     * @param string $placeId
      */
-    public function storeRelation($eventId, $relationType, $itemId);
+    public function storePlace($eventId, $placeId);
 
     /**
      * @param string $eventId

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer\Security;
 
+use CultuurNet\Search\Parameter\FilterQuery;
 use CultuurNet\Search\Parameter\Group;
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
@@ -70,7 +71,13 @@ class UserPermissionMatcher implements UserPermissionMatcherInterface
             $constraints,
             $offerId
         );
-        $response = $this->searchService->search([$query, new Group(true)]);
+        $response = $this->searchService->search(
+            [
+                $query,
+                new FilterQuery('private:*'),
+                new Group(true),
+            ]
+        );
         if ($response->getStatusCode() != 200) {
             return false;
         }

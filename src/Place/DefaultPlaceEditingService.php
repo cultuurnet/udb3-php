@@ -10,9 +10,10 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
-use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
+use CultuurNet\UDB3\Place\Commands\UpdateAddress;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -24,6 +25,14 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements P
      */
     protected $writeRepository;
 
+    /**
+     * @param CommandBusInterface $commandBus
+     * @param UuidGeneratorInterface $uuidGenerator
+     * @param DocumentRepositoryInterface $readRepository
+     * @param OfferCommandFactoryInterface $commandFactory
+     * @param RepositoryInterface $writeRepository
+     * @param LabelServiceInterface $labelService
+     */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
@@ -37,7 +46,9 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements P
             $uuidGenerator,
             $readRepository,
             $commandFactory,
-            $labelService
+            $labelService,
+            new PlaceTypeResolver(),
+            new PlaceThemeResolver()
         );
 
         $this->writeRepository = $writeRepository;
@@ -47,6 +58,7 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements P
      * {@inheritdoc}
      */
     public function createPlace(
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Address $address,
@@ -55,7 +67,48 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements P
     ) {
         $id = $this->uuidGenerator->generate();
 
-        $place = Place::createPlace($id, $title, $eventType, $address, $calendar, $theme, $this->publicationDate);
+        $place = Place::createPlace(
+            $id,
+            $mainLanguage,
+            $title,
+            $eventType,
+            $address,
+            $calendar,
+            $theme,
+            $this->publicationDate
+        );
+
+        $this->writeRepository->save($place);
+
+        return $id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createApprovedPlace(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
+        $id = $this->uuidGenerator->generate();
+
+        $place = Place::createPlace(
+            $id,
+            $mainLanguage,
+            $title,
+            $eventType,
+            $address,
+            $calendar,
+            $theme
+        );
+
+        $publicationDate = $this->publicationDate ? $this->publicationDate : new \DateTimeImmutable();
+        $place->publish($publicationDate);
+        $place->approve();
 
         $this->writeRepository->save($place);
 
@@ -75,23 +128,23 @@ class DefaultPlaceEditingService extends DefaultOfferEditingService implements P
     }
 
     /**
+     * @inheritdoc
+     */
+    public function updateAddress($id, Address $address, Language $language)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            new UpdateAddress($id, $address, $language)
+        );
+    }
+
+
+    /**
      * {@inheritdoc}
      */
     public function deletePlace($id)
     {
         return $this->delete($id);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function updateFacilities($id, array $facilities)
-    {
-
-        $this->guardId($id);
-
-        return $this->commandBus->dispatch(
-            new UpdateFacilities($id, $facilities)
-        );
     }
 }

@@ -61,7 +61,7 @@ class ActorImportedFromUDB2 extends ActorEvent
     public static function deserialize(array $data)
     {
         $data += array(
-            'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2')
+            'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),
         );
         return new static(
             $data['actor_id'],

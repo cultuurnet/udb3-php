@@ -38,17 +38,20 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $mediaIriGenerator = new CallableIriGenerator(function ($file) {
-            return 'http://du.de/media/87e8b421-5e87-4fae-bb3b-2c9119852a11';
-        });
-
         $this->importer = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter($mediaIriGenerator),
-            new EventCdbIdExtractor(),
-            new PriceDescriptionParser(
-                new NumberFormatRepository(),
-                new CurrencyRepository()
+            new CdbXMLItemBaseImporter(
+                new PriceDescriptionParser(
+                    new NumberFormatRepository(),
+                    new CurrencyRepository()
+                ),
+                [
+                    'nl' => 'Basistarief',
+                    'fr' => 'Tarif de base',
+                    'en' => 'Base tarif',
+                    'de' => 'Basisrate',
+                ]
             ),
+            new EventCdbIdExtractor(),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()
         );
@@ -96,16 +99,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param $ageFrom
+     * @param integer|null $ageFrom
+     * @param integer|null $ageTo
      * @return \stdClass
      */
-    private function createJsonEventFromCdbXmlWithAgeFrom($ageFrom)
+    private function createJsonEventFromCdbXmlWithAgeRange($ageFrom = null, $ageTo = null)
     {
         $event = $this->createEventFromCdbXml(
             '../../samples/event_with_age_from.cdbxml.xml'
         );
 
         $event->setAgeFrom($ageFrom);
+        $event->setAgeTo($ageTo);
 
         $jsonEvent = $this->importer->documentWithCdbXML(
             new \stdClass(),
@@ -260,10 +265,16 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('availableFrom', $jsonEvent);
         $this->assertEquals('2014-07-25T05:18:22+02:00', $jsonEvent->availableFrom);
 
+        $this->assertObjectHasAttribute('availableTo', $jsonEvent);
+        $this->assertEquals('2015-03-29T00:00:00+01:00', $jsonEvent->availableTo);
+
         $anotherJsonEvent = $this->createJsonEventFromCdbXml('event_with_cdb_externalid.cdbxml.xml');
 
         $this->assertObjectHasAttribute('availableFrom', $anotherJsonEvent);
         $this->assertEquals('2014-10-22T00:00:00+02:00', $anotherJsonEvent->availableFrom);
+
+        $this->assertObjectHasAttribute('availableTo', $anotherJsonEvent);
+        $this->assertEquals('2015-03-19T00:00:00+01:00', $anotherJsonEvent->availableTo);
     }
 
     /**
@@ -461,20 +472,31 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'category' => 'base',
-                    'name' => 'Basistarief',
+                    'name' => [
+                        'nl' => 'Basistarief',
+                        'fr' => 'Tarif de base',
+                        'en' => 'Base tarif',
+                        'de' => 'Basisrate',
+                    ],
                     'price' => 12.5,
                     'priceCurrency' => 'EUR',
                 ],
                 [
-                    'name' => 'Met kinderen',
+                    'name' => [
+                        'nl' => 'Met kinderen',
+                        'fr' => 'Avec des enfants',
+                    ],
                     'category' => 'tariff',
-                    'price' => 20.0,
+                    'price' => 20,
                     'priceCurrency' => 'EUR',
                 ],
                 [
-                    'name' => 'Senioren',
+                    'name' => [
+                        'nl' => 'Senioren',
+                        'fr' => 'Aînés',
+                    ],
                     'category' => 'tariff',
-                    'price' => 30.0,
+                    'price' => 30,
                     'priceCurrency' => 'EUR',
                 ],
             ],
@@ -485,7 +507,7 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_ignores_a_properly_formatted_price_description_when_its_base_price_does_not_match_pricevalue()
+    public function it_ignores_base_price_in_price_description()
     {
         $jsonEvent = $this->createJsonEventFromCdbXml('event_with_properly_formatted_price_description_but_different_pricevalue.cdbxml.xml');
 
@@ -493,10 +515,27 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'category' => 'base',
-                    'name' => 'Basistarief',
-                    'price' => 12.00,
+                    'name' => [
+                        'nl' => 'Basistarief',
+                        'fr' => 'Tarif de base',
+                        'en' => 'Base tarif',
+                        'de' => 'Basisrate',
+                    ],
+                    'price' => 12,
                     'priceCurrency' => 'EUR',
-                ]
+                ],
+                [
+                    'category' => 'tariff',
+                    'name' => ['nl' => 'Met kinderen'],
+                    'price' => 20,
+                    'priceCurrency' => 'EUR',
+                ],
+                [
+                    'category' => 'tariff',
+                    'name' => ['nl' => 'Senioren'],
+                    'price' => 30,
+                    'priceCurrency' => 'EUR',
+                ],
             ],
             $jsonEvent->priceInfo
         );
@@ -513,7 +552,12 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'category' => 'base',
-                    'name' => 'Basistarief',
+                    'name' => [
+                        'nl' => 'Basistarief',
+                        'fr' => 'Tarif de base',
+                        'en' => 'Base tarif',
+                        'de' => 'Basisrate',
+                    ],
                     'price' => 12.5,
                     'priceCurrency' => 'EUR',
                 ],
@@ -573,22 +617,22 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-02-06T13:00:00+01:00',
-                    'endDate' => '2017-02-06T16:45:00+01:00'
+                    'endDate' => '2017-02-06T16:45:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-02-20T13:00:00+01:00',
-                    'endDate' => '2017-02-20T16:45:00+01:00'
+                    'endDate' => '2017-02-20T16:45:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-03-06T13:00:00+01:00',
-                    'endDate' => '2017-03-06T16:45:00+01:00'
+                    'endDate' => '2017-03-06T16:45:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-03-20T13:00:00+01:00',
-                    'endDate' => '2017-03-20T16:45:00+01:00'
+                    'endDate' => '2017-03-20T16:45:00+01:00',
                 ],
             ],
             $jsonEvent->subEvent
@@ -610,32 +654,32 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-01-30T13:00:00+01:00',
-                    'endDate' => '2016-01-30T13:00:00+01:00'
+                    'endDate' => '2016-01-30T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-11-30T13:00:00+01:00',
-                    'endDate' => '2016-11-30T17:00:00+01:00'
+                    'endDate' => '2016-11-30T17:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-12-03T00:00:00+01:00',
-                    'endDate' => '2016-12-03T00:00:00+01:00'
+                    'endDate' => '2016-12-03T00:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-12-09T00:00:00+01:00',
-                    'endDate' => '2016-12-09T00:00:00+01:00'
+                    'endDate' => '2016-12-09T00:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2016-12-30T13:00:00+01:00',
-                    'endDate' => '2016-12-30T13:00:00+01:00'
+                    'endDate' => '2016-12-30T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-11-30T13:00:00+01:00',
-                    'endDate' => '2017-11-30T17:00:00+01:00'
+                    'endDate' => '2017-11-30T17:00:00+01:00',
                 ],
             ],
             $jsonEvent->subEvent
@@ -657,22 +701,22 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-02-06T13:00:00+01:00',
-                    'endDate' => '2017-02-06T13:00:00+01:00'
+                    'endDate' => '2017-02-06T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-02-20T13:00:00+01:00',
-                    'endDate' => '2017-02-20T13:00:00+01:00'
+                    'endDate' => '2017-02-20T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-03-06T13:00:00+01:00',
-                    'endDate' => '2017-03-06T13:00:00+01:00'
+                    'endDate' => '2017-03-06T13:00:00+01:00',
                 ],
                 [
                     '@type' => 'Event',
                     'startDate' => '2017-03-20T13:00:00+01:00',
-                    'endDate' => '2017-03-20T13:00:00+01:00'
+                    'endDate' => '2017-03-20T13:00:00+01:00',
                 ],
             ],
             $jsonEvent->subEvent
@@ -710,18 +754,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                         'wednesday',
                         'thursday',
                         'friday',
-                        'saturday'
+                        'saturday',
                     ],
                     'opens' => '10:00',
-                    'closes' => '18:00'
+                    'closes' => '18:00',
                 ],
                 [
                     'dayOfWeek' => [
-                        'sunday'
+                        'sunday',
                     ],
                     'opens' => '08:00',
-                    'closes' => '12:00'
-                ]
+                    'closes' => '12:00',
+                ],
             ],
             $jsonEvent->openingHours
         );
@@ -744,18 +788,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                         'monday',
                         'thursday',
                         'friday',
-                        'saturday'
+                        'saturday',
                     ],
                     'opens' => '20:30',
-                    'closes' => '20:30'
+                    'closes' => '20:30',
                 ],
                 [
                     'dayOfWeek' => [
-                        'sunday'
+                        'sunday',
                     ],
                     'opens' => '16:00',
-                    'closes' => '16:00'
-                ]
+                    'closes' => '16:00',
+                ],
             ],
             $jsonEvent->openingHours
         );
@@ -787,15 +831,15 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                         'saturday',
                     ],
                     'opens' => '09:30',
-                    'closes' => '11:30'
+                    'closes' => '11:30',
                 ],
                 [
                     'dayOfWeek' => [
-                        'thursday'
+                        'thursday',
                     ],
                     'opens' => '09:00',
-                    'closes' => '17:00'
-                ]
+                    'closes' => '17:00',
+                ],
             ],
             $jsonEvent->openingHours
         );
@@ -828,101 +872,41 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_imports_age_from_0_as_typical_age_range_from_0_till_12()
+    public function it_should_import_an_event_without_age_range_when_age_from_and_to_are_not_set()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(0);
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange(null, null);
 
-        $this->assertEquals('0-12', $jsonEvent->typicalAgeRange);
+        $this->assertObjectNotHasAttribute('typicalAgeRange', $jsonEvent);
     }
 
     /**
      * @test
      */
-    public function it_imports_age_from_3_as_typical_age_range_from_3_till_12()
+    public function it_should_import_an_event_with_a_lower_boundary_when_only_age_from_is_set()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(3);
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange(3, null);
 
-        $this->assertEquals('3-12', $jsonEvent->typicalAgeRange);
+        $this->assertEquals('3-', $jsonEvent->typicalAgeRange);
     }
 
     /**
      * @test
      */
-    public function it_imports_age_from_12_as_typical_age_range_from_12_till_12()
+    public function it_should_import_an_event_with_an_upper_boundary_when__only_age_to_is_set()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(12);
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange(null, 65);
 
-        $this->assertEquals('12-12', $jsonEvent->typicalAgeRange);
+        $this->assertEquals('-65', $jsonEvent->typicalAgeRange);
     }
 
     /**
      * @test
      */
-    public function it_imports_age_from_13_as_typical_age_range_from_13_till_18()
+    public function it_should_import_an_event_with_an_upper_and_lower_boundary_when_age_to_or_from_are_set_to_zero()
     {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(13);
+        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeRange(0, 0);
 
-        $this->assertEquals('13-18', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_18_as_typical_age_range_from_18_till_18()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(18);
-
-        $this->assertEquals('18-18', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_19_as_typical_age_range_from_19_till_99()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(19);
-
-        $this->assertEquals('19-99', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_99_as_typical_age_range_from_99_till_99()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(99);
-
-        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_100_as_typical_age_range_from_99_till_99()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(100);
-
-        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_imports_age_from_101_as_typical_age_range_from_99_till_99()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom(101);
-
-        $this->assertEquals('99-99', $jsonEvent->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_import_age_from_as_string()
-    {
-        $jsonEvent = $this->createJsonEventFromCdbXmlWithAgeFrom('4');
-
-        $this->assertFalse(isset($jsonEvent->typicalAgeRange));
+        $this->assertEquals('0-0', $jsonEvent->typicalAgeRange);
     }
 
     /**
@@ -943,20 +927,24 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
         return array(
             'merge short description and long description when short description is not repeated in long description for events' => array(
                 'event_with_short_and_long_description.cdbxml.xml',
-                'description.txt'
+                'description.txt',
             ),
             'use long description when there is no short description in UDB2' => array(
                 'event_without_short_description.cdbxml.xml',
                 'description_from_only_long_description.txt',
             ),
-            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description' => array(
+            'remove repetition of short description in long description for events when complete short description is equal to the first part of long description' => array(
                 'event_with_short_description_included_in_long_description.cdbxml.xml',
                 'description.txt',
             ),
-            'remove repetition of short description in long description for events ONLY when FULL short description is equal to the first part of long description and keep HTML of long description' => array(
+            'remove repetition of short description in long description for events when complete short description is equal to the first part of long description and keep HTML of long description' => array(
                 'event_vertelavond_jan_gabriels.cdbxml.xml',
                 'description_vertelavond_jan_gabriels.txt',
                 '3.3',
+            ),
+            'take ellipsis into consideration when merging short and long description' => array(
+                'event_with_short_description_and_ellipsis_included_in_long_description.cdbxml.xml',
+                'description.txt',
             ),
             'newlines, leading & trailing whitespace are removed from longdescription' => array(
                 'event_brussels_buzzing.cdbxml.xml',

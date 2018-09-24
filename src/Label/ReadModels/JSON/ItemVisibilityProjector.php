@@ -50,7 +50,7 @@ class ItemVisibilityProjector implements EventListenerInterface, LoggerAwareInte
 
         if ($event instanceof MadeVisible) {
             $this->applyMadeVisible($domainMessage->getPayload());
-        } else if ($event instanceof MadeInvisible) {
+        } elseif ($event instanceof MadeInvisible) {
             $this->applyMadeInvisible($domainMessage->getPayload());
         }
     }

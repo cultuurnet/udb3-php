@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Events\Image;
 
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
@@ -23,8 +24,9 @@ class ImagesImportedFromUDB2Test extends \PHPUnit_Framework_TestCase
                 MIMEType::fromSubtype('jpeg'),
                 new Description('my best selfie'),
                 new CopyrightHolder('Dirkinator'),
-                Url::fromNative('http://du.de/media/dsc_00001.jpg')
-            )
+                Url::fromNative('http://du.de/media/dsc_00001.jpg'),
+                new Language('en')
+            ),
         ]);
 
         $event = new ImagesImportedFromUDB2('c6048768-8cbf-483d-a616-c3241e313383', $images);

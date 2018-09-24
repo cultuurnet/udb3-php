@@ -3,9 +3,13 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
@@ -14,6 +18,7 @@ use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use CultuurNet\UDB3\Language;
@@ -36,10 +41,10 @@ interface OfferCommandFactoryInterface
 
     /**
      * @param $id
-     * @param Image $image
+     * @param UUID $imageId
      * @return AbstractAddImage
      */
-    public function createAddImageCommand($id, Image $image);
+    public function createAddImageCommand($id, UUID $imageId);
 
     /**
      * @param $id
@@ -72,31 +77,31 @@ interface OfferCommandFactoryInterface
      * @param $id
      * @param Language $language
      * @param StringLiteral $title
-     * @return AbstractTranslateTitle
+     * @return AbstractUpdateTitle
      */
-    public function createTranslateTitleCommand($id, Language $language, StringLiteral $title);
+    public function createUpdateTitleCommand($id, Language $language, StringLiteral $title);
 
     /**
      * @param $id
      * @param Language $language
-     * @param StringLiteral $description
-     * @return AbstractTranslateDescription
-     */
-    public function createTranslateDescriptionCommand($id, Language $language, StringLiteral $description);
-
-    /**
-     * @param string $id
-     * @param string $description
+     * @param Description $description
      * @return AbstractUpdateDescription
      */
-    public function createUpdateDescriptionCommand($id, $description);
+    public function createUpdateDescriptionCommand($id, Language $language, Description $description);
 
     /**
      * @param string $id
-     * @param string $ageRange
+     * @param Calendar $calendar
+     * @return AbstractUpdateCalendar
+     */
+    public function createUpdateCalendarCommand($id, Calendar $calendar);
+
+    /**
+     * @param string $id
+     * @param AgeRange $ageRange
      * @return AbstractUpdateTypicalAgeRange
      */
-    public function createUpdateTypicalAgeRangeCommand($id, $ageRange);
+    public function createUpdateTypicalAgeRangeCommand($id, AgeRange $ageRange);
 
     /**
      * @param string $id
@@ -169,4 +174,25 @@ interface OfferCommandFactoryInterface
      * @return AbstractFlagAsDuplicate
      */
     public function createFlagAsDuplicate($id);
+
+    /**
+     * @param string $id
+     * @param EventType $type
+     * @return AbstractUpdateType
+     */
+    public function createUpdateTypeCommand($id, EventType $type);
+
+    /**
+     * @param string $id
+     * @param Theme $theme
+     * @return AbstractUpdateTheme
+     */
+    public function createUpdateThemeCommand($id, Theme $theme);
+
+    /**
+     * @param string $id
+     * @param array $facilities
+     * @return AbstractUpdateFacilities
+     */
+    public function createUpdateFacilitiesCommand($id, array $facilities);
 }

@@ -5,7 +5,11 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Event\Commands\AddImage;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
+use CultuurNet\UDB3\Event\Commands\CreateEvent;
+use CultuurNet\UDB3\Event\Commands\DeleteCurrentOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteEvent;
+use CultuurNet\UDB3\Event\Commands\ImportImages;
+use CultuurNet\UDB3\Event\Commands\ImportLabels;
 use CultuurNet\UDB3\Event\Commands\RemoveLabel;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsDuplicate;
@@ -16,16 +20,20 @@ use CultuurNet\UDB3\Event\Commands\RemoveImage;
 use CultuurNet\UDB3\Event\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Event\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Event\Commands\SelectMainImage;
-use CultuurNet\UDB3\Event\Commands\TranslateDescription;
-use CultuurNet\UDB3\Event\Commands\TranslateTitle;
+use CultuurNet\UDB3\Event\Commands\UpdateFacilities;
+use CultuurNet\UDB3\Event\Commands\UpdateTheme;
+use CultuurNet\UDB3\Event\Commands\UpdateTitle;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
 use CultuurNet\UDB3\Event\Commands\UpdateBookingInfo;
+use CultuurNet\UDB3\Event\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Event\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Event\Commands\UpdateDescription;
 use CultuurNet\UDB3\Event\Commands\UpdateImage;
+use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Event\Commands\UpdatePriceInfo;
+use CultuurNet\UDB3\Event\Commands\UpdateType;
 use CultuurNet\UDB3\Event\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use Psr\Log\LoggerAwareInterface;
@@ -37,6 +45,25 @@ use Psr\Log\LoggerAwareTrait;
 class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
+
+    /**
+     * @param CreateEvent $command
+     */
+    protected function handleCreateEvent(CreateEvent $command)
+    {
+        $event = Event::create(
+            $command->getItemId(),
+            $command->getMainLanguage(),
+            $command->getTitle(),
+            $command->getEventType(),
+            $command->getLocation(),
+            $command->getCalendar(),
+            $command->getTheme(),
+            $command->getPublicationDate()
+        );
+
+        $this->offerRepository->save($event);
+    }
 
     /**
      * Handle an update the major info command.
@@ -57,6 +84,19 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
 
         $this->offerRepository->save($event);
 
+    }
+
+    /**
+     * @param UpdateLocation $updateLocation
+     */
+    public function handleUpdateLocation(UpdateLocation $updateLocation)
+    {
+        /** @var Event $event */
+        $event = $this->offerRepository->load($updateLocation->getItemId());
+
+        $event->updateLocation($updateLocation->getLocationId());
+
+        $this->offerRepository->save($event);
     }
 
     /**
@@ -86,6 +126,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getRemoveLabelClassName()
     {
         return RemoveLabel::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImportLabelsClassName()
+    {
+        return ImportLabels::class;
     }
 
     /**
@@ -123,17 +171,17 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     /**
      * @return string
      */
-    protected function getTranslateTitleClassName()
+    protected function getImportImagesClassName()
     {
-        return TranslateTitle::class;
+        return ImportImages::class;
     }
 
     /**
      * @return string
      */
-    protected function getTranslateDescriptionClassName()
+    protected function getUpdateTitleClassName()
     {
-        return TranslateDescription::class;
+        return UpdateTitle::class;
     }
 
     /**
@@ -142,6 +190,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getUpdateDescriptionClassName()
     {
         return UpdateDescription::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateCalendarClassName()
+    {
+        return UpdateCalendar::class;
     }
 
     /**
@@ -174,6 +230,14 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getDeleteOrganizerClassName()
     {
         return DeleteOrganizer::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDeleteCurrentOrganizerClassName()
+    {
+        return DeleteCurrentOrganizer::class;
     }
 
     /**
@@ -231,5 +295,29 @@ class EventCommandHandler extends OfferCommandHandler implements LoggerAwareInte
     protected function getFlagAsInappropriateClassName()
     {
         return FlagAsInappropriate::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateTypeClassName()
+    {
+        return UpdateType::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateThemeClassName()
+    {
+        return UpdateTheme::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateFacilitiesClassName()
+    {
+        return UpdateFacilities::class;
     }
 }

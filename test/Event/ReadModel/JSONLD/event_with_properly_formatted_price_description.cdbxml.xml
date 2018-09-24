@@ -264,6 +264,10 @@
                 gratuitement pendant un an.
             </cdb:shortdescription>
             <cdb:title>Raviva - TaiQi</cdb:title>
+            <cdb:price>
+                <cdb:pricevalue>12.50</cdb:pricevalue>
+                <cdb:pricedescription>Tariff de base: 12,50 €; Avec des enfants: 20,00 €; Aînés: 30,00 €</cdb:pricedescription>
+            </cdb:price>
         </cdb:eventdetail>
     </cdb:eventdetails>
     <cdb:languages>

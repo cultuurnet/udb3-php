@@ -38,13 +38,22 @@ class MediaObjectSerializer implements SerializerInterface
             throw new UnsupportedException('Unsupported format, only json-ld is available.');
         };
 
+        if ($mediaObject instanceof Image) {
+            // Some Image objects have the 'application/octet-stream' mime-type, so we hardcode the @type to
+            // 'schema:ImageObject' to make sure an Image does not get the @type 'schema:mediaObject'.
+            $type = 'schema:ImageObject';
+        } else {
+            $type = $this->serializeMimeType($mediaObject->getMimeType());
+        }
+
         $normalizedData = [
             '@id' => $this->iriGenerator->iri($mediaObject->getMediaObjectId()),
-            '@type' => $this->serializeMimeType($mediaObject->getMimeType()),
+            '@type' => $type,
             'contentUrl' => (string) $mediaObject->getSourceLocation(),
             'thumbnailUrl' => (string) $mediaObject->getSourceLocation(),
             'description' => (string) $mediaObject->getDescription(),
             'copyrightHolder' => (string) $mediaObject->getCopyrightHolder(),
+            'inLanguage' => (string) $mediaObject->getLanguage(),
         ];
 
         return $normalizedData;

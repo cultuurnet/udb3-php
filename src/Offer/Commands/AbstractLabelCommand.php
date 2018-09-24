@@ -24,7 +24,6 @@ abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecu
     {
         parent::__construct($itemId);
         $this->label = $label;
-        $this->itemId = $itemId;
     }
 
     /**
@@ -46,8 +45,10 @@ abstract class AbstractLabelCommand extends AbstractCommand implements LabelSecu
     /**
      * @inheritdoc
      */
-    public function getName()
+    public function getNames()
     {
-        return new StringLiteral((string)$this->label);
+        return [
+            new StringLiteral((string)$this->label),
+        ];
     }
 }

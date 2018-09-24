@@ -32,7 +32,7 @@ class DelegateEventHandlingToSpecificMethodTraitTest extends \PHPUnit_Framework_
                 'applyMockLabelAdded',
                 'applyMockLabelUpdated',
                 'applyMockLabelRemoved',
-                'applyMockTitleTranslated'
+                'applyMockTitleTranslated',
             ])
             ->getMock();
 

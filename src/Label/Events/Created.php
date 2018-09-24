@@ -77,7 +77,7 @@ class Created extends AbstractEvent
     {
         return parent::serialize() + [
             self::VISIBILITY => $this->getVisibility()->toNative(),
-            self::PRIVACY => $this->getPrivacy()->toNative()
+            self::PRIVACY => $this->getPrivacy()->toNative(),
         ];
     }
 }

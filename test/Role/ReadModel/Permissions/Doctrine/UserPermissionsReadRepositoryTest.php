@@ -63,7 +63,7 @@ class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
             $this->userRoleTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::USER_ID_COLUMN => (string) $userId
+                SchemaConfigurator::USER_ID_COLUMN => (string) $userId,
             )
         );
 
@@ -72,7 +72,7 @@ class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
             $this->userRoleTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $otherRoleId,
-                SchemaConfigurator::USER_ID_COLUMN => (string) $userId
+                SchemaConfigurator::USER_ID_COLUMN => (string) $userId,
             )
         );
 
@@ -81,14 +81,14 @@ class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => $roleId,
-                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::LABELS_BEHEREN
+                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::LABELS_BEHEREN,
             )
         );
         $this->getConnection()->insert(
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => $roleId,
-                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::GEBRUIKERS_BEHEREN
+                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::GEBRUIKERS_BEHEREN,
             )
         );
 
@@ -97,14 +97,14 @@ class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => $otherRoleId,
-                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::GEBRUIKERS_BEHEREN
+                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::GEBRUIKERS_BEHEREN,
             )
         );
         $this->getConnection()->insert(
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => $otherRoleId,
-                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::AANBOD_MODEREREN
+                SchemaConfigurator::PERMISSION_COLUMN => (string) Permission::AANBOD_MODEREREN,
             )
         );
 
@@ -113,7 +113,7 @@ class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
         $expectedPermissions = [
             Permission::LABELS_BEHEREN(),
             Permission::GEBRUIKERS_BEHEREN(),
-            Permission::AANBOD_MODEREREN()
+            Permission::AANBOD_MODEREREN(),
         ];
         $this->assertEquals(
             $expectedPermissions,

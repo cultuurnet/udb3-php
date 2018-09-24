@@ -8,7 +8,7 @@ use CultuurNet\UDB3\Role\ValueObjects\Permission;
 abstract class AbstractModerationCommand extends AbstractCommand
 {
     /**
-     * @return Permission
+     * @inheritdoc
      */
     public function getPermission()
     {

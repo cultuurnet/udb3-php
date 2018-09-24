@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Place\Commands;
 
 use CultuurNet\UDB3\Facility;
+use CultuurNet\UDB3\Role\ValueObjects\Permission;
 
 class UpdateFacilitiesTest extends \PHPUnit_Framework_TestCase
 {
@@ -35,5 +36,16 @@ class UpdateFacilitiesTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedId, $this->updateFacilities->getItemId());
         $this->assertEquals($expectedFacilities, $this->updateFacilities->getFacilities());
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_special_permission_voorzieningen_bewerken()
+    {
+        $this->assertEquals(
+            Permission::VOORZIENINGEN_BEWERKEN(),
+            $this->updateFacilities->getPermission()
+        );
     }
 }

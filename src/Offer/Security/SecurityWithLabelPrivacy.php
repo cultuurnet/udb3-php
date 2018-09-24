@@ -69,13 +69,14 @@ class SecurityWithLabelPrivacy extends SecurityDecoratorBase
      */
     private function canUseLabel(LabelSecurityInterface $command)
     {
-        if ($this->userIdentification->isGodUser()) {
-            return true;
-        } else {
-            return $this->labelReadRepository->canUseLabel(
+        foreach ($command->getNames() as $labelName) {
+            if (!$this->labelReadRepository->canUseLabel(
                 $this->userIdentification->getId(),
-                $command->getName()
-            );
+                $labelName
+            )) {
+                return false;
+            }
         }
+        return true;
     }
 }

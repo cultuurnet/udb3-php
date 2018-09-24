@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -16,6 +17,10 @@ use DateTimeImmutable;
  */
 class EventCreated extends EventEvent
 {
+    /**
+     * @var Language
+     */
+    private $mainLanguage;
 
     /**
      * @var Title
@@ -49,6 +54,7 @@ class EventCreated extends EventEvent
 
     /**
      * @param string $eventId
+     * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
@@ -58,6 +64,7 @@ class EventCreated extends EventEvent
      */
     public function __construct(
         $eventId,
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Location $location,
@@ -67,12 +74,21 @@ class EventCreated extends EventEvent
     ) {
         parent::__construct($eventId);
 
+        $this->mainLanguage = $mainLanguage;
         $this->title = $title;
         $this->eventType = $eventType;
         $this->location = $location;
         $this->calendar = $calendar;
         $this->theme = $theme;
         $this->publicationDate = $publicationDate;
+    }
+
+    /**
+     * @return Language
+     */
+    public function getMainLanguage()
+    {
+        return $this->mainLanguage;
     }
 
     /**
@@ -137,6 +153,7 @@ class EventCreated extends EventEvent
             $publicationDate = $this->getPublicationDate()->format(\DateTime::ATOM);
         }
         return parent::serialize() + array(
+            'main_language' => $this->mainLanguage->getCode(),
             'title' => (string)$this->getTitle(),
             'event_type' => $this->getEventType()->serialize(),
             'theme' => $theme,
@@ -164,6 +181,7 @@ class EventCreated extends EventEvent
         }
         return new static(
             $data['event_id'],
+            new Language($data['main_language']),
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
             Location::deserialize($data['location']),

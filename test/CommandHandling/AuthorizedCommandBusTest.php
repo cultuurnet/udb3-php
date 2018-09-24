@@ -60,6 +60,7 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
      */
     public function it_delegates_is_authorized_call_to_security()
     {
+        /** @var AuthorizableCommandInterface $command */
         $command = $this->createMock(AuthorizableCommandInterface::class);
 
         $this->mockIsAuthorized(true);
@@ -110,7 +111,7 @@ class AuthorizedCommandBusTest extends \PHPUnit_Framework_TestCase
         $this->mockGetPermission(Permission::AANBOD_BEWERKEN());
         $this->mockGetItemId('itemId');
 
-        $this->setExpectedException(CommandAuthorizationException::class);
+        $this->expectException(CommandAuthorizationException::class);
 
         $this->authorizedCommandBus->dispatch($this->command);
     }

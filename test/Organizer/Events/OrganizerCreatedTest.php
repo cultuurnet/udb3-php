@@ -102,7 +102,7 @@ class OrganizerCreatedTest extends \PHPUnit_Framework_TestCase
                             new PostalCode('3000'),
                             new Locality('Leuven'),
                             Country::fromNative('BE')
-                        )
+                        ),
                     ),
                     array('0123456789'),
                     array('foo@bar.com'),

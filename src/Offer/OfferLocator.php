@@ -32,9 +32,7 @@ class OfferLocator implements EventStreamDecoratorInterface
 
         /** @var DomainMessage $message */
         foreach ($eventStream as $message) {
-            $metadata = new Metadata([
-                'id' => $offerLocation
-            ]);
+            $metadata = new Metadata(['id' => $offerLocation]);
 
             $messages[] = $message->andMetadata($metadata);
         }

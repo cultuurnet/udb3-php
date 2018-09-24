@@ -41,31 +41,39 @@ class AvailableToTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 new Calendar(CalendarType::PERMANENT()),
-                new \DateTime('2100-01-01T00:00:00Z')
+                new \DateTime('2100-01-01T00:00:00Z'),
             ],
             [
                 new Calendar(CalendarType::SINGLE(), $startDate),
-                $startDate
+                $startDate,
+            ],
+            [
+                new Calendar(CalendarType::SINGLE(), $startDate, $endDate),
+                $endDate,
             ],
             [
                 new Calendar(CalendarType::PERIODIC(), $startDate, $endDate),
-                $endDate
+                $endDate,
             ],
             [
                 new Calendar(CalendarType::MULTIPLE(), $startDate, $endDate),
-                $endDate
+                $endDate,
             ],
             [
-            new Calendar(CalendarType::SINGLE(), $startDateNoHours),
-                $startDateAlmostMidnight
+                new Calendar(CalendarType::SINGLE(), $startDateNoHours),
+                $startDateAlmostMidnight,
+            ],
+            [
+                new Calendar(CalendarType::SINGLE(), $startDateNoHours, $endDateNoHours),
+                $endDateAlmostMidnight,
             ],
             [
                 new Calendar(CalendarType::PERIODIC(), $startDate, $endDateNoHours),
-                $endDateAlmostMidnight
+                $endDateAlmostMidnight,
             ],
             [
                 new Calendar(CalendarType::MULTIPLE(), $startDate, $endDateNoHours),
-                $endDateAlmostMidnight
+                $endDateAlmostMidnight,
             ],
         ];
     }

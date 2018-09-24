@@ -2,8 +2,6 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Event\Events\ImageUpdated;
-use CultuurNet\UDB3\Media\MediaObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -29,7 +27,7 @@ class ImageUpdatedTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider eventDataProvider
      * @param array $serializedValue
-     * @param ImageUpdated $expectedTypicalAgeRangeUpdated
+     * @param ImageUpdated $expectedImageUpdated
      */
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,
@@ -49,7 +47,7 @@ class ImageUpdatedTest extends \PHPUnit_Framework_TestCase
                     'item_id' => 'de305d54-75b4-431b-adb2-eb6b9e546014',
                     'media_object_id' => 'ea305d54-75b4-431b-adb2-eb6b9e546019',
                     'description' => 'some description',
-                    'copyright_holder' => 'Dirk'
+                    'copyright_holder' => 'Dirk',
                 ],
                 new ImageUpdated(
                     'de305d54-75b4-431b-adb2-eb6b9e546014',

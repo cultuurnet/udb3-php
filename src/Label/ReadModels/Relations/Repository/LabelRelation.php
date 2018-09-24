@@ -25,19 +25,27 @@ class LabelRelation implements \JsonSerializable
     private $relationId;
 
     /**
+     * @var bool
+     */
+    private $imported;
+
+    /**
      * Entity constructor.
      * @param LabelName $labelName
      * @param RelationType $relationType
      * @param StringLiteral $relationId
+     * @param bool $imported
      */
     public function __construct(
         LabelName $labelName,
         RelationType $relationType,
-        StringLiteral $relationId
+        StringLiteral $relationId,
+        $imported
     ) {
         $this->labelName = $labelName;
         $this->relationType = $relationType;
         $this->relationId = $relationId;
+        $this->imported = (bool) $imported;
     }
 
     /**
@@ -65,6 +73,14 @@ class LabelRelation implements \JsonSerializable
     }
 
     /**
+     * @return bool
+     */
+    public function isImported()
+    {
+        return $this->imported;
+    }
+
+    /**
      * @inheritdoc
      */
     public function jsonSerialize()
@@ -72,7 +88,8 @@ class LabelRelation implements \JsonSerializable
         return [
             SchemaConfigurator::LABEL_NAME => $this->labelName->toNative(),
             SchemaConfigurator::RELATION_TYPE => $this->relationType->toNative(),
-            SchemaConfigurator::RELATION_ID => $this->relationId->toNative()
+            SchemaConfigurator::RELATION_ID => $this->relationId->toNative(),
+            SchemaConfigurator::IMPORTED => $this->imported,
         ];
     }
 
@@ -85,7 +102,8 @@ class LabelRelation implements \JsonSerializable
         return new static(
             new LabelName($relation[SchemaConfigurator::LABEL_NAME]),
             RelationType::fromNative($relation[SchemaConfigurator::RELATION_TYPE]),
-            new StringLiteral($relation[SchemaConfigurator::RELATION_ID])
+            new StringLiteral($relation[SchemaConfigurator::RELATION_ID]),
+            (bool) $relation[SchemaConfigurator::IMPORTED]
         );
     }
 }

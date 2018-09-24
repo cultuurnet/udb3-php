@@ -5,10 +5,14 @@ namespace CultuurNet\UDB3\Place;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 interface PlaceEditingServiceInterface
@@ -16,6 +20,7 @@ interface PlaceEditingServiceInterface
     /**
      * Create a new place.
      *
+     * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
@@ -24,7 +29,32 @@ interface PlaceEditingServiceInterface
      *
      * @return string $eventId
      */
-    public function createPlace(Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null);
+    public function createPlace(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    );
+
+    /**
+     * @param Language $mainLanguage
+     * @param Title $title
+     * @param EventType $eventType
+     * @param Address $address
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
+     * @return string $eventId
+     */
+    public function createApprovedPlace(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Address $address,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    );
 
     /**
      * @param string $id
@@ -46,20 +76,28 @@ interface PlaceEditingServiceInterface
     public function updateMajorInfo($id, Title $title, EventType $eventType, Address $address, CalendarInterface $calendar, Theme $theme = null);
 
     /**
+     * @param string $id
+     * @param Address $address
+     * @param Language $language
+     */
+    public function updateAddress($id, Address $address, Language $language);
+
+    /**
      * Update the description of a place.
      *
      * @param string $id
-     * @param string $description
+     * @param Language $language
+     * @param Description $description
      */
-    public function updateDescription($id, $description);
+    public function updateDescription($id, Language $language, Description $description);
 
     /**
      * Update the typical age range of a place.
      *
      * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      */
-    public function updateTypicalAgeRange($id, $ageRange);
+    public function updateTypicalAgeRange($id, AgeRange $ageRange);
 
     /**
      * Delete the typical age range of a place.
@@ -93,20 +131,12 @@ interface PlaceEditingServiceInterface
     public function updateContactPoint($id, ContactPoint $contactPoint);
 
     /**
-     * Update the facilities for a place.
-     *
-     * @param string $id
-     * @param array $facilities
-     */
-    public function updateFacilities($id, array $facilities);
-
-    /**
      * Add an image to the place.
      *
      * @param string $id
-     * @param Image $image
+     * @param UUID $imageId
      */
-    public function addImage($id, Image $image);
+    public function addImage($id, UUID $imageId);
 
     /**
      * Update an image of the place.

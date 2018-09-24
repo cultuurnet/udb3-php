@@ -4,6 +4,10 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 use CultuurNet\UDB3\Place\Commands\AddImage;
+use CultuurNet\UDB3\Place\Commands\CreatePlace;
+use CultuurNet\UDB3\Place\Commands\DeleteCurrentOrganizer;
+use CultuurNet\UDB3\Place\Commands\ImportImages;
+use CultuurNet\UDB3\Place\Commands\ImportLabels;
 use CultuurNet\UDB3\Place\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
@@ -16,9 +20,9 @@ use CultuurNet\UDB3\Place\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Place\Commands\DeletePlace;
 use CultuurNet\UDB3\Place\Commands\DeleteTypicalAgeRange;
 use CultuurNet\UDB3\Place\Commands\SelectMainImage;
-use CultuurNet\UDB3\Place\Commands\TranslateDescription;
-use CultuurNet\UDB3\Place\Commands\TranslateTitle;
+use CultuurNet\UDB3\Place\Commands\UpdateAddress;
 use CultuurNet\UDB3\Place\Commands\UpdateBookingInfo;
+use CultuurNet\UDB3\Place\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Place\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Place\Commands\UpdateDescription;
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
@@ -26,6 +30,9 @@ use CultuurNet\UDB3\Place\Commands\UpdateImage;
 use CultuurNet\UDB3\Place\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Place\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Place\Commands\UpdatePriceInfo;
+use CultuurNet\UDB3\Place\Commands\UpdateTheme;
+use CultuurNet\UDB3\Place\Commands\UpdateTitle;
+use CultuurNet\UDB3\Place\Commands\UpdateType;
 use CultuurNet\UDB3\Place\Commands\UpdateTypicalAgeRange;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -51,6 +58,14 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getRemoveLabelClassName()
     {
         return RemoveLabel::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImportLabelsClassName()
+    {
+        return ImportLabels::class;
     }
 
     /**
@@ -88,17 +103,17 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     /**
      * @return string
      */
-    protected function getTranslateTitleClassName()
+    protected function getImportImagesClassName()
     {
-        return TranslateTitle::class;
+        return ImportImages::class;
     }
 
     /**
      * @return string
      */
-    protected function getTranslateDescriptionClassName()
+    protected function getUpdateTitleClassName()
     {
-        return TranslateDescription::class;
+        return UpdateTitle::class;
     }
 
     /**
@@ -107,6 +122,14 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getUpdateDescriptionClassName()
     {
         return UpdateDescription::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateCalendarClassName()
+    {
+        return UpdateCalendar::class;
     }
 
     /**
@@ -139,6 +162,14 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     protected function getDeleteOrganizerClassName()
     {
         return DeleteOrganizer::class;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDeleteCurrentOrganizerClassName()
+    {
+        return DeleteCurrentOrganizer::class;
     }
 
     /**
@@ -199,23 +230,38 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
     }
 
     /**
-     * Handle the update of facilities for a place.
+     * @param CreatePlace $command
      */
-    public function handleUpdateFacilities(UpdateFacilities $updateFacilities)
+    protected function handleCreatePlace(CreatePlace $command)
     {
-
-        /** @var Place $place */
-        $place = $this->offerRepository->load($updateFacilities->getItemId());
-
-        $place->updateFacilities(
-            $updateFacilities->getFacilities()
+        $place = Place::createPlace(
+            $command->getItemId(),
+            $command->getMainLanguage(),
+            $command->getTitle(),
+            $command->getEventType(),
+            $command->getAddress(),
+            $command->getCalendar(),
+            $command->getTheme(),
+            $command->getPublicationDate()
         );
 
         $this->offerRepository->save($place);
     }
 
     /**
+     * @param UpdateAddress $updateAddress
+     */
+    protected function handleUpdateAddress(UpdateAddress $updateAddress)
+    {
+        /* @var Place $place */
+        $place = $this->offerRepository->load($updateAddress->getItemId());
+        $place->updateAddress($updateAddress->getAddress(), $updateAddress->getLanguage());
+        $this->offerRepository->save($place);
+    }
+
+    /**
      * Handle an update the major info command.
+     * @param UpdateMajorInfo $updateMajorInfo
      */
     public function handleUpdateMajorInfo(UpdateMajorInfo $updateMajorInfo)
     {
@@ -233,5 +279,23 @@ class CommandHandler extends OfferCommandHandler implements LoggerAwareInterface
 
         $this->offerRepository->save($place);
 
+    }
+
+    protected function getUpdateTypeClassName()
+    {
+        return UpdateType::class;
+    }
+
+    protected function getUpdateThemeClassName()
+    {
+        return UpdateTheme::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateFacilitiesClassName()
+    {
+        return UpdateFacilities::class;
     }
 }

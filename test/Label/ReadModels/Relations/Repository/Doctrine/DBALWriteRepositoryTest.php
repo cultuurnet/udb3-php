@@ -33,13 +33,15 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $expectedOfferLabelRelation = new LabelRelation(
             new LabelName('2dotstwice'),
             RelationType::PLACE(),
-            new StringLiteral('relationId')
+            new StringLiteral('relationId'),
+            true
         );
 
         $this->dbalWriteRepository->save(
             $expectedOfferLabelRelation->getLabelName(),
             $expectedOfferLabelRelation->getRelationType(),
-            $expectedOfferLabelRelation->getRelationId()
+            $expectedOfferLabelRelation->getRelationId(),
+            $expectedOfferLabelRelation->isImported()
         );
 
         $actualOfferLabelRelation = $this->getLabelRelations();
@@ -55,7 +57,8 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $labelRelation1 = new LabelRelation(
             new LabelName('2dotstwice'),
             RelationType::PLACE(),
-            new StringLiteral('relationId')
+            new StringLiteral('relationId'),
+            false
         );
 
         $this->saveLabelRelation($labelRelation1);
@@ -63,13 +66,15 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $labelRelation2 = new LabelRelation(
             $labelRelation1->getLabelName(),
             RelationType::EVENT(),
-            new StringLiteral('otherId')
+            new StringLiteral('otherId'),
+            true
         );
 
         $this->dbalWriteRepository->save(
             $labelRelation2->getLabelName(),
             $labelRelation2->getRelationType(),
-            $labelRelation2->getRelationId()
+            $labelRelation2->getRelationId(),
+            $labelRelation2->isImported()
         );
 
         $actualOfferLabelRelation = $this->getLabelRelations();
@@ -91,7 +96,8 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $labelRelation1 = new LabelRelation(
             new LabelName('2dotstwice'),
             RelationType::PLACE(),
-            new StringLiteral('relationId')
+            new StringLiteral('relationId'),
+            false
         );
 
         $this->saveLabelRelation($labelRelation1);
@@ -99,13 +105,15 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $labelRelation2 = new LabelRelation(
             $labelRelation1->getLabelName(),
             $labelRelation1->getRelationType(),
-            new StringLiteral('otherId')
+            new StringLiteral('otherId'),
+            true
         );
 
         $this->dbalWriteRepository->save(
             $labelRelation2->getLabelName(),
             $labelRelation2->getRelationType(),
-            $labelRelation2->getRelationId()
+            $labelRelation2->getRelationId(),
+            $labelRelation2->isImported()
         );
 
         $actualOfferLabelRelation = $this->getLabelRelations();
@@ -127,7 +135,8 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $offerLabelRelation = new LabelRelation(
             new LabelName('2dotstwice'),
             RelationType::PLACE(),
-            new StringLiteral('relationId')
+            new StringLiteral('relationId'),
+            true
         );
 
         $this->saveLabelRelation($offerLabelRelation);
@@ -135,15 +144,17 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $sameOfferLabelRelation = new LabelRelation(
             $offerLabelRelation->getLabelName(),
             $offerLabelRelation->getRelationType(),
-            $offerLabelRelation->getRelationId()
+            $offerLabelRelation->getRelationId(),
+            $offerLabelRelation->isImported()
         );
 
-        $this->setExpectedException(UniqueConstraintViolationException::class);
+        $this->expectException(UniqueConstraintViolationException::class);
 
         $this->dbalWriteRepository->save(
             $sameOfferLabelRelation->getLabelName(),
             $sameOfferLabelRelation->getRelationType(),
-            $sameOfferLabelRelation->getRelationId()
+            $sameOfferLabelRelation->getRelationId(),
+            $sameOfferLabelRelation->isImported()
         );
     }
 
@@ -155,13 +166,15 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
         $OfferLabelRelation1 = new LabelRelation(
             new LabelName('2dotstwice'),
             RelationType::PLACE(),
-            new StringLiteral('relationId')
+            new StringLiteral('relationId'),
+            false
         );
 
         $OfferLabelRelation2 = new LabelRelation(
             new LabelName('cultuurnet'),
             RelationType::PLACE(),
-            new StringLiteral('otherRelationId')
+            new StringLiteral('otherRelationId'),
+            true
         );
 
         $this->saveLabelRelation($OfferLabelRelation1);
@@ -187,45 +200,82 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
      */
     public function it_can_delete_based_on_relation_id()
     {
-        $LabelRelation1 = new LabelRelation(
-            new LabelName('2dotstwice'),
-            RelationType::PLACE(),
-            new StringLiteral('relationId')
+        $labelRelations = $this->seedLabelRelations();
+
+        $this->dbalWriteRepository->deleteByRelationId(
+            $labelRelations[0]->getRelationId()
         );
 
-        $labelRelation2 = new LabelRelation(
-            new LabelName('cultuurnet'),
-            RelationType::PLACE(),
-            new StringLiteral('otherRelationId')
-        );
-
-        $labelRelation3 = new LabelRelation(
-            new LabelName('cultuurnet'),
-            RelationType::PLACE(),
-            new StringLiteral('relationId')
-        );
-
-        $labelRelation4 = new LabelRelation(
-            new LabelName('foo'),
-            RelationType::PLACE(),
-            new StringLiteral('fooId')
-        );
-
-        $this->saveLabelRelation($LabelRelation1);
-        $this->saveLabelRelation($labelRelation2);
-        $this->saveLabelRelation($labelRelation3);
-        $this->saveLabelRelation($labelRelation4);
-
-        $this->dbalWriteRepository->deleteByRelationId($LabelRelation1->getRelationId());
-
-        $labelRelations = $this->getLabelRelations();
+        $foundLabelRelations = $this->getLabelRelations();
 
         $this->assertEquals(
             [
-                $labelRelation2,
-                $labelRelation4,
+                $labelRelations[1],
+                $labelRelations[3],
             ],
-            $labelRelations
+            $foundLabelRelations
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_delete_imported_labels_on_relation_id()
+    {
+        $labelRelations = $this->seedLabelRelations();
+
+        $this->dbalWriteRepository->deleteImportedByRelationId(
+            $labelRelations[0]->getRelationId()
+        );
+
+        $foundLabelRelations = $this->getLabelRelations();
+
+        $this->assertEquals(
+            [
+                $labelRelations[1],
+                $labelRelations[2],
+                $labelRelations[3],
+            ],
+            $foundLabelRelations
+        );
+    }
+
+    /**
+     * @return LabelRelation[]
+     */
+    private function seedLabelRelations()
+    {
+        $labelRelations = [
+            new LabelRelation(
+                new LabelName('2dotstwice'),
+                RelationType::PLACE(),
+                new StringLiteral('relationId'),
+                true
+            ),
+            new LabelRelation(
+                new LabelName('cultuurnet'),
+                RelationType::PLACE(),
+                new StringLiteral('otherRelationId'),
+                false
+            ),
+            new LabelRelation(
+                new LabelName('cultuurnet'),
+                RelationType::PLACE(),
+                new StringLiteral('relationId'),
+                false
+            ),
+            new LabelRelation(
+                new LabelName('foo'),
+                RelationType::PLACE(),
+                new StringLiteral('fooId'),
+                false
+            ),
+        ];
+
+        foreach ($labelRelations as $labelRelation) {
+            $this->saveLabelRelation($labelRelation);
+        }
+
+        return $labelRelations;
     }
 }

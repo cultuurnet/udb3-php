@@ -39,7 +39,7 @@ class CdbXmlContactInfoImporterTest extends \PHPUnit_Framework_TestCase
             'email' => 'info@2dotstwice.be',
             'phone' => '987654321',
             'url' => 'www.2dotstwice.be',
-            'urlLabel' => 'Reserveer plaatsen',
+            'urlLabel' => ['nl' => 'Reserveer plaatsen'],
         ];
 
         $this->assertEquals($expectedBookingInfo, $jsonLd->bookingInfo);
@@ -100,12 +100,12 @@ class CdbXmlContactInfoImporterTest extends \PHPUnit_Framework_TestCase
             ],
             'phone' => [
                 '89898989',
-                '12121212'
+                '12121212',
             ],
             'url' => [
                 'www.cultuurnet.be',
                 'www.booking.com',
-            ]
+            ],
         ];
 
         $this->assertEquals($expectedContactPoint, $jsonLd->contactPoint);

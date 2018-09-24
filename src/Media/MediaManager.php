@@ -6,6 +6,7 @@ use Broadway\Repository\AggregateNotFoundException;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
@@ -72,7 +73,8 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
         MIMEType $fileType,
         StringLiteral $description,
         StringLiteral $copyrightHolder,
-        Url $sourceLocation
+        Url $sourceLocation,
+        Language $language
     ) {
         try {
             $existingMediaObject = $this->repository->load($id);
@@ -88,7 +90,8 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
             $fileType,
             $description,
             $copyrightHolder,
-            $sourceLocation
+            $sourceLocation,
+            $language
         );
 
         $this->repository->save($mediaObject);
@@ -122,7 +125,8 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
             $uploadImage->getMimeType(),
             $uploadImage->getDescription(),
             $uploadImage->getCopyrightHolder(),
-            Url::fromNative($destinationIri)
+            Url::fromNative($destinationIri),
+            $uploadImage->getLanguage()
         );
 
         $jobInfo = ['file_id' => (string) $uploadImage->getFileId()];
@@ -161,7 +165,8 @@ class MediaManager extends Udb3CommandHandler implements LoggerAwareInterface, M
             $mediaObject->getMimeType(),
             new Description((string) $mediaObject->getDescription()),
             new CopyrightHolder((string) $mediaObject->getCopyrightHolder()),
-            $mediaObject->getSourceLocation()
+            $mediaObject->getSourceLocation(),
+            $mediaObject->getLanguage()
         );
 
         return $image;

@@ -4,29 +4,46 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 interface EventEditingServiceInterface
 {
+
+    /**
+     * Update the title of an event.
+     *
+     * @param string $id
+     * @param Language $language
+     * @param StringLiteral $title
+     */
+    public function updateTitle($id, Language $language, StringLiteral $title);
+
     /**
      * Update the description of an event.
      *
      * @param string $id
-     * @param string $description
+     * @param Language $language
+     * @param Description $description
      */
-    public function updateDescription($id, $description);
+    public function updateDescription($id, Language $language, Description $description);
 
     /**
      * Update the typical age range of an event.
      *
      * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      */
-    public function updateTypicalAgeRange($id, $ageRange);
+    public function updateTypicalAgeRange($id, AgeRange $ageRange);
 
     /**
      * Delete the typical age range of a place.
@@ -63,9 +80,9 @@ interface EventEditingServiceInterface
      * Add an image to the event.
      *
      * @param string $id
-     * @param Image $image
+     * @param UUID $imageId
      */
-    public function addImage($id, Image $image);
+    public function addImage($id, UUID $imageId);
 
     /**
      * Update an image of the event.
@@ -94,6 +111,7 @@ interface EventEditingServiceInterface
     public function removeImage($id, Image $image);
 
     /**
+     * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
@@ -102,7 +120,32 @@ interface EventEditingServiceInterface
      *
      * @return string $eventId
      */
-    public function createEvent(Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
+    public function createEvent(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        $theme = null
+    );
+
+    /**
+     * @param Language $mainLanguage
+     * @param Title $title
+     * @param EventType $eventType
+     * @param Location $location
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
+     * @return string $eventId
+     */
+    public function createApprovedEvent(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    );
 
     /**
      * @param string $originalEventId
@@ -124,6 +167,14 @@ interface EventEditingServiceInterface
      * @return string $commandId
      */
     public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
+
+    /**
+     * @param string $eventId
+     * @param LocationId $locationId
+     *
+     * @return string $commandId
+     */
+    public function updateLocation($eventId, LocationId $locationId);
 
     /**
      * @param string $eventId

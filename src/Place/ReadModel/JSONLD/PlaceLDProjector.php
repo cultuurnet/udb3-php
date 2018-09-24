@@ -6,23 +6,29 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Actor\ActorImportedFromUDB2;
+use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
-use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Facility;
+use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferUpdate;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
+use CultuurNet\UDB3\Place\Events\AddressTranslated;
+use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Place\Events\CalendarUpdated;
 use CultuurNet\UDB3\Place\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Place\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Place\Events\DescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\ImageAdded;
@@ -44,11 +50,15 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
+use CultuurNet\UDB3\Place\Events\ThemeUpdated;
 use CultuurNet\UDB3\Place\Events\TitleTranslated;
+use CultuurNet\UDB3\Place\Events\TitleUpdated;
+use CultuurNet\UDB3\Place\Events\TypeUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Place\PlaceEvent;
+use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\Theme;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -59,6 +69,11 @@ use Symfony\Component\Serializer\SerializerInterface;
 class PlaceLDProjector extends OfferLDProjector implements EventListenerInterface
 {
     /**
+     * @var RepositoryInterface
+     */
+    private $placeRelations;
+
+    /**
      * @var CdbXMLImporter
      */
     protected $cdbXMLImporter;
@@ -67,57 +82,67 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
+     * @param RepositoryInterface $placeRelations
      * @param SerializerInterface $mediaObjectSerializer
      * @param CdbXMLImporter $cdbXMLImporter
+     * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+     * @param EventSpecification $eventFilter
+     * @param string[] $basePriceTranslations
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
+        RepositoryInterface $placeRelations,
         SerializerInterface $mediaObjectSerializer,
-        CdbXMLImporter $cdbXMLImporter
+        CdbXMLImporter $cdbXMLImporter,
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        EventSpecification $eventFilter,
+        array $basePriceTranslations
     ) {
         parent::__construct(
             $repository,
             $iriGenerator,
             $organizerService,
-            $mediaObjectSerializer
+            $mediaObjectSerializer,
+            $jsonDocumentMetaDataEnricher,
+            $eventFilter,
+            $basePriceTranslations
         );
 
-        $this->slugger = new CulturefeedSlugger();
+        $this->placeRelations = $placeRelations;
+
         $this->cdbXMLImporter = $cdbXMLImporter;
-    }
-
-    protected function getImagesImportedFromUdb2ClassName()
-    {
-        return ImagesImportedFromUDB2::class;
-    }
-
-    protected function getImagesUpdatedFromUdb2ClassName()
-    {
-        return ImagesUpdatedFromUDB2::class;
     }
 
     /**
      * @param PlaceImportedFromUDB2 $placeImportedFromUDB2
+     * @return JsonDocument
      */
     protected function applyPlaceImportedFromUDB2(
         PlaceImportedFromUDB2 $placeImportedFromUDB2
     ) {
-        $this->projectActorImportedFromUDB2($placeImportedFromUDB2);
+        return $this->projectActorImportedFromUDB2(
+            $placeImportedFromUDB2
+        );
     }
 
     /**
      * @param PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
+     * @return JsonDocument
      */
     protected function applyPlaceUpdatedFromUDB2(
         PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
     ) {
-        $this->projectActorImportedFromUDB2($placeUpdatedFromUDB2);
+        return $this->projectActorImportedFromUDB2(
+            $placeUpdatedFromUDB2
+        );
     }
 
     /**
      * @param ActorImportedFromUDB2 $actorImportedFromUDB2
+     * @return JsonDocument
+     * @throws \CultureFeed_Cdb_ParseException
      */
     protected function projectActorImportedFromUDB2(
         ActorImportedFromUDB2 $actorImportedFromUDB2
@@ -142,7 +167,21 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $udb2Actor
         );
 
-        $this->repository->save($document->withBody($actorLd));
+        // When importing from UDB2 the main language is always nl.
+        // When updating from UDB2 never change the main language.
+        if (!isset($actorLd->mainLanguage)) {
+            $this->setMainLanguage($actorLd, new Language('nl'));
+        }
+
+        // Remove geocoordinates, because the address might have been
+        // updated and we might get inconsistent data if it takes a while
+        // before the new geocoordinates are added.
+        // In case geocoding fails, it's also easier to look for places that
+        // have no geocoordinates instead of places that have incorrect
+        // geocoordinates.
+        unset($actorLd->geo);
+
+        return $document->withBody($actorLd);
     }
 
     /**
@@ -163,6 +202,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     /**
      * @param PlaceCreated $placeCreated
      * @param DomainMessage $domainMessage
+     * @return JsonDocument
      */
     protected function applyPlaceCreated(PlaceCreated $placeCreated, DomainMessage $domainMessage)
     {
@@ -174,13 +214,15 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $placeCreated->getPlaceId()
         );
 
-        if (empty($jsonLD->name)) {
-            $jsonLD->name = new \stdClass();
-        }
+        $this->setMainLanguage($jsonLD, $placeCreated->getMainLanguage());
 
-        $jsonLD->name->nl = $placeCreated->getTitle();
+        $jsonLD->name[$placeCreated->getMainLanguage()->getCode()] = $placeCreated->getTitle();
 
-        $jsonLD->address = $placeCreated->getAddress()->toJsonLd();
+        $this->setAddress(
+            $jsonLD,
+            $placeCreated->getAddress(),
+            $this->getMainLanguage($jsonLD)
+        );
 
         $calendarJsonLD = $placeCreated->getCalendar()->toJsonLd();
         $jsonLD = (object) array_merge((array) $jsonLD, $calendarJsonLD);
@@ -190,7 +232,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $eventType = $placeCreated->getEventType();
         $jsonLD->terms = [
-            $eventType->toJsonLd()
+            $eventType->toJsonLd(),
         ];
 
         $theme = $placeCreated->getTheme();
@@ -215,31 +257,44 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
 
-        $this->repository->save($document->withBody($jsonLD));
+        return $document->withBody($jsonLD);
     }
 
     /**
      * @param PlaceDeleted $placeDeleted
+     * @return null
      */
     protected function applyPlaceDeleted(PlaceDeleted $placeDeleted)
     {
-        $this->repository->remove($placeDeleted->getItemId());
+        $document = $this->loadDocumentFromRepository($placeDeleted);
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->workflowStatus = WorkflowStatus::DELETED()->getName();
+
+        return $document->withBody($jsonLD);
     }
 
     /**
      * Apply the major info updated command to the projector.
      * @param MajorInfoUpdated $majorInfoUpdated
+     * @return JsonDocument
      */
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
         $document = $this
-            ->loadPlaceDocumentFromRepository($majorInfoUpdated)
+            ->loadPlaceDocumentFromRepositoryById($majorInfoUpdated->getPlaceId())
             ->apply(OfferUpdate::calendar($majorInfoUpdated->getCalendar()));
 
         $jsonLD = $document->getBody();
 
-        $jsonLD->name->nl = $majorInfoUpdated->getTitle();
-        $jsonLD->address = $majorInfoUpdated->getAddress()->toJsonLd();
+        $jsonLD->name->{$this->getMainLanguage($jsonLD)->getCode()} = $majorInfoUpdated->getTitle();
+
+        $this->setAddress(
+            $jsonLD,
+            $majorInfoUpdated->getAddress(),
+            $this->getMainLanguage($jsonLD)
+        );
 
         $availableTo = AvailableTo::createFromCalendar($majorInfoUpdated->getCalendar());
         $jsonLD->availableTo = (string)$availableTo;
@@ -251,7 +306,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         $eventType = $majorInfoUpdated->getEventType();
         $jsonLD->terms = [
-            $eventType->toJsonLd()
+            $eventType->toJsonLd(),
         ];
 
         $theme = $majorInfoUpdated->getTheme();
@@ -259,55 +314,117 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
             $jsonLD->terms[] = $theme->toJsonLd();
         }
 
-        $this->repository->save($document->withBody($jsonLD));
+        // Remove geocoordinates, because the address might have been
+        // updated and we might get inconsistent data if it takes a while
+        // before the new geocoordinates are added.
+        // In case geocoding fails, it's also easier to look for places that
+        // have no geocoordinates instead of places that have incorrect
+        // geocoordinates.
+        unset($jsonLD->geo);
 
+        return $document->withBody($jsonLD);
     }
 
     /**
-     * Apply the facilitiesupdated event to the place repository.
-     * @param FacilitiesUpdated $facilitiesUpdated
+     * @param AddressUpdated $addressUpdated
+     * @return JsonDocument
      */
-    protected function applyFacilitiesUpdated(FacilitiesUpdated $facilitiesUpdated)
+    protected function applyAddressUpdated(AddressUpdated $addressUpdated)
     {
+        $document = $this->loadPlaceDocumentFromRepositoryById($addressUpdated->getPlaceId());
+        $jsonLD = $document->getBody();
+        $this->setAddress($jsonLD, $addressUpdated->getAddress(), $this->getMainLanguage($jsonLD));
+        return $document->withBody($jsonLD);
+    }
 
-        $document = $this->loadPlaceDocumentFromRepository($facilitiesUpdated);
+    /**
+     * @param AddressTranslated $addressTranslated
+     * @return JsonDocument
+     */
+    protected function applyAddressTranslated(AddressTranslated $addressTranslated)
+    {
+        $document = $this->loadPlaceDocumentFromRepositoryById($addressTranslated->getPlaceId());
+        $jsonLD = $document->getBody();
+        $this->setAddress($jsonLD, $addressTranslated->getAddress(), $addressTranslated->getLanguage());
+        return $document->withBody($jsonLD);
+    }
+
+    /**
+     * @param \stdClass $jsonLd
+     * @param Address $address
+     * @param Language $language
+     */
+    protected function setAddress(\stdClass $jsonLd, Address $address, Language $language)
+    {
+        if (!isset($jsonLd->address)) {
+            $jsonLd->address = new \stdClass();
+        }
+
+        if (isset($jsonLd->address->streetAddress)) {
+            // Old projections have their address in a single language.
+            // Set the old address as the address for the main language before
+            // updating it or adding another address.
+            // @replay_i18n
+            // @see https://jira.uitdatabank.be/browse/III-2201
+            $mainLanguageCode = $this->getMainLanguage($jsonLd)->getCode();
+            $jsonLd->address = (object) [
+                $mainLanguageCode => $jsonLd->address,
+            ];
+        }
+
+        $jsonLd->address->{$language->getCode()} = $address->toJsonLd();
+    }
+
+    /**
+     * @param GeoCoordinatesUpdated $geoCoordinatesUpdated
+     * @return JsonDocument
+     */
+    protected function applyGeoCoordinatesUpdated(GeoCoordinatesUpdated $geoCoordinatesUpdated)
+    {
+        $document = $this->loadPlaceDocumentFromRepositoryById($geoCoordinatesUpdated->getItemId());
 
         $placeLd = $document->getBody();
 
-        $terms = isset($placeLd->terms) ? $placeLd->terms : array();
+        $placeLd->geo = (object) [
+            'latitude' => $geoCoordinatesUpdated->getCoordinates()->getLatitude()->toDouble(),
+            'longitude' => $geoCoordinatesUpdated->getCoordinates()->getLongitude()->toDouble(),
+        ];
 
-        // Remove all old facilities + get numeric keys.
-        $terms = array_values(array_filter(
-            $terms,
-            function ($term) {
-                return $term->domain !== Facility::DOMAIN;
-            }
-        ));
-
-        // Add the new facilities.
-        foreach ($facilitiesUpdated->getFacilities() as $facility) {
-            $terms[] = $facility->toJsonLd();
-        }
-
-        $placeLd->terms = $terms;
-
-        $this->repository->save($document->withBody($placeLd));
-
+        return $document->withBody($placeLd);
     }
 
     /**
-     * @param PlaceEvent $place
-     * @return JsonDocument
+     * @param OrganizerProjectedToJSONLD $organizerProjectedToJSONLD
+     * @return JsonDocument[]
+     *
+     * @throws \CultuurNet\UDB3\EntityNotFoundException
      */
-    protected function loadPlaceDocumentFromRepository(PlaceEvent $place)
-    {
-        $document = $this->repository->get($place->getPlaceId());
+    protected function applyOrganizerProjectedToJSONLD(
+        OrganizerProjectedToJSONLD $organizerProjectedToJSONLD
+    ) {
+        $placeIds = $this->placeRelations->getPlacesOrganizedByOrganizer(
+            $organizerProjectedToJSONLD->getId()
+        );
 
-        if (!$document) {
-            return $this->newDocument($place->getPlaceId());
+        $organizer = $this->organizerService->getEntity(
+            $organizerProjectedToJSONLD->getId()
+        );
+
+        $documents = [];
+
+        foreach ($placeIds as $placeId) {
+            $document = $this->loadDocumentFromRepositoryByItemId($placeId);
+            $placeLD = $document->getBody();
+
+            $newPlaceLD = clone $placeLD;
+            $newPlaceLD->organizer = json_decode($organizer);
+
+            if ($newPlaceLD != $placeLD) {
+                $documents[] = $document->withBody($newPlaceLD);
+            }
         }
 
-        return $document;
+        return $documents;
     }
 
     /**
@@ -425,6 +542,11 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         return DescriptionUpdated::class;
     }
 
+    protected function getCalendarUpdatedClassName()
+    {
+        return CalendarUpdated::class;
+    }
+
     protected function getTypicalAgeRangeUpdatedClassName()
     {
         return TypicalAgeRangeUpdated::class;
@@ -458,5 +580,35 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
     protected function getFlaggedAsInappropriateClassName()
     {
         return FlaggedAsInappropriate::class;
+    }
+
+    protected function getImagesImportedFromUdb2ClassName()
+    {
+        return ImagesImportedFromUDB2::class;
+    }
+
+    protected function getImagesUpdatedFromUdb2ClassName()
+    {
+        return ImagesUpdatedFromUDB2::class;
+    }
+
+    protected function getTitleUpdatedClassName()
+    {
+        return TitleUpdated::class;
+    }
+
+    protected function getTypeUpdatedClassName()
+    {
+        return TypeUpdated::class;
+    }
+
+    protected function getThemeUpdatedClassName()
+    {
+        return ThemeUpdated::class;
+    }
+
+    protected function getFacilitiesUpdatedClassName()
+    {
+        return FacilitiesUpdated::class;
     }
 }

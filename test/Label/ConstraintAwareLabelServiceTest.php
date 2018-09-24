@@ -62,7 +62,7 @@ class ConstraintAwareLabelServiceTest extends \PHPUnit_Framework_TestCase
                     $labelName,
                     Visibility::INVISIBLE(),
                     Privacy::PRIVACY_PUBLIC()
-                )
+                ),
             ],
             $traceableEventStore->getEvents()
         );

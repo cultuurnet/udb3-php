@@ -3,15 +3,18 @@
 namespace CultuurNet\UDB3\Place\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
@@ -24,6 +27,7 @@ use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Place\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Place\Commands\Moderation\Reject;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -49,10 +53,14 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
         return new RemoveLabel($id, $label);
     }
 
-
-    public function createAddImageCommand($id, Image $image)
+    /**
+     * @param $id
+     * @param UUID $imageId
+     * @return AddImage
+     */
+    public function createAddImageCommand($id, UUID $imageId)
     {
-        return new AddImage($id, $image);
+        return new AddImage($id, $imageId);
     }
 
     public function createRemoveImageCommand($id, Image $image)
@@ -83,22 +91,30 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
      * @param $id
      * @param Language $language
      * @param StringLiteral $title
-     * @return AbstractTranslateTitle
+     * @return AbstractUpdateTitle
      */
-    public function createTranslateTitleCommand($id, Language $language, StringLiteral $title)
+    public function createUpdateTitleCommand($id, Language $language, StringLiteral $title)
     {
-        return new TranslateTitle($id, $language, $title);
+        return new UpdateTitle($id, $language, $title);
     }
 
     /**
      * @param $id
      * @param Language $language
-     * @param StringLiteral $description
-     * @return AbstractTranslateDescription
+     * @param Description $description
+     * @return AbstractUpdateDescription
      */
-    public function createTranslateDescriptionCommand($id, Language $language, StringLiteral $description)
+    public function createUpdateDescriptionCommand($id, Language $language, Description $description)
     {
-        return new TranslateDescription($id, $language, $description);
+        return new UpdateDescription($id, $language, $description);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createUpdateCalendarCommand($id, Calendar $calendar)
+    {
+        return new UpdateCalendar($id, $calendar);
     }
 
     /**
@@ -113,20 +129,10 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
 
     /**
      * @param string $id
-     * @param string $description
-     * @return AbstractUpdateDescription
-     */
-    public function createUpdateDescriptionCommand($id, $description)
-    {
-        return new UpdateDescription($id, $description);
-    }
-
-    /**
-     * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      * @return AbstractUpdateTypicalAgeRange
      */
-    public function createUpdateTypicalAgeRangeCommand($id, $ageRange)
+    public function createUpdateTypicalAgeRangeCommand($id, AgeRange $ageRange)
     {
         return new UpdateTypicalAgeRange($id, $ageRange);
     }
@@ -234,5 +240,23 @@ class PlaceCommandFactory implements OfferCommandFactoryInterface
     public function createFlagAsDuplicate($id)
     {
         return new FlagAsDuplicate($id);
+    }
+
+    public function createUpdateTypeCommand($id, EventType $type)
+    {
+        return new UpdateType($id, $type);
+    }
+
+    public function createUpdateThemeCommand($id, Theme $theme)
+    {
+        return new UpdateTheme($id, $theme);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createUpdateFacilitiesCommand($id, array $facilities)
+    {
+        return new UpdateFacilities($id, $facilities);
     }
 }

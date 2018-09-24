@@ -8,6 +8,9 @@ use Broadway\Domain\Metadata;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use CultureFeed_Cdb_Data_File;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
+use CultuurNet\Geocoding\Coordinate\Latitude;
+use CultuurNet\Geocoding\Coordinate\Longitude;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -20,25 +23,29 @@ use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\CalendarUpdated;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
+use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
-use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
@@ -49,6 +56,7 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Timestamp;
 use CultuurNet\UDB3\Title;
@@ -79,11 +87,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     private $iriGenerator;
 
     /**
-     * @var IriGeneratorInterface
-     */
-    private $mediaIriGenerator;
-
-    /**
      * @var CdbXMLEventFactory
      */
     private $cdbXMLEventFactory;
@@ -107,6 +110,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
      * @var CdbXMLImporter|PHPUnit_Framework_MockObject_MockObject
      */
     protected $cdbXMLImporter;
+
+    /**
+     * @var EventSpecification|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $eventFilter;
 
     /**
      * Constructs a test case with the given name.
@@ -139,20 +147,25 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             }
         );
 
-        $this->mediaIriGenerator = new CallableIriGenerator(function (CultureFeed_Cdb_Data_File $file) {
-            return 'http://example.com/media/' . $file->getFileName();
-        });
-
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
+
+        $this->eventFilter = $this->createMock(EventSpecification::class);
 
         $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter($this->mediaIriGenerator),
-            new EventCdbIdExtractor(),
-            new PriceDescriptionParser(
-                new NumberFormatRepository(),
-                new CurrencyRepository()
+            new CdbXMLItemBaseImporter(
+                new PriceDescriptionParser(
+                    new NumberFormatRepository(),
+                    new CurrencyRepository()
+                ),
+                [
+                    'nl' => 'Basistarief',
+                    'fr' => 'Tarif de base',
+                    'en' => 'Base tarif',
+                    'de' => 'Basisrate',
+                ]
             ),
+            new EventCdbIdExtractor(),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()
         );
@@ -165,7 +178,17 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             $this->organizerService,
             $this->serializer,
             $this->iriOfferIdentifierFactory,
-            $this->cdbXMLImporter
+            $this->cdbXMLImporter,
+            new JsonDocumentLanguageEnricher(
+                new EventJsonDocumentLanguageAnalyzer()
+            ),
+            $this->eventFilter,
+            [
+                'nl' => 'Basistarief',
+                'fr' => 'Tarif de base',
+                'en' => 'Base tariff',
+                'de' => 'Basisrate',
+            ]
         );
     }
 
@@ -183,13 +206,13 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventCreated = $this->createEventCreated($eventId, $calendar, null);
 
-        $jsonLD = $this->createJsonLD($eventId);
+        $jsonLD = $this->createJsonLD($eventId, new Language('en'));
         $jsonLD->terms = [
             (object)[
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
 
         $this->mockPlaceService();
@@ -218,7 +241,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventCreated = $this->createEventCreated($eventId, $calendar, $theme);
 
-        $jsonLD = $this->createJsonLD($eventId);
+        $jsonLD = $this->createJsonLD($eventId, new Language('en'));
         $jsonLD->terms = [
             (object)[
                 'id' => '0.50.4.0.0',
@@ -229,7 +252,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
 
         $this->mockPlaceService();
@@ -265,7 +288,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventCreated = $this->createEventCreated($eventId, $calendar, $theme);
 
-        $jsonLD = $this->createJsonLD($eventId);
+        $jsonLD = $this->createJsonLD($eventId, new Language('en'));
         $jsonLD->terms = [
             (object)[
                 'id' => '0.50.4.0.0',
@@ -276,7 +299,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
         $jsonLD->creator = $expectedCreator;
 
@@ -413,7 +436,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $eventCreated = $this->createEventCreated($eventId, $calendar, $theme);
 
-        $jsonLD = $this->createJsonLD($eventId);
+        $jsonLD = $this->createJsonLD($eventId, new Language('en'));
         $jsonLD->calendarType = 'multiple';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $jsonLD->endDate = '2015-01-29T13:25:21+01:00';
@@ -427,7 +450,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 '@type' => 'Event',
                 'startDate' => '2015-01-28T13:25:21+01:00',
                 'endDate' => '2015-01-29T13:25:21+01:00',
-            ]
+            ],
         ];
         $jsonLD->availableTo = $jsonLD->endDate;
         $jsonLD->sameAs = [
@@ -443,7 +466,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
 
         $this->mockPlaceService();
@@ -456,6 +479,50 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $this->assertEquals($jsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_a_main_language_when_importing_cdbxml()
+    {
+        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
+            'samples/event_with_calendar_periods.cdbxml.xml'
+        );
+
+        $body = $this->project($event, $event->getEventId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_change_main_language_when_updating()
+    {
+        // First make sure there is already an event, so it is a real update.
+        $eventId = 'a2d50a8d-5b83-4c8b-84e6-e9c0bacbb1a3';
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00')
+        );
+        $eventCreated = $this->createEventCreated($eventId, $calendar, null);
+        $this->mockPlaceService();
+        $this->project(
+            $eventCreated,
+            $eventId,
+            new Metadata(),
+            DateTime::fromString('2015-01-20T13:25:21+01:00')
+        );
+
+        // Now do the real update.
+        $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
+            'samples/event_with_calendar_periods.cdbxml.xml'
+        );
+
+        $body = $this->project($event, $eventId);
+
+        $this->assertEquals(new Language('en'), $body->mainLanguage);
     }
 
     /**
@@ -634,71 +701,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_does_not_add_typical_age_range_when_age_from_is_missing()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_without_age_from.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $this->assertObjectNotHasAttribute('typicalAgeRange', $body);
-    }
-
-    /**
-     * @test
-     */
-    public function it_adds_typical_age_range_when_age_from_is_present()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_with_age_from.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $this->assertEquals('10-12', $body->typicalAgeRange);
-    }
-
-    /**
-     * @test
-     */
-    public function it_adds_a_language_property_when_cdbxml_has_languages()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_with_languages.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $expectedLanguages = [
-            'Nederlands',
-            'Frans',
-            'Engels'
-        ];
-
-        $this->assertEquals(
-            $expectedLanguages,
-            $body->language
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_add_an_empty_language_property()
-    {
-        $event = $this->cdbXMLEventFactory->eventImportedFromUDB2(
-            'samples/event_without_languages.cdbxml.xml'
-        );
-
-        $body = $this->project($event, $event->getEventId());
-
-        $this->assertObjectNotHasAttribute('language', $body);
-    }
-
-    /**
-     * @test
-     */
     public function it_projects_the_addition_of_a_label()
     {
         $labelAdded = new LabelAdded(
@@ -709,7 +711,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A']
+                'labels' => ['label A'],
             ])
         );
 
@@ -731,7 +733,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A', 'label B', 'label C']
+                'labels' => ['label A', 'label B', 'label C'],
             ])
         );
 
@@ -758,7 +760,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'bar' => 'stool'
+                'bar' => 'stool',
             ])
         );
 
@@ -769,11 +771,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new Label('label B')
         );
 
-        $body = $this->project($labelAdded, 'foo');
+        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedBody = new stdClass();
         $expectedBody->bar = 'stool';
         $expectedBody->labels = ['label B'];
+        $expectedBody->modified = $this->recordedOn->toString();
 
         $this->assertEquals(
             $expectedBody,
@@ -842,6 +845,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'name' => [
                     'nl' => 'Quicksand Valley',
                 ],
+                'languages' => ['nl'],
+                'completedLanguages' => ['nl'],
             ])
         );
 
@@ -859,12 +864,15 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     'streetAddress' => "Hanswijkstraat 63",
                 ],
             ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
         $expectedSecondEventBody = (object) [
             'name' => (object)[
                 'nl' => 'Quicksand Valley',
             ],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
             'location' => (object)[
                 'name' => "t,arsenaal mechelen",
                 'address' => (object)[
@@ -874,6 +882,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     'streetAddress' => "Hanswijkstraat 63",
                 ],
             ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
         $placeProjectedToJSONLD = new PlaceProjectedToJSONLD(
@@ -882,11 +891,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $this->projector->handle(
-            DomainMessage::recordNow(
+            new DomainMessage(
                 $placeID,
                 0,
                 new Metadata(),
-                $placeProjectedToJSONLD
+                $placeProjectedToJSONLD,
+                $this->recordedOn->toBroadwayDateTime()
             )
         );
 
@@ -949,8 +959,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             json_encode([
                 'name' => [
                     'nl' => 'Rekanto - TaiQi',
-                    'fr' => 'Raviva - TaiQi'
+                    'fr' => 'Raviva - TaiQi',
                 ],
+                'languages' => ['nl', 'fr'],
+                'completedLanguages' => ['nl', 'fr'],
             ])
         );
 
@@ -965,19 +977,23 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     'kgielens@stichtingtegenkanker.be',
                 ],
             ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
         $expectedSecondEventBody = (object) [
             'name' => (object)[
                 'nl' => 'Rekanto - TaiQi',
-                'fr' => 'Raviva - TaiQi'
+                'fr' => 'Raviva - TaiQi',
             ],
+            'languages' => ['nl', 'fr'],
+            'completedLanguages' => ['nl', 'fr'],
             'organizer' => (object)[
                 'name' => 'stichting tegen Kanker',
                 'email' => [
                     'kgielens@stichtingtegenkanker.be',
                 ],
             ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
         $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD(
@@ -986,11 +1002,12 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $this->projector->handle(
-            DomainMessage::recordNow(
+            new DomainMessage(
                 $organizerProjectedToJSONLD->getId(),
                 0,
                 new Metadata(),
-                $organizerProjectedToJSONLD
+                $organizerProjectedToJSONLD,
+                $this->recordedOn->toBroadwayDateTime()
             )
         );
 
@@ -1035,10 +1052,11 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->id = $id;
-        $jsonLD->name = ['nl' => 'some representative title'];
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = ['en' => 'some representative title'];
         $jsonLD->location = [
             '@type' => 'Place',
-            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e'
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
@@ -1046,8 +1064,10 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $initialDocument = (new JsonDocument('foo'))
             ->withBody($jsonLD);
@@ -1056,12 +1076,13 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $expectedJsonLD = new stdClass();
         $expectedJsonLD->id = $id;
+        $expectedJsonLD->mainLanguage = 'en';
         $expectedJsonLD->name = (object)[
-            'nl' => 'new title'
+            'en' => 'new title',
         ];
         $expectedJsonLD->location = (object)[
             '@type' => 'Place',
-            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e'
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
         ];
         $expectedJsonLD->calendarType = 'single';
         $expectedJsonLD->terms = [
@@ -1074,15 +1095,151 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
+        $expectedJsonLD->languages = ['en'];
+        $expectedJsonLD->completedLanguages = ['en'];
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
-        $expectedJsonLD->availableTo = $expectedJsonLD->startDate;
+        $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
+        $expectedJsonLD->modified = $this->recordedOn->toString();
 
-        $body = $this->project($majorInfoUpdated, $id);
+        $body = $this->project($majorInfoUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
 
         $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_calendar_updated()
+    {
+        $eventId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $calendarUpdated = new CalendarUpdated($eventId, $calendar);
+
+        $jsonLD = new stdClass();
+        $jsonLD->id = $eventId;
+
+        $initialDocument = (new JsonDocument('foo'))
+            ->withBody($jsonLD);
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLD = (object) [
+            '@id' => 'http://example.com/entity/' . $eventId,
+            '@context' => '/contexts/event',
+        ];
+        $expectedJsonLD->calendarType = 'single';
+        $expectedJsonLD->startDate = '2020-01-26T11:11:11+01:00';
+        $expectedJsonLD->endDate = '2020-01-27T12:12:12+01:00';
+        $expectedJsonLD->availableTo = '2020-01-27T12:12:12+01:00';
+        $expectedJsonLD->modified = $this->recordedOn->toString();
+
+        $body = $this->project($calendarUpdated, $eventId, null, $this->recordedOn->toBroadwayDateTime());
+
+        $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_location()
+    {
+        $this->mockPlaceService();
+
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $locationId = new LocationId('395fe7eb-9bac-4647-acae-316b6446a85e');
+
+        $locationUpdated = new LocationUpdated(
+            $eventId,
+            $locationId
+        );
+
+        $jsonLD = new stdClass();
+        $jsonLD->id = $eventId;
+        $jsonLD->location = [
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
+        ];
+
+        $initialDocument = (new JsonDocument($eventId))
+            ->withBody($jsonLD);
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLD = new stdClass();
+        $expectedJsonLD->id = $eventId;
+        $expectedJsonLD->location = (object)[
+            '@type' => 'Place',
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
+        ];
+        $expectedJsonLD->modified = $this->recordedOn->toString();
+
+        $body = $this->project($locationUpdated, $eventId, null, $this->recordedOn->toBroadwayDateTime());
+
+        $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_the_updating_of_geo_coordinates()
+    {
+        $id = 'ea328f14-a3c8-4f71-abd9-00cd0a2cf217';
+
+        $initialDocument = new JsonDocument(
+            $id,
+            json_encode(
+                [
+                    '@id' => 'http://uitdatabank/event/' . $id,
+                    '@type' => 'Event',
+                    'name' => [
+                        'nl' => 'Test',
+                    ],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
+                    'location' => (object) [
+                        '@type' => 'Place',
+                        '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
+                    ],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $coordinatesUpdated = new GeoCoordinatesUpdated(
+            $id,
+            new Coordinates(
+                new Latitude(1.1234567),
+                new Longitude(-0.34567)
+            )
+        );
+
+        $expectedBody = (object) [
+            '@id' => 'http://uitdatabank/event/' . $id,
+            '@type' => 'Event',
+            'name' => (object) ['nl' => 'Test'],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
+            'location' => (object) [
+                '@type' => 'Place',
+                '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
+                'geo' => (object) [
+                    'latitude' => 1.1234567,
+                    'longitude' => -0.34567,
+                ],
+            ],
+            'modified' => $this->recordedOn->toString(),
+        ];
+
+        $body = $this->project($coordinatesUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
+        $this->assertEquals($expectedBody, $body);
     }
 
     /**
@@ -1123,6 +1280,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $events = [$importedFromUDB2, $majorInfoUpdated];
+        $body = null;
         foreach ($events as $event) {
             $body = $this->project($event, $importedFromUDB2->getEventId());
         }
@@ -1147,7 +1305,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
 
         $this->assertEquals($expectedTerms, $body->terms);
@@ -1165,12 +1323,13 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new Audience(AudienceType::EDUCATION())
         );
 
-        $body = $this->project($audienceUpdated, $eventId);
+        $body = $this->project($audienceUpdated, $eventId, null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedJson = (object) [
                 '@id' => 'http://example.com/entity/' . $eventId,
                 '@context' => '/contexts/event',
-                'audience' => (object) ['audienceType' => 'education']
+                'audience' => (object) ['audienceType' => 'education'],
+                'modified' => $this->recordedOn->toString(),
             ];
 
         $this->assertEquals($expectedJson, $body);
@@ -1179,32 +1338,22 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_deletes_events()
+    public function it_updates_workflow_status_on_delete()
     {
-        $id = 'foo';
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
 
-        $this->documentRepository->save(
-            (new JsonDocument($id))
-                ->withBody(
-                    (object)[
-                        'foo' => 'bar',
-                    ]
-                )
-        );
+        $eventDeleted = new EventDeleted($eventId);
 
-        $eventDeleted = new EventDeleted($id);
-        $this->projector->handle(
-            DomainMessage::recordNow(
-                $id,
-                1,
-                new Metadata(),
-                $eventDeleted
-            )
-        );
+        $body = $this->project($eventDeleted, $eventId, null, $this->recordedOn->toBroadwayDateTime());
 
-        $this->setExpectedException(DocumentGoneException::class);
+        $expectedJson = (object) [
+            '@id' => 'http://example.com/entity/' . $eventId,
+            '@context' => '/contexts/event',
+            'workflowStatus' => 'DELETED',
+            'modified' => $this->recordedOn->toString(),
+        ];
 
-        $this->documentRepository->get($id);
+        $this->assertEquals($expectedJson, $body);
     }
 
     /**
@@ -1241,9 +1390,9 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                         'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                         'description' => 'sexy ladies without clothes',
-                        'copyrightHolder' => 'Bart Ramakers'
-                    ]
-                ]
+                        'copyrightHolder' => 'Bart Ramakers',
+                    ],
+                ],
             ])
         );
 
@@ -1254,8 +1403,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                 'contentUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                 'thumbnailUrl' => 'http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png',
                 'description' => 'sexy ladies without clothes',
-                'copyrightHolder' => 'Bart Ramakers'
-            ]
+                'copyrightHolder' => 'Bart Ramakers',
+            ],
         ];
 
         $importedDate = '2015-03-01T10:17:19.176169+02:00';
@@ -1280,8 +1429,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     $eventUpdatedFromUDB2,
                     DateTime::fromString($importedDate)
                 ),
-                $expectedMediaObjects
-            ]
+                $expectedMediaObjects,
+            ],
         ];
     }
 
@@ -1298,6 +1447,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     ) {
         return new EventCreated(
             $eventId,
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
@@ -1317,19 +1467,21 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
     /**
      * @param string $eventId
+     * @param Language $mainLanguage
      * @return stdClass
      */
-    private function createJsonLD($eventId)
+    private function createJsonLD($eventId, Language $mainLanguage)
     {
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/'. $eventId;
         $jsonLD->{'@context'} = '/contexts/event';
+        $jsonLD->mainLanguage = $mainLanguage->getCode();
         $jsonLD->name = (object)[
-            'nl' => 'some representative title'
+            $mainLanguage->getCode() => 'some representative title',
         ];
         $jsonLD->location = (object)[
             '@type' => 'Place',
-            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e'
+            '@id' => 'http://example.com/entity/395fe7eb-9bac-4647-acae-316b6446a85e',
         ];
         $jsonLD->calendarType = 'single';
         $jsonLD->startDate = '2015-01-26T13:25:21+01:00';
@@ -1341,6 +1493,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD->modified = '2015-01-20T13:25:21+01:00';
         $jsonLD->workflowStatus = 'DRAFT';
         $jsonLD->audience = (object)['audienceType' => 'everyone'];
+        $jsonLD->languages = [$mainLanguage->getCode()];
+        $jsonLD->completedLanguages = [$mainLanguage->getCode()];
 
         return $jsonLD;
     }

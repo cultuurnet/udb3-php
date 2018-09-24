@@ -3,13 +3,15 @@
 namespace CultuurNet\UDB3\PriceInfo;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Price\Tariff as Udb3ModelTariff;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 use ValueObjects\Money\Currency;
-use ValueObjects\StringLiteral\StringLiteral;
+use ValueObjects\Money\CurrencyCode;
 
 class Tariff implements SerializableInterface
 {
     /**
-     * @var StringLiteral
+     * @var MultilingualString
      */
     private $name;
 
@@ -24,12 +26,12 @@ class Tariff implements SerializableInterface
     private $currencyCodeString;
 
     /**
-     * @param StringLiteral $name
+     * @param MultilingualString $name
      * @param Price $price
      * @param Currency $currency
      */
     public function __construct(
-        StringLiteral $name,
+        MultilingualString $name,
         Price $price,
         Currency $currency
     ) {
@@ -39,7 +41,7 @@ class Tariff implements SerializableInterface
     }
 
     /**
-     * @return StringLiteral
+     * @return MultilingualString
      */
     public function getName()
     {
@@ -68,7 +70,7 @@ class Tariff implements SerializableInterface
     public function serialize()
     {
         return [
-            'name' => $this->name->toNative(),
+            'name' => $this->name->serialize(),
             'price' => $this->price->toNative(),
             'currency' => $this->currencyCodeString,
         ];
@@ -81,9 +83,22 @@ class Tariff implements SerializableInterface
     public static function deserialize(array $data)
     {
         return new Tariff(
-            new StringLiteral($data['name']),
+            MultilingualString::deserialize($data['name']),
             new Price($data['price']),
             Currency::fromNative($data['currency'])
+        );
+    }
+
+    /**
+     * @param Udb3ModelTariff $udb3ModelTariff
+     * @return Tariff
+     */
+    public static function fromUdb3ModelTariff(Udb3ModelTariff $udb3ModelTariff)
+    {
+        return new Tariff(
+            MultilingualString::fromUdb3ModelTranslatedValueObject($udb3ModelTariff->getName()),
+            new Price($udb3ModelTariff->getPrice()->getAmount()),
+            new Currency(CurrencyCode::fromNative($udb3ModelTariff->getPrice()->getCurrency()->getName()))
         );
     }
 }

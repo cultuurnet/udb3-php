@@ -73,7 +73,7 @@ class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
     {
         return parent::serialize() + [
                 'original_event_id' => $this->getOriginalEventId(),
-                'calendar' => $this->calendar->serialize()
+                'calendar' => $this->calendar->serialize(),
             ];
     }
 

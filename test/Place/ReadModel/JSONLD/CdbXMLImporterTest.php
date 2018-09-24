@@ -2,8 +2,11 @@
 
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
+use CommerceGuys\Intl\Currency\CurrencyRepository;
+use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
+use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use InvalidArgumentException;
@@ -19,7 +22,18 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->importer = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter(),
+            new CdbXMLItemBaseImporter(
+                new PriceDescriptionParser(
+                    new NumberFormatRepository(),
+                    new CurrencyRepository()
+                ),
+                [
+                    'nl' => 'Basistarief',
+                    'fr' => 'Tarif de base',
+                    'en' => 'Base tarif',
+                    'de' => 'Basisrate',
+                ]
+            ),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()
         );

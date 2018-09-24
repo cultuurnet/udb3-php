@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -128,6 +129,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $payload = new PlaceCreated(
             $placeId->toNative(),
+            new Language('en'),
             new Title('test 123'),
             new EventType('0.50.4.0.0', 'concert'),
             new Address(

@@ -33,14 +33,14 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
                 SchemaConfigurator::NAME_COLUMN => '?',
                 SchemaConfigurator::VISIBLE_COLUMN => '?',
                 SchemaConfigurator::PRIVATE_COLUMN => '?',
-                SchemaConfigurator::PARENT_UUID_COLUMN => '?'
+                SchemaConfigurator::PARENT_UUID_COLUMN => '?',
             ])
             ->setParameters([
                 $uuid->toNative(),
                 $name->toNative(),
                 $visibility === Visibility::VISIBLE() ? 1 : 0,
                 $privacy === Privacy::PRIVACY_PRIVATE() ? 1 : 0,
-                $parentUuid ? $parentUuid->toNative() : null
+                $parentUuid ? $parentUuid->toNative() : null,
             ]);
 
         $queryBuilder->execute();
@@ -132,7 +132,7 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
             ->where(SchemaConfigurator::UUID_COLUMN . ' = ?')
             ->setParameters([
                 $value ? 1 : 0,
-                $uuid->toNative()
+                $uuid->toNative(),
             ]);
 
         $queryBuilder->execute();

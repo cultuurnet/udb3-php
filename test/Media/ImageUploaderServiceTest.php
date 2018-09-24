@@ -4,33 +4,36 @@ namespace CultuurNet\UDB3\Media;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use League\Flysystem\File;
+use CultuurNet\UDB3\Language;
 use League\Flysystem\FilesystemInterface;
 use org\bovigo\vfs\content\LargeFileContent;
-use org\bovigo\vfs\content\LargeFileContentTestCase;
 use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamContent;
-use org\bovigo\vfs\vfsStreamFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var UUID
+     */
+    private $fileId;
+
+    /**
      * @var ImageUploaderInterface
      */
     protected $uploader;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|FilesystemInterface
-     */
-    protected $filesystem;
-
-    /**
      * @var \PHPUnit_Framework_MockObject_MockObject|UuidGeneratorInterface
      */
     protected $uuidGenerator;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject|FilesystemInterface
+     */
+    protected $filesystem;
 
     /**
      * @var string
@@ -44,6 +47,8 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $this->fileId = new UUID('de305d54-75b4-431b-adb2-eb6b9e546014');
+
         $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
         $this->filesystem = $this->createMock(FilesystemInterface::class);
         $this->commandBus = $this->createMock(CommandBusInterface::class);
@@ -63,6 +68,7 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
     {
         $description = new StringLiteral('file description');
         $copyrightHolder = new StringLiteral('Dude Man');
+        $language = new Language('en');
         $file = $this->getMockFile();
 
         $file
@@ -75,12 +81,10 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
             ->method('getMimeType')
             ->willReturn('video/avi');
 
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'The uploaded file is not an image.'
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The uploaded file is not an image.');
 
-        $this->uploader->upload($file, $description, $copyrightHolder);
+        $this->uploader->upload($file, $description, $copyrightHolder, $language);
     }
 
     /**
@@ -99,21 +103,31 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 
         $description = new StringLiteral('file description');
         $copyrightHolder = new StringLiteral('Dude Man');
-        $generatedUuid = 'de305d54-75b4-431b-adb2-eb6b9e546014';
+        $language = new Language('en');
 
+        $expectedDestination = $this->directory.'/'. $this->fileId .'.png';
+
+        $generatedUuid = 'de305d54-75b4-431b-adb2-eb6b9e546014';
         $this->uuidGenerator
             ->expects($this->once())
             ->method('generate')
             ->willReturn($generatedUuid);
-
-        $expectedDestination = $this->directory.'/'.$generatedUuid.'.png';
 
         $this->filesystem
             ->expects($this->once())
             ->method('writeStream')
             ->with($expectedDestination, $this->anything());
 
-        $this->uploader->upload($file, $description, $copyrightHolder);
+        $jobId = 'b7df66b0-b772-43db-b7c8-eb58f444817c';
+        $this->commandBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->willReturn($jobId);
+
+        $uploadImageResult = $this->uploader->upload($file, $description, $copyrightHolder, $language);
+
+        $this->assertEquals($generatedUuid, $uploadImageResult->getImageId());
+        $this->assertEquals($jobId, $uploadImageResult->getJobId());
     }
 
     /**
@@ -128,13 +142,12 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
         );
         $description = new StringLiteral('file description');
         $copyrightHolder = new StringLiteral('Dude Man');
+        $language = new Language('en');
 
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'The file did not upload correctly.'
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The file did not upload correctly.');
 
-        $this->uploader->upload($file, $description, $copyrightHolder);
+        $this->uploader->upload($file, $description, $copyrightHolder, $language);
     }
 
     /**
@@ -156,13 +169,12 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 
         $description = new StringLiteral('file description');
         $copyrightHolder = new StringLiteral('Dude Man');
+        $language = new Language('en');
 
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'The type of the uploaded file can not be guessed.'
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The type of the uploaded file can not be guessed.');
 
-        $this->uploader->upload($file, $description, $copyrightHolder);
+        $this->uploader->upload($file, $description, $copyrightHolder, $language);
     }
 
     /**
@@ -182,13 +194,12 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 
         $description = new StringLiteral('file description');
         $copyrightHolder = new StringLiteral('Dude Man');
+        $language = new Language('en');
 
-        $this->setExpectedException(
-            FileSizeExceededException::class,
-            'The file size of the uploaded image is too big.'
-        );
+        $this->expectException(FileSizeExceededException::class);
+        $this->expectExceptionMessage('The file size of the uploaded image is too big.');
 
-        $uploader->upload($file, $description, $copyrightHolder);
+        $uploader->upload($file, $description, $copyrightHolder, $language);
     }
 
     /**
@@ -208,13 +219,12 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 
         $description = new StringLiteral('file description');
         $copyrightHolder = new StringLiteral('Dude Man');
+        $language = new Language('en');
 
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            'There is a maximum size and we could not determine the size of the uploaded image.'
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('There is a maximum size and we could not determine the size of the uploaded image.');
 
-        $uploader->upload($file, $description, $copyrightHolder);
+        $uploader->upload($file, $description, $copyrightHolder, $language);
     }
 
     /**
@@ -234,23 +244,36 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
 
         $description = new StringLiteral('file description');
         $copyrightHolder = new StringLiteral('Dude Man');
-        $generatedUuid = 'de305d54-75b4-431b-adb2-eb6b9e546014';
+        $language = new Language('en');
 
+        $expectedDestination = $this->directory.'/'. $this->fileId .'.jpg';
+
+        $generatedUuid = 'de305d54-75b4-431b-adb2-eb6b9e546014';
         $this->uuidGenerator
             ->expects($this->once())
             ->method('generate')
             ->willReturn($generatedUuid);
-
-        $expectedDestination = $this->directory.'/'.$generatedUuid.'.jpg';
 
         $this->filesystem
             ->expects($this->once())
             ->method('writeStream')
             ->with($expectedDestination, $this->anything());
 
-        $uploader->upload($file, $description, $copyrightHolder);
+        $jobId = 'b7df66b0-b772-43db-b7c8-eb58f444817c';
+        $this->commandBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->willReturn($jobId);
+
+        $uploadImageResult = $uploader->upload($file, $description, $copyrightHolder, $language);
+
+        $this->assertEquals($generatedUuid, $uploadImageResult->getImageId());
+        $this->assertEquals($jobId, $uploadImageResult->getJobId());
     }
 
+    /**
+     * @return UploadedFile|\PHPUnit_Framework_MockObject_MockObject
+     */
     private function getMockFile()
     {
         return $this

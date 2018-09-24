@@ -7,31 +7,52 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\CalendarUpdated;
 use CultuurNet\UDB3\Event\Events\Concluded;
+use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Published;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
+use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use CultuurNet\UDB3\Offer\AgeRange;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 use RuntimeException;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Money\Currency;
+use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
@@ -59,6 +80,7 @@ class EventTest extends AggregateRootScenarioTestCase
 
         $this->event = Event::create(
             'foo',
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
@@ -79,6 +101,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         return new EventCreated(
             'd2b41f1d-598c-46af-a3a5-10e373faa6fe',
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
@@ -95,6 +118,28 @@ class EventTest extends AggregateRootScenarioTestCase
         );
     }
 
+    private function getCreationEventWithTheme()
+    {
+        return new EventCreated(
+            'd2b41f1d-598c-46af-a3a5-10e373faa6fe',
+            new Language('en'),
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new Location(
+                UUID::generateAsString(),
+                new StringLiteral('P-P-Partyzone'),
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('3000'),
+                    new Locality('Leuven'),
+                    Country::fromNative('BE')
+                )
+            ),
+            new Calendar(CalendarType::PERMANENT()),
+            new Theme('1.8.3.1.0', 'Pop en rock')
+        );
+    }
+
     /**
      * @test
      */
@@ -103,8 +148,9 @@ class EventTest extends AggregateRootScenarioTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected eventId to be a string, received integer');
 
-        $event = Event::create(
+        Event::create(
             101,
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
@@ -150,7 +196,256 @@ class EventTest extends AggregateRootScenarioTestCase
                         $newEventId,
                         'foo',
                         $calendar
-                    )
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_facilities_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $facilities = [
+            new Facility("3.27.0.0.0", "Rolstoeltoegankelijk"),
+            new Facility("3.30.0.0.0", "Rolstoelpodium"),
+        ];
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new FacilitiesUpdated($eventId, $facilities),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($facilities) {
+                    $event->updateFacilities($facilities);
+                }
+            )
+            ->then(
+                [
+                    new FacilitiesUpdated($eventId, $facilities),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_contact_point_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $contactPoint = new ContactPoint(
+            ['016/101010',],
+            ['test@2dotstwice.be', 'admin@2dotstwice.be'],
+            ['http://www.2dotstwice.be']
+        );
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new ContactPointUpdated($eventId, $contactPoint),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($contactPoint) {
+                    $event->updateContactPoint($contactPoint);
+                }
+            )
+            ->then(
+                [
+                    new ContactPointUpdated($eventId, $contactPoint),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_calendar_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new CalendarUpdated($eventId, $calendar),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($calendar) {
+                    $event->updateCalendar($calendar);
+                }
+            )
+            ->then(
+                [
+                    new CalendarUpdated($eventId, $calendar),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_typical_age_range_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $typicalAgeRange = new AgeRange(new Age(8), new Age(11));
+        $otherTypicalAgeRange = new AgeRange(new Age(7), new Age(11));
+
+        $xmlData = $this->getSample('EventTest_WithAgeRange.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($typicalAgeRange, $otherTypicalAgeRange) {
+                    $event->updateTypicalAgeRange($typicalAgeRange);
+                    $event->updateTypicalAgeRange($otherTypicalAgeRange);
+                }
+            )
+            ->then(
+                [
+                    new TypicalAgeRangeUpdated($eventId, $otherTypicalAgeRange),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_delete_typical_age_range_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $xmlData = $this->getSample('EventTest_WithAgeRange.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) {
+                    $event->deleteTypicalAgeRange();
+                }
+            )
+            ->then(
+                [
+                    new TypicalAgeRangeDeleted($eventId),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_booking_info_after_udb2_update()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $bookingInfo = new BookingInfo(
+            'www.publiq.be',
+            new MultilingualString(new Language('nl'), new StringLiteral('publiq')),
+            '02 123 45 67',
+            'info@publiq.be'
+        );
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new BookingInfoUpdated($eventId, $bookingInfo),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($bookingInfo) {
+                    $event->updateBookingInfo($bookingInfo);
+                }
+            )
+            ->then(
+                [
+                    new BookingInfoUpdated($eventId, $bookingInfo),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_price_info_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+
+        $priceInfo = new PriceInfo(
+            new BasePrice(
+                new Price(1000),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new PriceInfoUpdated($eventId, $priceInfo),
+                    new EventUpdatedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($priceInfo) {
+                    $event->updatePriceInfo($priceInfo);
+                }
+            )
+            ->then(
+                [
+                    new PriceInfoUpdated($eventId, $priceInfo),
                 ]
             );
     }
@@ -162,7 +457,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) {
@@ -183,7 +478,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) {
@@ -203,7 +498,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $this->scenario
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) {
@@ -230,7 +525,7 @@ class EventTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->given([
-                new EventImportedFromUDB2($eventId, $xmlData, $xmlNamespace)
+                new EventImportedFromUDB2($eventId, $xmlData, $xmlNamespace),
             ])
             ->when(
                 function (Event $event) {
@@ -275,7 +570,7 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         $label
                     ),
-                ]
+                ],
             ],
             'label added by update from udb2' => [
                 $id,
@@ -287,7 +582,7 @@ class EventTest extends AggregateRootScenarioTestCase
                         $cdbXmlWithFooKeyword,
                         $ns
                     ),
-                ]
+                ],
             ],
             'label with different casing' => [
                 $id,
@@ -298,8 +593,8 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         new Label('fOO')
                     ),
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -324,7 +619,7 @@ class EventTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new LabelRemoved($id, $label)
+                    new LabelRemoved($id, $label),
                 ]
             );
     }
@@ -352,7 +647,7 @@ class EventTest extends AggregateRootScenarioTestCase
                 $label,
                 [
                     $eventImportedFromUdb2,
-                ]
+                ],
             ],
             'label previously removed by an update from udb2' => [
                 $label,
@@ -367,7 +662,7 @@ class EventTest extends AggregateRootScenarioTestCase
                         $cdbXml,
                         $ns
                     ),
-                ]
+                ],
             ],
             'label previously removed' => [
                 $label,
@@ -381,8 +676,8 @@ class EventTest extends AggregateRootScenarioTestCase
                         $id,
                         $label
                     ),
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -416,7 +711,8 @@ class EventTest extends AggregateRootScenarioTestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $cdbXml = file_get_contents(
@@ -462,7 +758,8 @@ class EventTest extends AggregateRootScenarioTestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->scenario
@@ -511,7 +808,8 @@ class EventTest extends AggregateRootScenarioTestCase
             new MIMEType('image/png'),
             new Description('sexy ladies without clothes'),
             new CopyrightHolder('Bart Ramakers'),
-            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png')
+            Url::fromNative('http://foo.bar/media/de305d54-75b4-431b-adb2-eb6b9e546014.png'),
+            new Language('en')
         );
 
         $this->scenario
@@ -537,6 +835,68 @@ class EventTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
+     */
+    public function it_handles_update_location()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+        $oldLocationId = new LocationId($createEvent->getLocation()->getCdbid());
+        $newLocationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                ]
+            )
+            ->when(
+                function (Event $event) use ($oldLocationId, $newLocationId) {
+                    $event->updateLocation($oldLocationId);
+                    $event->updateLocation($newLocationId);
+                    $event->updateLocation($newLocationId);
+                }
+            )
+            ->then(
+                [
+                    new LocationUpdated($eventId, $newLocationId),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_location_after_udb2_import()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+        $locationId = new LocationId($createEvent->getLocation()->getCdbid());
+
+        $xmlData = $this->getSample('EventTest.cdbxml.xml');
+        $xmlNamespace = self::NS_CDBXML_3_2;
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                    new LocationUpdated($eventId, $locationId),
+                    new EventImportedFromUDB2($eventId, $xmlData, $xmlNamespace),
+                ]
+            )
+            ->when(
+                function (Event $event) use ($locationId) {
+                    $event->updateLocation($locationId);
+                }
+            )
+            ->then(
+                [
+                    new LocationUpdated($eventId, $locationId),
+                ]
+            );
+    }
+
+    /**
+     * @test
      * @dataProvider audienceDataProvider
      * @param Audience[] $audiences
      * @param AudienceUpdated[] $audienceUpdatedEvents
@@ -547,7 +907,7 @@ class EventTest extends AggregateRootScenarioTestCase
     ) {
         $this->scenario
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) use ($audiences) {
@@ -672,7 +1032,7 @@ class EventTest extends AggregateRootScenarioTestCase
                     new LabelAdded(
                         $newEventId,
                         $label
-                    )
+                    ),
                 ]
             );
     }
@@ -773,7 +1133,7 @@ class EventTest extends AggregateRootScenarioTestCase
         $this->scenario
             ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
             ->given([
-                $this->getCreationEvent()
+                $this->getCreationEvent(),
             ])
             ->when(
                 function (Event $event) {
@@ -786,6 +1146,147 @@ class EventTest extends AggregateRootScenarioTestCase
             ->when(
                 function (Event $event) {
                     $event->conclude();
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_title_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateTitle(
+                        new Language('en'),
+                        new Title('some representative title')
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_calendar_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateCalendar(
+                        new Calendar(CalendarType::PERMANENT())
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_audience_type_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateAudience(
+                        new Audience(AudienceType::EVERYONE())
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_contact_point_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateContactPoint(
+                        new ContactPoint()
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_booking_info_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEventWithTheme(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateBookingInfo(
+                        new BookingInfo()
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_type_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEvent(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateType(
+                        new EventType('0.50.4.0.0', 'concert')
+                    );
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_the_same_theme_after_event_created()
+    {
+        $this->scenario
+            ->withAggregateId('d2b41f1d-598c-46af-a3a5-10e373faa6fe')
+            ->given([
+                $this->getCreationEventWithTheme(),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateTheme(
+                        new Theme('1.8.3.1.0', 'Pop en rock')
+                    );
                 }
             )
             ->then([]);

@@ -53,8 +53,8 @@ class LabelRolesWriteRepositoryTest extends \PHPUnit_Framework_TestCase
         $expectedRows = [
             [
                 SchemaConfigurator::LABEL_ID_COLUMN => $labelId->toNative(),
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
-            ]
+                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
+            ],
         ];
 
         $this->assertEquals($expectedRows, $actualRows);
@@ -79,12 +79,12 @@ class LabelRolesWriteRepositoryTest extends \PHPUnit_Framework_TestCase
         $expectedRows = [
             [
                 SchemaConfigurator::LABEL_ID_COLUMN => $labelId1->toNative(),
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId1->toNative()
+                SchemaConfigurator::ROLE_ID_COLUMN => $roleId1->toNative(),
             ],
             [
                 SchemaConfigurator::LABEL_ID_COLUMN => $labelId2->toNative(),
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId2->toNative()
-            ]
+                SchemaConfigurator::ROLE_ID_COLUMN => $roleId2->toNative(),
+            ],
         ];
 
         $actualRows = $this->getRows();
@@ -111,8 +111,8 @@ class LabelRolesWriteRepositoryTest extends \PHPUnit_Framework_TestCase
         $expectedRows = [
             [
                 SchemaConfigurator::LABEL_ID_COLUMN => $labelId1->toNative(),
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId1->toNative()
-            ]
+                SchemaConfigurator::ROLE_ID_COLUMN => $roleId1->toNative(),
+            ],
         ];
 
         $actualRows = $this->getRows();
@@ -130,7 +130,7 @@ class LabelRolesWriteRepositoryTest extends \PHPUnit_Framework_TestCase
             $this->labelRolesTableName,
             [
                 SchemaConfigurator::LABEL_ID_COLUMN => $labelId->toNative(),
-                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                SchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             ]
         );
     }

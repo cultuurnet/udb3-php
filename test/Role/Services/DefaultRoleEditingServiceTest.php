@@ -190,7 +190,7 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
                 new RoleCreated(
                     $this->uuid,
                     new StringLiteral('roleName')
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );

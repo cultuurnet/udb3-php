@@ -3,10 +3,13 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
@@ -15,8 +18,16 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
+use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use CultuurNet\UDB3\PriceInfo\BasePrice;
+use CultuurNet\UDB3\PriceInfo\Price;
+use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\PriceInfo\Tariff;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_TestCase
@@ -57,6 +68,58 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         );
 
         $this->sampleDir = __DIR__ . '/samples/';
+    }
+
+    /**
+     * @test
+     * @dataProvider mainLanguageDataProvider
+     * @param string $sampleFile
+     * @param Language $expectedMainLanguage
+     */
+    public function it_handles_main_language(
+        $sampleFile,
+        Language $expectedMainLanguage
+    ) {
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /** @var EventCreated|PlaceCreated|OrganizerCreatedWithUniqueWebsite $created */
+        $created = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals($expectedMainLanguage, $created->getMainLanguage());
+    }
+
+    /**
+     * @return array
+     */
+    public function mainLanguageDataProvider()
+    {
+        return [
+            'EventCreated no main language' => [
+                __DIR__ . '/samples/serialized_event_event_created_class.json',
+                new Language('nl'),
+            ],
+            'PlaceCreated no main language' => [
+                __DIR__ . '/samples/serialized_event_place_created_class.json',
+                new Language('nl'),
+            ],
+            'OrganizerCreatedWithUniqueWebsite no main language' => [
+                __DIR__ . '/samples/serialized_event_organizer_created_with_unique_website_class.json',
+                new Language('nl'),
+            ],
+            'EventCreated with es as main language' => [
+                __DIR__ . '/samples/serialized_event_event_created_with_main_language_class.json',
+                new Language('es'),
+            ],
+            'PlaceCreated with es as main language' => [
+                __DIR__ . '/samples/serialized_event_place_created_with_main_language_class.json',
+                new Language('es'),
+            ],
+            'OrganizerCreatedWithUniqueWebsite with es as main language' => [
+                __DIR__ . '/samples/serialized_event_organizer_created_with_unique_website_and_main_language.class.json',
+                new Language('es'),
+            ],
+        ];
     }
 
     /**
@@ -288,7 +351,118 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     public function it_replaces_event_id_with_item_id_on_event_booking_info_updated()
     {
         $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_class.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts());
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds());
+
         $this->assertEventIdReplacedWithItemId($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_deprecated_availability_date_formats_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_with_deprecated_availability.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-02-20T15:11:26+00:00'),
+            $bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts()
+        );
+
+        $this->assertEquals(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-04-30T14:11:26+00:00'),
+            $bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_invalid_availability_date_formats_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_with_invalid_availability.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts());
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds());
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_deprecated_url_label_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_with_deprecated_url_label.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            new MultilingualString(new Language('nl'), new StringLiteral('Reserveer plaatsen')),
+            $bookingInfoUpdated->getBookingInfo()->getUrlLabel()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_keeps_valid_availability_date_formats_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_with_valid_availability.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-02-20T15:11:26+01:00'),
+            $bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts()
+        );
+
+        $this->assertEquals(
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2018-04-30T14:11:26+01:00'),
+            $bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_missing_availability_dates_with_null_on_booking_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_booking_info_updated_without_availability.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var BookingInfoUpdated $bookingInfoUpdated */
+        $bookingInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityStarts());
+        $this->assertNull($bookingInfoUpdated->getBookingInfo()->getAvailabilityEnds());
     }
 
     /**
@@ -380,6 +554,71 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     }
 
     /**
+     * @test
+     */
+    public function it_replaces_place_id_with_item_id_on_event_facilities_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_facilities_updated_class.json';
+        $this->assertPlaceIdReplacedWithItemId($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_place_id_with_item_id_on_geo_coordinates_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_geo_coordinates_updated_class.json';
+        $this->assertPlaceIdReplacedWithItemId($sampleFile);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_replace_string_names_with_translatable_objects_in_price_info_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_price_info_updated_class.json';
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        $expectedPriceInfo = new PriceInfo(
+            new BasePrice(
+                new Price(1500),
+                Currency::fromNative('EUR')
+            )
+        );
+
+        $expectedPriceInfo = $expectedPriceInfo
+            ->withExtraTariff(
+                new Tariff(
+                    new MultilingualString(
+                        new Language('nl'),
+                        new StringLiteral('Senioren')
+                    ),
+                    new Price(1000),
+                    Currency::fromNative('EUR')
+                )
+            )
+            ->withExtraTariff(
+                new Tariff(
+                    new MultilingualString(
+                        new Language('nl'),
+                        new StringLiteral('Studenten')
+                    ),
+                    new Price(750),
+                    Currency::fromNative('EUR')
+                )
+            );
+
+        /**
+         * @var PriceInfoUpdated $event
+         */
+        $event = $this->serializer->deserialize($decoded);
+        $actualPriceInfo = $event->getPriceInfo();
+
+        $this->assertEquals($expectedPriceInfo, $actualPriceInfo);
+    }
+
+    /**
      * @param string $sampleFile
      */
     private function assertEventIdReplacedWithItemId($sampleFile)
@@ -406,7 +645,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $typedId = $decoded['payload'][$type . '_id'];
 
         /**
-         * @var AbstractEvent $abstractEvent
+         * @var \CultuurNet\UDB3\Offer\Events\AbstractEvent $abstractEvent
          */
         $abstractEvent = $this->serializer->deserialize($decoded);
         $itemId = $abstractEvent->getItemId();

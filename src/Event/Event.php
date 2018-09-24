@@ -3,13 +3,17 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
 use CultuurNet\UDB3\Event\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Event\Events\CalendarUpdated;
 use CultuurNet\UDB3\Event\Events\Concluded;
 use CultuurNet\UDB3\Event\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Event\Events\DescriptionTranslated;
@@ -20,6 +24,8 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventDeleted;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use CultuurNet\UDB3\Event\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Event\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Event\Events\ImageAdded;
 use CultuurNet\UDB3\Event\Events\ImageRemoved;
 use CultuurNet\UDB3\Event\Events\Image\ImagesImportedFromUDB2;
@@ -27,6 +33,8 @@ use CultuurNet\UDB3\Event\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Event\Events\ImageUpdated;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\LabelsImported;
+use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MainImageSelected;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Approved;
@@ -37,23 +45,30 @@ use CultuurNet\UDB3\Event\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
+use CultuurNet\UDB3\Event\Events\ThemeUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
+use CultuurNet\UDB3\Event\Events\TitleUpdated;
+use CultuurNet\UDB3\Event\Events\TypeUpdated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
+use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Offer;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Identity\UUID;
+use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Event extends Offer implements UpdateableWithCdbXmlInterface
@@ -69,11 +84,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     private $audience;
 
     /**
+     * @var LocationId
+     */
+    private $locationId;
+
+    /**
      * @var boolean
      */
     private $concluded = false;
-
-    const MAIN_LANGUAGE_CODE = 'nl';
 
     public function __construct()
     {
@@ -84,6 +102,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      * Factory method to create a new event.
      *
      * @param $eventId
+     * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
      * @param Location $location
@@ -94,6 +113,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      */
     public static function create(
         $eventId,
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Location $location,
@@ -106,6 +126,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $event->apply(
             new EventCreated(
                 $eventId,
+                $mainLanguage,
                 $title,
                 $eventType,
                 $location,
@@ -168,22 +189,6 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param ImageCollection $images
-     */
-    public function updateImagesFromUDB2(ImageCollection $images)
-    {
-        $this->apply(new ImagesUpdatedFromUDB2($this->eventId, $images));
-    }
-
-    /**
-     * @param ImageCollection $images
-     */
-    public function importImagesFromUDB2(ImageCollection $images)
-    {
-        $this->apply(new ImagesImportedFromUDB2($this->eventId, $images));
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getAggregateRootId()
@@ -191,17 +196,18 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         return $this->eventId;
     }
 
-    /**
-     * @return UUID[]
-     */
-    public function getMediaObjects()
-    {
-        return $this->mediaObjects;
-    }
-
     protected function applyEventCreated(EventCreated $eventCreated)
     {
         $this->eventId = $eventCreated->getEventId();
+        $this->titles[$eventCreated->getMainLanguage()->getCode()] = $eventCreated->getTitle();
+        $this->calendar = $eventCreated->getCalendar();
+        $this->audience = new Audience(AudienceType::EVERYONE());
+        $this->contactPoint = new ContactPoint();
+        $this->bookingInfo = new BookingInfo();
+        $this->typeId = $eventCreated->getEventType()->getId();
+        $this->themeId = $eventCreated->getTheme() ? $eventCreated->getTheme()->getId() : null;
+        $this->locationId = new LocationId($eventCreated->getLocation()->getCdbid());
+        $this->mainLanguage = $eventCreated->getMainLanguage();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
@@ -219,6 +225,8 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         EventImportedFromUDB2 $eventImported
     ) {
         $this->eventId = $eventImported->getEventId();
+        // When importing from UDB2 the default main language is always 'nl'.
+        $this->mainLanguage = new Language('nl');
         $this->setUDB2Data($eventImported);
     }
 
@@ -228,6 +236,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyEventUpdatedFromUDB2(
         EventUpdatedFromUDB2 $eventUpdated
     ) {
+        // Note: when updating from UDB2 never change the main language.
         $this->setUDB2Data($eventUpdated);
     }
 
@@ -241,6 +250,31 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             $eventCdbXML->getCdbXmlNamespaceUri(),
             $eventCdbXML->getCdbXml()
         );
+
+        // Just clear the facilities.
+        $this->facilities = [];
+
+        // Just clear the location id after an import or update.
+        $this->locationId = null;
+
+        // Just clear the contact point.
+        $this->contactPoint = null;
+
+        // Just clear the calendar.
+        $this->calendar = null;
+
+        // Correctly set the age range to avoid issues with deleting age range.
+        // after an update from UDB2.
+        $this->typicalAgeRange = new AgeRange(
+            $udb2Event->getAgeFrom() ? new Age($udb2Event->getAgeFrom()) : null,
+            $udb2Event->getAgeTo() ? new Age($udb2Event->getAgeTo()) : null
+        );
+
+        // Just clear the booking info.
+        $this->bookingInfo = null;
+
+        // Just clear the price info.
+        $this->priceInfo = null;
 
         $this->importWorkflowStatus($udb2Event);
         $this->labels = LabelCollection::fromKeywords($udb2Event->getKeywords(true));
@@ -263,6 +297,24 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         Theme $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
+    }
+
+    /**
+     * @param LocationId $locationId
+     */
+    public function updateLocation(LocationId $locationId)
+    {
+        if (is_null($this->locationId) || !$this->locationId->sameValueAs($locationId)) {
+            $this->apply(new LocationUpdated($this->eventId, $locationId));
+        }
+    }
+
+    /**
+     * @param LocationUpdated $locationUpdated
+     */
+    public function applyLocationUpdated(LocationUpdated $locationUpdated)
+    {
+        $this->locationId = $locationUpdated->getLocationId();
     }
 
     /**
@@ -338,6 +390,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    protected function createLabelsImportedEvent(Labels $labels)
+    {
+        return new LabelsImported($this->eventId, $labels);
+    }
+
+    /**
      * @param Image $image
      * @return ImageAdded
      */
@@ -356,17 +416,21 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param AbstractUpdateImage $updateImageCommand
+     * @param UUID $mediaObjectId
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      * @return ImageUpdated
      */
     protected function createImageUpdatedEvent(
-        AbstractUpdateImage $updateImageCommand
+        UUID $mediaObjectId,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
     ) {
         return new ImageUpdated(
             $this->eventId,
-            $updateImageCommand->getMediaObjectId(),
-            $updateImageCommand->getDescription(),
-            $updateImageCommand->getCopyrightHolder()
+            $mediaObjectId,
+            $description,
+            $copyrightHolder
         );
     }
 
@@ -380,36 +444,48 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $title
-     * @return TitleTranslated
+     * @inheritdoc
      */
-    protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
+    protected function createTitleTranslatedEvent(Language $language, Title $title)
     {
         return new TitleTranslated($this->eventId, $language, $title);
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $description
-     * @return DescriptionTranslated
+     * @param Title $title
+     * @return TitleUpdated
      */
-    protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
+    protected function createTitleUpdatedEvent(Title $title)
+    {
+        return new TitleUpdated($this->eventId, $title);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createDescriptionTranslatedEvent(Language $language, Description $description)
     {
         return new DescriptionTranslated($this->eventId, $language, $description);
     }
 
     /**
-     * @param string $description
-     * @return DescriptionUpdated
+     * @inheritdoc
      */
-    protected function createDescriptionUpdatedEvent($description)
+    protected function createDescriptionUpdatedEvent(Description $description)
     {
         return new DescriptionUpdated($this->eventId, $description);
     }
 
     /**
-     * @param string $typicalAgeRange
+     * @inheritdoc
+     */
+    protected function createCalendarUpdatedEvent(Calendar $calendar)
+    {
+        return new CalendarUpdated($this->eventId, $calendar);
+    }
+
+    /**
+     * @param AgeRange $typicalAgeRange
      * @return TypicalAgeRangeUpdated
      */
     protected function createTypicalAgeRangeUpdatedEvent($typicalAgeRange)
@@ -450,6 +526,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createContactPointUpdatedEvent(ContactPoint $contactPoint)
     {
         return new ContactPointUpdated($this->eventId, $contactPoint);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createGeoCoordinatesUpdatedEvent(Coordinates $coordinates)
+    {
+        return new GeoCoordinatesUpdated($this->eventId, $coordinates);
     }
 
     /**
@@ -516,6 +600,30 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     protected function createFlaggedAsInappropriate()
     {
         return new FlaggedAsInappropriate($this->eventId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createTypeUpdatedEvent(EventType $type)
+    {
+        return new TypeUpdated($this->eventId, $type);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createThemeUpdatedEvent(Theme $theme)
+    {
+        return new ThemeUpdated($this->eventId, $theme);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createFacilitiesUpdatedEvent(array $facilities)
+    {
+        return new FacilitiesUpdated($this->eventId, $facilities);
     }
 
     /**

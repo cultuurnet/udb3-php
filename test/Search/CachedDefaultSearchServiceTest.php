@@ -213,7 +213,7 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
                         Url::fromNative("http://culudb-silex.dev:8080/event/5513151b-3c7d-40b4-9f05-36e7d7a6fef4"),
                         "5513151b-3c7d-40b4-9f05-36e7d7a6fef4",
                         OfferType::EVENT()
-                    )
+                    ),
                 ]
             ),
             new Integer(878)
@@ -223,7 +223,7 @@ class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
             'query' => '*.*',
             'limit' => 30,
             'start' => 0,
-            'sort' => 'lastupdated desc'
+            'sort' => 'lastupdated desc',
         );
 
         $this->searchService = $this->createMock(SearchServiceInterface::class);

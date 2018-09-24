@@ -2,11 +2,12 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
-use Broadway\Domain\DateTime as BroadwayDateTime;
+use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
+use CultuurNet\UDB3\Actor\ActorEvent;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -16,15 +17,23 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
-use CultuurNet\UDB3\Organizer\Events\AbstractLabelEvent;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Organizer\Events\OrganizerEvent;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
+use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
+use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
+use CultuurNet\UDB3\Organizer\ReadModel\JSONLD\OrganizerJsonDocumentLanguageAnalyzer;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
+use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
@@ -51,6 +60,11 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private $iriGenerator;
 
+    /**
+     * @var RecordedOn
+     */
+    private $recordedOn;
+
     public function setUp()
     {
         $this->documentRepository = $this->createMock(DocumentRepositoryInterface::class);
@@ -66,7 +80,14 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector = new OrganizerLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
-            $this->eventBus
+            $this->eventBus,
+            new JsonDocumentLanguageEnricher(
+                new OrganizerJsonDocumentLanguageAnalyzer()
+            )
+        );
+
+        $this->recordedOn = RecordedOn::fromBroadwayDateTime(
+            DateTime::fromString('2018-01-18T13:57:09Z')
         );
     }
 
@@ -115,7 +136,6 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $uuidGenerator = new Version4Generator();
         $id = $uuidGenerator->generate();
-        $created = '2015-01-20T13:25:21+01:00';
 
         $street = new Street('Kerkstraat 69');
         $locality = new Locality('Leuven');
@@ -134,19 +154,25 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
-        $jsonLD->name = 'some representative title';
-        $jsonLD->addresses = [
-            [
+
+        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->name[$jsonLD->mainLanguage] = 'some representative title';
+
+        $jsonLD->address = [
+            'nl' => [
                 'addressCountry' => $country,
                 'addressLocality' => $locality,
                 'postalCode' => $postalCode,
                 'streetAddress' => $street,
-            ]
+            ],
         ];
         $jsonLD->phone = ['050/123'];
         $jsonLD->email = ['test@test.be', 'test2@test.be'];
         $jsonLD->url = ['http://www.google.be'];
-        $jsonLD->created = $created;
+        $jsonLD->created = $this->recordedOn->toString();
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
+        $jsonLD->modified = $this->recordedOn->toString();
 
         $expectedDocument = (new JsonDocument($id))
             ->withBody($jsonLD);
@@ -161,7 +187,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 1,
                 new Metadata(),
                 $organizerCreated,
-                BroadwayDateTime::fromString($created)
+                $this->recordedOn->toBroadwayDateTime()
             )
         );
     }
@@ -173,10 +199,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $uuidGenerator = new Version4Generator();
         $id = $uuidGenerator->generate();
-        $created = '2015-01-20T13:25:21+01:00';
 
         $organizerCreated = new OrganizerCreatedWithUniqueWebsite(
             $id,
+            new Language('en'),
             Url::fromNative('http://www.stuk.be'),
             new Title('some representative title')
         );
@@ -184,9 +210,13 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD = new \stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/organizer';
+        $jsonLD->mainLanguage = 'en';
         $jsonLD->url = 'http://www.stuk.be';
-        $jsonLD->name = 'some representative title';
-        $jsonLD->created = $created;
+        $jsonLD->name['en'] = 'some representative title';
+        $jsonLD->created = $this->recordedOn->toString();
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
+        $jsonLD->modified = $this->recordedOn->toString();
 
         $expectedDocument = (new JsonDocument($id))
             ->withBody($jsonLD);
@@ -201,9 +231,165 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 1,
                 new Metadata(),
                 $organizerCreated,
-                BroadwayDateTime::fromString($created)
+                $this->recordedOn->toBroadwayDateTime()
             )
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_website_update()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $website = Url::fromNative('http://www.depot.be');
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new WebsiteUpdated(
+                $organizerId,
+                $website
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_updated_website.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_title_update()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $title = new Title('Het Depot');
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new TitleUpdated(
+                $organizerId,
+                $title
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_updated_title.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_address_updated()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new AddressUpdated(
+                $organizerId,
+                new Address(
+                    new Street('Martelarenplein'),
+                    new PostalCode('3000'),
+                    new Locality('Leuven'),
+                    Country::fromNative('BE')
+                )
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_updated_address.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_main_language_when_importing_from_udb2()
+    {
+        $event = $this->organizerImportedFromUDB2('organizer_with_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
+                return $body->mainLanguage === 'nl';
+            }));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_main_language_when_updating_from_udb2()
+    {
+        // First make sure there is an already created organizer.
+        $organizerId = 'someId';
+        $this->mockGet($organizerId, 'organizer_with_main_language.json');
+
+        $event = $this->organizerUpdatedFromUDB2('organizer_with_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
+                return $body->mainLanguage === 'en';
+            }));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_title_translated()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $title = new Title('EssaiOrganisation');
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new TitleTranslated(
+                $organizerId,
+                $title,
+                new Language('fr')
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_translated_title.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_translation_of_organizer_with_untranslated_name()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+        $title = new Title('EssaiOrganisation');
+
+        $this->mockGet($organizerId, 'organizer_untranslated_name.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new TitleTranslated(
+                $organizerId,
+                $title,
+                new Language('fr')
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_translated_title.json');
+
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -212,48 +398,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_an_email_property_when_cdbxml_has_an_email()
     {
         $event = $this->organizerImportedFromUDB2('organizer_with_email.cdbxml.xml');
-
-        $this->documentRepository->expects($this->once())
-            ->method('save')
-            ->with($this->callback(function (JsonDocument $document) {
-                $body = $document->getBody();
-
-                $emails = $body->contactPoint->email;
-                $expectedEmails = [
-                    'info@villanella.be'
-                ];
-
-                return is_array($emails) &&
-                $emails == $expectedEmails;
-            }));
-
-        $this->projector->applyOrganizerImportedFromUDB2($event);
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_add_an_email_property_when_cdbxml_has_no_email()
-    {
-        $event = $this->organizerImportedFromUDB2('organizer_without_email.cdbxml.xml');
-
-        $this->documentRepository->expects($this->once())
-            ->method('save')
-            ->with($this->callback(function (JsonDocument $document) {
-                $body = $document->getBody();
-
-                return empty($body->contactPoint->email);
-            }));
-
-        $this->projector->applyOrganizerImportedFromUDB2($event);
-    }
-
-    /**
-     * @test
-     */
-    public function it_adds_an_email_property_when_cdbxml_has_multiple_emails()
-    {
-        $event = $this->organizerImportedFromUDB2('organizer_with_emails.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -263,14 +408,58 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 $emails = $body->contactPoint->email;
                 $expectedEmails = [
                     'info@villanella.be',
-                    'dirk@dirkinc.be'
                 ];
 
                 return is_array($emails) &&
                 $emails == $expectedEmails;
             }));
 
-        $this->projector->applyOrganizerImportedFromUDB2($event);
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_add_an_email_property_when_cdbxml_has_no_email()
+    {
+        $event = $this->organizerImportedFromUDB2('organizer_without_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
+
+                return empty($body->contactPoint->email);
+            }));
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_an_email_property_when_cdbxml_has_multiple_emails()
+    {
+        $event = $this->organizerImportedFromUDB2('organizer_with_emails.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
+
+                $emails = $body->contactPoint->email;
+                $expectedEmails = [
+                    'info@villanella.be',
+                    'dirk@dirkinc.be',
+                ];
+
+                return is_array($emails) &&
+                $emails == $expectedEmails;
+            }));
+
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -279,29 +468,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_adds_a_phone_property_when_cdbxml_has_a_phone_number()
     {
         $event = $this->organizerImportedFromUDB2('organizer_with_phone_number.cdbxml.xml');
-
-        $this->documentRepository->expects($this->once())
-            ->method('save')
-            ->with($this->callback(function (JsonDocument $document) {
-                $body = $document->getBody();
-
-                $phones = $body->contactPoint->phone;
-                $expectedPhones = [
-                    '+32 3 260 96 10'
-                ];
-
-                return is_array($phones) && $phones == $expectedPhones;
-            }));
-
-        $this->projector->applyOrganizerImportedFromUDB2($event);
-    }
-
-    /**
-     * @test
-     */
-    public function it_adds_a_phone_property_when_cdbxml_has_multiple_phone_numbers()
-    {
-        $event = $this->organizerImportedFromUDB2('organizer_with_phone_numbers.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -311,13 +478,37 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 $phones = $body->contactPoint->phone;
                 $expectedPhones = [
                     '+32 3 260 96 10',
-                    '+32 3 062 69 01'
                 ];
 
                 return is_array($phones) && $phones == $expectedPhones;
             }));
 
-        $this->projector->applyOrganizerImportedFromUDB2($event);
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_phone_property_when_cdbxml_has_multiple_phone_numbers()
+    {
+        $event = $this->organizerImportedFromUDB2('organizer_with_phone_numbers.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
+
+        $this->documentRepository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (JsonDocument $document) {
+                $body = $document->getBody();
+
+                $phones = $body->contactPoint->phone;
+                $expectedPhones = [
+                    '+32 3 260 96 10',
+                    '+32 3 062 69 01',
+                ];
+
+                return is_array($phones) && $phones == $expectedPhones;
+            }));
+
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -326,6 +517,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_add_a_phone_property_when_cdbxml_has_no_phone()
     {
         $event = $this->organizerImportedFromUDB2('organizer_without_phone_number.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($event);
 
         $this->documentRepository->expects($this->once())
             ->method('save')
@@ -335,22 +527,25 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 return empty($body->contactPoint->phone);
             }));
 
-        $this->projector->applyOrganizerImportedFromUDB2($event);
+        $this->projector->handle($domainMessage);
     }
 
     /**
      * @test
      */
-    public function it_deletes_an_organizer()
+    public function it_updates_workflow_status_on_delete()
     {
-        $organizerId = 'ORG-123-FOO';
-        $organizerDeleted = new OrganizerDeleted($organizerId);
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
 
-        $this->documentRepository->expects($this->once())
-            ->method('remove')
-            ->with($organizerId);
+        $this->mockGet($organizerId, 'organizer.json');
 
-        $this->projector->applyOrganizerDeleted($organizerDeleted);
+        $domainMessage = $this->createDomainMessage(
+            new OrganizerDeleted($organizerId)
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_deleted_workflow_status.json');
+
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -359,6 +554,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_can_update_an_organizer_from_udb2_even_if_it_has_been_deleted()
     {
         $organizerUpdatedFromUdb2 = $this->organizerUpdatedFromUDB2('organizer_with_email.cdbxml.xml');
+        $domainMessage = $this->createDomainMessage($organizerUpdatedFromUdb2);
         $actorId = $organizerUpdatedFromUdb2->getActorId();
 
         $this->documentRepository->expects($this->once())
@@ -376,7 +572,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
-        $this->projector->applyOrganizerUpdatedFromUDB2($organizerUpdatedFromUdb2);
+        $this->projector->handle($domainMessage);
     }
 
     /**
@@ -448,18 +644,18 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             [
                 new Label('labelName'),
                 'organizer_with_one_label.json',
-                'organizer.json'
+                'organizer_with_modified.json',
             ],
             [
                 new Label('anotherLabel'),
                 'organizer_with_two_labels.json',
-                'organizer_with_one_label.json'
+                'organizer_with_one_label.json',
             ],
             [
                 new Label('yetAnotherLabel'),
                 'organizer_with_three_labels.json',
-                'organizer_with_two_labels.json'
-            ]
+                'organizer_with_two_labels.json',
+            ],
         ];
     }
 
@@ -476,7 +672,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $labelRemoved = new LabelRemoved($organizerId, $label);
         $domainMessage = $this->createDomainMessage($labelRemoved);
 
-        $this->expectSave($organizerId, 'organizer.json');
+        $this->expectSave($organizerId, 'organizer_with_modified.json');
 
         $this->projector->handle($domainMessage);
     }
@@ -499,24 +695,37 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private function expectSave($organizerId, $fileName)
     {
-        $organizerWithLabelJson = file_get_contents(__DIR__ . '/Samples/' . $fileName);
+        $expectedOrganizerJson = file_get_contents(__DIR__ . '/Samples/' . $fileName);
+        // The expected organizer json still has newline formatting.
+        // The actual organizer json on the other hand has no newlines
+        // because it was created by using the withBody method on JsonDocument.
+        // By calling json_encode(json_decode(...)) the newlines are also removed
+        // from the expected document.
+        $expectedOrganizerJson = json_encode(json_decode($expectedOrganizerJson));
+
         $this->documentRepository->expects($this->once())
             ->method('save')
-            ->with(new JsonDocument($organizerId, $organizerWithLabelJson));
+            ->with(new JsonDocument($organizerId, $expectedOrganizerJson));
     }
 
     /**
-     * @param AbstractLabelEvent $labelEvent
+     * @param ActorEvent|OrganizerEvent $organizerEvent
      * @return DomainMessage
      */
-    private function createDomainMessage(AbstractLabelEvent $labelEvent)
+    private function createDomainMessage($organizerEvent)
     {
+        if ($organizerEvent instanceof ActorEvent) {
+            $id = $organizerEvent->getActorId();
+        } else {
+            $id = $organizerEvent->getOrganizerId();
+        }
+
         return new DomainMessage(
-            $labelEvent->getOrganizerId(),
+            $id,
             0,
             new Metadata(),
-            $labelEvent,
-            BroadwayDateTime::now()
+            $organizerEvent,
+            $this->recordedOn->toBroadwayDateTime()
         );
     }
 }

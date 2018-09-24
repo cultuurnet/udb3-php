@@ -56,7 +56,7 @@ class DBALRepository implements RepositoryInterface
                 [
                     SchemaConfigurator::UUID_COLUMN => ':role_id',
                     SchemaConfigurator::NAME_COLUMN => ':role_name',
-                    SchemaConfigurator::CONSTRAINT_COLUMN => ':constraint'
+                    SchemaConfigurator::CONSTRAINT_COLUMN => ':constraint',
                 ]
             )
             ->setParameter('role_id', $uuid)

@@ -3,29 +3,32 @@
 namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Event\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Event\Commands\Moderation\Reject;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
-use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -52,13 +55,41 @@ class EventCommandFactory implements OfferCommandFactoryInterface
     }
 
     /**
+     * @param string $id
+     * @param EventType $type
+     * @return UpdateType
+     */
+    public function createUpdateTypeCommand($id, EventType $type)
+    {
+        return new UpdateType($id, $type);
+    }
+
+    /**
+     * @param string $id
+     * @param Theme $theme
+     * @return UpdateTheme
+     */
+    public function createUpdateThemeCommand($id, Theme $theme)
+    {
+        return new UpdateTheme($id, $theme);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createUpdateFacilitiesCommand($id, array $facilities)
+    {
+        return new UpdateFacilities($id, $facilities);
+    }
+
+    /**
      * @param $id
-     * @param Image $image
+     * @param UUID $imageId
      * @return AddImage
      */
-    public function createAddImageCommand($id, Image $image)
+    public function createAddImageCommand($id, UUID $imageId)
     {
-        return new AddImage($id, $image);
+        return new AddImage($id, $imageId);
     }
 
     /**
@@ -106,40 +137,38 @@ class EventCommandFactory implements OfferCommandFactoryInterface
      * @param $id
      * @param Language $language
      * @param StringLiteral $title
-     * @return AbstractTranslateTitle
+     * @return AbstractUpdateTitle
      */
-    public function createTranslateTitleCommand($id, Language $language, StringLiteral $title)
+    public function createUpdateTitleCommand($id, Language $language, StringLiteral $title)
     {
-        return new TranslateTitle($id, $language, $title);
+        return new UpdateTitle($id, $language, $title);
     }
 
     /**
      * @param $id
      * @param Language $language
-     * @param StringLiteral $description
-     * @return AbstractTranslateDescription
-     */
-    public function createTranslateDescriptionCommand($id, Language $language, StringLiteral $description)
-    {
-        return new TranslateDescription($id, $language, $description);
-    }
-
-    /**
-     * @param string $id
-     * @param string $description
+     * @param Description $description
      * @return AbstractUpdateDescription
      */
-    public function createUpdateDescriptionCommand($id, $description)
+    public function createUpdateDescriptionCommand($id, Language $language, Description $description)
     {
-        return new UpdateDescription($id, $description);
+        return new UpdateDescription($id, $language, $description);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createUpdateCalendarCommand($id, Calendar $calendar)
+    {
+        return new UpdateCalendar($id, $calendar);
     }
 
     /**
      * @param string $id
-     * @param string $ageRange
+     * @param AgeRange $ageRange
      * @return AbstractUpdateTypicalAgeRange
      */
-    public function createUpdateTypicalAgeRangeCommand($id, $ageRange)
+    public function createUpdateTypicalAgeRangeCommand($id, AgeRange $ageRange)
     {
         return new UpdateTypicalAgeRange($id, $ageRange);
     }

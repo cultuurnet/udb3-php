@@ -133,7 +133,7 @@ class AggregateAwareDBALEventStoreTest extends \PHPUnit_Framework_TestCase
             new NonCompatibleUuid($uuid),
             0,
             new Metadata([
-                'meta' => 'some meta'
+                'meta' => 'some meta',
             ]),
             new DummyEvent(
                 $uuid->toNative(),
@@ -176,7 +176,7 @@ class AggregateAwareDBALEventStoreTest extends \PHPUnit_Framework_TestCase
             $uuid->toNative(),
             0,
             new Metadata([
-                'meta' => 'some meta'
+                'meta' => 'some meta',
             ]),
             new DummyEvent(
                 $uuid->toNative(),
@@ -200,7 +200,7 @@ class AggregateAwareDBALEventStoreTest extends \PHPUnit_Framework_TestCase
            'payload' => json_encode($this->payloadSerializer->serialize($domainMessage->getPayload())),
            'recorded_on' => $domainMessage->getRecordedOn()->toString(),
            'type' => $domainMessage->getType(),
-           'aggregate_type' => $this->aggregateType
+           'aggregate_type' => $this->aggregateType,
         ];
     }
 

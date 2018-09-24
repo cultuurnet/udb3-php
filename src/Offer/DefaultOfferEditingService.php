@@ -5,7 +5,11 @@ namespace CultuurNet\UDB3\Offer;
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\EntityNotFoundException;
+use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
@@ -14,6 +18,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class DefaultOfferEditingService implements OfferEditingServiceInterface
@@ -49,24 +54,40 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     protected $publicationDate;
 
     /**
+     * @var TypeResolverInterface
+     */
+    protected $typeResolver;
+
+    /**
+     * @var ThemeResolverInterface
+     */
+    protected $themeResolver;
+
+    /**
      * @param CommandBusInterface $commandBus
      * @param UuidGeneratorInterface $uuidGenerator
      * @param DocumentRepositoryInterface $readRepository
      * @param OfferCommandFactoryInterface $commandFactory
      * @param LabelServiceInterface $labelService
+     * @param TypeResolverInterface $typeResolver
+     * @param ThemeResolverInterface $themeResolver
      */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
         DocumentRepositoryInterface $readRepository,
         OfferCommandFactoryInterface $commandFactory,
-        LabelServiceInterface $labelService
+        LabelServiceInterface $labelService,
+        TypeResolverInterface $typeResolver,
+        ThemeResolverInterface $themeResolver
     ) {
         $this->commandBus = $commandBus;
         $this->uuidGenerator = $uuidGenerator;
         $this->readRepository = $readRepository;
         $this->commandFactory = $commandFactory;
         $this->labelService = $labelService;
+        $this->typeResolver = $typeResolver;
+        $this->themeResolver = $themeResolver;
         $this->publicationDate = null;
     }
 
@@ -122,17 +143,61 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     }
 
     /**
+     * @param string $id
+     * @param StringLiteral $typeId
+     * @return string
+     */
+    public function updateType($id, StringLiteral $typeId)
+    {
+        $this->guardId($id);
+        $type = $this->typeResolver->byId($typeId);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateTypeCommand($id, $type)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param StringLiteral $themeId
+     * @return string
+     */
+    public function updateTheme($id, StringLiteral $themeId)
+    {
+        $this->guardId($id);
+        $theme = $this->themeResolver->byId($themeId);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateThemeCommand($id, $theme)
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param array $facilities
+     * @return string
+     */
+    public function updateFacilities($id, array $facilities)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createUpdateFacilitiesCommand($id, $facilities)
+        );
+    }
+
+    /**
      * @param $id
      * @param Language $language
      * @param StringLiteral $title
      * @return string
      */
-    public function translateTitle($id, Language $language, StringLiteral $title)
+    public function updateTitle($id, Language $language, StringLiteral $title)
     {
         $this->guardId($id);
 
         return $this->commandBus->dispatch(
-            $this->commandFactory->createTranslateTitleCommand(
+            $this->commandFactory->createUpdateTitleCommand(
                 $id,
                 $language,
                 $title
@@ -143,15 +208,15 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     /**
      * @param $id
      * @param Language $language
-     * @param StringLiteral $description
+     * @param Description $description
      * @return string
      */
-    public function translateDescription($id, Language $language, StringLiteral $description)
+    public function updateDescription($id, Language $language, Description $description)
     {
         $this->guardId($id);
 
         return $this->commandBus->dispatch(
-            $this->commandFactory->createTranslateDescriptionCommand(
+            $this->commandFactory->createUpdateDescriptionCommand(
                 $id,
                 $language,
                 $description
@@ -160,16 +225,31 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
     }
 
     /**
-     * @param string $id
-     * @param Image $image
-     * @return string
+     * @inheritdoc
      */
-    public function addImage($id, Image $image)
+    public function updateCalendar($id, Calendar $calendar)
     {
         $this->guardId($id);
 
         return $this->commandBus->dispatch(
-            $this->commandFactory->createAddImageCommand($id, $image)
+            $this->commandFactory->createUpdateCalendarCommand(
+                $id,
+                $calendar
+            )
+        );
+    }
+
+    /**
+     * @param string $id
+     * @param UUID $imageId
+     * @return string
+     */
+    public function addImage($id, UUID $imageId)
+    {
+        $this->guardId($id);
+
+        return $this->commandBus->dispatch(
+            $this->commandFactory->createAddImageCommand($id, $imageId)
         );
     }
 
@@ -232,24 +312,10 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
 
     /**
      * @param string $id
-     * @param string $description
+     * @param AgeRange $ageRange
      * @return string
      */
-    public function updateDescription($id, $description)
-    {
-        $this->guardId($id);
-
-        return $this->commandBus->dispatch(
-            $this->commandFactory->createUpdateDescriptionCommand($id, $description)
-        );
-    }
-
-    /**
-     * @param string $id
-     * @param string $ageRange
-     * @return string
-     */
-    public function updateTypicalAgeRange($id, $ageRange)
+    public function updateTypicalAgeRange($id, AgeRange $ageRange)
     {
         $this->guardId($id);
 
@@ -355,9 +421,17 @@ class DefaultOfferEditingService implements OfferEditingServiceInterface
 
     /**
      * @param string $id
+     *
+     * @throws EntityNotFoundException|DocumentGoneException
      */
     public function guardId($id)
     {
-        $this->readRepository->get($id);
+        $offer = $this->readRepository->get($id);
+
+        if (is_null($offer)) {
+            throw new EntityNotFoundException(
+                sprintf('Offer with id: %s not found.', $id)
+            );
+        }
     }
 }

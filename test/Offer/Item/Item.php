@@ -2,25 +2,32 @@
 
 namespace CultuurNet\UDB3\Offer\Item;
 
+use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
-use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
+use CultuurNet\UDB3\Offer\Item\Events\LabelsImported;
 use CultuurNet\UDB3\Offer\Item\Events\MainImageSelected;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
@@ -30,7 +37,10 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\ThemeUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
+use CultuurNet\UDB3\Offer\Item\Events\TitleUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\TypeUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Offer;
@@ -39,6 +49,9 @@ use CultuurNet\UDB3\Offer\Item\Events\ImageRemoved;
 use CultuurNet\UDB3\Offer\Item\Events\ImageUpdated;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
+use CultuurNet\UDB3\Title;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Item extends Offer
@@ -54,6 +67,7 @@ class Item extends Offer
     protected function applyItemCreated(ItemCreated $created)
     {
         $this->id = $created->getItemId();
+        $this->mainLanguage = $created->getMainLanguage();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
@@ -75,6 +89,14 @@ class Item extends Offer
         return new LabelRemoved($this->id, $label);
     }
 
+    /**
+     * @inheritdoc
+     */
+    protected function createLabelsImportedEvent(Labels $labels)
+    {
+        return new LabelsImported($this->id, $labels);
+    }
+
     protected function createImageAddedEvent(Image $image)
     {
         return new ImageAdded($this->id, $image);
@@ -86,13 +108,15 @@ class Item extends Offer
     }
 
     protected function createImageUpdatedEvent(
-        AbstractUpdateImage $updateImageCommand
+        UUID $mediaObjectId,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
     ) {
         return new ImageUpdated(
             $this->id,
-            $updateImageCommand->getMediaObjectId(),
-            $updateImageCommand->getDescription(),
-            $updateImageCommand->getCopyrightHolder()
+            $mediaObjectId,
+            $description,
+            $copyrightHolder
         );
     }
 
@@ -110,36 +134,48 @@ class Item extends Offer
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $title
-     * @return AbstractTitleTranslated
+     * @inheritdoc
      */
-    protected function createTitleTranslatedEvent(Language $language, StringLiteral $title)
+    protected function createTitleTranslatedEvent(Language $language, Title $title)
     {
         return new TitleTranslated($this->id, $language, $title);
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $description
-     * @return AbstractDescriptionTranslated
+     * @param Title $title
+     * @return TitleUpdated
      */
-    protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description)
+    protected function createTitleUpdatedEvent(Title $title)
+    {
+        return new TitleUpdated($this->id, $title);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createDescriptionTranslatedEvent(Language $language, Description $description)
     {
         return new DescriptionTranslated($this->id, $language, $description);
     }
 
     /**
-     * @param string $description
-     * @return DescriptionUpdated
+     * @inheritdoc
      */
-    protected function createDescriptionUpdatedEvent($description)
+    protected function createDescriptionUpdatedEvent(Description $description)
     {
         return new DescriptionUpdated($this->id, $description);
     }
 
     /**
-     * @param string $typicalAgeRange
+     * @inheritdoc
+     */
+    protected function createCalendarUpdatedEvent(Calendar $calendar)
+    {
+        return new CalendarUpdated($this->id, $calendar);
+    }
+
+    /**
+     * @param AgeRange $typicalAgeRange
      * @return TypicalAgeRangeUpdated
      */
     protected function createTypicalAgeRangeUpdatedEvent($typicalAgeRange)
@@ -180,6 +216,14 @@ class Item extends Offer
     protected function createContactPointUpdatedEvent(ContactPoint $contactPoint)
     {
         return new ContactPointUpdated($this->id, $contactPoint);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createGeoCoordinatesUpdatedEvent(Coordinates $coordinates)
+    {
+        return new GeoCoordinatesUpdated($this->id, $coordinates);
     }
 
     /**
@@ -264,5 +308,23 @@ class Item extends Offer
     protected function createFlaggedAsInappropriate()
     {
         return new FlaggedAsInappropriate($this->id);
+    }
+
+    protected function createTypeUpdatedEvent(EventType $type)
+    {
+        return new TypeUpdated($this->id, $type);
+    }
+
+    protected function createThemeUpdatedEvent(Theme $theme)
+    {
+        return new ThemeUpdated($this->id, $theme);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function createFacilitiesUpdatedEvent(array $facilities)
+    {
+        return new FacilitiesUpdated($this->id, $facilities);
     }
 }

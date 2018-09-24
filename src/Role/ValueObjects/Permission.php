@@ -11,8 +11,11 @@ use ValueObjects\Enum\Enum;
  * @method static Permission AANBOD_MODEREREN()
  * @method static Permission AANBOD_VERWIJDEREN()
  * @method static Permission ORGANISATIES_BEHEREN()
+ * @method static Permission ORGANISATIES_BEWERKEN()
  * @method static Permission GEBRUIKERS_BEHEREN()
  * @method static Permission LABELS_BEHEREN()
+ * @method static Permission MEDIA_UPLOADEN()
+ * @method static Permission VOORZIENINGEN_BEWERKEN()
  */
 class Permission extends Enum
 {
@@ -20,6 +23,9 @@ class Permission extends Enum
     const AANBOD_MODEREREN = 'Aanbod modereren';
     const AANBOD_VERWIJDEREN = 'Aanbod verwijderen';
     const ORGANISATIES_BEHEREN = 'Organisaties beheren';
+    const ORGANISATIES_BEWERKEN = 'Organisaties bewerken';
     const GEBRUIKERS_BEHEREN = 'Gebruikers beheren';
     const LABELS_BEHEREN = 'Labels beheren';
+    const MEDIA_UPLOADEN = 'Media uploaden';
+    const VOORZIENINGEN_BEWERKEN = 'Voorzieningen bewerken';
 }

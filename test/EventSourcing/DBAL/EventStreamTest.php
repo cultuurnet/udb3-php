@@ -56,6 +56,65 @@ class EventStreamTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     */
+    public function it_requires_int_type_for_optional_start_id()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('StartId should have type int.');
+
+        $this->eventStream->withStartId('100');
+    }
+
+    /**
+     * @test
+     * @dataProvider invalidStartIdDataProvider
+     *
+     * @param int $invalidStartId
+     */
+    public function it_requires_a_value_higher_than_zero_for_optional_start_id($invalidStartId)
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('StartId should be higher than 0.');
+
+        $this->eventStream->withStartId($invalidStartId);
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidStartIdDataProvider()
+    {
+        return [
+            [0],
+            [-1],
+            [-0],
+        ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_string_type_for_optional_cdbid()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cdbids should have type array.');
+
+        $this->eventStream->withCdbids("1021");
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_non_empty_value_for_optional_cdbid()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cdbids can\'t be empty.');
+
+        $this->eventStream->withCdbids([]);
+    }
+
+    /**
+     * @test
      * @dataProvider eventStreamDecoratorDataProvider
      * @param EventStreamDecoratorInterface|null $eventStreamDecorator
      * @param array $expectedDecoratedMetadata
@@ -64,8 +123,7 @@ class EventStreamTest extends \PHPUnit_Framework_TestCase
         EventStreamDecoratorInterface $eventStreamDecorator = null,
         array $expectedDecoratedMetadata = []
     ) {
-        $domainMessages = $this->createDomainMessages();
-        $this->appendDomainMessages($this->eventStore, $domainMessages);
+        $history = $this->fillHistory();
 
         if (!is_null($eventStreamDecorator)) {
             $eventStream = $this->eventStream
@@ -79,7 +137,8 @@ class EventStreamTest extends \PHPUnit_Framework_TestCase
         $domainEventStreams = iterator_to_array($domainEventStreams);
 
         $expectedDomainEventStreams = [];
-        foreach ($domainMessages as $key => $domainMessage) {
+
+        foreach ($history as $key => $domainMessage) {
             $expectedDomainMessage = $domainMessage->andMetadata($expectedDecoratedMetadata[$key]);
             $expectedDomainEventStreams[] = new DomainEventStream([$expectedDomainMessage]);
         }
@@ -148,31 +207,192 @@ class EventStreamTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function it_handles_a_specific_cdbid()
+    {
+        $cdbid = '9B994B6A-FE49-42B0-B67D-F681BE533A7A';
+        $cdbids = [$cdbid];
+        $history = $this->fillHistory();
+
+        $eventStream = $this->eventStream->withCdbids($cdbids);
+
+        $domainEventStreams = $eventStream();
+        $domainEventStreams = iterator_to_array($domainEventStreams);
+        $expectedDomainEventStreams = [];
+        foreach ($history as $key => $domainMessage) {
+            if ($domainMessage->getId() == $cdbid) {
+                $expectedDomainEventStreams[] = new DomainEventStream(
+                    [
+                        $domainMessage,
+                    ]
+                );
+            }
+        }
+
+        $this->assertEquals(
+            $expectedDomainEventStreams,
+            $domainEventStreams
+        );
+    }
+
     /**
      * @test
      */
-    public function it_can_return_the_start_id()
+    public function it_handles_a_start_id()
     {
-        $table = 'events';
-        $payloadSerializer = new SimpleInterfaceSerializer();
-        $metadataSerializer = new SimpleInterfaceSerializer();
-        $startId = 101;
+        $history = $this->fillHistory();
+        $eventStream = $this->eventStream->withStartId(4);
 
-        $eventStream = new EventStream(
-            $this->getConnection(),
-            $payloadSerializer,
-            $metadataSerializer,
-            $table
-        );
+        /** @var EventStream|\Generator $domainEventStreams */
+        $domainEventStreams = $eventStream();
 
-        $eventStream = $eventStream->withStartId($startId);
+        $domainEventStreams = iterator_to_array($domainEventStreams);
+        $expectedDomainEventStreams = [];
+        foreach ($history as $key => $domainMessage) {
+            // The history array is zero-based but sqlite index is one-based.
+            // So to start from the 4th element the index needs to be 3.
+            if ($key >= 3) {
+                $expectedDomainEventStreams[] = new DomainEventStream(
+                    [
+                        $domainMessage,
+                    ]
+                );
+            }
+        }
 
-        $expectedPreviousId = 100;
+        $this->assertEquals($expectedDomainEventStreams, $domainEventStreams);
+    }
 
-        $this->assertEquals(
-            $expectedPreviousId,
-            $eventStream->getPreviousId()
-        );
+    /**
+     * @test
+     */
+    public function it_returns_the_last_processed_id()
+    {
+        $this->fillHistory();
+
+        $eventStream = $this->eventStream;
+        $domainEventStreams = $eventStream();
+
+        $expectedLastProcessedId = 1;
+        while ($domainEventStreams->current()) {
+            $this->assertEquals(
+                $expectedLastProcessedId++,
+                $eventStream->getLastProcessedId()
+            );
+            $domainEventStreams->next();
+        }
+    }
+
+    /**
+     * @return DomainMessage[]
+     */
+    private function fillHistory()
+    {
+        $idOfEntityA = 'F68E71A1-DBB0-4542-AEE5-BD937E095F74';
+        $idOfEntityB = '011A02C5-D395-47C1-BEBE-184840A2C961';
+        $idOfEntityC = '9B994B6A-FE49-42B0-B67D-F681BE533A7A';
+
+        /** @var DomainMessage[] $history */
+        $history = [
+            0 => new DomainMessage(
+                'F68E71A1-DBB0-4542-AEE5-BD937E095F74',
+                1,
+                new Metadata(),
+                new DummyEvent(
+                    'F68E71A1-DBB0-4542-AEE5-BD937E095F74',
+                    'test 123'
+                ),
+                DateTime::fromString('2015-01-02T08:30:00+0100')
+            ),
+            1 => new DomainMessage(
+                'F68E71A1-DBB0-4542-AEE5-BD937E095F74',
+                2,
+                new Metadata(),
+                new DummyEvent(
+                    'F68E71A1-DBB0-4542-AEE5-BD937E095F74',
+                    'test 123 456'
+                ),
+                DateTime::fromString('2015-01-02T08:40:00+0100')
+            ),
+            2 => new DomainMessage(
+                $idOfEntityB,
+                1,
+                new Metadata(),
+                new DummyEvent(
+                    $idOfEntityB,
+                    'entity b test content'
+                ),
+                DateTime::fromString('2015-01-02T08:41:00+0100')
+            ),
+            3 => new DomainMessage(
+                $idOfEntityC,
+                1,
+                new Metadata(),
+                new DummyEvent(
+                    $idOfEntityC,
+                    'entity c test content'
+                ),
+                DateTime::fromString('2015-01-02T08:42:30+0100')
+            ),
+            4 => new DomainMessage(
+                $idOfEntityA,
+                3,
+                new Metadata(),
+                new DummyEvent(
+                    $idOfEntityA,
+                    'entity a test content'
+                ),
+                DateTime::fromString('2015-01-03T16:00:01+0100')
+            ),
+            5 => new DomainMessage(
+                $idOfEntityA,
+                4,
+                new Metadata(),
+                new DummyEvent(
+                    $idOfEntityA,
+                    'entity a test content playhead 4'
+                ),
+                DateTime::fromString('2015-01-03T17:00:01+0100')
+            ),
+            6 => new DomainMessage(
+                $idOfEntityA,
+                5,
+                new Metadata(),
+                new DummyEvent(
+                    $idOfEntityA,
+                    'entity a test content playhead 5'
+                ),
+                DateTime::fromString('2015-01-03T18:00:01+0100')
+            ),
+            7 => new DomainMessage(
+                $idOfEntityA,
+                6,
+                new Metadata(),
+                new DummyEvent(
+                    $idOfEntityA,
+                    'entity a test content playhead 6'
+                ),
+                DateTime::fromString('2015-01-03T18:30:01+0100')
+            ),
+            8 => new DomainMessage(
+                $idOfEntityA,
+                7,
+                new Metadata(),
+                new DummyEvent(
+                    $idOfEntityA,
+                    'entity a test content playhead 7'
+                ),
+                DateTime::fromString('2015-01-03T19:45:00+0100')
+            ),
+        ];
+
+        foreach ($history as $domainMessage) {
+            $this->eventStore->append(
+                $domainMessage->getId(),
+                new DomainEventStream([$domainMessage])
+            );
+        }
+
+        return $history;
     }
 
     /**
@@ -344,7 +564,7 @@ class EventStreamTest extends \PHPUnit_Framework_TestCase
                     'entity a test content playhead 7'
                 ),
                 DateTime::fromString('2015-01-03T19:45:00+0100')
-            )
+            ),
         ];
 
         return $domainMessages;

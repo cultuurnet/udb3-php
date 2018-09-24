@@ -52,7 +52,7 @@ class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
 
         $expectedArray = [
             'uuid' => $this->uuid->toNative(),
-            'query' => $this->query->toNative()
+            'query' => $this->query->toNative(),
         ];
 
         $this->assertEquals($expectedArray, $actualArray);
@@ -62,7 +62,7 @@ class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
     {
         $data = [
             'uuid' => $this->uuid->toNative(),
-            'query' => $this->query->toNative()
+            'query' => $this->query->toNative(),
         ];
         $actualEvent = $this->event->deserialize($data);
         $expectedEvent = $this->event;

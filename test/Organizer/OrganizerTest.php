@@ -9,13 +9,23 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
+use CultuurNet\UDB3\Organizer\Commands\ImportLabels;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Organizer\Events\LabelAdded;
+use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
+use CultuurNet\UDB3\Organizer\Events\LabelsImported;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
 use CultuurNet\UDB3\Organizer\Events\OrganizerUpdatedFromUDB2;
+use CultuurNet\UDB3\Organizer\Events\TitleTranslated;
+use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
+use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
@@ -26,6 +36,11 @@ class OrganizerTest extends AggregateRootScenarioTestCase
      * @var string
      */
     private $id;
+
+    /**
+     * @var Language
+     */
+    private $mainLanguage;
 
     /**
      * @var Url
@@ -47,11 +62,13 @@ class OrganizerTest extends AggregateRootScenarioTestCase
         parent::setUp();
 
         $this->id = '18eab5bf-09bf-4521-a8b4-c0f4a585c096';
+        $this->mainLanguage = new Language('en');
         $this->website = Url::fromNative('http://www.stuk.be');
         $this->title = new Title('STUK');
 
         $this->organizerCreatedWithUniqueWebsite = new OrganizerCreatedWithUniqueWebsite(
             $this->id,
+            new Language('en'),
             $this->website,
             $this->title
         );
@@ -116,7 +133,7 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                         [],
                         [],
                         []
-                    )
+                    ),
                 ]
             )
             ->when(
@@ -147,6 +164,54 @@ class OrganizerTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
+    public function it_can_import_labels()
+    {
+        $labels = new Labels(
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('new_label_1'),
+                true
+            ),
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('existing_label_1'),
+                true
+            )
+        );
+
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                    new LabelAdded($this->id, new Label('existing_label_1')),
+                    new LabelAdded($this->id, new Label('existing_label_2')),
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) use ($labels) {
+                    $organizer->importLabels($labels);
+                    $organizer->importLabels($labels);
+                }
+            )
+            ->then(
+                [
+                    new LabelsImported(
+                        $this->id,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('new_label_1'),
+                                true
+                            )
+                        )
+                    ),
+                    new LabelAdded($this->id, new Label('new_label_1')),
+                    new LabelRemoved($this->id, new Label('existing_label_2')),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
     public function it_can_create_new_organizers()
     {
         $this->scenario
@@ -154,6 +219,7 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                 function () {
                     return Organizer::create(
                         $this->id,
+                        $this->mainLanguage,
                         $this->website,
                         $this->title
                     );
@@ -239,6 +305,243 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                     new ContactPointUpdated($this->id, $initialContactPoint),
                     new ContactPointUpdated($this->id, $updatedContactPoint),
                     new ContactPointUpdated($this->id, $emptyContactPoint),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_the_website_when_different_from_the_current_website()
+    {
+        $this->scenario
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateWebsite(Url::fromNative('http://www.stuk.be'));
+                    $organizer->updateWebsite(Url::fromNative('http://www.hetdepot.be'));
+                }
+            )
+            ->then(
+                [
+                    // Organizer was created with website 'http://www.stuk.be'.
+                    new WebsiteUpdated(
+                        $this->id,
+                        Url::fromNative('http://www.hetdepot.be')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_the_website_when_organizer_imported_from_udb2()
+    {
+        $cdbXml = $this->getCdbXML('organizer_with_keyword.cdbxml.xml');
+
+        $this->scenario
+            ->given(
+                [
+                    new OrganizerImportedFromUDB2(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    ),
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateWebsite(Url::fromNative('http://www.hetdepot.be'));
+                }
+            )
+            ->then(
+                [
+                    // Organizer was created with an empty website.
+                    new WebsiteUpdated(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        Url::fromNative('http://www.hetdepot.be')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_the_title_when_different_from_same_language_title()
+    {
+        $this->scenario
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateTitle(
+                        new Title('STUK'),
+                        new Language('en')
+                    );
+                    $organizer->updateTitle(
+                        new Title('Het Depot'),
+                        new Language('en')
+                    );
+                    $organizer->updateTitle(
+                        new Title('Het Depot'),
+                        new Language('en')
+                    );
+                    $organizer->updateTitle(
+                        new Title('Le Depot'),
+                        new Language('fr')
+                    );
+                    $organizer->updateTitle(
+                        new Title('STUK'),
+                        new Language('fr')
+                    );
+                    $organizer->updateTitle(
+                        new Title('STUK'),
+                        new Language('fr')
+                    );
+                }
+            )
+            ->then(
+                [
+                    // Organizer was created with 'nl' title STUK.
+                    new TitleUpdated(
+                        $this->id,
+                        new Title('Het Depot')
+                    ),
+                    new TitleTranslated(
+                        $this->id,
+                        new Title('Le Depot'),
+                        new Language('fr')
+                    ),
+                    new TitleTranslated(
+                        $this->id,
+                        new Title('STUK'),
+                        new Language('fr')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_translate_a_title()
+    {
+        $this->scenario
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateTitle(
+                        new Title('Pièce'),
+                        new Language('fr')
+                    );
+                }
+            )
+            ->then(
+                [
+                    new TitleTranslated(
+                        $this->id,
+                        new Title('Pièce'),
+                        new Language('fr')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_title_on_organizer_imported_from_udb2()
+    {
+        $cdbXml = $this->getCdbXML('organizer_with_keyword.cdbxml.xml');
+
+        $this->scenario
+            ->given(
+                [
+                    new OrganizerImportedFromUDB2(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    ),
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) {
+                    $organizer->updateTitle(
+                        new Title('DE Studio'),
+                        new Language('nl')
+                    );
+                    $organizer->updateTitle(
+                        new Title('STUK'),
+                        new Language('nl')
+                    );
+                }
+            )
+            ->then(
+                [
+                    // Organizer was imported with title 'DE Studio'.
+                    new TitleUpdated(
+                        '404EE8DE-E828-9C07-FE7D12DC4EB24480',
+                        new Title('STUK')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_title_on_organizer_updated_from_udb2()
+    {
+        $cdbXml = $this->getCdbXML('organizer_with_keyword.cdbxml.xml');
+
+        $this->scenario
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) use ($cdbXml) {
+                    $organizer->updateWithCdbXml(
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    );
+                    $organizer->updateTitle(
+                        new Title('DE Studio'),
+                        new Language('en')
+                    );
+                    $organizer->updateTitle(
+                        new Title('Het Depot'),
+                        new Language('en')
+                    );
+                }
+            )
+            ->then(
+                [
+                    // Organizer was created with title 'STUK,
+                    // but then imported with title 'DE Studio'.
+                    new OrganizerUpdatedFromUDB2(
+                        $this->id,
+                        $cdbXml,
+                        'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+                    ),
+                    new TitleUpdated(
+                        $this->id,
+                        new Title('Het Depot')
+                    ),
                 ]
             );
     }

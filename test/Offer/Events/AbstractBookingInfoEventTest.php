@@ -3,6 +3,9 @@
 namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\ValueObject\MultilingualString;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractBookingInfoEventTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,13 +29,11 @@ class AbstractBookingInfoEventTest extends \PHPUnit_Framework_TestCase
         $this->itemId = 'Foo';
         $this->bookingInfo = new BookingInfo(
             'http://foo.bar',
-            'urlLabel',
+            new MultilingualString(new Language('nl'), new StringLiteral('urlLabel')),
             '0123456789',
             'foo@bar.com',
-            '01/01/2016',
-            '31/01/2016',
-            'name',
-            'description'
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-01T00:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-31T00:00:00+01:00')
         );
         $this->abstractBookingInfoEvent = new MockAbstractBookingInfoEvent(
             $this->itemId,
@@ -43,18 +44,16 @@ class AbstractBookingInfoEventTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_can_be_instantiated_With_properties()
+    public function it_can_be_instantiated_with_properties()
     {
         $expectedItemId = 'Foo';
         $expectedBookingInfo = new BookingInfo(
             'http://foo.bar',
-            'urlLabel',
+            new MultilingualString(new Language('nl'), new StringLiteral('urlLabel')),
             '0123456789',
             'foo@bar.com',
-            '01/01/2016',
-            '31/01/2016',
-            'name',
-            'description'
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-01T00:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-31T00:00:00+01:00')
         );
         $expectedAbstractBookingInfoEvent = new MockAbstractBookingInfoEvent(
             $expectedItemId,
@@ -72,13 +71,11 @@ class AbstractBookingInfoEventTest extends \PHPUnit_Framework_TestCase
         $expectedItemId = 'Foo';
         $expectedBookingInfo = new BookingInfo(
             'http://foo.bar',
-            'urlLabel',
+            new MultilingualString(new Language('nl'), new StringLiteral('urlLabel')),
             '0123456789',
             'foo@bar.com',
-            '01/01/2016',
-            '31/01/2016',
-            'name',
-            'description'
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-01T00:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-31T00:00:00+01:00')
         );
 
         $itemId = $this->abstractBookingInfoEvent->getItemId();
@@ -133,24 +130,20 @@ class AbstractBookingInfoEventTest extends \PHPUnit_Framework_TestCase
                         'phone' => '0123456789',
                         'email' => 'foo@bar.com',
                         'url' => 'http://foo.bar',
-                        'urlLabel' => 'urlLabel',
-                        'name' => 'name',
-                        'description' => 'description',
-                        'availabilityStarts' => '01/01/2016',
-                        'availabilityEnds' => '31/01/2016'
+                        'urlLabel' => ['nl' => 'urlLabel'],
+                        'availabilityStarts' => '2016-01-01T00:00:00+01:00',
+                        'availabilityEnds' => '2016-01-31T00:00:00+01:00',
                     ],
                 ],
                 new MockAbstractBookingInfoEvent(
                     'madId',
                     new BookingInfo(
                         'http://foo.bar',
-                        'urlLabel',
+                        new MultilingualString(new Language('nl'), new StringLiteral('urlLabel')),
                         '0123456789',
                         'foo@bar.com',
-                        '01/01/2016',
-                        '31/01/2016',
-                        'name',
-                        'description'
+                        \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-01T00:00:00+01:00'),
+                        \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-01-31T00:00:00+01:00')
                     )
                 ),
             ],

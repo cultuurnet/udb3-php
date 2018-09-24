@@ -8,8 +8,14 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Organizer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
+use CultuurNet\UDB3\Organizer\Commands\CreateOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Organizer\Commands\ImportLabels;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
+use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
+use CultuurNet\UDB3\Organizer\Commands\UpdateContactPoint;
+use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
+use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
 use ValueObjects\StringLiteral\StringLiteral;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 
@@ -60,9 +66,15 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     protected function getCommandHandlerMethods()
     {
         return [
+            CreateOrganizer::class => 'createOrganizer',
+            UpdateWebsite::class => 'updateWebsite',
+            UpdateTitle::class => 'updateTitle',
+            UpdateAddress::class => 'updateAddress',
+            UpdateContactPoint::class => 'updateContactPoint',
             DeleteOrganizer::class => 'deleteOrganizer',
             AddLabel::class => 'addLabel',
-            RemoveLabel::class => 'removeLabel'
+            RemoveLabel::class => 'removeLabel',
+            ImportLabels::class => 'importLabels',
         ];
     }
 
@@ -78,6 +90,69 @@ class OrganizerCommandHandler implements CommandHandlerInterface
             $method = $handlers[$class];
             $this->{$method}($command);
         }
+    }
+
+    protected function createOrganizer(CreateOrganizer $createOrganizer)
+    {
+        $organizer = Organizer::create(
+            $createOrganizer->getOrganizerId(),
+            $createOrganizer->getMainLanguage(),
+            $createOrganizer->getWebsite(),
+            $createOrganizer->getTitle()
+        );
+
+        $this->organizerRepository->save($organizer);
+    }
+
+    /**
+     * @param UpdateWebsite $updateWebsite
+     */
+    protected function updateWebsite(UpdateWebsite $updateWebsite)
+    {
+        $organizer = $this->loadOrganizer($updateWebsite->getOrganizerId());
+
+        $organizer->updateWebsite($updateWebsite->getWebsite());
+
+        $this->organizerRepository->save($organizer);
+    }
+
+    /**
+     * @param UpdateTitle $updateTitle
+     */
+    protected function updateTitle(UpdateTitle $updateTitle)
+    {
+        $organizer = $this->loadOrganizer($updateTitle->getOrganizerId());
+
+        $organizer->updateTitle(
+            $updateTitle->getTitle(),
+            $updateTitle->getLanguage()
+        );
+
+        $this->organizerRepository->save($organizer);
+    }
+
+    /**
+     * @param UpdateAddress $updateAddress
+     */
+    protected function updateAddress(UpdateAddress $updateAddress)
+    {
+        $organizer = $this->loadOrganizer($updateAddress->getOrganizerId());
+
+        $organizer->updateAddress($updateAddress->getAddress());
+
+        $this->organizerRepository->save($organizer);
+    }
+
+    /**
+     * @param UpdateContactPoint $updateContactPoint
+     */
+    protected function updateContactPoint(UpdateContactPoint $updateContactPoint)
+    {
+        $organizer = $this->loadOrganizer($updateContactPoint->getOrganizerId());
+
+        $organizer->updateContactPoint($updateContactPoint->getContactPoint());
+
+        $this->organizerRepository->save($organizer);
     }
 
     /**
@@ -100,6 +175,18 @@ class OrganizerCommandHandler implements CommandHandlerInterface
         $organizer = $this->loadOrganizer($removeLabel->getOrganizerId());
 
         $organizer->removeLabel($this->createLabel($removeLabel));
+
+        $this->organizerRepository->save($organizer);
+    }
+
+    /**
+     * @param ImportLabels $importLabels
+     */
+    protected function importLabels(ImportLabels $importLabels)
+    {
+        $organizer = $this->loadOrganizer($importLabels->getOrganizerId());
+
+        $organizer->importLabels($importLabels->getLabels());
 
         $this->organizerRepository->save($organizer);
     }

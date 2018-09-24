@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand as OfferAbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
-use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle;
+use CultuurNet\UDB3\Offer\Mock\Commands\UpdateTitle;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -78,7 +78,7 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
      */
     public function it_delegates_is_authorized_to_decoratee_when_not_label_security_command()
     {
-        $translateTitle = new TranslateTitle(
+        $translateTitle = new UpdateTitle(
             'cc9b975b-80e3-47db-ae77-8a930e453232',
             new Language('nl'),
             new StringLiteral('Hallo wereld')
@@ -99,7 +99,7 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
             OfferAbstractLabelCommand::class,
             [
                 '6a475eb2-04dd-41e3-95d1-225a1cd511f1',
-                new Label('bibliotheekweek')
+                new Label('bibliotheekweek'),
             ]
         );
 
@@ -112,26 +112,11 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
         $this->securityWithLabelPrivacy->isAuthorized($labelSecurity);
     }
 
-
     /**
      * @test
      */
-    public function a_god_user_can_use_all_labels()
+    public function a_user_can_only_use_labels_he_is_allowed_to_use()
     {
-        $this->mockIsGodUser(true);
-
-        $this->assertTrue(
-            $this->securityWithLabelPrivacy->isAuthorized($this->addLabel)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function a_normal_user_can_only_use_labels_he_is_allowed_to_use()
-    {
-        $this->mockIsGodUser(false);
-
         $this->userIdentification->method('getId')
             ->willReturn(new StringLiteral('82650413-baf2-4257-a25b-d25dc18999dc'));
 
@@ -141,14 +126,5 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(
             $this->securityWithLabelPrivacy->isAuthorized($this->addLabel)
         );
-    }
-
-    /**
-     * @param $isGodUser
-     */
-    private function mockIsGodUser($isGodUser)
-    {
-        $this->userIdentification->method('isGodUser')
-            ->willReturn($isGodUser);
     }
 }

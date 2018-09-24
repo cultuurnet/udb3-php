@@ -6,42 +6,51 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Media\MediaManager;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
+use CultuurNet\UDB3\Offer\Item\Commands\DeleteCurrentOrganizer;
+use CultuurNet\UDB3\Offer\Item\Commands\ImportLabels;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Approve;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\FlagAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
-use CultuurNet\UDB3\Offer\Item\Commands\TranslateDescription;
-use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateFacilities;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
-use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
+use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ItemCreated;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
+use CultuurNet\UDB3\Offer\Item\Events\LabelsImported;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Approved;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\FlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Published;
 use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
+use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Offer\Item\ItemCommandHandler;
 use CultuurNet\UDB3\Offer\Item\ItemRepository;
 use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel as AddLabelToSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\RemoveLabel as RemoveLabelFromSomethingElse;
-use CultuurNet\UDB3\Offer\Mock\Commands\TranslateTitle as TranslateTitleOnSomethingElse;
-use CultuurNet\UDB3\Offer\Mock\Commands\TranslateDescription as TranslateDescriptionOnSomethingElse;
+use CultuurNet\UDB3\Offer\Mock\Commands\UpdateTitle as UpdateTitleOnSomethingElse;
 use CultuurNet\UDB3\Offer\Mock\Commands\UpdatePriceInfo as UpdatePriceInfoOnSomethingElse;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -65,7 +74,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     protected $language;
 
     /**
-     * @var StringLiteral
+     * @var Title
      */
     protected $title;
 
@@ -90,9 +99,14 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     protected $organizerRepository;
 
     /**
-     * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
      */
     protected $labelRepository;
+
+    /**
+     * @var MediaManager|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $mediaManager;
 
     public function setUp()
     {
@@ -101,10 +115,13 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->id = '123';
         $this->label = new Label('foo');
         $this->language = new Language('en');
-        $this->title = new StringLiteral('English title');
+        $this->title = new Title('English title');
         $this->description = new StringLiteral('English description');
 
-        $this->itemCreated = new ItemCreated($this->id);
+        $this->itemCreated = new ItemCreated(
+            $this->id,
+            new Language('nl')
+        );
 
         $this->priceInfo = new PriceInfo(
             new BasePrice(
@@ -130,10 +147,13 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                 Privacy::PRIVACY_PUBLIC()
             ));
 
+        $this->mediaManager = $this->createMock(MediaManager::class);
+
         return new ItemCommandHandler(
             new ItemRepository($eventStore, $eventBus),
             $this->organizerRepository,
-            $this->labelRepository
+            $this->labelRepository,
+            $this->mediaManager
         );
     }
 
@@ -146,7 +166,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given(
                 [
-                    $this->itemCreated
+                    $this->itemCreated,
                 ]
             )
             ->when(
@@ -154,7 +174,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->then(
                 [
-                    new LabelAdded($this->id, $this->label)
+                    new LabelAdded($this->id, $this->label),
                 ]
             );
     }
@@ -168,7 +188,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given(
                 [
-                    $this->itemCreated
+                    $this->itemCreated,
                 ]
             )
             ->when(
@@ -195,7 +215,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             )
             ->then(
                 [
-                    new LabelRemoved($this->id, $this->label)
+                    new LabelRemoved($this->id, $this->label),
                 ]
             );
     }
@@ -222,21 +242,69 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_handles_import_labels()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                ]
+            )
+            ->when(
+                new ImportLabels(
+                    $this->id,
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('foo'),
+                            true
+                        ),
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('bar'),
+                            true
+                        )
+                    )
+                )
+            )
+            ->then(
+                [
+                    new LabelsImported(
+                        $this->id,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('foo'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('bar'),
+                                true
+                            )
+                        )
+                    ),
+                    new LabelAdded($this->id, new Label('foo')),
+                    new LabelAdded($this->id, new Label('bar')),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
     public function it_handles_translate_title_commands_from_the_correct_namespace()
     {
         $this->scenario
             ->withAggregateId($this->id)
             ->given(
                 [
-                    $this->itemCreated
+                    $this->itemCreated,
                 ]
             )
             ->when(
-                new TranslateTitle($this->id, $this->language, $this->title)
+                new UpdateTitle($this->id, $this->language, $this->title)
             )
             ->then(
                 [
-                    new TitleTranslated($this->id, $this->language, $this->title)
+                    new TitleTranslated($this->id, $this->language, $this->title),
                 ]
             );
     }
@@ -250,51 +318,11 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given(
                 [
-                    $this->itemCreated
+                    $this->itemCreated,
                 ]
             )
             ->when(
-                new TranslateTitleOnSomethingElse($this->id, $this->language, $this->title)
-            )
-            ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_translate_description_commands_from_the_correct_namespace()
-    {
-        $this->scenario
-            ->withAggregateId($this->id)
-            ->given(
-                [
-                    $this->itemCreated
-                ]
-            )
-            ->when(
-                new TranslateDescription($this->id, $this->language, $this->description)
-            )
-            ->then(
-                [
-                    new DescriptionTranslated($this->id, $this->language, $this->description)
-                ]
-            );
-    }
-
-    /**
-     * @test
-     */
-    public function it_ignores_translate_description_commands_from_incorrect_namespace()
-    {
-        $this->scenario
-            ->withAggregateId($this->id)
-            ->given(
-                [
-                    $this->itemCreated
-                ]
-            )
-            ->when(
-                new TranslateDescriptionOnSomethingElse($this->id, $this->language, $this->description)
+                new UpdateTitleOnSomethingElse($this->id, $this->language, $this->title)
             )
             ->then([]);
     }
@@ -361,11 +389,11 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given([
                 $this->itemCreated,
-                new Published($this->id, new \DateTime())
+                new Published($this->id, new \DateTime()),
             ])
             ->when(new Approve($this->id))
             ->then([
-                new Approved($this->id)
+                new Approved($this->id),
             ]);
     }
 
@@ -378,11 +406,11 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given([
                 $this->itemCreated,
-                new Published($this->id, new \DateTime())
+                new Published($this->id, new \DateTime()),
             ])
             ->when(new FlagAsDuplicate($this->id))
             ->then([
-                new FlaggedAsDuplicate($this->id)
+                new FlaggedAsDuplicate($this->id),
             ]);
     }
 
@@ -395,11 +423,11 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given([
                 $this->itemCreated,
-                new Published($this->id, new \DateTime())
+                new Published($this->id, new \DateTime()),
             ])
             ->when(new FlagAsInappropriate($this->id))
             ->then([
-                new FlaggedAsInappropriate($this->id)
+                new FlaggedAsInappropriate($this->id),
             ]);
     }
 
@@ -414,11 +442,54 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($this->id)
             ->given([
                 $this->itemCreated,
-                new Published($this->id, new \DateTime())
+                new Published($this->id, new \DateTime()),
             ])
             ->when(new Reject($this->id, $reason))
             ->then([
-                new Rejected($this->id, $reason)
+                new Rejected($this->id, $reason),
             ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_facilities_of_a_place()
+    {
+        $facilities = [
+            new Facility('facility1', 'facility label'),
+        ];
+
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given([
+                $this->itemCreated,
+            ])
+            ->when(new UpdateFacilities($this->id, $facilities))
+            ->then([
+                new FacilitiesUpdated($this->id, $facilities),
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_delete_current_organizer_commands()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                    new OrganizerUpdated($this->id, '9f4cad43-8a2b-4475-870c-e02ef9741754'),
+                ]
+            )
+            ->when(
+                new DeleteCurrentOrganizer($this->id)
+            )
+            ->then(
+                [
+                    new OrganizerDeleted($this->id, '9f4cad43-8a2b-4475-870c-e02ef9741754'),
+                ]
+            );
     }
 }

@@ -17,7 +17,7 @@ class NotUDB3PlaceTest extends \PHPUnit_Framework_TestCase
         $filterQuery = new FilterQuery('!keywords: "udb3 place"');
         $expectedFilters = [
             $existingFilterQuery,
-            $filterQuery
+            $filterQuery,
         ];
 
         $filteringSearchParameters = $UDB3PlacesFilter->apply($searchParameters);

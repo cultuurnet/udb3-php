@@ -14,11 +14,16 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
+use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
+use CultuurNet\UDB3\Organizer\Commands\UpdateContactPoint;
+use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
+use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use ValueObjects\Geography\Country;
@@ -91,6 +96,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventStore->trace();
 
         $organizerId = $this->service->create(
+            new Language('en'),
             Url::fromNative('http://www.stuk.be'),
             new Title('Het Stuk')
         );
@@ -101,6 +107,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
             [
                 new OrganizerCreatedWithUniqueWebsite(
                     '9196cb78-4381-11e6-beb8-9e71128cae77',
+                    new Language('en'),
                     Url::fromNative('http://www.stuk.be'),
                     new Title('Het Stuk')
                 ),
@@ -119,6 +126,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->eventStore->trace();
 
         $organizerId = $this->service->create(
+            new Language('en'),
             Url::fromNative('http://www.stuk.be'),
             new Title('Het Stuk'),
             new Address(
@@ -136,6 +144,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
             [
                 new OrganizerCreatedWithUniqueWebsite(
                     '9196cb78-4381-11e6-beb8-9e71128cae77',
+                    new Language('en'),
                     Url::fromNative('http://www.stuk.be'),
                     new Title('Het Stuk')
                 ),
@@ -157,6 +166,91 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals($expectedUuid, $organizerId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_website()
+    {
+        $organizerId = 'baee2963-e1ba-4777-a803-4c645c6fd31c';
+        $website = Url::fromNative('http://www.depot.be');
+
+        $expectedUpdateWebsite = new UpdateWebsite($organizerId, $website);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($expectedUpdateWebsite);
+
+        $this->service->updateWebsite($organizerId, $website);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_title()
+    {
+        $organizerId = 'baee2963-e1ba-4777-a803-4c645c6fd31c';
+        $title = new Title('Het Depot');
+        $language = new Language('nl');
+
+        $expectedUpdateTitle = new UpdateTitle(
+            $organizerId,
+            $title,
+            $language
+        );
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($expectedUpdateTitle);
+
+        $this->service->updateTitle($organizerId, $title, $language);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_address()
+    {
+        $organizerId = 'baee2963-e1ba-4777-a803-4c645c6fd31c';
+        $address = new Address(
+            new Street('Martelarenplein 1'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
+        );
+
+        $expectedUpdateAddress = new UpdateAddress($organizerId, $address);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($expectedUpdateAddress);
+
+        $this->service->updateAddress($organizerId, $address);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_contact_point()
+    {
+        $organizerId = 'baee2963-e1ba-4777-a803-4c645c6fd31c';
+        $contactPoint = new ContactPoint(
+            [
+                '01213456789',
+            ],
+            [
+                'info@hetdepot.be',
+            ]
+        );
+
+        $updateContactPoint = new UpdateContactPoint($organizerId, $contactPoint);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updateContactPoint);
+
+        $this->service->updateContactPoint($organizerId, $contactPoint);
     }
 
     /**

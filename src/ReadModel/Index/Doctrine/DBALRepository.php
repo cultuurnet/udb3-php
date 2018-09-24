@@ -61,6 +61,8 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $userId,
         $name,
         $postalCode,
+        $city,
+        $country,
         Domain $owningDomain,
         DateTimeInterface $created = null
     ) {
@@ -77,6 +79,8 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                     ->set('uid', ':uid')
                     ->set('title', ':title')
                     ->set('zip', ':zip')
+                    ->set('city', ':city')
+                    ->set('country', ':country')
                     ->set('owning_domain', ':owning_domain')
                     ->set('entity_iri', ':entity_iri');
 
@@ -85,7 +89,16 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                 }
 
                 $this->setIdAndEntityType($q, $id, $entityType);
-                $this->setValues($q, $userId, $name, $postalCode, $owningDomain, $created);
+                $this->setValues(
+                    $q,
+                    $userId,
+                    $name,
+                    $postalCode,
+                    $city,
+                    $country,
+                    $owningDomain,
+                    $created
+                );
                 $q->setParameter('entity_iri', $iri);
 
                 $q->execute();
@@ -104,9 +117,11 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                             'uid' => ':uid',
                             'title' => ':title',
                             'zip' => ':zip',
+                            'city' => ':city',
+                            'country' => ':country',
                             'created' => ':created',
                             'updated' => ':created',
-                            'owning_domain' => ':owning_domain'
+                            'owning_domain' => ':owning_domain',
                         ]
                     );
 
@@ -116,6 +131,8 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
                     $userId,
                     $name,
                     $postalCode,
+                    $city,
+                    $country,
                     $owningDomain,
                     $created
                 );
@@ -137,6 +154,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
      * @param string $userId
      * @param string $name
      * @param string $postalCode
+     * @param string $country
      * @param Domain $owningDomain
      * @param DateTimeInterface $created
      */
@@ -145,12 +163,16 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
         $userId,
         $name,
         $postalCode,
+        $city,
+        $country,
         Domain $owningDomain,
         DateTimeInterface $created = null
     ) {
         $q->setParameter('uid', $userId);
         $q->setParameter('title', $name);
         $q->setParameter('zip', $postalCode);
+        $q->setParameter('city', $city);
+        $q->setParameter('country', $country);
         $q->setParameter('owning_domain', $owningDomain->toNative());
         if ($created instanceof DateTimeInterface) {
             $q->setParameter('created', $created->getTimestamp());
@@ -225,7 +247,7 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
     /**
      * @inheritdoc
      */
-    public function findPlacesByPostalCode($postalCode)
+    public function findPlacesByPostalCode($postalCode, $country)
     {
         $q = $this->connection->createQueryBuilder();
         $expr = $q->expr();
@@ -235,12 +257,38 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             ->where(
                 $expr->andX(
                     $expr->eq('entity_type', ':entity_type'),
-                    $expr->eq('zip', ':zip')
+                    $expr->eq('zip', ':zip'),
+                    $expr->eq('country', ':country')
                 )
             );
 
         $q->setParameter('entity_type', EntityType::PLACE()->toNative());
         $q->setParameter('zip', $postalCode);
+        $q->setParameter('country', $country);
+
+        $results = $q->execute();
+
+        return $results->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    public function findPlacesByCity($city, $country)
+    {
+        $q = $this->connection->createQueryBuilder();
+        $expr = $q->expr();
+
+        $q->select('entity_id')
+            ->from($this->tableName->toNative())
+            ->where(
+                $expr->andX(
+                    $expr->eq('entity_type', ':entity_type'),
+                    $expr->eq('city', ':city'),
+                    $expr->eq('country', ':country')
+                )
+            );
+
+        $q->setParameter('entity_type', EntityType::PLACE()->toNative());
+        $q->setParameter('city', $city);
+        $q->setParameter('country', $country);
 
         $results = $q->execute();
 
@@ -342,23 +390,13 @@ class DBALRepository implements RepositoryInterface, PlaceLookupServiceInterface
             $results->fetchAll(\PDO::FETCH_ASSOC)
         );
 
-        $itemCount = count($offerIdentifierArray);
-        // We can skip an additional query to determine to total items count
-        // if the amount of rows on the first page does not reach the limit.
-        $onFirstPage = $queryBuilder->getFirstResult() === 0;
-        $hasSinglePage = $itemCount < $queryBuilder->getMaxResults();
-        if ($onFirstPage && $hasSinglePage) {
-            $totalItems = $itemCount;
-        } else {
-            $q = $this->connection->createQueryBuilder();
-
-            $totalItems = $q->resetQueryParts()->select('COUNT(*) AS total')
-                ->from($this->tableName->toNative())
-                ->where($filterExpression)
-                ->setParameters($parameters)
-                ->execute()
-                ->fetchColumn(0);
-        }
+        $q = $this->connection->createQueryBuilder();
+        $totalItems = $q->resetQueryParts()->select('COUNT(*) AS total')
+            ->from($this->tableName->toNative())
+            ->where($filterExpression)
+            ->setParameters($parameters)
+            ->execute()
+            ->fetchColumn(0);
 
         return new Results(
             OfferIdentifierCollection::fromArray($offerIdentifierArray),

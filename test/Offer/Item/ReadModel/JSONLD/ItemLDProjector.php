@@ -3,9 +3,11 @@
 namespace CultuurNet\UDB3\Offer\Item\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionTranslated;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\FacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\Image\ImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
@@ -19,7 +21,10 @@ use CultuurNet\UDB3\Offer\Item\Events\Moderation\Rejected;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\PriceInfoUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\ThemeUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
+use CultuurNet\UDB3\Offer\Item\Events\TitleUpdated;
+use CultuurNet\UDB3\Offer\Item\Events\TypeUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\OfferLDProjector;
@@ -120,6 +125,11 @@ class ItemLDProjector extends OfferLDProjector
         return DescriptionUpdated::class;
     }
 
+    protected function getCalendarUpdatedClassName()
+    {
+        return CalendarUpdated::class;
+    }
+
     protected function getTypicalAgeRangeUpdatedClassName()
     {
         return TypicalAgeRangeUpdated::class;
@@ -163,5 +173,25 @@ class ItemLDProjector extends OfferLDProjector
     protected function getImagesUpdatedFromUdb2ClassName()
     {
         return ImagesUpdatedFromUDB2::class;
+    }
+
+    protected function getTitleUpdatedClassName()
+    {
+        return TitleUpdated::class;
+    }
+
+    protected function getTypeUpdatedClassName()
+    {
+        return TypeUpdated::class;
+    }
+
+    protected function getThemeUpdatedClassName()
+    {
+        return ThemeUpdated::class;
+    }
+
+    protected function getFacilitiesUpdatedClassName()
+    {
+        return FacilitiesUpdated::class;
     }
 }

@@ -3,26 +3,35 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
 use Broadway\Domain\DomainMessage;
+use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\CulturefeedSlugger;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
+use CultuurNet\UDB3\EventListener\EventSpecification;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Media\Image;
+use CultuurNet\UDB3\Offer\AvailableTo;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
+use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTypeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -39,12 +48,16 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
+use CultuurNet\UDB3\ReadModel\MultilingualJsonLDProjectorTrait;
+use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\SluggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use ValueObjects\Identity\UUID;
 
 abstract class OfferLDProjector implements OrganizerServiceInterface
 {
+    use MultilingualJsonLDProjectorTrait;
     use DelegateEventHandlingToSpecificMethodTrait {
         DelegateEventHandlingToSpecificMethodTrait::handle as handleUnknownEvents;
     }
@@ -65,9 +78,9 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $organizerService;
 
     /**
-     * @var SluggerInterface
+     * @var JsonDocumentMetaDataEnricherInterface
      */
-    protected $slugger;
+    protected $jsonDocumentMetaDataEnricher;
 
     /**
      * @var SerializerInterface
@@ -75,23 +88,50 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $mediaObjectSerializer;
 
     /**
+     * @var EventSpecification
+     */
+    protected $eventsNotTriggeringUpdateModified;
+
+    /**
+     * Associative array of bases prices.
+     * Key is the language, value is the translated string.
+     *
+     * @var string[]
+     */
+    private $basePriceTranslations;
+
+    /**
+     * @var SluggerInterface
+     */
+    protected $slugger;
+
+    /**
      * @param DocumentRepositoryInterface $repository
      * @param IriGeneratorInterface $iriGenerator
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
+     * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
+     * @param EventSpecification $eventsNotTriggeringUpdateModified
+     * @param string[] $basePriceTranslations
      */
     public function __construct(
         DocumentRepositoryInterface $repository,
         IriGeneratorInterface $iriGenerator,
         EntityServiceInterface $organizerService,
-        SerializerInterface $mediaObjectSerializer
+        SerializerInterface $mediaObjectSerializer,
+        JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
+        EventSpecification $eventsNotTriggeringUpdateModified,
+        array $basePriceTranslations
     ) {
         $this->repository = $repository;
         $this->iriGenerator = $iriGenerator;
         $this->organizerService = $organizerService;
-        $this->slugger = new CulturefeedSlugger();
-
+        $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
+        $this->eventsNotTriggeringUpdateModified = $eventsNotTriggeringUpdateModified;
+        $this->basePriceTranslations = $basePriceTranslations;
+
+        $this->slugger = new CulturefeedSlugger();
     }
 
     /**
@@ -106,9 +146,29 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         if (isset($eventHandlers[$eventName])) {
             $handler = $eventHandlers[$eventName];
-            call_user_func(array($this, $handler), $event);
+            $jsonDocuments = call_user_func(array($this, $handler), $event, $domainMessage);
+        } elseif ($methodName = $this->getHandleMethodName($event)) {
+            $jsonDocuments = $this->{$methodName}($event, $domainMessage);
         } else {
-            $this->handleUnknownEvents($domainMessage);
+            return;
+        }
+
+        if (!$jsonDocuments) {
+            return;
+        }
+
+        if (!is_array($jsonDocuments)) {
+            $jsonDocuments = [$jsonDocuments];
+        }
+
+        foreach ($jsonDocuments as $jsonDocument) {
+            $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
+
+            if (!$this->eventsNotTriggeringUpdateModified->matches($event)) {
+                $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
+            }
+
+            $this->repository->save($jsonDocument);
         }
     }
 
@@ -175,6 +235,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     /**
      * @return string
      */
+    abstract protected function getTitleUpdatedClassName();
+
+    /**
+     * @return string
+     */
     abstract protected function getDescriptionTranslatedClassName();
 
     /**
@@ -206,6 +271,11 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @return string
      */
     abstract protected function getDescriptionUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getCalendarUpdatedClassName();
 
     /**
      * @return string
@@ -253,7 +323,102 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     abstract protected function getImagesUpdatedFromUdb2ClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getTypeUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getThemeUpdatedClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getFacilitiesUpdatedClassName();
+
+    /**
+     * @param AbstractTypeUpdated $typeUpdated
+     * @return JsonDocument
+     */
+    protected function applyTypeUpdated(AbstractTypeUpdated $typeUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($typeUpdated);
+
+        return $this->updateTerm($document, $typeUpdated->getType());
+    }
+
+    /**
+     * @param AbstractThemeUpdated $themeUpdated
+     * @return JsonDocument
+     */
+    protected function applyThemeUpdated(AbstractThemeUpdated $themeUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($themeUpdated);
+
+        return $this->updateTerm($document, $themeUpdated->getTheme());
+    }
+
+    /**
+     * @param JsonDocument $document
+     * @param Category $category
+     *
+     * @return JsonDocument
+     */
+    private function updateTerm(JsonDocument $document, Category $category)
+    {
+        $offerLD = $document->getBody();
+
+        $oldTerms = property_exists($offerLD, 'terms') ? $offerLD->terms : [];
+        $newTerm = (object) $category->serialize();
+
+        $newTerms = array_filter(
+            $oldTerms,
+            function ($term) use ($category) {
+                return !property_exists($term, 'domain') || $term->domain !== $category->getDomain();
+            }
+        );
+
+        array_push($newTerms, $newTerm);
+
+        $offerLD->terms = array_values($newTerms);
+
+        return $document->withBody($offerLD);
+    }
+
+    /**
+     * @param AbstractFacilitiesUpdated $facilitiesUpdated
+     * @return JsonDocument
+     */
+    protected function applyFacilitiesUpdated(AbstractFacilitiesUpdated $facilitiesUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($facilitiesUpdated);
+
+        $offerLd = $document->getBody();
+
+        $terms = isset($offerLd->terms) ? $offerLd->terms : array();
+
+        // Remove all old facilities + get numeric keys.
+        $terms = array_values(array_filter(
+            $terms,
+            function ($term) {
+                return $term->domain !== Facility::DOMAIN;
+            }
+        ));
+
+        // Add the new facilities.
+        foreach ($facilitiesUpdated->getFacilities() as $facility) {
+            $terms[] = $facility->toJsonLd();
+        }
+
+        $offerLd->terms = $terms;
+
+        return $document->withBody($offerLd);
+    }
+
+    /**
      * @param AbstractLabelAdded $labelAdded
+     * @return JsonDocument
      */
     protected function applyLabelAdded(AbstractLabelAdded $labelAdded)
     {
@@ -270,11 +435,12 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $labels[] = $label;
         $offerLd->{$labelsProperty} = array_unique($labels);
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractLabelRemoved $labelRemoved
+     * @return JsonDocument
      */
     protected function applyLabelRemoved(AbstractLabelRemoved $labelRemoved)
     {
@@ -306,13 +472,14 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             }
         }
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * Apply the imageAdded event to the item repository.
      *
      * @param AbstractImageAdded $imageAdded
+     * @return JsonDocument
      */
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
     {
@@ -329,13 +496,14 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             $offerLd->image = $imageData['contentUrl'];
         }
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * Apply the ImageUpdated event to the item repository.
      *
      * @param AbstractImageUpdated $imageUpdated
+     * @return JsonDocument
      * @throws \Exception
      */
     protected function applyImageUpdated(AbstractImageUpdated $imageUpdated)
@@ -370,11 +538,12 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             throw new \Exception('The image to update could not be found.');
         }
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractImageRemoved $imageRemoved
+     * @return JsonDocument
      */
     protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)
     {
@@ -425,11 +594,12 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
             $offerLd->mediaObject = array_values($filteredMediaObjects);
         }
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractMainImageSelected $mainImageSelected
+     * @return JsonDocument
      */
     protected function applyMainImageSelected(AbstractMainImageSelected $mainImageSelected)
     {
@@ -450,7 +620,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd->image = $mediaObject->contentUrl;
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
@@ -466,6 +636,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
     /**
      * @param AbstractTitleTranslated $titleTranslated
+     * @return JsonDocument
      */
     protected function applyTitleTranslated(AbstractTitleTranslated $titleTranslated)
     {
@@ -475,11 +646,27 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd->name->{$titleTranslated->getLanguage()->getCode(
         )} = $titleTranslated->getTitle()->toNative();
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
+    }
+
+    /**
+     * @param AbstractTitleUpdated $titleUpdated
+     * @return JsonDocument
+     */
+    protected function applyTitleUpdated(AbstractTitleUpdated $titleUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($titleUpdated);
+        $offerLd = $document->getBody();
+        $mainLanguage = isset($offerLd->mainLanguage) ? $offerLd->mainLanguage : 'nl';
+
+        $offerLd->name->{$mainLanguage} = $titleUpdated->getTitle()->toNative();
+
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractDescriptionTranslated $descriptionTranslated
+     * @return JsonDocument
      */
     protected function applyDescriptionTranslated(
         AbstractDescriptionTranslated $descriptionTranslated
@@ -494,12 +681,31 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         }
         $offerLd->description->{$languageCode} = $description;
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
+    }
+
+    /**
+     * @param AbstractCalendarUpdated $calendarUpdated
+     *
+     * @return JsonDocument
+     */
+    protected function applyCalendarUpdated(AbstractCalendarUpdated $calendarUpdated)
+    {
+        $document = $this->loadDocumentFromRepository($calendarUpdated)
+            ->apply(OfferUpdate::calendar($calendarUpdated->getCalendar()));
+
+        $offerLd = $document->getBody();
+
+        $availableTo = AvailableTo::createFromCalendar($calendarUpdated->getCalendar());
+        $offerLd->availableTo = (string)$availableTo;
+
+        return $document->withBody($offerLd);
     }
 
     /**
      * Apply the organizer updated event to the offer repository.
      * @param AbstractOrganizerUpdated $organizerUpdated
+     * @return JsonDocument
      */
     protected function applyOrganizerUpdated(AbstractOrganizerUpdated $organizerUpdated)
     {
@@ -511,12 +717,13 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
                 '@type' => 'Organizer',
             ) + (array)$this->organizerJSONLD($organizerUpdated->getOrganizerId());
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * Apply the organizer delete event to the offer repository.
      * @param AbstractOrganizerDeleted $organizerDeleted
+     * @return JsonDocument
      */
     protected function applyOrganizerDeleted(AbstractOrganizerDeleted $organizerDeleted)
     {
@@ -526,25 +733,28 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         unset($offerLd->organizer);
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * Apply the booking info updated event to the offer repository.
      * @param AbstractBookingInfoUpdated $bookingInfoUpdated
+     * @return JsonDocument
      */
     protected function applyBookingInfoUpdated(AbstractBookingInfoUpdated $bookingInfoUpdated)
     {
         $document = $this->loadDocumentFromRepository($bookingInfoUpdated);
 
         $offerLd = $document->getBody();
+
         $offerLd->bookingInfo = $bookingInfoUpdated->getBookingInfo()->toJsonLd();
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractPriceInfoUpdated $priceInfoUpdated
+     * @return JsonDocument
      */
     protected function applyPriceInfoUpdated(AbstractPriceInfoUpdated $priceInfoUpdated)
     {
@@ -557,7 +767,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd->priceInfo[] = [
             'category' => 'base',
-            'name' => 'Basistarief',
+            'name' => $this->basePriceTranslations,
             'price' => $basePrice->getPrice()->toFloat(),
             'priceCurrency' => $basePrice->getCurrency()->getCode()->toNative(),
         ];
@@ -565,18 +775,19 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         foreach ($priceInfoUpdated->getPriceInfo()->getTariffs() as $tariff) {
             $offerLd->priceInfo[] = [
                 'category' => 'tariff',
-                'name' => $tariff->getName()->toNative(),
+                'name' => $tariff->getName()->serialize(),
                 'price' => $tariff->getPrice()->toFloat(),
                 'priceCurrency' => $tariff->getCurrency()->getCode()->toNative(),
             ];
         }
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * Apply the contact point updated event to the offer repository.
      * @param AbstractContactPointUpdated $contactPointUpdated
+     * @return JsonDocument
      */
     protected function applyContactPointUpdated(AbstractContactPointUpdated $contactPointUpdated)
     {
@@ -585,12 +796,13 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $offerLd = $document->getBody();
         $offerLd->contactPoint = $contactPointUpdated->getContactPoint()->toJsonLd();
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * Apply the description updated event to the offer repository.
      * @param AbstractDescriptionUpdated $descriptionUpdated
+     * @return JsonDocument
      */
     protected function applyDescriptionUpdated(
         AbstractDescriptionUpdated $descriptionUpdated
@@ -601,14 +813,17 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         if (empty($offerLd->description)) {
             $offerLd->description = new \stdClass();
         }
-        $offerLd->description->{'nl'} = $descriptionUpdated->getDescription();
 
-        $this->repository->save($document->withBody($offerLd));
+        $mainLanguage = isset($offerLd->mainLanguage) ? $offerLd->mainLanguage : 'nl';
+        $offerLd->description->{$mainLanguage} = $descriptionUpdated->getDescription()->toNative();
+
+        return $document->withBody($offerLd);
     }
 
     /**
      * Apply the typical age range updated event to the offer repository.
      * @param AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     * @return JsonDocument
      */
     protected function applyTypicalAgeRangeUpdated(
         AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated
@@ -616,14 +831,15 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $document = $this->loadDocumentFromRepository($typicalAgeRangeUpdated);
 
         $offerLd = $document->getBody();
-        $offerLd->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
+        $offerLd->typicalAgeRange = (string) $typicalAgeRangeUpdated->getTypicalAgeRange();
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * Apply the typical age range deleted event to the offer repository.
      * @param AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
+     * @return JsonDocument
      */
     protected function applyTypicalAgeRangeDeleted(
         AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
@@ -634,121 +850,132 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         unset($offerLd->typicalAgeRange);
 
-        $this->repository->save($document->withBody($offerLd));
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractPublished $published
+     * @return JsonDocument
      */
     protected function applyPublished(AbstractPublished $published)
     {
-        $this->applyEventTransformation($published, function ($offerLd) use ($published) {
-            $offerLd->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+        $document = $this->loadDocumentFromRepository($published);
 
-            $publicationDate = $published->getPublicationDate();
-            $offerLd->availableFrom = $publicationDate->format(\DateTime::ATOM);
-        });
+        $offerLd = $document->getBody();
+
+        $offerLd->workflowStatus = WorkflowStatus::READY_FOR_VALIDATION()->getName();
+
+        $publicationDate = $published->getPublicationDate();
+        $offerLd->availableFrom = $publicationDate->format(\DateTime::ATOM);
+
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractApproved $approved
+     * @return JsonDocument
      */
     protected function applyApproved(AbstractApproved $approved)
     {
-        $this->applyEventTransformation($approved, function ($offerLd) {
-            $offerLd->workflowStatus = WorkflowStatus::APPROVED()->getName();
-        });
+        $document = $this->loadDocumentFromRepository($approved);
+        $offerLd = $document->getBody();
+        $offerLd->workflowStatus = WorkflowStatus::APPROVED()->getName();
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractRejected $rejected
+     * @return JsonDocument
      */
     protected function applyRejected(AbstractRejected $rejected)
     {
-        $this->applyEventTransformation($rejected, $this->reject());
+        $document = $this->loadDocumentFromRepository($rejected);
+        $offerLd = $document->getBody();
+        $offerLd->workflowStatus = WorkflowStatus::REJECTED()->getName();
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractFlaggedAsDuplicate $flaggedAsDuplicate
+     * @return JsonDocument
      */
     protected function applyFlaggedAsDuplicate(
         AbstractFlaggedAsDuplicate $flaggedAsDuplicate
     ) {
-        $this->applyEventTransformation($flaggedAsDuplicate, $this->reject());
+        $document = $this->loadDocumentFromRepository($flaggedAsDuplicate);
+        $offerLd = $document->getBody();
+        $offerLd->workflowStatus = WorkflowStatus::REJECTED()->getName();
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractFlaggedAsInappropriate $flaggedAsInappropriate
+     * @return JsonDocument
      */
     protected function applyFlaggedAsInappropriate(
         AbstractFlaggedAsInappropriate $flaggedAsInappropriate
     ) {
-        $this->applyEventTransformation($flaggedAsInappropriate, $this->reject());
-    }
-
-    /**
-     * @return callable
-     */
-    private function reject()
-    {
-        return function ($offerLd) {
-            $offerLd->workflowStatus = WorkflowStatus::REJECTED()->getName();
-        };
-    }
-
-    /**
-     * @param AbstractEvent $event
-     * @param callable $transformation
-     *  a transformation that you want applied to the offer-ld document
-     *  the first parameter passed to the callback will be the document body
-     *  the second is the domain event
-     */
-    private function applyEventTransformation(AbstractEvent $event, callable $transformation)
-    {
-        $document = $this->loadDocumentFromRepository($event);
-
+        $document = $this->loadDocumentFromRepository($flaggedAsInappropriate);
         $offerLd = $document->getBody();
-
-        $transformation($offerLd, $event);
-
-        $this->repository->save($document->withBody($offerLd));
+        $offerLd->workflowStatus = WorkflowStatus::REJECTED()->getName();
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2
+     * @return JsonDocument
      */
     protected function applyImagesImportedFromUdb2(AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2)
     {
-        $this->applyEventTransformation($imagesImportedFromUDB2, [$this, 'applyImagesEvent']);
+        $document = $this->loadDocumentFromRepository($imagesImportedFromUDB2);
+        $offerLd = $document->getBody();
+        $this->applyUdb2ImagesEvent($offerLd, $imagesImportedFromUDB2);
+        return $document->withBody($offerLd);
     }
 
     /**
      * @param AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2
+     * @return JsonDocument
      */
     protected function applyImagesUpdatedFromUdb2(AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2)
     {
-        $this->applyEventTransformation($imagesUpdatedFromUDB2, [$this, 'applyImagesEvent']);
+        $document = $this->loadDocumentFromRepository($imagesUpdatedFromUDB2);
+        $offerLd = $document->getBody();
+        $this->applyUdb2ImagesEvent($offerLd, $imagesUpdatedFromUDB2);
+        return $document->withBody($offerLd);
     }
 
     /**
+     * This indirect apply method can be called internally to deal with images coming from UDB2.
+     * Imports from UDB2 only contain the native Dutch content.
+     * @see https://github.com/cultuurnet/udb3-udb2-bridge/blob/db0a7ab2444f55bb3faae3d59b82b39aaeba253b/test/Media/ImageCollectionFactoryTest.php#L79-L103
+     * Because of this we have to make sure translated images are left in place.
+     *
      * @param \stdClass $offerLd
      * @param AbstractImagesEvent $imagesEvent
      */
-    private function applyImagesEvent(\stdClass $offerLd, AbstractImagesEvent $imagesEvent)
+    private function applyUdb2ImagesEvent(\stdClass $offerLd, AbstractImagesEvent $imagesEvent)
     {
         $images = $imagesEvent->getImages();
-        $jsonMediaObjects = array_map(
+        $currentMediaObjects = isset($offerLd->mediaObject) ? $offerLd->mediaObject : [];
+        $dutchMediaObjects = array_map(
             function (Image $image) {
                 return $this->mediaObjectSerializer->serialize($image, 'json-ld');
             },
             $images->toArray()
         );
+        $translatedMediaObjects = array_filter(
+            $currentMediaObjects,
+            function ($image) {
+                return $image->inLanguage !== 'nl';
+            }
+        );
         $mainImage = $images->getMain();
 
         unset($offerLd->mediaObject, $offerLd->image);
 
-        if (!empty($jsonMediaObjects)) {
-            $offerLd->mediaObject = $jsonMediaObjects;
+        if (!empty($dutchMediaObjects) || !empty($translatedMediaObjects)) {
+            $offerLd->mediaObject = array_merge($dutchMediaObjects, $translatedMediaObjects);
         }
 
         if (isset($mainImage)) {
@@ -766,7 +993,6 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         $offerLd = $document->getBody();
         $offerLd->{'@id'} = $this->iriGenerator->iri($id);
-        $offerLd->{'@context'} = '/contexts/event';
 
         return $document->withBody($offerLd);
     }
@@ -809,8 +1035,23 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         } catch (EntityNotFoundException $e) {
             // In case the place can not be found at the moment, just add its ID
             return array(
-                '@id' => $this->organizerService->iri($organizerId)
+                '@id' => $this->organizerService->iri($organizerId),
             );
         }
+    }
+
+    /**
+     * @param JsonDocument $jsonDocument
+     * @param DomainMessage $domainMessage
+     * @return JsonDocument
+     */
+    private function updateModified(JsonDocument $jsonDocument, DomainMessage $domainMessage)
+    {
+        $body = $jsonDocument->getBody();
+
+        $recordedDateTime = RecordedOn::fromDomainMessage($domainMessage);
+        $body->modified = $recordedDateTime->toString();
+
+        return $jsonDocument->withBody($body);
     }
 }

@@ -4,7 +4,10 @@ namespace CultuurNet\UDB3\Offer\Item;
 
 use CultuurNet\UDB3\Offer\Item\Commands\AddImage;
 use CultuurNet\UDB3\Offer\Item\Commands\AddLabel;
+use CultuurNet\UDB3\Offer\Item\Commands\DeleteCurrentOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteItem;
+use CultuurNet\UDB3\Offer\Item\Commands\ImportImages;
+use CultuurNet\UDB3\Offer\Item\Commands\ImportLabels;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveLabel;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\DeleteTypicalAgeRange;
@@ -15,14 +18,17 @@ use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Publish;
 use CultuurNet\UDB3\Offer\Item\Commands\Moderation\Reject;
 use CultuurNet\UDB3\Offer\Item\Commands\RemoveImage;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateBookingInfo;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateCalendar;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateContactPoint;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateDescription;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateImage;
-use CultuurNet\UDB3\Offer\Item\Commands\TranslateDescription;
-use CultuurNet\UDB3\Offer\Item\Commands\TranslateTitle;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateTheme;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateTitle;
 use CultuurNet\UDB3\Offer\Item\Commands\SelectMainImage;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateOrganizer;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdatePriceInfo;
+use CultuurNet\UDB3\Offer\Item\Commands\UpdateType;
 use CultuurNet\UDB3\Offer\Item\Commands\UpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\OfferCommandHandler;
 
@@ -36,6 +42,11 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getRemoveLabelClassName()
     {
         return RemoveLabel::class;
+    }
+
+    protected function getImportLabelsClassName()
+    {
+        return ImportLabels::class;
     }
 
     protected function getAddImageClassName()
@@ -61,22 +72,30 @@ class ItemCommandHandler extends OfferCommandHandler
     /**
      * @return string
      */
-    protected function getTranslateTitleClassName()
+    protected function getImportImagesClassName()
     {
-        return TranslateTitle::class;
+        return ImportImages::class;
     }
 
     /**
      * @return string
      */
-    protected function getTranslateDescriptionClassName()
+    protected function getUpdateTitleClassName()
     {
-        return TranslateDescription::class;
+        return UpdateTitle::class;
     }
 
     protected function getUpdateDescriptionClassName()
     {
         return UpdateDescription::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateCalendarClassName()
+    {
+        return UpdateCalendar::class;
     }
 
     protected function getUpdateTypicalAgeRangeClassName()
@@ -97,6 +116,11 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getDeleteOrganizerClassName()
     {
         return DeleteOrganizer::class;
+    }
+
+    protected function getDeleteCurrentOrganizerClassName()
+    {
+        return DeleteCurrentOrganizer::class;
     }
 
     protected function getUpdateContactPointClassName()
@@ -142,5 +166,20 @@ class ItemCommandHandler extends OfferCommandHandler
     protected function getFlagAsInappropriateClassName()
     {
         return FlagAsInappropriate::class;
+    }
+
+    protected function getUpdateTypeClassName()
+    {
+        return UpdateType::class;
+    }
+
+    protected function getUpdateThemeClassName()
+    {
+        return UpdateTheme::class;
+    }
+
+    protected function getUpdateFacilitiesClassName()
+    {
+        return UpdateFacilities::class;
     }
 }

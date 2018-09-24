@@ -3,11 +3,14 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 interface OfferEditingServiceInterface
@@ -32,22 +35,30 @@ interface OfferEditingServiceInterface
      * @param StringLiteral $title
      * @return string
      */
-    public function translateTitle($id, Language $language, StringLiteral $title);
+    public function updateTitle($id, Language $language, StringLiteral $title);
 
     /**
      * @param $id
      * @param Language $language
-     * @param StringLiteral $description
+     * @param Description $description
      * @return string
      */
-    public function translateDescription($id, Language $language, StringLiteral $description);
+    public function updateDescription($id, Language $language, Description $description);
 
     /**
      * @param string $id
-     * @param Image $image
+     * @param Calendar $calendar
+     *
      * @return string
      */
-    public function addImage($id, Image $image);
+    public function updateCalendar($id, Calendar $calendar);
+
+    /**
+     * @param string $id
+     * @param UUID $imageId
+     * @return string
+     */
+    public function addImage($id, UUID $imageId);
 
     /**
      * @param string $id
@@ -78,17 +89,10 @@ interface OfferEditingServiceInterface
 
     /**
      * @param string $id
-     * @param string $description
+     * @param AgeRange $ageRange
      * @return string
      */
-    public function updateDescription($id, $description);
-
-    /**
-     * @param string $id
-     * @param string $ageRange
-     * @return string
-     */
-    public function updateTypicalAgeRange($id, $ageRange);
+    public function updateTypicalAgeRange($id, AgeRange $ageRange);
 
     /**
      * @param string $id
@@ -129,4 +133,25 @@ interface OfferEditingServiceInterface
      * @param PriceInfo $priceInfo
      */
     public function updatePriceInfo($id, PriceInfo $priceInfo);
+
+    /**
+     * @param string $id
+     * @param StringLiteral $typeId
+     * @return string
+     */
+    public function updateType($id, StringLiteral $typeId);
+
+    /**
+     * @param string $id
+     * @param StringLiteral $themeId
+     * @return string
+     */
+    public function updateTheme($id, StringLiteral $themeId);
+
+    /**
+     * @param string $id
+     * @param array $facilities
+     * @return string
+     */
+    public function updateFacilities($id, array $facilities);
 }

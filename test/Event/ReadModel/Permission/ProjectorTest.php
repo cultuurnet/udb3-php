@@ -11,9 +11,11 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
+use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Title;
@@ -126,6 +128,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
         $payload = new EventCreated(
             $eventId->toNative(),
+            new Language('nl'),
             new Title('test 123'),
             new EventType('0.50.4.0.0', 'concert'),
             new Location(
@@ -149,6 +152,38 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             new Metadata(
                 ['user_id' => $userId->toNative()]
             ),
+            $payload
+        );
+
+        $this->repository->expects($this->once())
+            ->method('markOfferEditableByUser')
+            ->with(
+                $eventId,
+                $userId
+            );
+
+        $this->projector->handle($msg);
+    }
+
+    /**
+     * @test
+     */
+    public function it_add_permission_to_the_user_that_copied_an_event()
+    {
+        $userId = 'user-id';
+        $eventId = 'event-id';
+        $originalEventId = 'original-event-id';
+
+        $payload = new EventCopied(
+            $eventId,
+            $originalEventId,
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $msg = DomainMessage::recordNow(
+            $eventId,
+            1,
+            new Metadata(['user_id' => $userId]),
             $payload
         );
 

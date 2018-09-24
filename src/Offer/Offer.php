@@ -4,16 +4,33 @@ namespace CultuurNet\UDB3\Offer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
 use CultureFeed_Cdb_Item_Base;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\BookingInfo;
+use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\ContactPoint;
+use CultuurNet\UDB3\Description;
+use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\LabelAwareAggregateRoot;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\ImageCollection;
+use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
+use \CultuurNet\UDB3\Media\Properties\Description as ImageDescription;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractContactPointUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractGeoCoordinatesUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractLabelsImported;
+use CultuurNet\UDB3\Offer\Events\AbstractThemeUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
+use CultuurNet\UDB3\Offer\Events\AbstractTitleUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionTranslated;
 use CultuurNet\UDB3\Offer\Events\AbstractDescriptionUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelAdded;
@@ -22,6 +39,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractOrganizerUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractPriceInfoUpdated;
+use CultuurNet\UDB3\Offer\Events\AbstractTypeUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Offer\Events\AbstractTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageAdded;
@@ -31,18 +49,20 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesImportedFromUDB2;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImagesUpdatedFromUDB2;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 use CultuurNet\UDB3\Offer\Events\Image\AbstractMainImageSelected;
-use CultuurNet\UDB3\Offer\Events\AbstractTitleTranslated;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractApproved;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsDuplicate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractFlaggedAsInappropriate;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use CultuurNet\UDB3\Theme;
+use CultuurNet\UDB3\Title;
 use Exception;
+use TwoDotsTwice\Collection\Exception\CollectionItemNotFoundException;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-abstract class Offer extends EventSourcedAggregateRoot
+abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggregateRoot
 {
     const DUPLICATE_REASON = 'duplicate';
     const INAPPROPRIATE_REASON = 'inappropriate';
@@ -53,14 +73,9 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected $labels;
 
     /**
-     * @var UUID[]
+     * @var ImageCollection
      */
-    protected $mediaObjects = [];
-
-    /**
-     * @var UUID
-     */
-    protected $mainImageId;
+    protected $images;
 
     /**
      * @var string
@@ -85,11 +100,129 @@ abstract class Offer extends EventSourcedAggregateRoot
     protected $priceInfo;
 
     /**
+     * @var StringLiteral[]
+     */
+    protected $titles;
+
+    /**
+     * @var Description[]
+     */
+    protected $descriptions;
+
+    /**
+     * @var Language
+     */
+    protected $mainLanguage;
+
+    /**
+     * @var string;
+     */
+    protected $typeId;
+
+    /**
+     * @var string;
+     */
+    protected $themeId;
+
+    /**
+     * @var array
+     */
+    protected $facilities;
+
+    /**
+     * @var ContactPoint
+     */
+    protected $contactPoint;
+
+    /**
+     * @var Calendar
+     */
+    protected $calendar;
+
+    /**
+     * @var AgeRange
+     */
+    protected $typicalAgeRange;
+
+    /**
+     * @var BookingInfo
+     */
+    protected $bookingInfo;
+
+    /**
      * Offer constructor.
      */
     public function __construct()
     {
+        $this->titles = [];
+        $this->descriptions = [];
         $this->labels = new LabelCollection();
+        $this->images = new ImageCollection();
+        $this->facilities = [];
+        $this->contactPoint = null;
+        $this->calendar = null;
+        $this->typicalAgeRange = null;
+        $this->bookingInfo = null;
+    }
+
+    /**
+     * @param EventType $type
+     */
+    public function updateType(EventType $type)
+    {
+        if (!$this->typeId || $this->typeId !== $type->getId()) {
+            $this->apply($this->createTypeUpdatedEvent($type));
+        }
+    }
+
+    /**
+     * @param Theme $theme
+     */
+    public function updateTheme(Theme $theme)
+    {
+        if (!$this->themeId || $this->themeId !== $theme->getId()) {
+            $this->apply($this->createThemeUpdatedEvent($theme));
+        }
+    }
+
+    /**
+     * @param array $facilities
+     */
+    public function updateFacilities(array $facilities)
+    {
+        if (empty($this->facilities) || !$this->sameFacilities($this->facilities, $facilities)) {
+            $this->apply($this->createFacilitiesUpdatedEvent($facilities));
+        }
+    }
+
+    /**
+     * @param AbstractFacilitiesUpdated $facilitiesUpdated
+     */
+    protected function applyFacilitiesUpdated(AbstractFacilitiesUpdated $facilitiesUpdated)
+    {
+        $this->facilities = $facilitiesUpdated->getFacilities();
+    }
+
+    /**
+     * @param array $facilities1
+     * @param array $facilities2
+     * @return bool
+     */
+    private function sameFacilities($facilities1, $facilities2)
+    {
+        if (count($facilities1) !== count($facilities2)) {
+            return false;
+        }
+
+        $sameFacilities = array_uintersect(
+            $facilities1,
+            $facilities2,
+            function (Facility $facility1, Facility $facility2) {
+                return strcmp($facility1->getId(), $facility2->getId());
+            }
+        );
+
+        return count($sameFacilities) === count($facilities2);
     }
 
     /**
@@ -99,11 +232,12 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     protected function getMainImageId()
     {
-        return $this->mainImageId;
+        $mainImage = $this->images->getMain();
+        return isset($mainImage) ? $mainImage->getMediaObjectId() : null;
     }
 
     /**
-     * @param Label $label
+     * @inheritdoc
      */
     public function addLabel(Label $label)
     {
@@ -115,7 +249,7 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param Label $label
+     * @inheritdoc
      */
     public function removeLabel(Label $label)
     {
@@ -127,36 +261,130 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param Language $language
-     * @param StringLiteral $title
+     * @param Labels $labels
      */
-    public function translateTitle(Language $language, StringLiteral $title)
+    public function importLabels(Labels $labels)
     {
-        $this->apply(
-            $this->createTitleTranslatedEvent($language, $title)
+        // Convert the imported labels to label collection.
+        $importLabelsCollection = new LabelCollection(
+            array_map(
+                function (\CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label $label) {
+                    return new Label(
+                        $label->getName()->toString(),
+                        $label->isVisible()
+                    );
+                },
+                $labels->toArray()
+            )
         );
+
+        // What are the added labels?
+        // Labels which are not inside the internal state but inside the imported labels
+        $addedLabels = new LabelCollection();
+        foreach ($importLabelsCollection->asArray() as $label) {
+            if (!$this->labels->contains($label)) {
+                $addedLabels = $addedLabels->with($label);
+            }
+        }
+
+        // Fire a LabelsImported for all new labels.
+        $importLabels = new Labels();
+        foreach ($addedLabels->asArray() as $addedLabel) {
+            $importLabels = $importLabels->with(
+                new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                    new LabelName((string) $addedLabel),
+                    $addedLabel->isVisible()
+                )
+            );
+        }
+        if ($importLabels->count() > 0) {
+            $this->apply($this->createLabelsImportedEvent($importLabels));
+        }
+
+        // For each added label fire a LabelAdded event.
+        foreach ($addedLabels->asArray() as $label) {
+            $this->apply($this->createLabelAddedEvent($label));
+        }
+
+        // What are the deleted labels?
+        // Labels which are inside the internal state but not inside imported labels.
+        // For each deleted label fire a LabelDeleted event.
+        foreach ($this->labels->asArray() as $label) {
+            if (!$importLabelsCollection->contains($label)) {
+                $this->apply($this->createLabelRemovedEvent($label));
+            }
+        }
     }
 
     /**
      * @param Language $language
-     * @param StringLiteral $description
+     * @param Title $title
      */
-    public function translateDescription(Language $language, StringLiteral $description)
+    public function updateTitle(Language $language, Title $title)
     {
-        $this->apply(
-            $this->createDescriptionTranslatedEvent($language, $description)
-        );
+        if ($this->isTitleChanged($title, $language)) {
+            if ($language->getCode() !== $this->mainLanguage->getCode()) {
+                $event = $this->createTitleTranslatedEvent($language, $title);
+            } else {
+                $event = $this->createTitleUpdatedEvent($title);
+            }
+
+            $this->apply($event);
+        }
+    }
+
+    /**
+     * @param AbstractTitleTranslated $titleTranslated
+     */
+    public function applyTitleTranslated(AbstractTitleTranslated $titleTranslated)
+    {
+        $this->titles[$titleTranslated->getLanguage()->getCode()] = $titleTranslated->getTitle();
     }
 
 
     /**
-     * @param string $description
+     * @param AbstractTitleUpdated $titleUpdated
      */
-    public function updateDescription($description)
+    public function applyTitleUpdated(AbstractTitleUpdated $titleUpdated)
     {
-        $this->apply(
-            $this->createDescriptionUpdatedEvent($description)
-        );
+        $this->titles[$this->mainLanguage->getCode()] = $titleUpdated->getTitle();
+    }
+
+    /**
+     * @param Description $description
+     * @param Language $language
+     */
+    public function updateDescription(Description $description, Language $language)
+    {
+        if ($this->isDescriptionChanged($description, $language)) {
+            if ($language->getCode() !== $this->mainLanguage->getCode()) {
+                $event = $this->createDescriptionTranslatedEvent($language, $description);
+            } else {
+                $event = $this->createDescriptionUpdatedEvent($description);
+            }
+
+            $this->apply($event);
+        }
+    }
+
+    /**
+     * @param Calendar $calendar
+     */
+    public function updateCalendar(Calendar $calendar)
+    {
+        if (is_null($this->calendar) || !$this->calendar->sameAs($calendar)) {
+            $this->apply(
+                $this->createCalendarUpdatedEvent($calendar)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractCalendarUpdated $calendarUpdated
+     */
+    protected function applyCalendarUpdated(AbstractCalendarUpdated $calendarUpdated)
+    {
+        $this->calendar = $calendarUpdated->getCalendar();
     }
 
     /**
@@ -164,16 +392,36 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function updateTypicalAgeRange($typicalAgeRange)
     {
-        $this->apply(
-            $this->createTypicalAgeRangeUpdatedEvent($typicalAgeRange)
-        );
+        $typicalAgeRangeUpdatedEvent = $this->createTypicalAgeRangeUpdatedEvent($typicalAgeRange);
+
+        if (empty($this->typicalAgeRange) || !$this->typicalAgeRange->sameAs($typicalAgeRangeUpdatedEvent->getTypicalAgeRange())) {
+            $this->apply($typicalAgeRangeUpdatedEvent);
+        }
+    }
+
+    /**
+     * @param AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated
+     */
+    protected function applyTypicalAgeRangeUpdated(AbstractTypicalAgeRangeUpdated $typicalAgeRangeUpdated)
+    {
+        $this->typicalAgeRange = $typicalAgeRangeUpdated->getTypicalAgeRange();
     }
 
     public function deleteTypicalAgeRange()
     {
-        $this->apply(
-            $this->createTypicalAgeRangeDeletedEvent()
-        );
+        if (!is_null($this->typicalAgeRange)) {
+            $this->apply(
+                $this->createTypicalAgeRangeDeletedEvent()
+            );
+        }
+    }
+
+    /**
+     * @param AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted
+     */
+    public function applyTypicalAgeRangeDeleted(AbstractTypicalAgeRangeDeleted $typicalAgeRangeDeleted)
+    {
+        $this->typicalAgeRange = null;
     }
 
     /**
@@ -203,13 +451,49 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * Delete the current organizer regardless of the id.
+     */
+    public function deleteCurrentOrganizer()
+    {
+        if (!is_null($this->organizerId)) {
+            $this->apply(
+                $this->createOrganizerDeletedEvent($this->organizerId)
+            );
+        }
+    }
+
+    /**
      * Updated the contact info.
      * @param ContactPoint $contactPoint
      */
     public function updateContactPoint(ContactPoint $contactPoint)
     {
+        if (is_null($this->contactPoint) || !$this->contactPoint->sameAs($contactPoint)) {
+            $this->apply(
+                $this->createContactPointUpdatedEvent($contactPoint)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractContactPointUpdated $contactPointUpdated
+     */
+    protected function applyContactPointUpdated(AbstractContactPointUpdated $contactPointUpdated)
+    {
+        $this->contactPoint = $contactPointUpdated->getContactPoint();
+    }
+
+    /**
+     * @param Coordinates $coordinates
+     */
+    public function updateGeoCoordinates(Coordinates $coordinates)
+    {
+        // Note: DON'T compare to previous coordinates and apply only on
+        // changes. Various projectors expect GeoCoordinatesUpdated after
+        // MajorInfoUpdated and PlaceUpdatedFromUDB2, even if the address
+        // and thus the coordinates haven't actually changed.
         $this->apply(
-            $this->createContactPointUpdatedEvent($contactPoint)
+            $this->createGeoCoordinatesUpdatedEvent($coordinates)
         );
     }
 
@@ -220,9 +504,19 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function updateBookingInfo(BookingInfo $bookingInfo)
     {
-        $this->apply(
-            $this->createBookingInfoUpdatedEvent($bookingInfo)
-        );
+        if (is_null($this->bookingInfo) || !$this->bookingInfo->sameAs($bookingInfo)) {
+            $this->apply(
+                $this->createBookingInfoUpdatedEvent($bookingInfo)
+            );
+        }
+    }
+
+    /**
+     * @param AbstractBookingInfoUpdated $bookingInfoUpdated
+     */
+    public function applyBookingInfoUpdated(AbstractBookingInfoUpdated $bookingInfoUpdated)
+    {
+        $this->bookingInfo = $bookingInfoUpdated->getBookingInfo();
     }
 
     /**
@@ -262,21 +556,31 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param Image $image
-     * @return boolean
+     * @param AbstractThemeUpdated $themeUpdated
      */
-    private function containsImage(Image $image)
+    protected function applyThemeUpdated(AbstractThemeUpdated $themeUpdated)
     {
-        $equalImages = array_filter(
-            $this->mediaObjects,
-            function ($existingMediaObjectId) use ($image) {
-                return $image
-                    ->getMediaObjectId()
-                    ->sameValueAs($existingMediaObjectId);
-            }
-        );
+        $this->themeId = $themeUpdated->getTheme()->getId();
+    }
 
-        return !empty($equalImages);
+    /**
+     * @param AbstractTypeUpdated $themeUpdated
+     */
+    protected function applyTypeUpdated(AbstractTypeUpdated $themeUpdated)
+    {
+        $this->typeId = $themeUpdated->getType()->getId();
+    }
+
+    protected function applyDescriptionUpdated(AbstractDescriptionUpdated $descriptionUpdated)
+    {
+        $mainLanguageCode = $this->mainLanguage->getCode();
+        $this->descriptions[$mainLanguageCode] = $descriptionUpdated->getDescription();
+    }
+
+    protected function applyDescriptionTranslated(AbstractDescriptionTranslated $descriptionTranslated)
+    {
+        $languageCode = $descriptionTranslated->getLanguage()->getCode();
+        $this->descriptions[$languageCode] = $descriptionTranslated->getDescription();
     }
 
     /**
@@ -286,7 +590,10 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function addImage(Image $image)
     {
-        if (!$this->containsImage($image)) {
+        // Find the image based on UUID inside the internal state.
+        $existingImage = $this->images->findImageByUUID($image->getMediaObjectId());
+
+        if ($existingImage === null) {
             $this->apply(
                 $this->createImageAddedEvent($image)
             );
@@ -298,9 +605,33 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function updateImage(AbstractUpdateImage $updateImageCommand)
     {
-        $this->apply(
-            $this->createImageUpdatedEvent($updateImageCommand)
-        );
+        if ($this->updateImageAllowed($updateImageCommand)) {
+            $this->apply(
+                $this->createImageUpdatedEvent(
+                    $updateImageCommand->getMediaObjectId(),
+                    $updateImageCommand->getDescription(),
+                    $updateImageCommand->getCopyrightHolder()
+                )
+            );
+        }
+    }
+
+    /**
+     * @param AbstractUpdateImage $updateImageCommand
+     * @return bool
+     */
+    private function updateImageAllowed(AbstractUpdateImage $updateImageCommand)
+    {
+        $image = $this->images->findImageByUUID($updateImageCommand->getMediaObjectId());
+
+        // Don't update if the image is not found based on UUID.
+        if (!$image) {
+            return false;
+        }
+
+        // Update when copyright or description is changed.
+        return !$updateImageCommand->getCopyrightHolder()->sameValueAs($image->getCopyrightHolder()) ||
+            !$updateImageCommand->getDescription()->sameValueAs($image->getDescription());
     }
 
     /**
@@ -310,9 +641,13 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function removeImage(Image $image)
     {
-        if ($this->containsImage($image)) {
+        // Find the image based on UUID inside the internal state.
+        // Use the image from the internal state.
+        $existingImage = $this->images->findImageByUUID($image->getMediaObjectId());
+
+        if ($existingImage) {
             $this->apply(
-                $this->createImageRemovedEvent($image)
+                $this->createImageRemovedEvent($existingImage)
             );
         }
     }
@@ -324,14 +659,65 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     public function selectMainImage(Image $image)
     {
-        if (!$this->containsImage($image)) {
+        if (!$this->images->contains($image)) {
             throw new \InvalidArgumentException('You can not select a random image to be main, it has to be added to the item.');
         }
 
-        if ($this->mainImageId !== $image->getMediaObjectId()) {
+        $oldMainImage = $this->images->getMain();
+
+        if (!isset($oldMainImage) || $oldMainImage->getMediaObjectId() !== $image->getMediaObjectId()) {
             $this->apply(
                 $this->createMainImageSelectedEvent($image)
             );
+        }
+    }
+
+    /**
+     * @param ImageCollection $imageCollection
+     */
+    public function importImages(ImageCollection $imageCollection)
+    {
+        $currentImageCollection = $this->images;
+        $newMainImage = $imageCollection->getMain();
+
+        $importImages = $imageCollection->toArray();
+        $currentImages = $currentImageCollection->toArray();
+
+        $compareImages = function (Image $a, Image $b) {
+            $idA = $a->getMediaObjectId()->toNative();
+            $idB = $b->getMediaObjectId()->toNative();
+            return strcmp($idA, $idB);
+        };
+
+        /* @var Image[] $addedImages */
+        $addedImages = array_udiff($importImages, $currentImages, $compareImages);
+
+        /* @var Image[] $updatedImages */
+        $updatedImages = array_uintersect($importImages, $currentImages, $compareImages);
+
+        /* @var Image[] $removedImages */
+        $removedImages = array_udiff($currentImages, $importImages, $compareImages);
+
+        foreach ($addedImages as $addedImage) {
+            $this->apply($this->createImageAddedEvent($addedImage));
+        }
+
+        foreach ($updatedImages as $updatedImage) {
+            $this->apply(
+                $this->createImageUpdatedEvent(
+                    $updatedImage->getMediaObjectId(),
+                    $updatedImage->getDescription(),
+                    $updatedImage->getCopyrightHolder()
+                )
+            );
+        }
+
+        foreach ($removedImages as $removedImage) {
+            $this->apply($this->createImageRemovedEvent($removedImage));
+        }
+
+        if ($newMainImage) {
+            $this->apply($this->createMainImageSelectedEvent($newMainImage));
         }
     }
 
@@ -456,6 +842,32 @@ abstract class Offer extends EventSourcedAggregateRoot
     }
 
     /**
+     * @param Title $title
+     * @param Language $language
+     * @return bool
+     */
+    private function isTitleChanged(Title $title, Language $language)
+    {
+        $languageCode = $language->getCode();
+
+        return !isset($this->titles[$languageCode]) ||
+            !$title->sameValueAs($this->titles[$languageCode]);
+    }
+
+    /**
+     * @param Description $description
+     * @param Language $language
+     * @return bool
+     */
+    private function isDescriptionChanged(Description $description, Language $language)
+    {
+        $languageCode = $language->getCode();
+
+        return !isset($this->descriptions[$languageCode]) ||
+            !$description->sameValueAs($this->descriptions[$languageCode]);
+    }
+
+    /**
      * Overwrites or resets the main image and all media objects
      * by importing a new collection of images from UDB2.
      *
@@ -522,30 +934,38 @@ abstract class Offer extends EventSourcedAggregateRoot
 
     protected function applyImageAdded(AbstractImageAdded $imageAdded)
     {
-        $imageId = $imageAdded->getImage()->getMediaObjectId();
-        $this->mediaObjects[] = $imageId;
+        $this->images = $this->images->with($imageAdded->getImage());
+    }
 
-        if (count($this->mediaObjects) === 1) {
-            $this->mainImageId = $imageId;
-        }
+    protected function applyImageUpdated(AbstractImageUpdated $imageUpdated)
+    {
+        $image = $this->images->findImageByUUID($imageUpdated->getMediaObjectId());
+
+        $updatedImage = new Image(
+            $image->getMediaObjectId(),
+            $image->getMimeType(),
+            new ImageDescription($imageUpdated->getDescription()->toNative()),
+            new CopyrightHolder($imageUpdated->getCopyrightHolder()->toNative()),
+            $image->getSourceLocation(),
+            $image->getLanguage()
+        );
+
+        // Currently no other option to update an item inside a collection.
+        $this->images = $this->images->without($image);
+        $this->images = $this->images->with($updatedImage);
     }
 
     protected function applyImageRemoved(AbstractImageRemoved $imageRemoved)
     {
-        $this->mediaObjects = array_diff(
-            $this->mediaObjects,
-            [$imageRemoved->getImage()->getMediaObjectId()]
-        );
-
-        $oldestImageId = reset($this->mediaObjects);
-        if ($oldestImageId) {
-            $this->mainImageId = $oldestImageId;
+        try {
+            $this->images = $this->images->without($imageRemoved->getImage());
+        } catch (CollectionItemNotFoundException $exception) {
         }
     }
 
     protected function applyMainImageSelected(AbstractMainImageSelected $mainImageSelected)
     {
-        $this->mainImageId = $mainImageSelected->getImage()->getMediaObjectId();
+        $this->images = $this->images->withMain($mainImageSelected->getImage());
     }
 
     protected function applyOrganizerUpdated(AbstractOrganizerUpdated $organizerUpdated)
@@ -563,7 +983,7 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     protected function applyImagesImportedFromUDB2(AbstractImagesImportedFromUDB2 $imagesImportedFromUDB2)
     {
-        $this->applyImagesEvent($imagesImportedFromUDB2);
+        $this->applyUdb2ImagesEvent($imagesImportedFromUDB2);
     }
 
     /**
@@ -571,26 +991,32 @@ abstract class Offer extends EventSourcedAggregateRoot
      */
     protected function applyImagesUpdatedFromUDB2(AbstractImagesUpdatedFromUDB2 $imagesUpdatedFromUDB2)
     {
-        $this->applyImagesEvent($imagesUpdatedFromUDB2);
+        $this->applyUdb2ImagesEvent($imagesUpdatedFromUDB2);
     }
 
     /**
-     * Overwrites or resets the main image and all media objects.
+     * This indirect apply method can be called internally to deal with images coming from UDB2.
+     * Imports from UDB2 only contain the native Dutch content.
+     * @see https://github.com/cultuurnet/udb3-udb2-bridge/blob/db0a7ab2444f55bb3faae3d59b82b39aaeba253b/test/Media/ImageCollectionFactoryTest.php#L79-L103
+     * Because of this we have to make sure translated images are left in place.
      *
      * @param AbstractImagesEvent $imagesEvent
      */
-    protected function applyImagesEvent(AbstractImagesEvent $imagesEvent)
+    protected function applyUdb2ImagesEvent(AbstractImagesEvent $imagesEvent)
     {
-        $mainImage = $imagesEvent->getImages()->getMain();
-
-        $this->mainImageId = $mainImage ? $mainImage->getMediaObjectId() : null;
-
-        $this->mediaObjects = array_map(
+        $newMainImage = $imagesEvent->getImages()->getMain();
+        $dutchImagesList = $imagesEvent->getImages()->toArray();
+        $translatedImagesList = array_filter(
+            $this->images->toArray(),
             function (Image $image) {
-                return $image->getMediaObjectId();
-            },
-            $imagesEvent->getImages()->toArray()
+                return $image->getLanguage()->getCode() !== 'nl';
+            }
         );
+
+        $imagesList = array_merge($dutchImagesList, $translatedImagesList);
+        $images = ImageCollection::fromArray($imagesList);
+
+        $this->images = isset($newMainImage) ? $images->withMain($newMainImage) : $images;
     }
 
     /**
@@ -606,18 +1032,24 @@ abstract class Offer extends EventSourcedAggregateRoot
     abstract protected function createLabelRemovedEvent(Label $label);
 
     /**
-     * @param Language $language
-     * @param StringLiteral $title
-     * @return AbstractTitleTranslated
+     * @param Labels $labels
+     * @return AbstractLabelsImported
      */
-    abstract protected function createTitleTranslatedEvent(Language $language, StringLiteral $title);
+    abstract protected function createLabelsImportedEvent(Labels $labels);
 
     /**
      * @param Language $language
-     * @param StringLiteral $description
+     * @param Title $title
+     * @return AbstractTitleTranslated
+     */
+    abstract protected function createTitleTranslatedEvent(Language $language, Title $title);
+
+    /**
+     * @param Language $language
+     * @param Description $description
      * @return AbstractDescriptionTranslated
      */
-    abstract protected function createDescriptionTranslatedEvent(Language $language, StringLiteral $description);
+    abstract protected function createDescriptionTranslatedEvent(Language $language, Description $description);
 
     /**
      * @param Image $image
@@ -632,11 +1064,15 @@ abstract class Offer extends EventSourcedAggregateRoot
     abstract protected function createImageRemovedEvent(Image $image);
 
     /**
-     * @param AbstractUpdateImage $updateImageCommand
+     * @param UUID $uuid
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      * @return AbstractImageUpdated
      */
     abstract protected function createImageUpdatedEvent(
-        AbstractUpdateImage $updateImageCommand
+        UUID $uuid,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
     );
 
     /**
@@ -651,10 +1087,22 @@ abstract class Offer extends EventSourcedAggregateRoot
     abstract protected function createOfferDeletedEvent();
 
     /**
-     * @param string $description
+     * @param Title $title
+     * @return AbstractTitleUpdated
+     */
+    abstract protected function createTitleUpdatedEvent(Title $title);
+
+    /**
+     * @param Description $description
      * @return AbstractDescriptionUpdated
      */
-    abstract protected function createDescriptionUpdatedEvent($description);
+    abstract protected function createDescriptionUpdatedEvent(Description $description);
+
+    /**
+     * @param Calendar $calendar
+     * @return AbstractCalendarUpdated
+     */
+    abstract protected function createCalendarUpdatedEvent(Calendar $calendar);
 
     /**
      * @param string $typicalAgeRange
@@ -684,6 +1132,12 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractContactPointUpdated
      */
     abstract protected function createContactPointUpdatedEvent(ContactPoint $contactPoint);
+
+    /**
+     * @param Coordinates $coordinates
+     * @return AbstractGeoCoordinatesUpdated
+     */
+    abstract protected function createGeoCoordinatesUpdatedEvent(Coordinates $coordinates);
 
     /**
      * @param BookingInfo $bookingInfo
@@ -735,4 +1189,22 @@ abstract class Offer extends EventSourcedAggregateRoot
      * @return AbstractImagesUpdatedFromUDB2
      */
     abstract protected function createImagesUpdatedFromUDB2(ImageCollection $images);
+
+    /**
+     * @param EventType $type
+     * @return AbstractTypeUpdated
+     */
+    abstract protected function createTypeUpdatedEvent(EventType $type);
+
+    /**
+     * @param Theme $theme
+     * @return AbstractThemeUpdated
+     */
+    abstract protected function createThemeUpdatedEvent(Theme $theme);
+
+    /**
+     * @param array $facilities
+     * @return AbstractFacilitiesUpdated
+     */
+    abstract protected function createFacilitiesUpdatedEvent(array $facilities);
 }

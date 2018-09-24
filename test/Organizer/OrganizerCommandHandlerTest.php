@@ -12,23 +12,40 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\Entity;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\AddLabel;
+use CultuurNet\UDB3\Organizer\Commands\CreateOrganizer;
 use CultuurNet\UDB3\Organizer\Commands\DeleteOrganizer;
+use CultuurNet\UDB3\Organizer\Commands\ImportLabels;
 use CultuurNet\UDB3\Organizer\Commands\RemoveLabel;
+use CultuurNet\UDB3\Organizer\Commands\UpdateAddress;
+use CultuurNet\UDB3\Organizer\Commands\UpdateContactPoint;
+use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
+use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
+use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
+use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
+use CultuurNet\UDB3\Organizer\Events\LabelsImported;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
+use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
+use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
+use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
+use ValueObjects\Web\Url;
 
 class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -115,12 +132,14 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->organizerCreated = new OrganizerCreated(
             new UUID(),
             new Title('Organizer Title'),
-            [new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9630'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )],
+            [
+                new Address(
+                    new Street('Kerkstraat 69'),
+                    new PostalCode('9630'),
+                    new Locality('Zottegem'),
+                    Country::fromNative('BE')
+                ),
+            ],
             ['phone'],
             ['email'],
             ['url']
@@ -148,6 +167,172 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ),
             $this->labelRepository
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_create_organizer()
+    {
+        $id = new UUID();
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->when(
+                new CreateOrganizer(
+                    $id,
+                    new Language('nl'),
+                    Url::fromNative('http://www.depot.be'),
+                    new Title('Het depot')
+                )
+            )
+            ->then(
+                [
+                    new OrganizerCreatedWithUniqueWebsite(
+                        $id,
+                        new Language('nl'),
+                        Url::fromNative('http://www.depot.be'),
+                        new Title('Het depot')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_website()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+
+        $this->scenario
+            ->withAggregateId($organizerId)
+            ->given(
+                [
+                    $this->organizerCreated,
+                ]
+            )
+            ->when(
+                new UpdateWebsite(
+                    $organizerId,
+                    Url::fromNative('http://www.depot.be')
+                )
+            )
+            ->then(
+                [
+                    new WebsiteUpdated(
+                        $organizerId,
+                        Url::fromNative('http://www.depot.be')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_title()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+
+        $this->scenario
+            ->withAggregateId($organizerId)
+            ->given(
+                [
+                    $this->organizerCreated,
+                ]
+            )
+            ->when(
+                new UpdateTitle(
+                    $organizerId,
+                    new Title('Het Depot'),
+                    new Language('nl')
+                )
+            )
+            ->then(
+                [
+                    new TitleUpdated(
+                        $organizerId,
+                        new Title('Het Depot')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_address()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+
+        $address = new Address(
+            new Street('Martelarenplein 1'),
+            new PostalCode('3000'),
+            new Locality('Leuven'),
+            Country::fromNative('BE')
+        );
+
+        $this->scenario
+            ->withAggregateId($organizerId)
+            ->given(
+                [
+                    $this->organizerCreated,
+                ]
+            )
+            ->when(
+                new UpdateAddress(
+                    $organizerId,
+                    $address
+                )
+            )
+            ->then(
+                [
+                    new AddressUpdated(
+                        $organizerId,
+                        $address
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_update_contact_point()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+
+        $contactPoint = new ContactPoint(
+            [
+                '0123456789',
+            ],
+            [
+                'info@hetdepot.be',
+            ]
+        );
+
+        $this->scenario
+            ->withAggregateId($organizerId)
+            ->given(
+                [
+                    $this->organizerCreated,
+                ]
+            )
+            ->when(
+                new UpdateContactPoint(
+                    $organizerId,
+                    $contactPoint
+                )
+            )
+            ->then(
+                [
+                    new ContactPointUpdated(
+                        $organizerId,
+                        $contactPoint
+                    ),
+                ]
+            );
     }
 
     /**
@@ -192,7 +377,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($organizerId)
             ->given([
                 $this->organizerCreated,
-                new LabelAdded($organizerId, $label)
+                new LabelAdded($organizerId, $label),
             ])
             ->when(new AddLabel($organizerId, $label))
             ->then([]);
@@ -210,7 +395,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($organizerId)
             ->given([
                 $this->organizerCreated,
-                new LabelAdded($organizerId, $label)
+                new LabelAdded($organizerId, $label),
             ])
             ->when(new RemoveLabel($organizerId, $label))
             ->then([new LabelRemoved($organizerId, $label)]);
@@ -228,7 +413,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->withAggregateId($organizerId)
             ->given([
                 $this->organizerCreated,
-                new LabelAdded($organizerId, $label)
+                new LabelAdded($organizerId, $label),
             ])
             ->when(new RemoveLabel($organizerId, $label))
             ->then([new LabelRemoved($organizerId, $label)]);
@@ -271,8 +456,58 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
                 new LabelAdded($organizerId, $labelFoo),
                 new LabelAdded($organizerId, $labelBar),
                 new LabelRemoved($organizerId, $labelFoo),
-                new LabelRemoved($organizerId, $labelBar)
+                new LabelRemoved($organizerId, $labelBar),
             ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_import_labels()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+
+        $this->scenario
+            ->withAggregateId($organizerId)
+            ->given(
+                [
+                    $this->organizerCreated,
+                ]
+            )
+            ->when(
+                new ImportLabels(
+                    $organizerId,
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('foo'),
+                            true
+                        ),
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('bar'),
+                            true
+                        )
+                    )
+                )
+            )
+            ->then(
+                [
+                    new LabelsImported(
+                        $organizerId,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('foo'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('bar'),
+                                true
+                            )
+                        )
+                    ),
+                    new LabelAdded($organizerId, new Label('foo')),
+                    new LabelAdded($organizerId, new Label('bar')),
+                ]
+            );
     }
 
     /**

@@ -13,7 +13,16 @@ class WebsiteUniqueConstraintService implements UniqueConstraintServiceInterface
      */
     public function hasUniqueConstraint(DomainMessage $domainMessage)
     {
-        return $domainMessage->getPayload() instanceof OrganizerCreatedWithUniqueWebsite;
+        return $domainMessage->getPayload() instanceof OrganizerCreatedWithUniqueWebsite ||
+            $domainMessage->getPayload() instanceof WebsiteUpdated;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function needsUpdateUniqueConstraint(DomainMessage $domainMessage)
+    {
+        return $domainMessage->getPayload() instanceof WebsiteUpdated;
     }
 
     /**
@@ -25,7 +34,7 @@ class WebsiteUniqueConstraintService implements UniqueConstraintServiceInterface
             throw new \InvalidArgumentException('Given domain message has no unique constraint.');
         }
 
-        /* @var OrganizerCreatedWithUniqueWebsite $payload */
+        /* @var OrganizerCreatedWithUniqueWebsite|WebsiteUpdated $payload */
         $payload = $domainMessage->getPayload();
         return new StringLiteral((string) $payload->getWebsite());
     }

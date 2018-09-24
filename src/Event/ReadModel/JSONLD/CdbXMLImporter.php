@@ -4,19 +4,13 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\CalendarFactoryInterface;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractorInterface;
-use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
+use CultuurNet\UDB3\Cdb\Description\MergedDescription;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporterInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
-use CultuurNet\UDB3\StringFilter\BreakTagToNewlineStringFilter;
-use CultuurNet\UDB3\StringFilter\CombinedStringFilter;
-use CultuurNet\UDB3\StringFilter\ConsecutiveBlockOfTextStringFilter;
-use CultuurNet\UDB3\StringFilter\StringFilterInterface;
-use CultuurNet\UDB3\StringFilter\StripSourceStringFilter;
-use CultuurNet\UDB3\StringFilter\StripSurroundingSpaceStringFilter;
 
 /**
  * Takes care of importing cultural events in the CdbXML format (UDB2)
@@ -35,21 +29,6 @@ class CdbXMLImporter
     private $cdbIdExtractor;
 
     /**
-     * @var PriceDescriptionParser
-     */
-    private $priceDescriptionParser;
-
-    /**
-     * @var StringFilterInterface
-     */
-    private $longDescriptionFilter;
-
-    /**
-     * @var StringFilterInterface
-     */
-    private $shortDescriptionFilter;
-
-    /**
      * @var CalendarFactoryInterface
      */
     private $calendarFactory;
@@ -62,40 +41,19 @@ class CdbXMLImporter
     /**
      * @param CdbXMLItemBaseImporter $cdbXMLItemBaseImporter
      * @param EventCdbIdExtractorInterface $cdbIdExtractor
-     * @param PriceDescriptionParser $priceDescriptionParser
      * @param CalendarFactoryInterface $calendarFactory
      * @param CdbXmlContactInfoImporterInterface $cdbXmlContactInfoImporter
      */
     public function __construct(
         CdbXMLItemBaseImporter $cdbXMLItemBaseImporter,
         EventCdbIdExtractorInterface $cdbIdExtractor,
-        PriceDescriptionParser $priceDescriptionParser,
         CalendarFactoryInterface $calendarFactory,
         CdbXmlContactInfoImporterInterface $cdbXmlContactInfoImporter
     ) {
         $this->cdbXMLItemBaseImporter = $cdbXMLItemBaseImporter;
         $this->cdbIdExtractor = $cdbIdExtractor;
-        $this->priceDescriptionParser = $priceDescriptionParser;
         $this->calendarFactory = $calendarFactory;
         $this->cdbXmlContactInfoImporter = $cdbXmlContactInfoImporter;
-
-        $consecutiveBlockOfTextFilter = new ConsecutiveBlockOfTextStringFilter();
-
-        $this->longDescriptionFilter = new CombinedStringFilter();
-        $this->longDescriptionFilter->addFilter(
-            new StripSourceStringFilter()
-        );
-        $this->longDescriptionFilter->addFilter(
-            $consecutiveBlockOfTextFilter
-        );
-        $this->longDescriptionFilter->addFilter(
-            new BreakTagToNewlineStringFilter()
-        );
-        $this->longDescriptionFilter->addFilter(
-            new StripSurroundingSpaceStringFilter()
-        );
-
-        $this->shortDescriptionFilter = $consecutiveBlockOfTextFilter;
     }
 
     /**
@@ -124,10 +82,8 @@ class CdbXMLImporter
     ) {
         $jsonLD = clone $base;
 
-        /** @var \CultureFeed_Cdb_Data_EventDetail $detail */
         $detail = null;
 
-        /** @var \CultureFeed_Cdb_Data_EventDetail[] $details */
         $details = $event->getDetails();
 
         foreach ($details as $languageDetail) {
@@ -170,7 +126,7 @@ class CdbXMLImporter
             );
         }
 
-        $this->importPriceInfo($detail, $jsonLD);
+        $this->cdbXMLItemBaseImporter->importPriceInfo($details, $jsonLD);
 
         $this->importTerms($event, $jsonLD);
 
@@ -182,8 +138,6 @@ class CdbXMLImporter
         $this->importTypicalAgeRange($event, $jsonLD);
 
         $this->importPerformers($detail, $jsonLD);
-
-        $this->importLanguages($event, $jsonLD);
 
         $this->importUitInVlaanderenReference($event, $slugger, $jsonLD);
 
@@ -205,44 +159,12 @@ class CdbXMLImporter
      */
     private function importDescription($languageDetail, $jsonLD, $language)
     {
-        $longDescription = $languageDetail->getLongDescription();
-
-        if ($longDescription) {
-            $longDescription = $this->longDescriptionFilter->filter(
-                $longDescription
-            );
+        try {
+            $description = MergedDescription::fromCdbDetail($languageDetail);
+            $jsonLD->description[$language] = $description->toNative();
+        } catch (\InvalidArgumentException $e) {
+            return;
         }
-
-        $descriptions = [];
-
-        $shortDescription = $languageDetail->getShortDescription();
-        if ($shortDescription) {
-            $includeShortDescription = true;
-
-            $shortDescription = $this->shortDescriptionFilter->filter(
-                $shortDescription
-            );
-
-            if ($longDescription) {
-                $includeShortDescription =
-                    !$this->longDescriptionStartsWithShortDescription(
-                        $longDescription,
-                        $shortDescription
-                    );
-            }
-
-            if ($includeShortDescription) {
-                $descriptions[] = $shortDescription;
-            }
-        }
-
-        if ($longDescription) {
-            $descriptions[] = $longDescription;
-        }
-
-        $description = implode("\n\n", $descriptions);
-
-        $jsonLD->description[$language] = $description;
     }
 
     /**
@@ -261,16 +183,15 @@ class CdbXMLImporter
             $location += (array)$placeManager->placeJSONLD($location_id);
         } else {
             $location_cdb = $event->getLocation();
+            $location['mainLanguage'] = 'nl';
             $location['name']['nl'] = $location_cdb->getLabel();
             $address = $location_cdb->getAddress()->getPhysicalAddress();
             if ($address) {
-                $location['address'] = array(
+                $location['address']['nl'] = array(
                     'addressCountry' => $address->getCountry(),
                     'addressLocality' => $address->getCity(),
                     'postalCode' => $address->getZip(),
-                    'streetAddress' =>
-                        $address->getStreet() . ' ' . $address->getHouseNumber(
-                        ),
+                    'streetAddress' => $address->getStreet() . ' ' . $address->getHouseNumber(),
                 );
             }
         }
@@ -323,70 +244,6 @@ class CdbXMLImporter
     }
 
     /**
-     * @param \CultureFeed_Cdb_Data_EventDetail $detail
-     * @param \stdClass $jsonLD
-     */
-    private function importPriceInfo(
-        \CultureFeed_Cdb_Data_EventDetail $detail,
-        $jsonLD
-    ) {
-        $prices = array();
-
-        $price = $detail->getPrice();
-
-        if ($price) {
-            $description = $price->getDescription();
-
-            if ($description) {
-                $prices = $this->priceDescriptionParser->parse($description);
-            }
-
-            $priceValue = $price->getValue();
-
-            if ($priceValue !== null) {
-                $priceValue = floatval($priceValue);
-            }
-
-            // Ignore prices parsed from description when its base price
-            // does not equal the cdbxml price value.
-            if (!empty($prices) && $prices['Basistarief'] !== $priceValue) {
-                $prices = [];
-            }
-
-            // If price description was not interpretable, fall back to
-            // price title and value.
-            if (empty($prices) && $priceValue !== null) {
-                $prices['Basistarief'] = floatval($price->getValue());
-            }
-        }
-
-        if (!empty($prices)) {
-            $priceInfo = array();
-
-            /** @var \CultureFeed_Cdb_Data_Price $price */
-            foreach ($prices as $title => $value) {
-                $priceInfoItem = array(
-                    'name' => $title,
-                    'priceCurrency' => 'EUR',
-                    'price' => $value,
-                );
-
-                $priceInfoItem['category'] = 'tariff';
-
-                if ($priceInfoItem['name'] === 'Basistarief') {
-                    $priceInfoItem['category'] = 'base';
-                }
-
-                $priceInfo[] = $priceInfoItem;
-            }
-
-            if (!empty($priceInfo)) {
-                $jsonLD->priceInfo = $priceInfo;
-            }
-        }
-    }
-
-    /**
      * @param \CultureFeed_Cdb_Item_Event $event
      * @param \stdClass $jsonLD
      */
@@ -395,7 +252,7 @@ class CdbXMLImporter
         $themeBlacklist = [
             'Thema onbepaald',
             'Meerder kunstvormen',
-            'Meerdere filmgenres'
+            'Meerdere filmgenres',
         ];
         $categories = array();
         foreach ($event->getCategories() as $category) {
@@ -418,18 +275,13 @@ class CdbXMLImporter
     private function importTypicalAgeRange(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
     {
         $ageFrom = $event->getAgeFrom();
+        $ageTo = $event->getAgeTo();
 
-        if (isset($ageFrom) && is_int($ageFrom)) {
-            if ($ageFrom <= 12) {
-                $jsonLD->typicalAgeRange = "{$ageFrom}-12";
-            } else if ($ageFrom <= 18) {
-                $jsonLD->typicalAgeRange = "{$ageFrom}-18";
-            } else if ($ageFrom <= 99) {
-                $jsonLD->typicalAgeRange = "{$ageFrom}-99";
-            } else {
-                $jsonLD->typicalAgeRange = '99-99';
-            }
+        if (!is_int($ageFrom) && !is_int($ageTo)) {
+            return;
         }
+
+        $jsonLD->typicalAgeRange = "{$ageFrom}-{$ageTo}";
     }
 
     /**
@@ -448,23 +300,6 @@ class CdbXMLImporter
                     $jsonLD->performer[] = $performerData;
                 }
             }
-        }
-    }
-
-    /**
-     * @param \CultureFeed_Cdb_Item_Event $event
-     * @param \stdClass $jsonLD
-     */
-    private function importLanguages(\CultureFeed_Cdb_Item_Event $event, $jsonLD)
-    {
-        /** @var \CultureFeed_Cdb_Data_Language $udb2Language */
-        $languages = $event->getLanguages();
-        if ($languages) {
-            $jsonLD->language = [];
-            foreach ($languages as $udb2Language) {
-                $jsonLD->language[] = $udb2Language->getLanguage();
-            }
-            $jsonLD->language = array_unique($jsonLD->language);
         }
     }
 
@@ -540,19 +375,5 @@ class CdbXMLImporter
         $audience = new Audience(AudienceType::fromNative($audienceType));
 
         $jsonLD->audience = $audience->serialize();
-    }
-
-    /**
-     * @param string $longDescription
-     * @param string $shortDescription
-     * @return bool
-     */
-    private function longDescriptionStartsWithShortDescription(
-        $longDescription,
-        $shortDescription
-    ) {
-        $longDescription = strip_tags(html_entity_decode($longDescription));
-
-        return 0 === strncmp($longDescription, $shortDescription, mb_strlen($shortDescription));
     }
 }

@@ -64,7 +64,7 @@ abstract class BaseDBALRepositoryTest extends \PHPUnit_Framework_TestCase
             $entity->getPrivacy() === Privacy::PRIVACY_PRIVATE()
                 ? true : false,
             $entity->getParentUuid()->toNative(),
-            $entity->getCount()->toNative()
+            $entity->getCount()->toNative(),
         ];
     }
 

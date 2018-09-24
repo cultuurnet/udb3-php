@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Media;
 
 use Broadway\CommandHandling\CommandHandlerInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Commands\UploadImage;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use ValueObjects\Identity\UUID;
@@ -30,6 +31,7 @@ interface MediaManagerInterface extends CommandHandlerInterface
      * @param StringLiteral $description
      * @param StringLiteral $copyrightHolder
      * @param Url $sourceLocation
+     * @param Language $language
      *
      * @return MediaObject
      */
@@ -38,6 +40,7 @@ interface MediaManagerInterface extends CommandHandlerInterface
         MIMEType $mimeType,
         StringLiteral $description,
         StringLiteral $copyrightHolder,
-        Url $sourceLocation
+        Url $sourceLocation,
+        Language $language
     );
 }

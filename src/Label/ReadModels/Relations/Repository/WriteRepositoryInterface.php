@@ -12,11 +12,14 @@ interface WriteRepositoryInterface
      * @param LabelName $labelName
      * @param RelationType $relationType
      * @param StringLiteral $relationId
+     * @param bool $imported
+     * @return void
      */
     public function save(
         LabelName $labelName,
         RelationType $relationType,
-        StringLiteral $relationId
+        StringLiteral $relationId,
+        $imported
     );
 
     /**
@@ -32,4 +35,11 @@ interface WriteRepositoryInterface
      * @param StringLiteral $relationId
      */
     public function deleteByRelationId(StringLiteral $relationId);
+
+    /**
+     * This method will only delete the imported labels based on relation id.
+     *
+     * @param StringLiteral $relationId
+     */
+    public function deleteImportedByRelationId(StringLiteral $relationId);
 }

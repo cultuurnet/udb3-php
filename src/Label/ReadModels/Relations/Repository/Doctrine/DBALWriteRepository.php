@@ -17,19 +17,22 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
     public function save(
         LabelName $labelName,
         RelationType $relationType,
-        StringLiteral $relationId
+        StringLiteral $relationId,
+        $imported
     ) {
         $queryBuilder = $this->createQueryBuilder()
             ->insert($this->getTableName())
             ->values([
                 SchemaConfigurator::LABEL_NAME => '?',
                 SchemaConfigurator::RELATION_TYPE => '?',
-                SchemaConfigurator::RELATION_ID => '?'
+                SchemaConfigurator::RELATION_ID => '?',
+                SchemaConfigurator::IMPORTED => '?',
             ])
             ->setParameters([
                 $labelName->toNative(),
                 $relationType->toNative(),
-                $relationId->toNative()
+                $relationId->toNative(),
+                $imported ? 1 : 0,
             ]);
 
         $this->executeTransactional($queryBuilder);
@@ -60,6 +63,25 @@ class DBALWriteRepository extends AbstractDBALRepository implements WriteReposit
             ->delete($this->getTableName())
             ->where(SchemaConfigurator::RELATION_ID . ' = ?')
             ->setParameters([$relationId->toNative()]);
+
+        $this->executeTransactional($queryBuilder);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function deleteImportedByRelationId(StringLiteral $relationId)
+    {
+        $queryBuilder = $this->createQueryBuilder()
+            ->delete($this->getTableName())
+            ->where(SchemaConfigurator::RELATION_ID . ' = :relationId')
+            ->andWhere(SchemaConfigurator::IMPORTED . ' = :imported')
+            ->setParameters(
+                [
+                    ':relationId' => $relationId->toNative(),
+                    ':imported' => true,
+                ]
+            );
 
         $this->executeTransactional($queryBuilder);
     }

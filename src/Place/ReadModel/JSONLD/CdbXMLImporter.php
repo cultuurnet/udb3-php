@@ -6,6 +6,7 @@
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\CalendarFactoryInterface;
+use CultuurNet\UDB3\Cdb\Description\MergedDescription;
 use CultuurNet\UDB3\LabelImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporterInterface;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
@@ -83,13 +84,11 @@ class CdbXMLImporter
             $jsonLD->description = new \stdClass();
         }
 
-        $descriptions = [
-            trim($detail->getShortDescription()),
-            trim($detail->getLongDescription())
-        ];
-        $descriptions = array_filter($descriptions);
-        if (count($descriptions) > 0) {
-            $jsonLD->description->nl = implode('<br/>', $descriptions);
+        try {
+            $description = MergedDescription::fromCdbDetail($detail);
+            $jsonLD->description->nl = $description->toNative();
+        } catch (\InvalidArgumentException $e) {
+            // No description found.
         }
 
         // make sure the name is an object as well before trying to add
@@ -114,7 +113,11 @@ class CdbXMLImporter
                 $address = $address->getPhysicalAddress();
 
                 if ($address) {
-                    $jsonLD->address = array(
+                    if (!isset($jsonLD->address)) {
+                        $jsonLD->address = new \stdClass();
+                    }
+
+                    $jsonLD->address->nl = array(
                         'addressCountry' => $address->getCountry(),
                         'addressLocality' => $address->getCity(),
                         'postalCode' => $address->getZip(),

@@ -45,7 +45,7 @@ class Audience implements SerializableInterface
     public function serialize()
     {
         return [
-            'audienceType' => $this->getAudienceType()->toNative()
+            'audienceType' => $this->getAudienceType()->toNative(),
         ];
     }
 

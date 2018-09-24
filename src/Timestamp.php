@@ -3,12 +3,14 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use DateTime;
 use DateTimeInterface;
 use InvalidArgumentException;
 
 /**
  * Provices a class for a timestamp.
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange.
  */
 class Timestamp implements SerializableInterface
 {
@@ -79,5 +81,17 @@ class Timestamp implements SerializableInterface
             'startDate' => $this->startDate->format(DateTime::ATOM),
             'endDate' => $this->endDate->format(DateTime::ATOM),
         ];
+    }
+
+    /**
+     * @param DateRange $dateRange
+     * @return self
+     */
+    public static function fromUdb3ModelDateRange(DateRange $dateRange)
+    {
+        return new Timestamp(
+            $dateRange->getFrom(),
+            $dateRange->getTo()
+        );
     }
 }

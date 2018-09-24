@@ -51,7 +51,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
         $context = new Metadata(
             [
                 'user_id' => 1,
-                'user_nick' => 'admin'
+                'user_nick' => 'admin',
             ]
         );
 
@@ -125,7 +125,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
         $context = new Metadata(
             [
                 'user_id' => 1,
-                'user_nick' => 'admin'
+                'user_nick' => 'admin',
             ]
         );
 
@@ -159,7 +159,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
         $context = new Metadata(
             [
                 'user_id' => 1,
-                'user_nick' => 'admin'
+                'user_nick' => 'admin',
             ]
         );
 
@@ -194,7 +194,7 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
         $context = new Metadata(
             [
                 'user_id' => 1,
-                'user_nick' => 'admin'
+                'user_nick' => 'admin',
             ]
         );
 
@@ -203,11 +203,11 @@ class ResqueCommandBusTest extends \PHPUnit_Framework_TestCase
             ->withConsecutive(
                 [
                     ResqueCommandBus::EVENT_COMMAND_CONTEXT_SET,
-                    ['context' => $context]
+                    ['context' => $context],
                 ],
                 [
                     ResqueCommandBus::EVENT_COMMAND_CONTEXT_SET,
-                    ['context' => null]
+                    ['context' => null],
                 ]
             );
 

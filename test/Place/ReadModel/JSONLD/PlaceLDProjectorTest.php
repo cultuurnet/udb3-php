@@ -6,7 +6,12 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
+use CommerceGuys\Intl\Currency\CurrencyRepository;
+use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use CultureFeed_Cdb_Data_File;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
+use CultuurNet\Geocoding\Coordinate\Latitude;
+use CultuurNet\Geocoding\Coordinate\Longitude;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -14,18 +19,22 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\Facility;
+use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
-use CultuurNet\UDB3\Place\Events\FacilitiesUpdated;
+use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
+use CultuurNet\UDB3\Place\Events\AddressTranslated;
+use CultuurNet\UDB3\Place\Events\AddressUpdated;
+use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
@@ -33,7 +42,9 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -68,9 +79,19 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $address;
 
     /**
+     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $placeRelations;
+
+    /**
      * @var CdbXMLImporter
      */
     private $cdbXMLImporter;
+
+    /**
+     * @var EventSpecification
+     */
+    private $eventFilter;
 
     /**
      * @var IriGeneratorInterface
@@ -109,17 +130,43 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         });
 
         $this->cdbXMLImporter = new CdbXMLImporter(
-            new CdbXMLItemBaseImporter($this->mediaIriGenerator),
+            new CdbXMLItemBaseImporter(
+                new PriceDescriptionParser(
+                    new NumberFormatRepository(),
+                    new CurrencyRepository()
+                ),
+                [
+                    'nl' => 'Basistarief',
+                    'fr' => 'Tarif de base',
+                    'en' => 'Base tarif',
+                    'de' => 'Basisrate',
+                ]
+            ),
             new CalendarFactory(),
             new CdbXmlContactInfoImporter()
         );
+
+        $this->placeRelations = $this->createMock(RepositoryInterface::class);
+
+        $this->eventFilter = $this->createMock(EventSpecification::class);
 
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
+            $this->placeRelations,
             $this->serializer,
-            $this->cdbXMLImporter
+            $this->cdbXMLImporter,
+            new JsonDocumentLanguageEnricher(
+                new PlaceJsonDocumentLanguageAnalyzer()
+            ),
+            $this->eventFilter,
+            [
+                'nl' => 'Basistarief',
+                'fr' => 'Tarif de base',
+                'en' => 'Base tariff',
+                'de' => 'Basisrate',
+            ]
         );
 
         $street = new Street('Kerkstraat 69');
@@ -128,24 +175,6 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $country = Country::fromNative('BE');
 
         $this->address = new Address($street, $postalCode, $locality, $country);
-    }
-
-    /**
-     * @param string $fileName
-     * @return PlaceImportedFromUDB2
-     */
-    private function placeImportedFromUDB2($fileName)
-    {
-        $cdbXml = file_get_contents(
-            __DIR__ . '/' . $fileName
-        );
-        $event = new PlaceImportedFromUDB2(
-            'someId',
-            $cdbXml,
-            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
-        );
-
-        return $event;
     }
 
     /**
@@ -158,6 +187,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $placeCreated = new PlaceCreated(
             $id,
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             $this->address,
@@ -167,12 +197,15 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/place';
-        $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
-        $jsonLD->address = (object)[
-          'addressCountry' => 'BE',
-          'addressLocality' => 'Leuven',
-          'postalCode' => '3000',
-          'streetAddress' => 'Kerkstraat 69',
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = (object)[ 'en' => 'some representative title' ];
+        $jsonLD->address = (object) [
+            'en' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Leuven',
+                'postalCode' => '3000',
+                'streetAddress' => 'Kerkstraat 69',
+            ],
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
@@ -181,11 +214,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
         $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $body = $this->project(
             $placeCreated,
@@ -210,6 +245,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $placeCreated = new PlaceCreated(
             $id,
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             $this->address,
@@ -220,12 +256,15 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
         $jsonLD->{'@context'} = '/contexts/place';
-        $jsonLD->name = (object)[ 'nl' => 'some representative title' ];
-        $jsonLD->address = (object)[
-            'addressCountry' => 'BE',
-            'addressLocality' => 'Leuven',
-            'postalCode' => '3000',
-            'streetAddress' => 'Kerkstraat 69',
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = (object)[ 'en' => 'some representative title' ];
+        $jsonLD->address = (object) [
+            'en' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Leuven',
+                'postalCode' => '3000',
+                'streetAddress' => 'Kerkstraat 69',
+            ],
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
@@ -239,11 +278,13 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
         $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $body = $this->project(
             $placeCreated,
@@ -268,6 +309,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $placeCreated = new PlaceCreated(
             $id,
+            new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
             $this->address,
@@ -276,13 +318,16 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $jsonLD = new stdClass();
         $jsonLD->{'@id'} = 'http://example.com/entity/' . $id;
-        $jsonLD->{'@context'} = '/api/1.0/place.jsonld';
-        $jsonLD->name = 'some representative title';
-        $jsonLD->address = (object)[
-            'addressCountry' => 'BE',
-            'addressLocality' => 'Leuven',
-            'postalCode' => '3000',
-            'streetAddress' => 'Kerkstraat 69',
+        $jsonLD->{'@context'} = '/contexts/place';
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = (object) ['en' => 'some representative title'];
+        $jsonLD->address = (object) [
+            'en' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Leuven',
+                'postalCode' => '3000',
+                'streetAddress' => 'Kerkstraat 69',
+            ],
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
@@ -290,25 +335,235 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
-        $jsonLD->creator = '1 (Tester)';
-        $jsonLD->workflowStatus = 'READY_FOR_VALIDATION';
+        $jsonLD->creator = 'Tester';
+        $jsonLD->workflowStatus = 'DRAFT';
+        $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $metadata = new Metadata(
             [
                 'user_id' => '1',
-                'user_nick' => 'Tester'
+                'user_nick' => 'Tester',
             ]
         );
-        $this->project(
+
+        $actualJsonLD = $this->project(
             $placeCreated,
             $id,
             $metadata,
             DateTime::fromString($created)
         );
+
+        $this->assertEquals($jsonLD, $actualJsonLD);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_project_an_updated_address()
+    {
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->name = (object) ['nl'=>'some representative title'];
+        $jsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => '$country',
+                'addressLocality' => '$locality',
+                'postalCode' => '$postalCode',
+                'streetAddress' => '$street',
+            ],
+        ];
+        $jsonLD->calendarType = 'permanent';
+        $jsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+        ];
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
+
+        $initialDocument = (new JsonDocument('66f30742-dee9-4794-ac92-fa44634692b8'))
+            ->withBody($jsonLD);
+
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLD = new stdClass();
+        $expectedJsonLD->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $expectedJsonLD->mainLanguage = 'nl';
+        $expectedJsonLD->name = (object) ['nl'=>'some representative title'];
+        $expectedJsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Kessel-lo',
+                'postalCode' => '3010',
+                'streetAddress' => 'Eenmeilaan 35',
+            ],
+        ];
+        $expectedJsonLD->calendarType = 'permanent';
+        $expectedJsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+        ];
+        $expectedJsonLD->languages = ['nl'];
+        $expectedJsonLD->completedLanguages = ['nl'];
+        $expectedJsonLD->modified = $this->recordedOn->toString();
+
+        $addressUpdated = new AddressUpdated(
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            new Address(
+                new Street('Eenmeilaan 35'),
+                new PostalCode('3010'),
+                new Locality('Kessel-lo'),
+                Country::fromNative('BE')
+            )
+        );
+
+        $body = $this->project(
+            $addressUpdated,
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            null,
+            $this->recordedOn->toBroadwayDateTime()
+        );
+
+        $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_project_a_translated_address()
+    {
+        $jsonLD = new stdClass();
+        $jsonLD->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $jsonLD->mainLanguage = 'nl';
+        $jsonLD->name = (object) ['nl'=>'some representative title'];
+        $jsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => '$country',
+                'addressLocality' => '$locality',
+                'postalCode' => '$postalCode',
+                'streetAddress' => '$street',
+            ],
+        ];
+        $jsonLD->calendarType = 'permanent';
+        $jsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+        ];
+        $jsonLD->languages = ['nl'];
+        $jsonLD->completedLanguages = ['nl'];
+
+        $initialDocument = (new JsonDocument('66f30742-dee9-4794-ac92-fa44634692b8'))
+            ->withBody($jsonLD);
+
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLD = new stdClass();
+        $expectedJsonLD->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $expectedJsonLD->mainLanguage = 'nl';
+        $expectedJsonLD->name = (object) ['nl'=>'some representative title'];
+        $expectedJsonLD->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => '$country',
+                'addressLocality' => '$locality',
+                'postalCode' => '$postalCode',
+                'streetAddress' => '$street',
+            ],
+            'fr' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Kessel-lo',
+                'postalCode' => '3010',
+                'streetAddress' => 'Eenmeilaan 35',
+            ],
+        ];
+        $expectedJsonLD->calendarType = 'permanent';
+        $expectedJsonLD->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+        ];
+        $expectedJsonLD->languages = ['nl', 'fr'];
+        $expectedJsonLD->completedLanguages = ['nl'];
+        $expectedJsonLD->modified = $this->recordedOn->toString();
+
+        $addressTranslated = new AddressTranslated(
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            new Address(
+                new Street('Eenmeilaan 35'),
+                new PostalCode('3010'),
+                new Locality('Kessel-lo'),
+                Country::fromNative('BE')
+            ),
+            new Language('fr')
+        );
+
+        $body = $this->project(
+            $addressTranslated,
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            null,
+            $this->recordedOn->toBroadwayDateTime()
+        );
+
+        $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_a_main_language_when_importing_from_udb2()
+    {
+        $event = $this->placeImportedFromUDB2('place_with_short_and_long_description.cdbxml.xml');
+
+        $body = $this->project($event, $event->getActorId());
+
+        $this->assertEquals('nl', $body->mainLanguage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_update_the_main_language_when_updating_from_udb2()
+    {
+        // First make sure there is a new place created.
+        $placeId = 'foo';
+        $created = '2015-01-20T13:25:21+01:00';
+        $placeCreated = new PlaceCreated(
+            $placeId,
+            new Language('en'),
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            $this->address,
+            new Calendar(CalendarType::PERMANENT())
+        );
+        $this->project(
+            $placeCreated,
+            $placeId,
+            null,
+            DateTime::fromString($created)
+        );
+
+        // Now do the real update.
+        $place = $this->placeUpdatedFromUDB2('place_with_short_and_long_description.cdbxml.xml');
+
+        $body = $this->project($place, $placeId);
+
+        $this->assertEquals(new Language('en'), $body->mainLanguage);
     }
 
     /**
@@ -331,7 +586,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $samples = array(
             ['place_with_short_description.cdbxml.xml', 'Korte beschrijving.'],
             ['place_with_long_description.cdbxml.xml', 'Lange beschrijving.'],
-            ['place_with_short_and_long_description.cdbxml.xml', "Korte beschrijving.<br/>Lange beschrijving."]
+            ['place_with_short_and_long_description.cdbxml.xml', "Korte beschrijving.\n\nLange beschrijving."],
         );
 
         return $samples;
@@ -354,7 +609,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($placeUpdatedFromUdb2, $actorId);
 
-        $this->assertEquals('Korte beschrijving.<br/>Lange beschrijving.', $body->description->nl);
+        $this->assertEquals("Korte beschrijving.\n\nLange beschrijving.", $body->description->nl);
     }
 
     /**
@@ -377,7 +632,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $body = $this->project($placeUpdatedFromUdb2, $actorId);
 
-        $this->assertEquals('Korte beschrijving.<br/>Lange beschrijving.', $body->description->nl);
+        $this->assertEquals("Korte beschrijving.\n\nLange beschrijving.", $body->description->nl);
 
     }
 
@@ -387,8 +642,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
      * @param string $fileName
      * @param string $expectedDescription
      */
-    public function it_adds_a_description_property_when_cdbxml_has_long_or_short_description($fileName, $expectedDescription)
-    {
+    public function it_adds_a_description_property_when_cdbxml_has_long_or_short_description(
+        $fileName,
+        $expectedDescription
+    ) {
         $event = $this->placeImportedFromUDB2($fileName);
 
         $body = $this->project($event, $event->getActorId());
@@ -397,6 +654,71 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             $expectedDescription,
             $body->description->nl
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_keep_address_translations_when_updating_from_cdbxml()
+    {
+        $initialJsonLd = new stdClass();
+        $initialJsonLd->{'@id'} = 'http://io.uitdatabank.be/place/66f30742-dee9-4794-ac92-fa44634692b8';
+        $initialJsonLd->mainLanguage = 'nl';
+        $initialJsonLd->name = (object) ['nl'=>'some representative title'];
+        $initialJsonLd->address = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Brussel',
+                'postalCode' => '1000',
+                'streetAddress' => 'Wetstraat 1',
+            ],
+            'fr' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Bruxelles',
+                'postalCode' => '1000',
+                'streetAddress' => 'Rue de la loi 1',
+            ],
+        ];
+        $initialJsonLd->calendarType = 'permanent';
+        $initialJsonLd->terms = [
+            (object)[
+                'id' => '0.50.4.0.0',
+                'label' => 'concert',
+                'domain' => 'eventtype',
+            ],
+        ];
+        $initialJsonLd->languages = ['nl', 'fr'];
+        $initialJsonLd->completedLanguages = ['nl'];
+
+        $initialDocument = (new JsonDocument('66f30742-dee9-4794-ac92-fa44634692b8'))
+            ->withBody($initialJsonLd);
+
+        $this->documentRepository->save($initialDocument);
+
+        $expectedJsonLdAddress = (object) [
+            'nl' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Overpelt',
+                'postalCode' => '3900',
+                'streetAddress' => 'Jeugdlaan 2',
+            ],
+            'fr' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Bruxelles',
+                'postalCode' => '1000',
+                'streetAddress' => 'Rue de la loi 1',
+            ],
+        ];
+
+        $cdbXml = file_get_contents(__DIR__ . '/place_with_long_description.cdbxml.xml');
+        $placeUpdatedFromUdb2 = new PlaceUpdatedFromUDB2(
+            '66f30742-dee9-4794-ac92-fa44634692b8',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        $actualJsonLd = $this->project($placeUpdatedFromUdb2, '66f30742-dee9-4794-ac92-fa44634692b8');
+        $this->assertEquals($expectedJsonLdAddress, $actualJsonLd->address);
     }
 
     /**
@@ -416,13 +738,16 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $majorInfoUpdated = new MajorInfoUpdated($id, $title, $eventType, $this->address, $calendar, $theme);
 
         $jsonLD = new stdClass();
-        $jsonLD->id = $id;
-        $jsonLD->name = (object)['nl'=>'some representative title'];
-        $jsonLD->address = (object)[
-          'addressCountry' => '$country',
-          'addressLocality' => '$locality',
-          'postalCode' => '$postalCode',
-          'streetAddress' => '$street',
+        $jsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
+        $jsonLD->mainLanguage = 'en';
+        $jsonLD->name = (object)['en'=>'some representative title'];
+        $jsonLD->address = (object) [
+            'en' => (object) [
+                'addressCountry' => '$country',
+                'addressLocality' => '$locality',
+                'postalCode' => '$postalCode',
+                'streetAddress' => '$street',
+            ],
         ];
         $jsonLD->calendarType = 'permanent';
         $jsonLD->terms = [
@@ -430,8 +755,10 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '0.50.4.0.0',
                 'label' => 'concert',
                 'domain' => 'eventtype',
-            ]
+            ],
         ];
+        $jsonLD->languages = ['en'];
+        $jsonLD->completedLanguages = ['en'];
 
         $initialDocument = (new JsonDocument('foo'))
             ->withBody($jsonLD);
@@ -439,13 +766,16 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $this->documentRepository->save($initialDocument);
 
         $expectedJsonLD = new stdClass();
-        $expectedJsonLD->id = $id;
-        $expectedJsonLD->name = (object)['nl'=>'new title'];
-        $expectedJsonLD->address = (object)[
-            'addressCountry' => 'BE',
-            'addressLocality' => 'Leuven',
-            'postalCode' => '3000',
-            'streetAddress' => 'Kerkstraat 69',
+        $expectedJsonLD->{'@id'} = 'http://io.uitdatabank.be/place/foo';
+        $expectedJsonLD->mainLanguage = 'en';
+        $expectedJsonLD->name = (object)['en'=>'new title'];
+        $expectedJsonLD->address = (object) [
+            'en' => (object) [
+                'addressCountry' => 'BE',
+                'addressLocality' => 'Leuven',
+                'postalCode' => '3000',
+                'streetAddress' => 'Kerkstraat 69',
+            ],
         ];
         $expectedJsonLD->calendarType = 'single';
         $expectedJsonLD->terms = [
@@ -458,85 +788,93 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                 'id' => '123',
                 'label' => 'theme label',
                 'domain' => 'theme',
-            ]
+            ],
         ];
         $expectedJsonLD->startDate = '2015-01-26T13:25:21+01:00';
         $expectedJsonLD->endDate = '2015-02-26T13:25:21+01:00';
-        $expectedJsonLD->availableTo = $expectedJsonLD->startDate;
+        $expectedJsonLD->availableTo = $expectedJsonLD->endDate;
+        $expectedJsonLD->languages = ['en'];
+        $expectedJsonLD->completedLanguages = ['en'];
+        $expectedJsonLD->modified = $this->recordedOn->toString();
 
-        $body = $this->project($majorInfoUpdated, $majorInfoUpdated->getPlaceId());
+        $body = $this->project(
+            $majorInfoUpdated,
+            $majorInfoUpdated->getPlaceId(),
+            null,
+            $this->recordedOn->toBroadwayDateTime()
+        );
+
         $this->assertEquals($expectedJsonLD, $body);
     }
 
     /**
      * @test
      */
-    public function it_projects_the_updating_of_facilities()
+    public function it_projects_the_updating_of_geo_coordinates()
     {
-
-        $id = 'foo';
-        $facilities = [
-            new Facility('facility1', 'facility label'),
-            new Facility('facility2', 'facility label2'),
-        ];
-
-        $facilitiesUpdated = new FacilitiesUpdated($id, $facilities);
+        $id = 'ea328f14-a3c8-4f71-abd9-00cd0a2cf217';
 
         $initialDocument = new JsonDocument(
             $id,
-            json_encode([
-                'terms' => [
-                    [
-                        'id' => 'facility1',
-                        'label' => 'facility label',
-                        'domain' => 'facility',
-                    ]
+            json_encode(
+                [
+                    '@id' => 'http://uitdatabank/place/' . $id,
+                    '@type' => 'Place',
+                    'name' => [
+                        'nl' => 'Test',
+                    ],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
                 ]
-            ])
+            )
         );
 
         $this->documentRepository->save($initialDocument);
 
-        $expectedBody = (object)[
-            'terms' => [
-                (object)[
-                    'id' => 'facility1',
-                    'label' => 'facility label',
-                    'domain' => 'facility',
-                ],
-                (object)[
-                    'id' => 'facility2',
-                    'label' => 'facility label2',
-                    'domain' => 'facility',
-                ]
-            ]
+        $coordinatesUpdated = new GeoCoordinatesUpdated(
+            $id,
+            new Coordinates(
+                new Latitude(1.1234567),
+                new Longitude(-0.34567)
+            )
+        );
+
+        $expectedBody = (object) [
+            '@id' => 'http://uitdatabank/place/' . $id,
+            '@type' => 'Place',
+            'name' => (object) ['nl' => 'Test'],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
+            'geo' => (object) [
+                'latitude' => 1.1234567,
+                'longitude' => -0.34567,
+            ],
+            'modified' => $this->recordedOn->toString(),
         ];
 
-        $body = $this->project($facilitiesUpdated, $id);
+        $body = $this->project($coordinatesUpdated, $id, null, $this->recordedOn->toBroadwayDateTime());
         $this->assertEquals($expectedBody, $body);
     }
 
     /**
      * @test
      */
-    public function it_deletes_places()
+    public function it_updates_workflow_status_on_delete()
     {
-        $id = 'foo';
+        $placeId = 'ea328f14-a3c8-4f71-abd9-00cd0a2cf217';
 
-        $placeDeleted = new PlaceDeleted($id);
+        $placeDeleted = new PlaceDeleted($placeId);
 
-        $this->projector->handle(
-            DomainMessage::recordNow(
-                $id,
-                2,
-                new Metadata(),
-                $placeDeleted
-            )
-        );
+        $body = $this->project($placeDeleted, $placeId, null, $this->recordedOn->toBroadwayDateTime());
 
-        $this->expectException(DocumentGoneException::class);
+        $expectedJson = (object) [
+            '@id' => 'http://example.com/entity/' . $placeId,
+            '@context' => '/contexts/place',
+            'workflowStatus' => 'DELETED',
+            'modified' => $this->recordedOn->toString(),
+        ];
 
-        $this->documentRepository->get($id);
+        $this->assertEquals($expectedJson, $body);
     }
 
     /**
@@ -552,7 +890,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A']
+                'labels' => ['label A'],
             ])
         );
 
@@ -574,7 +912,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'labels' => ['label A', 'label B', 'label C']
+                'labels' => ['label A', 'label B', 'label C'],
             ])
         );
 
@@ -601,7 +939,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $initialDocument = new JsonDocument(
             'foo',
             json_encode([
-                'bar' => 'stool'
+                'bar' => 'stool',
             ])
         );
 
@@ -612,16 +950,256 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new Label('label B')
         );
 
-        $body = $this->project($labelAdded, 'foo');
+        $body = $this->project($labelAdded, 'foo', null, $this->recordedOn->toBroadwayDateTime());
 
         $expectedBody = new stdClass();
         $expectedBody->bar = 'stool';
         $expectedBody->labels = ['label B'];
+        $expectedBody->modified = $this->recordedOn->toString();
 
         $this->assertEquals(
             $expectedBody,
             $body
         );
+    }
 
+    /**
+     * @test
+     */
+    public function it_removes_geocoordinates_after_major_info_updated()
+    {
+        $initialDocument = new JsonDocument(
+            '3c4850d7-689a-4729-8c5f-5f6c172ba52d',
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Old title',
+                    ],
+                    'geo' => [
+                        'latitude' => 1.5678,
+                        'longitude' => -0.9524,
+                    ],
+                    'terms' => [],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $majorInfoUpdated = new MajorInfoUpdated(
+            '3c4850d7-689a-4729-8c5f-5f6c172ba52d',
+            new Title('New title'),
+            new EventType('1.0.0.0', 'Mock'),
+            new Address(
+                new Street('Natieplein 2'),
+                new PostalCode('1000'),
+                new Locality('Brussel'),
+                Country::fromNative('BE')
+            ),
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $body = $this->project($majorInfoUpdated, '3c4850d7-689a-4729-8c5f-5f6c172ba52d');
+
+        $this->assertArrayNotHasKey('geo', (array) $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_geocoordinates_after_place_updated_from_udb2()
+    {
+        $initialDocument = new JsonDocument(
+            '318F2ACB-F612-6F75-0037C9C29F44087A',
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Old title',
+                    ],
+                    'geo' => [
+                        'latitude' => 1.5678,
+                        'longitude' => -0.9524,
+                    ],
+                    'terms' => [],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $cdbXml = file_get_contents(__DIR__ . '/place_with_long_description.cdbxml.xml');
+        $placeUpdatedFromUdb2 = new PlaceUpdatedFromUDB2(
+            '318F2ACB-F612-6F75-0037C9C29F44087A',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        $body = $this->project($placeUpdatedFromUdb2, '318F2ACB-F612-6F75-0037C9C29F44087A');
+
+        $this->assertArrayNotHasKey('geo', (array) $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_all_related_places_when_an_organizer_is_updated()
+    {
+        $kantoorLeuvenId = 'c01f5799-b914-487d-9e00-6c224ab6555e';
+        $kantoorKesselLoId = '57eaaa61-31d8-42c3-8d1b-1b1ecbb153a8';
+
+        $stadLeuvenId = 'dbef3da9-13f0-42be-9ac2-8593376a508a';
+
+        $stadLeuvenJSONLD = json_encode(
+            [
+                'name' => [
+                    'nl' => 'Stad Leuven',
+                ],
+                'email' => [
+                    'info@leuven.be',
+                ],
+            ]
+        );
+
+        $kantoorLeuvenJSONLD = json_encode(
+            [
+                'name' => [
+                    'nl' => 'Kantoor Leuven',
+                ],
+            ]
+        );
+        $initialKantoorLeuvenDocument = new JsonDocument(
+            $kantoorLeuvenId,
+            $kantoorLeuvenJSONLD
+        );
+        $this->documentRepository->save($initialKantoorLeuvenDocument);
+
+        $kantoorKesselLoJSONLD = json_encode(
+            [
+                'name' => [
+                    'nl' => 'Kantoor Kessel-Lo',
+                ],
+            ]
+        );
+        $initialKantoorKesselLoDocument = new JsonDocument(
+            $kantoorKesselLoId,
+            $kantoorKesselLoJSONLD
+        );
+        $this->documentRepository->save($initialKantoorKesselLoDocument);
+
+        $this->placeRelations
+            ->expects($this->once())
+            ->method('getPlacesOrganizedByOrganizer')
+            ->with($stadLeuvenId)
+            ->willReturn(
+                [
+                    $kantoorLeuvenId,
+                    $kantoorKesselLoId,
+                ]
+            );
+
+        $this->organizerService
+            ->expects($this->once())
+            ->method('getEntity')
+            ->with($stadLeuvenId)
+            ->willReturn($stadLeuvenJSONLD);
+
+        $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD(
+            $stadLeuvenId,
+            'organizers/' . $stadLeuvenId
+        );
+
+        $this->projector->handle(
+            new DomainMessage(
+                $organizerProjectedToJSONLD->getId(),
+                0,
+                new Metadata(),
+                $organizerProjectedToJSONLD,
+                $this->recordedOn->toBroadwayDateTime()
+            )
+        );
+
+        $expectedKantoorLeuvenBody = (object) [
+            'name' => (object) [
+                'nl' => 'Kantoor Leuven',
+            ],
+            'organizer' => (object) [
+                'name' => (object) [
+                    'nl' => 'Stad Leuven',
+                ],
+                'email' => [
+                    'info@leuven.be',
+                ],
+            ],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
+            'modified' => $this->recordedOn->toString(),
+        ];
+
+        $expectedKantoorKesselLoBody = (object) [
+            'name' => (object) [
+                'nl' => 'Kantoor Kessel-Lo',
+            ],
+            'organizer' => (object) [
+                'name' => (object) [
+                    'nl' => 'Stad Leuven',
+                ],
+                'email' => [
+                    'info@leuven.be',
+                ],
+            ],
+            'languages' => ['nl'],
+            'completedLanguages' => ['nl'],
+            'modified' => $this->recordedOn->toString(),
+        ];
+
+        $this->assertEquals(
+            $expectedKantoorLeuvenBody,
+            $this->documentRepository->get($kantoorLeuvenId)->getBody()
+        );
+
+        $this->assertEquals(
+            $expectedKantoorKesselLoBody,
+            $this->documentRepository->get($kantoorKesselLoId)->getBody()
+        );
+    }
+
+    /**
+     * @param string $fileName
+     * @return PlaceImportedFromUDB2
+     */
+    private function placeImportedFromUDB2($fileName)
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/' . $fileName
+        );
+        $event = new PlaceImportedFromUDB2(
+            'someId',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        return $event;
+    }
+
+    /**
+     * @param string $fileName
+     * @return PlaceUpdatedFromUDB2
+     */
+    private function placeUpdatedFromUDB2($fileName)
+    {
+        $cdbXml = file_get_contents(
+            __DIR__ . '/' . $fileName
+        );
+        $event = new PlaceUpdatedFromUDB2(
+            'someId',
+            $cdbXml,
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL'
+        );
+
+        return $event;
     }
 }

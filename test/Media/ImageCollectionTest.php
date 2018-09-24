@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
@@ -21,7 +22,8 @@ class ImageCollectionTest extends \PHPUnit_Framework_TestCase
             MIMEType::fromSubtype('jpeg'),
             new Description('my best selfie'),
             new CopyrightHolder('Henk'),
-            Url::fromNative('http://du.de/images/henk_032.jpg')
+            Url::fromNative('http://du.de/images/henk_032.jpg'),
+            new Language('en')
         );
         $images = (new ImageCollection())->withMain($mainImage);
 
@@ -38,7 +40,7 @@ class ImageCollectionTest extends \PHPUnit_Framework_TestCase
             new UUID(),
             MIMEType::fromSubtype('jpeg'),
             new StringLiteral('my best selfie'),
-            Url::fromNative('http://du.de/images/henk_032.jpg')
+            Url::fromNative('http://du.de/images/henk_032.jpg'),
         ];
 
         $images = new ImageCollection($notImages);
@@ -56,7 +58,8 @@ class ImageCollectionTest extends \PHPUnit_Framework_TestCase
             MIMEType::fromSubtype('jpeg'),
             new Description('my best selfie'),
             new CopyrightHolder('Henk'),
-            Url::fromNative('http://du.de/images/henk_032.jpg')
+            Url::fromNative('http://du.de/images/henk_032.jpg'),
+            new Language('en')
         );
         $images = (new ImageCollection())->with($image);
 
@@ -69,5 +72,38 @@ class ImageCollectionTest extends \PHPUnit_Framework_TestCase
     public function it_should_return_a_main_image_when_empty()
     {
         $this->assertEquals(null, (new ImageCollection())->getMain());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_find_an_image_based_on_uuid()
+    {
+        $uuid = new UUID();
+
+        $image = new Image(
+            $uuid,
+            MIMEType::fromSubtype('jpeg'),
+            new Description('my best selfie'),
+            new CopyrightHolder('Henk'),
+            Url::fromNative('http://du.de/images/henk_032.jpg'),
+            new Language('en')
+        );
+
+        $anotherImage = new Image(
+            new UUID(),
+            MIMEType::fromSubtype('jpeg'),
+            new Description('world biggest cat'),
+            new CopyrightHolder('Doggy Junier'),
+            Url::fromNative('http://www.cats.com/biggest.jpeg'),
+            new Language('en')
+        );
+
+        $images = (new ImageCollection())
+            ->with($image)
+            ->with($anotherImage);
+
+        $this->assertEquals($image, $images->findImageByUUID($uuid));
+        $this->assertNull($images->findImageByUUID(new UUID()));
     }
 }

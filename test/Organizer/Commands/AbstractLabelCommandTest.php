@@ -74,7 +74,7 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
     public function it_returns_a_permission()
     {
         $this->assertEquals(
-            Permission::AANBOD_BEWERKEN(),
+            Permission::ORGANISATIES_BEWERKEN(),
             $this->abstractLabelCommand->getPermission()
         );
     }
@@ -84,6 +84,11 @@ class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function it_identifies_by_label_name()
     {
-        $this->assertEquals($this->abstractLabelCommand->getName(), new StringLiteral('foo'));
+        $this->assertEquals(
+            [
+                new StringLiteral('foo'),
+            ],
+            $this->abstractLabelCommand->getNames()
+        );
     }
 }

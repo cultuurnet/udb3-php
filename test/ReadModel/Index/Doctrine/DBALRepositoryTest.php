@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index\Doctrine;
 
-use CultuurNet\Hydra\PagedCollection;
+use CultuurNet\UDB3\AbstractDBALTableTest;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
@@ -10,26 +10,18 @@ use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use PDO;
-use PHPUnit_Framework_TestCase;
 use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Domain;
 use ValueObjects\Web\Url;
 
-class DBALRepositoryTest extends PHPUnit_Framework_TestCase
+class DBALRepositoryTest extends AbstractDBALTableTest
 {
-    use DBALTestConnectionTrait;
-
     /**
      * @var DBALRepository
      */
     protected $repository;
-
-    /**
-     * @var StringLiteral
-     */
-    protected $tableName;
 
     /**
      * @var EntityIriGeneratorFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -55,7 +47,7 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         (new SchemaConfigurator($this->tableName))
             ->configure($schemaManager);
 
-        $this->data = $this->loadData();
+        $this->data = $this->loadData(__DIR__ . '/initial-values.json');
 
         $this->insert($this->data);
 
@@ -74,47 +66,6 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return array
-     */
-    private function loadData()
-    {
-         return json_decode(file_get_contents(__DIR__ . '/initial-values.json'));
-    }
-
-    /**
-     * @param array $rows
-     */
-    private function insert($rows)
-    {
-        $q = $this->getConnection()->createQueryBuilder();
-
-        $schema = $this->getConnection()->getSchemaManager()->createSchema();
-
-        $columns = $schema
-            ->getTable($this->tableName->toNative())
-            ->getColumns();
-
-        $values = [];
-        foreach ($columns as $column) {
-            $values[$column->getName()] = '?';
-        }
-
-        $q->insert($this->tableName->toNative())
-            ->values($values);
-
-        foreach ($rows as $row) {
-            $parameters = [];
-            foreach (array_keys($values) as $columnName) {
-                $parameters[] = $row->$columnName;
-            }
-
-            $q->setParameters($parameters);
-
-            $q->execute();
-        }
-    }
-
-    /**
      * @test
      */
     public function it_updates_existing_data_by_unique_combination_of_id_and_entity_type()
@@ -129,6 +80,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'bar',
             'Test event abc update',
             '3020',
+            'Herent',
+            'BE',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
         );
@@ -139,7 +92,9 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'uid' => 'bar',
             'title' => 'Test event abc update',
             'created' => '100',
-            'zip' => '3020'
+            'zip' => '3020',
+            'city' => 'Herent',
+            'country' => 'BE',
         ] + (array) $expectedData[3];
 
         $expectedData[3] = (object) $expectedData[3];
@@ -162,6 +117,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'bar',
             'Test event abc update',
             '3020',
+            'Herent',
+            'BE',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@100')
         );
@@ -173,8 +130,10 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
                 'title' => 'Test event abc update',
                 'created' => '100',
                 'zip' => '3020',
+                'city' => 'Herent',
+                'country' => 'BE',
                 'owning_domain' => 'udb.be',
-                'entity_iri' => 'http://hello.world/something/blub'
+                'entity_iri' => 'http://hello.world/something/blub',
             ] + (array) $expectedData[5];
 
         $expectedData[5] = (object) $expectedData[5];
@@ -197,6 +156,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'foo',
             'Test event xyz',
             '3020',
+            'Herent',
+            'BE',
             Domain::specifyType('udb.be'),
             new \DateTimeImmutable('@0')
         );
@@ -209,6 +170,8 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
             'uid' => 'foo',
             'title' => 'Test event xyz',
             'zip' => '3020',
+            'city' => 'Herent',
+            'country' => 'BE',
             'created' => 0,
             'updated' => 0,
             'owning_domain' => 'udb.be',
@@ -218,26 +181,12 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertCurrentData($expectedData);
     }
 
-    private function assertCurrentData($expectedData)
-    {
-        $expectedData = array_values($expectedData);
-
-        $results = $this->getConnection()->executeQuery('SELECT * from ' . $this->tableName->toNative());
-
-        $actualData = $results->fetchAll(PDO::FETCH_OBJ);
-
-        $this->assertEquals(
-            $expectedData,
-            $actualData
-        );
-    }
-
     /**
      * @test
      */
     public function it_deletes_by_unique_combination_of_id_and_entity_type()
     {
-        $this->repository->deleteIndex('abc', EntityType::PLACE());
+        $this->repository->deleteIndex('abcd', EntityType::PLACE());
 
         $expectedData = $this->data;
 
@@ -258,13 +207,29 @@ class DBALRepositoryTest extends PHPUnit_Framework_TestCase
     public function it_can_find_places_by_postal_code()
     {
         $expectedIds = [
-            'abc',
-            '123'
+            'abcd',
+            '123',
         ];
 
         $this->assertEquals(
             $expectedIds,
-            $this->repository->findPlacesByPostalCode('3000')
+            $this->repository->findPlacesByPostalCode('3000', 'BE')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_find_places_by_city_name()
+    {
+        $expectedIds = [
+            'abcd',
+            '123',
+        ];
+
+        $this->assertEquals(
+            $expectedIds,
+            $this->repository->findPlacesByCity('Leuven', 'BE')
         );
     }
 

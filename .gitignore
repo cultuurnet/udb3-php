@@ -3,3 +3,4 @@ build/
 
 # mkdocs build dir
 site/
+composer.lock

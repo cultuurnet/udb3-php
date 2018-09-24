@@ -26,6 +26,9 @@ class ContentTypes
     public static function map()
     {
         return [
+            AddressUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-address-updated+json',
+            AddressTranslated::class => 'application/vnd.cultuurnet.udb3-events.place-address-translated+json',
+            GeoCoordinatesUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-geocoordinates-updated+json',
             BookingInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-booking-info-updated+json',
             PriceInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-price-info-updated.json',
             ContactPointUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-contact-point-updated+json',
@@ -39,6 +42,7 @@ class ContentTypes
             LabelRemoved::class => 'application/vnd.cultuurnet.udb3-events.place-label-removed+json',
             MainImageSelected::class => 'application/vnd.cultuurnet.udb3-events.place-main-image-selected+json',
             MajorInfoUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-major-info-updated+json',
+            CalendarUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-calendar-updated+json',
             OrganizerDeleted::class => 'application/vnd.cultuurnet.udb3-events.place-organizer-deleted+json',
             OrganizerUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-organizer-updated+json',
             PlaceCreated::class => 'application/vnd.cultuurnet.udb3-events.place-created+json',
@@ -47,8 +51,11 @@ class ContentTypes
             PlaceProjectedToJSONLD::class => 'application/vnd.cultuurnet.udb3-events.place-projected-to-jsonld+json',
             PlaceUpdatedFromUDB2::class => 'application/vnd.cultuurnet.udb3-events.place-updated-from-udb2+json',
             TitleTranslated::class => 'application/vnd.cultuurnet.udb3-events.place-title-translated+json',
+            TitleUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-title-updated+json',
             TypicalAgeRangeUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-typical-age-range-updated+json',
             TypicalAgeRangeDeleted::class => 'application/vnd.cultuurnet.udb3-events.place-typical-age-range-deleted+json',
+            TypeUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-type-updated+json',
+            ThemeUpdated::class => 'application/vnd.cultuurnet.udb3-events.place-theme-updated+json',
             // Moderation
             Published::class => 'application/vnd.cultuurnet.udb3-events.moderation.place-published+json',
             Approved::class => 'application/vnd.cultuurnet.udb3-events.moderation.place-approved+json',

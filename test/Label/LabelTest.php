@@ -150,7 +150,7 @@ class LabelTest extends AggregateRootScenarioTestCase
             })
             ->then([
                 new MadeInvisible($this->uuid, $this->name),
-                new MadeVisible($this->uuid, $this->name)
+                new MadeVisible($this->uuid, $this->name),
             ]);
     }
 
@@ -229,7 +229,7 @@ class LabelTest extends AggregateRootScenarioTestCase
             })
             ->then([
                 new MadePrivate($this->uuid, $this->name),
-                new MadePublic($this->uuid, $this->name)
+                new MadePublic($this->uuid, $this->name),
             ]);
     }
 

@@ -42,7 +42,7 @@ abstract class AbstractImagesEvent extends AbstractEvent
                     return $image->serialize();
                 },
                 $this->images->toArray()
-            )
+            ),
         );
 
         $mainImage = $this->images->getMain();

@@ -12,9 +12,14 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
+use CultuurNet\UDB3\Event\Commands\UpdateCalendar;
+use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Events\EventCopied;
 use CultuurNet\UDB3\Event\Events\EventCreated;
+use CultuurNet\UDB3\Event\Events\Moderation\Approved;
+use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
@@ -25,7 +30,9 @@ use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
+use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -116,7 +123,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_refuses_to_translate_title_of_unknown_event()
+    public function it_refuses_to_update_title_of_unknown_event()
     {
         $id = 'some-unknown-id';
 
@@ -124,7 +131,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->translateTitle(
+        $this->eventEditingService->updateTitle(
             $id,
             new Language('nl'),
             new StringLiteral('new title')
@@ -134,7 +141,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_refuses_to_translate_description_of_unknown_event()
+    public function it_refuses_to_update_the_description_of_unknown_event()
     {
         $id = 'some-unknown-id';
 
@@ -142,10 +149,10 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->setUpEventNotFound($id);
 
-        $this->eventEditingService->translateDescription(
+        $this->eventEditingService->updateDescription(
             $id,
-            new Language('nl'),
-            new StringLiteral('new description')
+            new Language('en'),
+            new Description('new description')
         );
     }
 
@@ -183,6 +190,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function it_can_create_a_new_event()
     {
         $eventId = 'generated-uuid';
+        $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $street = new Street('Kerkstraat 69');
@@ -200,18 +208,82 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->method('generate')
             ->willReturn('generated-uuid');
 
-        $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme);
+        $this->eventEditingService->createEvent(
+            $mainLanguage,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
 
         $this->assertEquals(
             [
                 new EventCreated(
                     $eventId,
+                    $mainLanguage,
                     $title,
                     $eventType,
                     $location,
                     $calendar,
                     $theme
-                )
+                ),
+            ],
+            $this->eventStore->getEvents()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_be_able_to_create_a_new_event_and_approve_it_immediately()
+    {
+        $eventId = 'generated-uuid';
+        $mainLanguage = new Language('nl');
+        $title = new Title('Title');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $street = new Street('Kerkstraat 69');
+        $locality = new Locality('Leuven');
+        $postalCode = new PostalCode('3000');
+        $country = Country::fromNative('BE');
+        $address = new Address($street, $postalCode, $locality, $country);
+        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $calendar = new Calendar(CalendarType::PERMANENT());
+        $theme = null;
+
+        $publicationDate = new \DateTimeImmutable();
+        $service = $this->eventEditingService->withFixedPublicationDateForNewOffers(
+            $publicationDate
+        );
+
+        $this->eventStore->trace();
+
+        $this->uuidGenerator->expects($this->once())
+            ->method('generate')
+            ->willReturn('generated-uuid');
+
+        $service->createApprovedEvent(
+            $mainLanguage,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
+
+        $this->assertEquals(
+            [
+                new EventCreated(
+                    $eventId,
+                    $mainLanguage,
+                    $title,
+                    $eventType,
+                    $location,
+                    $calendar,
+                    $theme
+                ),
+                new Published($eventId, $publicationDate),
+                new Approved($eventId),
             ],
             $this->eventStore->getEvents()
         );
@@ -226,6 +298,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
         $calendar = new Calendar(CalendarType::PERMANENT());
 
+        $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $location = new Location(
@@ -247,6 +320,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturnOnConsecutiveCalls($originalEventId, $eventId);
 
         $this->eventEditingService->createEvent(
+            $mainLanguage,
             $title,
             $eventType,
             $location,
@@ -260,6 +334,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             [
                 new EventCreated(
                     $originalEventId,
+                    $mainLanguage,
                     $title,
                     $eventType,
                     $location,
@@ -270,7 +345,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
                     $eventId,
                     $originalEventId,
                     $calendar
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );
@@ -314,6 +389,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
     public function it_can_create_a_new_event_with_a_fixed_publication_date()
     {
         $eventId = 'generated-uuid';
+        $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
         $street = new Street('Kerkstraat 69');
@@ -338,22 +414,67 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->method('generate')
             ->willReturn('generated-uuid');
 
-        $this->eventEditingService->createEvent($title, $eventType, $location, $calendar, $theme);
+        $this->eventEditingService->createEvent(
+            $mainLanguage,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
 
         $this->assertEquals(
             [
                 new EventCreated(
                     $eventId,
+                    $mainLanguage,
                     $title,
                     $eventType,
                     $location,
                     $calendar,
                     $theme,
                     $publicationDate
-                )
+                ),
             ],
             $this->eventStore->getEvents()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_dispatch_an_update_calendar_command()
+    {
+        $eventId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';
+
+        $calendar = new Calendar(
+            CalendarType::SINGLE(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
+        );
+
+        $updateCalendar = new UpdateCalendar($eventId, $calendar);
+
+        $expectedCommandId = 'commandId';
+
+        $this->commandFactory->expects($this->once())
+            ->method('createUpdateCalendarCommand')
+            ->with($eventId, $calendar)
+            ->willReturn($updateCalendar);
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updateCalendar)
+            ->willReturn($expectedCommandId);
+
+        $this->readRepository->expects($this->once())
+            ->method('get')
+            ->with($eventId)
+            ->willReturn(new JsonDocument($eventId));
+
+        $commandId = $this->eventEditingService->updateCalendar($eventId, $calendar);
+
+        $this->assertEquals($expectedCommandId, $commandId);
     }
 
     /**
@@ -373,6 +494,34 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn($expectedCommandId);
 
         $commandId = $this->eventEditingService->updateAudience($eventId, $audience);
+
+        $this->assertEquals($expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_dispatch_an_update_location_command()
+    {
+        $eventId = '3ed90f18-93a3-4340-981d-12e57efa0211';
+
+        $locationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
+
+        $updateLocation = new UpdateLocation($eventId, $locationId);
+
+        $expectedCommandId = 'commandId';
+
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with($updateLocation)
+            ->willReturn($expectedCommandId);
+
+        $this->readRepository->expects($this->once())
+            ->method('get')
+            ->with($eventId)
+            ->willReturn(new JsonDocument($eventId));
+
+        $commandId = $this->eventEditingService->updateLocation($eventId, $locationId);
 
         $this->assertEquals($expectedCommandId, $commandId);
     }

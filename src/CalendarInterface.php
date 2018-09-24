@@ -2,10 +2,12 @@
 
 namespace CultuurNet\UDB3;
 
+use CultuurNet\UDB3\Calendar\OpeningHour;
 use DateTimeInterface;
 
 /**
  * Interface for calendars.
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar.
  */
 interface CalendarInterface
 {
@@ -33,7 +35,7 @@ interface CalendarInterface
     /**
      * Get the opening hours.
      *
-     * @return array
+     * @return OpeningHour[]
      */
     public function getOpeningHours();
 

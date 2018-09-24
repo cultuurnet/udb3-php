@@ -30,25 +30,12 @@ class PriceDescriptionParserTest extends \PHPUnit_Framework_TestCase
         $expectedPrices = array(
             'Basistarief' => 12.5,
             'Met kinderen' => 20,
-            'Senioren' => 30
+            'Senioren' => 30,
         );
 
         $prices = $this->parser->parse($description);
 
         $this->assertEquals($expectedPrices, $prices);
-    }
-
-    /**
-     * @test
-     */
-    public function it_requires_description_to_start_with_Basistarief()
-    {
-        // All prices are valid but Basistarief is not the first.
-        $description = 'Met kinderen: 20,00 €; Senioren: 30,00 €; Basistarief: 12,50 €';
-
-        $prices = $this->parser->parse($description);
-
-        $this->assertSame(array(), $prices);
     }
 
     /**

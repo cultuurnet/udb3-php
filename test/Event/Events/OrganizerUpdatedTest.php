@@ -19,7 +19,7 @@ class OrganizerUpdatedTest extends \PHPUnit_Framework_TestCase
                     'event-123',
                     'organizer-456'
                 ),
-            ]
+            ],
         ];
     }
 

@@ -18,7 +18,7 @@ class DummyEventStreamDecorator implements EventStreamDecoratorInterface
         foreach ($eventStream as $message) {
             $metadata = new Metadata(
                 [
-                    'mock' => $aggregateType . '::' . $aggregateIdentifier
+                    'mock' => $aggregateType . '::' . $aggregateIdentifier,
                 ]
             );
 

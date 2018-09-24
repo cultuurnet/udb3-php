@@ -9,9 +9,11 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\EventType;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use DateTimeImmutable;
 use ValueObjects\Geography\Country;
 
 class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
@@ -47,6 +49,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
 
         $this->placeCreated = new PlaceCreated(
             'id',
+            new Language('es'),
             new Title('title'),
             new EventType('id', 'label'),
             $this->address,
@@ -151,6 +154,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'place_id' => 'test 456',
+                    'main_language' => 'es',
                     'title' => 'title',
                     'theme' => null,
                     'address' => array(
@@ -165,12 +169,13 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
+                        'domain' => 'eventtype',
                     ),
-                    'publication_date' => null
+                    'publication_date' => null,
                 ],
                 new PlaceCreated(
                     'test 456',
+                    new Language('es'),
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Address(
@@ -187,6 +192,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'place_id' => 'test 456',
+                    'main_language' => 'es',
                     'title' => 'title',
                     'theme' => [
                         'id' => '123',
@@ -205,12 +211,13 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
+                        'domain' => 'eventtype',
                     ),
-                    'publication_date' => null
+                    'publication_date' => null,
                 ],
                 new PlaceCreated(
                     'test 456',
+                    new Language('es'),
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Address(
@@ -228,6 +235,7 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'place_id' => 'test 456',
+                    'main_language' => 'es',
                     'title' => 'title',
                     'theme' => null,
                     'address' => array(
@@ -242,12 +250,13 @@ class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
                     'event_type' => array(
                         'id' => 'bar_id',
                         'label' => 'bar',
-                        'domain' => 'eventtype'
+                        'domain' => 'eventtype',
                     ),
-                    'publication_date' => '2016-08-01T00:00:00+02:00'
+                    'publication_date' => '2016-08-01T00:00:00+02:00',
                 ],
                 new PlaceCreated(
                     'test 456',
+                    new Language('es'),
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
                     new Address(

@@ -107,7 +107,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::PERMISSION_COLUMN => Permission::LABELS_BEHEREN
+                SchemaConfigurator::PERMISSION_COLUMN => Permission::LABELS_BEHEREN,
             )
         );
 
@@ -115,7 +115,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::PERMISSION_COLUMN => Permission::GEBRUIKERS_BEHEREN
+                SchemaConfigurator::PERMISSION_COLUMN => Permission::GEBRUIKERS_BEHEREN,
             )
         );
 
@@ -123,7 +123,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => $otherRoleId,
-                SchemaConfigurator::PERMISSION_COLUMN => Permission::GEBRUIKERS_BEHEREN
+                SchemaConfigurator::PERMISSION_COLUMN => Permission::GEBRUIKERS_BEHEREN,
             )
         );
 
@@ -158,7 +158,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::PERMISSION_COLUMN => Permission::LABELS_BEHEREN
+                SchemaConfigurator::PERMISSION_COLUMN => Permission::LABELS_BEHEREN,
             )
         );
 
@@ -166,7 +166,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::PERMISSION_COLUMN => Permission::GEBRUIKERS_BEHEREN
+                SchemaConfigurator::PERMISSION_COLUMN => Permission::GEBRUIKERS_BEHEREN,
             )
         );
 
@@ -174,7 +174,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             $this->rolePermissionTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => $otherRoleId,
-                SchemaConfigurator::PERMISSION_COLUMN => Permission::GEBRUIKERS_BEHEREN
+                SchemaConfigurator::PERMISSION_COLUMN => Permission::GEBRUIKERS_BEHEREN,
             )
         );
 
@@ -215,7 +215,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             $this->userRoleTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::USER_ID_COLUMN => $otherUserId
+                SchemaConfigurator::USER_ID_COLUMN => $otherUserId,
             )
         );
 
@@ -223,7 +223,7 @@ class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
             $this->userRoleTableName,
             array(
                 SchemaConfigurator::ROLE_ID_COLUMN => (string) $roleId,
-                SchemaConfigurator::USER_ID_COLUMN => $userId
+                SchemaConfigurator::USER_ID_COLUMN => $userId,
             )
         );
 

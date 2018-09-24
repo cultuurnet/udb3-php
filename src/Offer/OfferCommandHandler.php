@@ -7,24 +7,32 @@ use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Media\MediaManager;
+use CultuurNet\UDB3\Media\MediaManagerInterface;
 use CultuurNet\UDB3\Offer\Commands\AbstractAddLabel;
+use CultuurNet\UDB3\Offer\Commands\AbstractDeleteCurrentOrganizer;
+use CultuurNet\UDB3\Offer\Commands\AbstractImportLabels;
 use CultuurNet\UDB3\Offer\Commands\AbstractLabelCommand;
 use CultuurNet\UDB3\Offer\Commands\AbstractRemoveLabel;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOffer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractDeleteTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateBookingInfo;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateCalendar;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateContactPoint;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateDescription;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateFacilities;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateOrganizer;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdatePriceInfo;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTheme;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateType;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTypicalAgeRange;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractAddImage;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractImportImages;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractRemoveImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractSelectMainImage;
 use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateDescription;
-use CultuurNet\UDB3\Offer\Commands\AbstractTranslateTitle;
+use CultuurNet\UDB3\Offer\Commands\AbstractUpdateTitle;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractApprove;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsDuplicate;
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractFlagAsInappropriate;
@@ -51,18 +59,26 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     protected $labelRepository;
 
     /**
+     * @var MediaManagerInterface|MediaManager
+     */
+    protected $mediaManager;
+
+    /**
      * @param RepositoryInterface $offerRepository
      * @param RepositoryInterface $organizerRepository
      * @param ReadRepositoryInterface $labelRepository
+     * @param MediaManagerInterface $mediaManager
      */
     public function __construct(
         RepositoryInterface $offerRepository,
         RepositoryInterface $organizerRepository,
-        ReadRepositoryInterface $labelRepository
+        ReadRepositoryInterface $labelRepository,
+        MediaManagerInterface $mediaManager
     ) {
         $this->offerRepository = $offerRepository;
         $this->organizerRepository = $organizerRepository;
         $this->labelRepository = $labelRepository;
+        $this->mediaManager = $mediaManager;
     }
 
     /**
@@ -118,12 +134,12 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @return string
      */
-    abstract protected function getTranslateTitleClassName();
+    abstract protected function getImportLabelsClassName();
 
     /**
      * @return string
      */
-    abstract protected function getTranslateDescriptionClassName();
+    abstract protected function getUpdateTitleClassName();
 
     /**
      * @return string
@@ -148,7 +164,17 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     /**
      * @return string
      */
+    abstract protected function getImportImagesClassName();
+
+    /**
+     * @return string
+     */
     abstract protected function getUpdateDescriptionClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateCalendarClassName();
 
     /**
      * @return string
@@ -169,6 +195,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
      * @return string
      */
     abstract protected function getDeleteOrganizerClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getDeleteCurrentOrganizerClassName();
 
     /**
      * @return string
@@ -216,6 +247,57 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     abstract protected function getFlagAsInappropriateClassName();
 
     /**
+     * @return string
+     */
+    abstract protected function getUpdateTypeClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateThemeClassName();
+
+    /**
+     * @return string
+     */
+    abstract protected function getUpdateFacilitiesClassName();
+
+    /**
+     * @param AbstractUpdateType $updateType
+     */
+    public function handleUpdateType(AbstractUpdateType $updateType)
+    {
+        $offer = $this->load($updateType->getItemId());
+
+        $offer->updateType($updateType->getType());
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractUpdateTheme $updateTheme
+     */
+    public function handleUpdateTheme(AbstractUpdateTheme $updateTheme)
+    {
+        $offer = $this->load($updateTheme->getItemId());
+
+        $offer->updateTheme($updateTheme->getTheme());
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
+     * @param AbstractUpdateFacilities $updateFacilities
+     */
+    public function handleUpdateFacilities(AbstractUpdateFacilities $updateFacilities)
+    {
+        $offer = $this->load($updateFacilities->getItemId());
+
+        $offer->updateFacilities($updateFacilities->getFacilities());
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
      * @param AbstractAddLabel $addLabel
      */
     private function handleAddLabel(AbstractAddLabel $addLabel)
@@ -240,6 +322,18 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
+     * @param AbstractImportLabels $importLabels
+     */
+    private function handleImportLabels(AbstractImportLabels $importLabels)
+    {
+        $offer = $this->load($importLabels->getItemId());
+
+        $offer->importLabels($importLabels->getLabels());
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
      * @param AbstractLabelCommand $labelCommand
      * @return Label
      */
@@ -255,22 +349,12 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
-     * @param AbstractTranslateTitle $translateTitle
+     * @param AbstractUpdateTitle $translateTitle
      */
-    private function handleTranslateTitle(AbstractTranslateTitle $translateTitle)
+    private function handleUpdateTitle(AbstractUpdateTitle $translateTitle)
     {
         $offer = $this->load($translateTitle->getItemId());
-        $offer->translateTitle($translateTitle->getLanguage(), $translateTitle->getTitle());
-        $this->offerRepository->save($offer);
-    }
-
-    /**
-     * @param AbstractTranslateDescription $translateDescription
-     */
-    private function handleTranslateDescription(AbstractTranslateDescription $translateDescription)
-    {
-        $offer = $this->load($translateDescription->getItemId());
-        $offer->translateDescription($translateDescription->getLanguage(), $translateDescription->getDescription());
+        $offer->updateTitle($translateTitle->getLanguage(), $translateTitle->getTitle());
         $this->offerRepository->save($offer);
     }
 
@@ -281,7 +365,10 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     public function handleAddImage(AbstractAddImage $addImage)
     {
         $offer = $this->load($addImage->getItemId());
-        $offer->addImage($addImage->getImage());
+
+        $image = $this->mediaManager->getImage($addImage->getImageId());
+        $offer->addImage($image);
+
         $this->offerRepository->save($offer);
     }
 
@@ -316,6 +403,16 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
+     * @param AbstractImportImages $importImages
+     */
+    public function handleImportImages(AbstractImportImages $importImages)
+    {
+        $offer = $this->load($importImages->getItemId());
+        $offer->importImages($importImages->getImages());
+        $this->offerRepository->save($offer);
+    }
+
+    /**
      * Handle the update of description on a place.
      * @param AbstractUpdateDescription $updateDescription
      */
@@ -324,11 +421,24 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
         $offer = $this->load($updateDescription->getItemId());
 
         $offer->updateDescription(
-            $updateDescription->getDescription()
+            $updateDescription->getDescription(),
+            $updateDescription->getLanguage()
         );
 
         $this->offerRepository->save($offer);
 
+    }
+
+    /**
+     * @param AbstractUpdateCalendar $updateCalendar
+     */
+    public function handleUpdateCalendar(AbstractUpdateCalendar $updateCalendar)
+    {
+        $offer = $this->load($updateCalendar->getItemId());
+
+        $offer->updateCalendar($updateCalendar->getCalendar());
+
+        $this->offerRepository->save($offer);
     }
 
     /**
@@ -393,12 +503,24 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
+     * @param AbstractDeleteCurrentOrganizer $deleteCurrentOrganizer
+     */
+    public function handleDeleteCurrentOrganizer(AbstractDeleteCurrentOrganizer $deleteCurrentOrganizer)
+    {
+        $offer = $this->load($deleteCurrentOrganizer->getItemId());
+
+        $offer->deleteCurrentOrganizer();
+
+        $this->offerRepository->save($offer);
+    }
+
+    /**
      * Handle an update command to updated the contact point.
      * @param AbstractUpdateContactPoint $updateContactPoint
      */
     public function handleUpdateContactPoint(AbstractUpdateContactPoint $updateContactPoint)
     {
-        $offer = $this->load($updateContactPoint->getId());
+        $offer = $this->load($updateContactPoint->getItemId());
 
         $offer->updateContactPoint(
             $updateContactPoint->getContactPoint()

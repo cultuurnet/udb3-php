@@ -98,8 +98,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             (string) $variationId,
             json_encode([
                 'description' => [
-                    'nl' => 'The variation description'
-                ]
+                    'nl' => 'The variation description',
+                ],
             ])
         );
 
@@ -107,8 +107,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             (string) $variationId,
             json_encode([
                 'description' => [
-                    'nl' => 'This is a new description'
-                ]
+                    'nl' => 'This is a new description',
+                ],
             ])
         );
 
@@ -158,9 +158,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '@id' => $iri,
                 'description' => [
                     'nl' => 'Original offer description',
-                    'fr' => 'Le french translation'
+                    'fr' => 'Le french translation',
                 ],
-                'sameAs' => []
+                'sameAs' => [],
             ])
         );
 
@@ -169,9 +169,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             json_encode([
                 '@id' => $variationUrl,
                 'description' => [
-                    'nl' => 'The variation description'
+                    'nl' => 'The variation description',
                 ],
-                'sameAs' => [$iri]
+                'sameAs' => [$iri],
             ])
         );
 
@@ -181,9 +181,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '@id' => $variationUrl,
                 'description' => [
                     'nl' => 'The variation description',
-                    'fr' => 'Le french translation'
+                    'fr' => 'Le french translation',
                 ],
-                'sameAs' => [$iri]
+                'sameAs' => [$iri],
             ])
         );
 
@@ -293,9 +293,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '@id' => $eventUrl,
                 'description' => [
                     'nl' => 'Original event description',
-                    'fr' => 'Le french translation'
+                    'fr' => 'Le french translation',
                 ],
-                'sameAs' => []
+                'sameAs' => [],
             ])
         );
 
@@ -305,9 +305,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
                 '@id' => $variationUrl,
                 'description' => [
                     'nl' => 'The variation description',
-                    'fr' => 'Le french translation'
+                    'fr' => 'Le french translation',
                 ],
-                'sameAs' => [$eventUrl]
+                'sameAs' => [$eventUrl],
             ])
         );
 

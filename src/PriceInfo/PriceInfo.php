@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\PriceInfo;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Price\PriceInfo as Udb3ModelPriceInfo;
 
 class PriceInfo implements SerializableInterface
 {
@@ -83,6 +84,23 @@ class PriceInfo implements SerializableInterface
             $priceInfo = $priceInfo->withExtraTariff(
                 Tariff::deserialize($tariffData)
             );
+        }
+
+        return $priceInfo;
+    }
+
+    /**
+     * @param Udb3ModelPriceInfo $udb3ModelPriceInfo
+     * @return PriceInfo
+     */
+    public static function fromUdb3ModelPriceInfo(Udb3ModelPriceInfo $udb3ModelPriceInfo)
+    {
+        $basePrice = BasePrice::fromUdb3ModelTariff($udb3ModelPriceInfo->getBasePrice());
+        $priceInfo = new PriceInfo($basePrice);
+
+        foreach ($udb3ModelPriceInfo->getTariffs() as $udb3ModelTariff) {
+            $tariff = Tariff::fromUdb3ModelTariff($udb3ModelTariff);
+            $priceInfo = $priceInfo->withExtraTariff($tariff);
         }
 
         return $priceInfo;

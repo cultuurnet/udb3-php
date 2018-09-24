@@ -164,6 +164,30 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     /**
      * @test
      */
+    public function it_can_get_by_name_case_insensitive()
+    {
+        $entity = $this->dbalReadRepository->getByName(
+            new StringLiteral('BosWandeling')
+        );
+
+        $this->assertEquals($this->entityByName, $entity);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_get_on_part_of_name()
+    {
+        $entity = $this->dbalReadRepository->getByName(
+            new StringLiteral('oswand')
+        );
+
+        $this->assertNull($entity);
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_null_when_not_found_by_name()
     {
         $entity = $this->dbalReadRepository->getByName(
@@ -227,7 +251,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
         $this->assertEquals(
             [
                 $this->entityByName,
-                $this->entityPrivateAccess
+                $this->entityPrivateAccess,
             ],
             $entities
         );
@@ -370,6 +394,25 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
     }
 
     /**
+     * @test
+     */
+    public function a_user_needs_permission_on_private_label_case_insensitive()
+    {
+        $userId = new StringLiteral('a02f67cb-3227-439b-861b-6ec24de7f0d1');
+        $this->seedRoles($userId);
+
+        $this->assertTrue($this->dbalReadRepository->canUseLabel(
+            $userId,
+            new StringLiteral('Wandeltocht')
+        ));
+
+        $this->assertFalse($this->dbalReadRepository->canUseLabel(
+            $userId,
+            new StringLiteral('Stadswandeling')
+        ));
+    }
+
+    /**
      * @param UUID $labelId
      * @param UUID $roleId
      */
@@ -379,7 +422,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
             $this->labelRolesTableName->toNative(),
             [
                 LabelRolesSchemaConfigurator::LABEL_ID_COLUMN => $labelId->toNative(),
-                LabelRolesSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                LabelRolesSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             ]
         );
     }
@@ -394,7 +437,7 @@ class DBALReadRepositoryTest extends BaseDBALRepositoryTest
             $this->userRolesTableName->toNative(),
             [
                 PermissionsSchemaConfigurator::USER_ID_COLUMN => $userId->toNative(),
-                PermissionsSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative()
+                PermissionsSchemaConfigurator::ROLE_ID_COLUMN => $roleId->toNative(),
             ]
         );
     }

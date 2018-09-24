@@ -1,8 +1,9 @@
 {
   "@id": "http://example.com/entity/2",
   "@context": "/contexts/event",
+  "mainLanguage": "en",
   "name": {
-    "nl": "some representative title"
+    "en": "some representative title"
   },
   "location": {
     "@type": "Place"
@@ -36,5 +37,7 @@
       "startDate": "2015-01-28T13:25:21+01:00",
       "endDate": "2015-01-29T13:25:21+01:00"
     }
-  ]
+  ],
+  "languages": ["en"],
+  "completedLanguages": ["en"]
 }

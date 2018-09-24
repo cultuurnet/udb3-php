@@ -8,13 +8,17 @@ use Broadway\Repository\RepositoryInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\Commands\UpdateAudience;
+use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Event\Commands\UpdateMajorInfo;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
+use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
 class DefaultEventEditingService extends DefaultOfferEditingService implements EventEditingServiceInterface
@@ -52,7 +56,9 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
             $uuidGenerator,
             $readRepository,
             $commandFactory,
-            $labelService
+            $labelService,
+            new EventTypeResolver(),
+            new EventThemeResolver()
         );
         $this->eventService = $eventService;
         $this->writeRepository = $writeRepository;
@@ -62,6 +68,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
      * {@inheritdoc}
      */
     public function createEvent(
+        Language $mainLanguage,
         Title $title,
         EventType $eventType,
         Location $location,
@@ -72,6 +79,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
 
         $event = Event::create(
             $eventId,
+            $mainLanguage,
             $title,
             $eventType,
             $location,
@@ -79,6 +87,38 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
             $theme,
             $this->publicationDate
         );
+
+        $this->writeRepository->save($event);
+
+        return $eventId;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createApprovedEvent(
+        Language $mainLanguage,
+        Title $title,
+        EventType $eventType,
+        Location $location,
+        CalendarInterface $calendar,
+        Theme $theme = null
+    ) {
+        $eventId = $this->uuidGenerator->generate();
+
+        $event = Event::create(
+            $eventId,
+            $mainLanguage,
+            $title,
+            $eventType,
+            $location,
+            $calendar,
+            $theme
+        );
+
+        $publicationDate = $this->publicationDate ? $this->publicationDate : new \DateTimeImmutable();
+        $event->publish($publicationDate);
+        $event->approve();
 
         $this->writeRepository->save($event);
 
@@ -123,6 +163,18 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
 
         return $this->commandBus->dispatch(
             new UpdateMajorInfo($eventId, $title, $eventType, $location, $calendar, $theme)
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateLocation($eventId, LocationId $locationId)
+    {
+        $this->guardId($eventId);
+
+        return $this->commandBus->dispatch(
+            new UpdateLocation($eventId, $locationId)
         );
     }
 

@@ -4,14 +4,8 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\ContactPoint;
 
-abstract class AbstractUpdateContactPoint
+abstract class AbstractUpdateContactPoint extends AbstractCommand
 {
-    /**
-     * Id that gets updated.
-     * @var string
-     */
-    protected $id;
-
     /**
      * The contactPoint entry
      * @var ContactPoint
@@ -19,21 +13,13 @@ abstract class AbstractUpdateContactPoint
     protected $contactPoint;
 
     /**
-     * @param string $id
+     * @param string $itemId
      * @param ContactPoint $contactPoint
      */
-    public function __construct($id, ContactPoint $contactPoint)
+    public function __construct($itemId, ContactPoint $contactPoint)
     {
-        $this->id = $id;
+        parent::__construct($itemId);
         $this->contactPoint = $contactPoint;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

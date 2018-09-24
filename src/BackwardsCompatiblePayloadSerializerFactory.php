@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\OrganizerDeleted as EventOrganizerDeleted;
 use CultuurNet\UDB3\Event\Events\OrganizerUpdated as EventOrganizerUpdated;
+use CultuurNet\UDB3\Event\Events\PriceInfoUpdated as EventPriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted as EventTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeUpdated as EventTypicalAgeRangeUpdated;
@@ -27,6 +28,7 @@ use CultuurNet\UDB3\Place\Events\DescriptionUpdated as PlaceDescriptionUpdated;
 use CultuurNet\UDB3\Place\Events\OrganizerDeleted as PlaceOrganizerDeleted;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated as PlaceOrganizerUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
+use CultuurNet\UDB3\Place\Events\PriceInfoUpdated as PlacePriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted as PlaceTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated as PlaceTypicalAgeRangeUpdated;
 use ValueObjects\Identity\UUID;
@@ -41,7 +43,6 @@ use ValueObjects\Identity\UUID;
  */
 class BackwardsCompatiblePayloadSerializerFactory
 {
-
     private function __construct()
     {
 
@@ -55,6 +56,32 @@ class BackwardsCompatiblePayloadSerializerFactory
     {
         $payloadManipulatingSerializer = new PayloadManipulatingSerializer(
             new SimpleInterfaceSerializer()
+        );
+
+        /*
+         * CREATE EVENTS
+         *
+         */
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Event\Events\EventCreated',
+            function (array $serializedObject) {
+                return self::addDefaultMainLanguage($serializedObject);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Place\Events\PlaceCreated',
+            function (array $serializedObject) {
+                return self::addDefaultMainLanguage($serializedObject);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite',
+            function (array $serializedObject) {
+                return self::addDefaultMainLanguage($serializedObject);
+            }
         );
 
         /*
@@ -191,10 +218,120 @@ class BackwardsCompatiblePayloadSerializerFactory
         );
 
         /**
+         * PLACE FACILITIES EVENT
+         */
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Place\Events\FacilitiesUpdated',
+            function (array $serializedObject) {
+                $serializedObject = self::replacePlaceIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
+         * GEOCOORDINATES UPDATED EVENT
+         */
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated',
+            function (array $serializedObject) {
+                $serializedObject = self::replacePlaceIdWithItemId($serializedObject);
+
+                return $serializedObject;
+            }
+        );
+
+        /**
+         * BOOKING INFO EVENT
+         */
+        $manipulateAvailability = function (array $serializedBookingInfo, $propertyName) {
+            if (!isset($serializedBookingInfo[$propertyName]) || empty($serializedBookingInfo[$propertyName])) {
+                $serializedBookingInfo[$propertyName] = null;
+                return $serializedBookingInfo;
+            }
+
+            $dateTimeString = $serializedBookingInfo[$propertyName];
+
+            // The new serialized date time format is a string according the ISO 8601 format.
+            // If this is so return without modifications.
+            $dateTimeFromAtom = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $dateTimeString);
+            if ($dateTimeFromAtom) {
+                return $serializedBookingInfo;
+            }
+
+            // For older format a modification is needed to ISO 8601 format.
+            $dateTimeFromAtomWithMilliseconds = \DateTimeImmutable::createFromFormat(
+                'Y-m-d\TH:i:s.uP',
+                $dateTimeString
+            );
+            if ($dateTimeFromAtomWithMilliseconds) {
+                $serializedBookingInfo[$propertyName] = $dateTimeFromAtomWithMilliseconds->format(\DATE_ATOM);
+                return $serializedBookingInfo;
+            }
+
+            // In case of unknown format clear the available date property.
+            unset($serializedBookingInfo[$propertyName]);
+            return $serializedBookingInfo;
+        };
+
+        $manipulateUrlLabel = function (array $serializedBookingInfo) {
+            if (!isset($serializedBookingInfo['urlLabel'])) {
+                return $serializedBookingInfo;
+            }
+
+            $urlLabel = $serializedBookingInfo['urlLabel'];
+
+            if (empty($urlLabel)) {
+                unset($serializedBookingInfo['urlLabel']);
+                return $serializedBookingInfo;
+            }
+
+            if (is_string($urlLabel)) {
+                $serializedBookingInfo['urlLabel'] = ['nl' => $urlLabel];
+                return $serializedBookingInfo;
+            }
+
+            if (is_array($urlLabel)) {
+                return $serializedBookingInfo;
+            }
+
+            // In case of unknown format clear the urlLabel property.
+            unset($serializedBookingInfo['urlLabel']);
+            return $serializedBookingInfo;
+        };
+
+        $manipulateBookingInfoEvent = function (
+            array $serializedEvent
+        ) use (
+            $manipulateAvailability,
+            $manipulateUrlLabel
+        ) {
+            $serializedEvent = self::replaceEventIdWithItemId($serializedEvent);
+            $serializedEvent = self::replacePlaceIdWithItemId($serializedEvent);
+
+            $serializedBookingInfo = $serializedEvent['payload']['bookingInfo'];
+            $serializedBookingInfo = $manipulateAvailability($serializedBookingInfo, 'availabilityStarts');
+            $serializedBookingInfo = $manipulateAvailability($serializedBookingInfo, 'availabilityEnds');
+            $serializedBookingInfo = $manipulateUrlLabel($serializedBookingInfo);
+            $serializedEvent['payload']['bookingInfo'] = $serializedBookingInfo;
+
+            return $serializedEvent;
+        };
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            EventBookingInfoUpdated::class,
+            $manipulateBookingInfoEvent
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            PlaceBookingInfoUpdated::class,
+            $manipulateBookingInfoEvent
+        );
+
+        /**
          * EventEvent to AbstractEvent (Offer)
          */
         $refactoredEventEvents = [
-            EventBookingInfoUpdated::class,
             EventTypicalAgeRangeDeleted::class,
             EventTypicalAgeRangeUpdated::class,
             EventContactPointUpdated::class,
@@ -221,7 +358,6 @@ class BackwardsCompatiblePayloadSerializerFactory
         $refactoredPlaceEvents = [
             PlaceOrganizerUpdated::class,
             PlaceOrganizerDeleted::class,
-            PlaceBookingInfoUpdated::class,
             PlaceTypicalAgeRangeDeleted::class,
             PlaceTypicalAgeRangeUpdated::class,
             PlaceContactPointUpdated::class,
@@ -234,6 +370,37 @@ class BackwardsCompatiblePayloadSerializerFactory
                 $refactoredPlaceEvent,
                 function (array $serializedObject) {
                     $serializedObject = self::replacePlaceIdWithItemId($serializedObject);
+                    return $serializedObject;
+                }
+            );
+        }
+
+        /**
+         * PriceInfoUpdated events
+         */
+        $priceInfoEvents = [
+            EventPriceInfoUpdated::class,
+            PlacePriceInfoUpdated::class,
+        ];
+
+        foreach ($priceInfoEvents as $priceInfoEvent) {
+            $payloadManipulatingSerializer->manipulateEventsOfClass(
+                $priceInfoEvent,
+                function (array $serializedObject) {
+                    $payload = &$serializedObject['payload'];
+                    $priceInfo = &$payload['price_info'];
+                    $tariffs = array_map(
+                        function (array $tariff) {
+                            $name = $tariff['name'];
+                            if (is_string($name)) {
+                                $name = ['nl' => $name];
+                            }
+                            $tariff['name'] = $name;
+                            return $tariff;
+                        },
+                        isset($priceInfo['tariffs']) ? $priceInfo['tariffs'] : []
+                    );
+                    $priceInfo['tariffs'] = $tariffs;
                     return $serializedObject;
                 }
             );
@@ -325,6 +492,20 @@ class BackwardsCompatiblePayloadSerializerFactory
 
             $serializedObject['payload']['label'] = $label->getName()->toNative();
             $serializedObject['payload']['visibility'] = $label->getVisibility() === Visibility::VISIBLE();
+        }
+
+        return $serializedObject;
+    }
+
+    /**
+     * @param array $serializedObject
+     * @return array
+     */
+    private static function addDefaultMainLanguage(array $serializedObject)
+    {
+        if (!isset($serializedObject['payload']['main_language'])) {
+            $mainLanguage = new Language('nl');
+            $serializedObject['payload']['main_language'] = $mainLanguage->getCode();
         }
 
         return $serializedObject;

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\MyOrganizers\ReadModel;
 
+use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\EventSourcing\DomainMessageBuilder;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -104,6 +105,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $msg = $this->domainMessageBuilder->create($organizerEvent);
 
+        // We do not expect a delete first when NOT replaying.
+        $this->repository->expects($this->never())
+            ->method('delete');
+
         $this->repository->expects($this->once())
             ->method('add')
             ->with(
@@ -130,5 +135,41 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->projector->handle(
             $this->domainMessageBuilder->create($organizerDeleted)
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_first_deletes_existing_entry_when_replaying()
+    {
+        $organizerId = 'my-organizer';
+
+        $organizerCreated = new OrganizerCreated(
+            $organizerId,
+            new Title('some title'),
+            [],
+            [],
+            [],
+            []
+        );
+
+        $domainMessage = $this->domainMessageBuilder
+            ->forReplay()
+            ->create($organizerCreated);
+
+        $this->repository->expects($this->once())
+            ->method('delete')
+            ->with($organizerId);
+
+        $this->repository->expects($this->once())
+            ->method('add')
+            ->with(
+                $organizerCreated->getOrganizerId(),
+                self::USER_ID,
+                new \DateTime(self::DATETIME)
+            );
+
+
+        $this->projector->handle($domainMessage);
     }
 }

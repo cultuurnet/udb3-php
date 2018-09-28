@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\MyOrganizers\ReadModel;
 
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\Broadway\Domain\ReplayDetectorTrait;
 use CultuurNet\UDB3\DomainMessageAdapter as DomainMessage;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTraitWithDomainMessageAdapter;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -14,6 +15,7 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 class Projector implements EventListenerInterface
 {
     use DelegateEventHandlingToSpecificMethodTraitWithDomainMessageAdapter;
+    use ReplayDetectorTrait;
 
     /**
      * @var RepositoryInterface
@@ -61,6 +63,10 @@ class Projector implements EventListenerInterface
         OrganizerEvent $organizerEvent,
         DomainMessage $domainMessage
     ) {
+        if ($this->isReplayed($domainMessage->getInnerDomainMessage())) {
+            $this->repository->delete($organizerEvent->getOrganizerId());
+        }
+
         $this->repository->add(
             $organizerEvent->getOrganizerId(),
             $domainMessage->getUserId(),

@@ -64,6 +64,9 @@ class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
             ->with('info@example.be')
             ->willReturn(self::USER_ID);
 
+        $this->repository->expects($this->never())
+            ->method('delete');
+
         $this->repository->expects($this->once())
             ->method('add')
             ->with(
@@ -94,5 +97,56 @@ class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
                 )
             )
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_first_deletes_existing_entry_when_replaying()
+    {
+        $cdbid = 'd53c2bc9-8f0e-4c9a-8457-77e8b3cab3d1';
+
+        $organizerImported = new OrganizerImportedFromUDB2(
+            $cdbid,
+            file_get_contents(__DIR__ . '/organizer.xml'),
+            'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL'
+        );
+
+        $this->userIdResolver->expects($this->once())
+            ->method('resolveCreatedByToUserId')
+            ->with('info@example.be')
+            ->willReturn(self::USER_ID);
+
+        $this->repository->expects($this->once())
+            ->method('delete')
+            ->with($cdbid);
+
+        $this->repository->expects($this->once())
+            ->method('add')
+            ->with(
+                $cdbid,
+                self::USER_ID,
+                new \DateTime(
+                    '2014-03-18T12:30:04',
+                    new \DateTimeZone('Europe/Brussels')
+                )
+            );
+
+        $this->repository->expects($this->once())
+            ->method('setUpdateDate')
+            ->with(
+                $cdbid,
+                new \DateTime(
+                    '2014-06-30T11:49:28',
+                    new \DateTimeZone('Europe/Brussels')
+                )
+            );
+
+
+        $domainMessage = $this->domainMessageBuilder
+            ->forReplay()
+            ->create($organizerImported);
+
+        $this->projector->handle($domainMessage);
     }
 }

@@ -32,4 +32,9 @@ class DomainMessageAdapter
     {
         return new DateTime($this->domainMessage->getRecordedOn()->toString());
     }
+
+    public function getInnerDomainMessage(): DomainMessage
+    {
+        return $this->domainMessage;
+    }
 }

@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\EventSourcing;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use CultuurNet\Broadway\Domain\DomainMessageIsReplayed;
 use ValueObjects\Identity\UUID;
 
 /**
@@ -31,6 +32,11 @@ class DomainMessageBuilder
      * @var DateTime
      */
     private $recordedOn;
+
+    /**
+     * @var null|bool
+     */
+    private $forReplay;
 
     public function setId(string $id): self
     {
@@ -60,6 +66,13 @@ class DomainMessageBuilder
         return $this;
     }
 
+    public function forReplay(bool $forReplay = true): self
+    {
+        $this->forReplay = $forReplay;
+
+        return $this;
+    }
+
     /**
      * @return \Broadway\Domain\DomainMessage
      */
@@ -75,12 +88,24 @@ class DomainMessageBuilder
             )
         );
 
-        return new DomainMessage(
+        $message =  new DomainMessage(
             $this->id ?? UUID::generateAsString(),
             $this->playhead ?? 1,
             $finalMetaData,
             $payload,
             $this->recordedOn ?? DateTime::now()
         );
+
+        if (is_bool($this->forReplay)) {
+            $replayMetadata = new Metadata(
+                [
+                    DomainMessageIsReplayed::METADATA_REPLAY_KEY => $this->forReplay,
+                ]
+            );
+
+            $message = $message->andMetadata($replayMetadata);
+        }
+
+        return $message;
     }
 }

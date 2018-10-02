@@ -193,12 +193,21 @@ class OrganizerLDProjector implements EventListenerInterface
             $recordedOn
         )->format('c');
 
-        $metaData = $domainMessage->getMetadata()->serialize();
-        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
-            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
-        }
+        $jsonLD = $this->appendCreator($jsonLD, $domainMessage);
 
         return $document->withBody($jsonLD);
+    }
+
+    private function appendCreator($jsonLD, $domainMessage)
+    {
+        $newJsonLD = clone $jsonLD;
+
+        $metaData = $domainMessage->getMetadata()->serialize();
+        if (isset($metaData['user_id'])) {
+            $newJsonLD->creator = $metaData['user_id'];
+        }
+
+        return $newJsonLD;
     }
 
     /**
@@ -232,10 +241,7 @@ class OrganizerLDProjector implements EventListenerInterface
             $recordedOn
         )->format('c');
 
-        $metaData = $domainMessage->getMetadata()->serialize();
-        if (isset($metaData['user_id']) && isset($metaData['user_nick'])) {
-            $jsonLD->creator = "{$metaData['user_id']} ({$metaData['user_nick']})";
-        }
+        $jsonLD = $this->appendCreator($jsonLD, $domainMessage);
 
         return $document->withBody($jsonLD);
     }

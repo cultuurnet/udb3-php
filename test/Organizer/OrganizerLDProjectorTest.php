@@ -170,6 +170,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->email = ['test@test.be', 'test2@test.be'];
         $jsonLD->url = ['http://www.google.be'];
         $jsonLD->created = $this->recordedOn->toString();
+        $jsonLD->creator = '28f69301-13bc-4153-a9d2-e91e89cbe156';
         $jsonLD->languages = ['nl'];
         $jsonLD->completedLanguages = ['nl'];
         $jsonLD->modified = $this->recordedOn->toString();
@@ -185,7 +186,12 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             new DomainMessage(
                 1,
                 1,
-                new Metadata(),
+                new Metadata(
+                    [
+                        'user_id' => '28f69301-13bc-4153-a9d2-e91e89cbe156',
+                        'user_nick' => 'JohnDoe',
+                    ]
+                ),
                 $organizerCreated,
                 $this->recordedOn->toBroadwayDateTime()
             )
@@ -214,6 +220,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->url = 'http://www.stuk.be';
         $jsonLD->name['en'] = 'some representative title';
         $jsonLD->created = $this->recordedOn->toString();
+        $jsonLD->creator = '28f69301-13bc-4153-a9d2-e91e89cbe156';
         $jsonLD->languages = ['en'];
         $jsonLD->completedLanguages = ['en'];
         $jsonLD->modified = $this->recordedOn->toString();
@@ -229,7 +236,12 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             new DomainMessage(
                 1,
                 1,
-                new Metadata(),
+                new Metadata(
+                    [
+                        'user_id' => '28f69301-13bc-4153-a9d2-e91e89cbe156',
+                        'user_nick' => 'JohnDoe',
+                    ]
+                ),
                 $organizerCreated,
                 $this->recordedOn->toBroadwayDateTime()
             )

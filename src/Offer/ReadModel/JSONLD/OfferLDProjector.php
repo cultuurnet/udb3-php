@@ -88,11 +88,6 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
     protected $mediaObjectSerializer;
 
     /**
-     * @var EventSpecification
-     */
-    protected $eventsNotTriggeringUpdateModified;
-
-    /**
      * Associative array of bases prices.
      * Key is the language, value is the translated string.
      *
@@ -111,7 +106,6 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
      * @param EntityServiceInterface $organizerService
      * @param SerializerInterface $mediaObjectSerializer
      * @param JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher
-     * @param EventSpecification $eventsNotTriggeringUpdateModified
      * @param string[] $basePriceTranslations
      */
     public function __construct(
@@ -120,7 +114,6 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         EntityServiceInterface $organizerService,
         SerializerInterface $mediaObjectSerializer,
         JsonDocumentMetaDataEnricherInterface $jsonDocumentMetaDataEnricher,
-        EventSpecification $eventsNotTriggeringUpdateModified,
         array $basePriceTranslations
     ) {
         $this->repository = $repository;
@@ -128,7 +121,6 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
         $this->organizerService = $organizerService;
         $this->jsonDocumentMetaDataEnricher = $jsonDocumentMetaDataEnricher;
         $this->mediaObjectSerializer = $mediaObjectSerializer;
-        $this->eventsNotTriggeringUpdateModified = $eventsNotTriggeringUpdateModified;
         $this->basePriceTranslations = $basePriceTranslations;
 
         $this->slugger = new CulturefeedSlugger();
@@ -163,10 +155,7 @@ abstract class OfferLDProjector implements OrganizerServiceInterface
 
         foreach ($jsonDocuments as $jsonDocument) {
             $jsonDocument = $this->jsonDocumentMetaDataEnricher->enrich($jsonDocument, $domainMessage->getMetadata());
-
-            if (!$this->eventsNotTriggeringUpdateModified->matches($event)) {
-                $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
-            }
+            $jsonDocument = $this->updateModified($jsonDocument, $domainMessage);
 
             $this->repository->save($jsonDocument);
         }

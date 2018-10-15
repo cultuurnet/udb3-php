@@ -34,7 +34,6 @@ use CultuurNet\UDB3\Event\Events\LabelRemoved;
 use CultuurNet\UDB3\Event\Events\LocationUpdated;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\Moderation\Published;
-use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
@@ -72,11 +71,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     const CDBXML_NAMESPACE = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
 
     /**
-     * @var EventServiceInterface|PHPUnit_Framework_MockObject_MockObject
-     */
-    private $eventService;
-
-    /**
      * @var PlaceService|PHPUnit_Framework_MockObject_MockObject
      */
     private $placeService;
@@ -112,11 +106,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     protected $cdbXMLImporter;
 
     /**
-     * @var EventSpecification|\PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $eventFilter;
-
-    /**
      * Constructs a test case with the given name.
      *
      * @param string $name
@@ -137,8 +126,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->cdbXMLEventFactory = new CdbXMLEventFactory();
 
-        $this->eventService = $this->createMock(EventServiceInterface::class);
-
         $this->placeService = $this->createMock(PlaceService::class);
 
         $this->iriGenerator = new CallableIriGenerator(
@@ -148,8 +135,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         );
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
-
-        $this->eventFilter = $this->createMock(EventSpecification::class);
 
         $this->iriOfferIdentifierFactory = $this->createMock(IriOfferIdentifierFactoryInterface::class);
         $this->cdbXMLImporter = new CdbXMLImporter(
@@ -173,7 +158,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $this->projector = new EventLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
-            $this->eventService,
             $this->placeService,
             $this->organizerService,
             $this->serializer,
@@ -182,7 +166,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new JsonDocumentLanguageEnricher(
                 new EventJsonDocumentLanguageAnalyzer()
             ),
-            $this->eventFilter,
             [
                 'nl' => 'Basistarief',
                 'fr' => 'Tarif de base',
@@ -783,243 +766,6 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             $body
         );
 
-    }
-
-    /**
-     * @test
-     */
-    public function it_embeds_the_projection_of_a_place_in_all_events_located_at_that_place()
-    {
-        $eventID = '468';
-        $secondEventID = '579';
-
-        $placeID = '101214';
-        $placeIri = Url::fromNative('http://du.de/place/' . $placeID);
-
-        $placeIdentifier = new IriOfferIdentifier($placeIri, $placeID, OfferType::PLACE());
-
-        $this->iriOfferIdentifierFactory->expects($this->once())
-            ->method('fromIri')
-            ->with($placeIri)
-            ->willReturn($placeIdentifier);
-
-        $this->eventService
-            ->expects($this->once())
-            ->method('eventsLocatedAtPlace')
-            ->with($placeID)
-            ->willReturn(
-                [
-                    $eventID,
-                    $secondEventID,
-                ]
-            );
-
-        $placeJSONLD = json_encode(
-            [
-                'name' => "t,arsenaal mechelen",
-                'address' => [
-                    'addressCountry' => "BE",
-                    'addressLocality' => "Mechelen",
-                    'postalCode' => "2800",
-                    'streetAddress' => "Hanswijkstraat 63",
-                ],
-            ]
-        );
-
-        $this->placeService
-            ->expects($this->once())
-            ->method('getEntity')
-            ->with($placeID)
-            ->willReturn($placeJSONLD);
-
-        $initialEventDocument = new JsonDocument(
-            $eventID,
-            json_encode([
-              'labels' => ['test 1', 'test 2'],
-            ])
-        );
-
-        $initialSecondEventDocument = new JsonDocument(
-            $secondEventID,
-            json_encode([
-                'name' => [
-                    'nl' => 'Quicksand Valley',
-                ],
-                'languages' => ['nl'],
-                'completedLanguages' => ['nl'],
-            ])
-        );
-
-        $this->documentRepository->save($initialEventDocument);
-        $this->documentRepository->save($initialSecondEventDocument);
-
-        $expectedEventBody = (object)[
-            'labels' => ['test 1', 'test 2'],
-            'location' => (object)[
-                'name' => "t,arsenaal mechelen",
-                'address' => (object)[
-                    'addressCountry' => "BE",
-                    'addressLocality' => "Mechelen",
-                    'postalCode' => "2800",
-                    'streetAddress' => "Hanswijkstraat 63",
-                ],
-            ],
-            'modified' => $this->recordedOn->toString(),
-        ];
-
-        $expectedSecondEventBody = (object) [
-            'name' => (object)[
-                'nl' => 'Quicksand Valley',
-            ],
-            'languages' => ['nl'],
-            'completedLanguages' => ['nl'],
-            'location' => (object)[
-                'name' => "t,arsenaal mechelen",
-                'address' => (object)[
-                    'addressCountry' => "BE",
-                    'addressLocality' => "Mechelen",
-                    'postalCode' => "2800",
-                    'streetAddress' => "Hanswijkstraat 63",
-                ],
-            ],
-            'modified' => $this->recordedOn->toString(),
-        ];
-
-        $placeProjectedToJSONLD = new PlaceProjectedToJSONLD(
-            $placeID,
-            (string) $placeIri
-        );
-
-        $this->projector->handle(
-            new DomainMessage(
-                $placeID,
-                0,
-                new Metadata(),
-                $placeProjectedToJSONLD,
-                $this->recordedOn->toBroadwayDateTime()
-            )
-        );
-
-        $this->assertEquals(
-            $expectedEventBody,
-            $this->getBody($eventID)
-        );
-
-        $this->assertEquals(
-            $expectedSecondEventBody,
-            $this->getBody($secondEventID)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_embeds_the_projection_of_an_organizer_in_all_related_events()
-    {
-        $eventID = '468';
-        $secondEventID = '579';
-
-        $organizerId = '101214';
-
-        $this->eventService
-            ->expects($this->once())
-            ->method('eventsOrganizedByOrganizer')
-            ->with($organizerId)
-            ->willReturn(
-                [
-                    $eventID,
-                    $secondEventID,
-                ]
-            );
-
-        $organizerJSONLD = json_encode(
-            [
-                'name' => 'stichting tegen Kanker',
-                'email' => [
-                    'kgielens@stichtingtegenkanker.be',
-                ],
-            ]
-        );
-
-        $this->organizerService
-            ->expects($this->once())
-            ->method('getEntity')
-            ->with($organizerId)
-            ->willReturn($organizerJSONLD);
-
-        $initialEventDocument = new JsonDocument(
-            $eventID,
-            json_encode([
-              'labels' => ['beweging', 'kanker'],
-            ])
-        );
-
-        $initialSecondEventDocument = new JsonDocument(
-            $secondEventID,
-            json_encode([
-                'name' => [
-                    'nl' => 'Rekanto - TaiQi',
-                    'fr' => 'Raviva - TaiQi',
-                ],
-                'languages' => ['nl', 'fr'],
-                'completedLanguages' => ['nl', 'fr'],
-            ])
-        );
-
-        $this->documentRepository->save($initialEventDocument);
-        $this->documentRepository->save($initialSecondEventDocument);
-
-        $expectedEventBody = (object)[
-            'labels' => ['beweging', 'kanker'],
-            'organizer' => (object)[
-                'name' => 'stichting tegen Kanker',
-                'email' => [
-                    'kgielens@stichtingtegenkanker.be',
-                ],
-            ],
-            'modified' => $this->recordedOn->toString(),
-        ];
-
-        $expectedSecondEventBody = (object) [
-            'name' => (object)[
-                'nl' => 'Rekanto - TaiQi',
-                'fr' => 'Raviva - TaiQi',
-            ],
-            'languages' => ['nl', 'fr'],
-            'completedLanguages' => ['nl', 'fr'],
-            'organizer' => (object)[
-                'name' => 'stichting tegen Kanker',
-                'email' => [
-                    'kgielens@stichtingtegenkanker.be',
-                ],
-            ],
-            'modified' => $this->recordedOn->toString(),
-        ];
-
-        $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD(
-            $organizerId,
-            'organizers/' . $organizerId
-        );
-
-        $this->projector->handle(
-            new DomainMessage(
-                $organizerProjectedToJSONLD->getId(),
-                0,
-                new Metadata(),
-                $organizerProjectedToJSONLD,
-                $this->recordedOn->toBroadwayDateTime()
-            )
-        );
-
-        $this->assertEquals(
-            $expectedEventBody,
-            $this->getBody($eventID)
-        );
-
-        $this->assertEquals(
-            $expectedSecondEventBody,
-            $this->getBody($secondEventID)
-        );
     }
 
     /**

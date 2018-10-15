@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\Serializer\SerializerInterface;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
@@ -22,7 +21,6 @@ use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
-use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
@@ -31,7 +29,6 @@ use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
-use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\Events\AddressTranslated;
 use CultuurNet\UDB3\Place\Events\AddressUpdated;
 use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
@@ -79,19 +76,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
     private $address;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $placeRelations;
-
-    /**
      * @var CdbXMLImporter
      */
     private $cdbXMLImporter;
-
-    /**
-     * @var EventSpecification
-     */
-    private $eventFilter;
 
     /**
      * @var IriGeneratorInterface
@@ -146,21 +133,15 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
             new CdbXmlContactInfoImporter()
         );
 
-        $this->placeRelations = $this->createMock(RepositoryInterface::class);
-
-        $this->eventFilter = $this->createMock(EventSpecification::class);
-
         $this->projector = new PlaceLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
-            $this->placeRelations,
             $this->serializer,
             $this->cdbXMLImporter,
             new JsonDocumentLanguageEnricher(
                 new PlaceJsonDocumentLanguageAnalyzer()
             ),
-            $this->eventFilter,
             [
                 'nl' => 'Basistarief',
                 'fr' => 'Tarif de base',
@@ -1041,130 +1022,6 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($placeUpdatedFromUdb2, '318F2ACB-F612-6F75-0037C9C29F44087A');
 
         $this->assertArrayNotHasKey('geo', (array) $body);
-    }
-
-    /**
-     * @test
-     */
-    public function it_updates_all_related_places_when_an_organizer_is_updated()
-    {
-        $kantoorLeuvenId = 'c01f5799-b914-487d-9e00-6c224ab6555e';
-        $kantoorKesselLoId = '57eaaa61-31d8-42c3-8d1b-1b1ecbb153a8';
-
-        $stadLeuvenId = 'dbef3da9-13f0-42be-9ac2-8593376a508a';
-
-        $stadLeuvenJSONLD = json_encode(
-            [
-                'name' => [
-                    'nl' => 'Stad Leuven',
-                ],
-                'email' => [
-                    'info@leuven.be',
-                ],
-            ]
-        );
-
-        $kantoorLeuvenJSONLD = json_encode(
-            [
-                'name' => [
-                    'nl' => 'Kantoor Leuven',
-                ],
-            ]
-        );
-        $initialKantoorLeuvenDocument = new JsonDocument(
-            $kantoorLeuvenId,
-            $kantoorLeuvenJSONLD
-        );
-        $this->documentRepository->save($initialKantoorLeuvenDocument);
-
-        $kantoorKesselLoJSONLD = json_encode(
-            [
-                'name' => [
-                    'nl' => 'Kantoor Kessel-Lo',
-                ],
-            ]
-        );
-        $initialKantoorKesselLoDocument = new JsonDocument(
-            $kantoorKesselLoId,
-            $kantoorKesselLoJSONLD
-        );
-        $this->documentRepository->save($initialKantoorKesselLoDocument);
-
-        $this->placeRelations
-            ->expects($this->once())
-            ->method('getPlacesOrganizedByOrganizer')
-            ->with($stadLeuvenId)
-            ->willReturn(
-                [
-                    $kantoorLeuvenId,
-                    $kantoorKesselLoId,
-                ]
-            );
-
-        $this->organizerService
-            ->expects($this->once())
-            ->method('getEntity')
-            ->with($stadLeuvenId)
-            ->willReturn($stadLeuvenJSONLD);
-
-        $organizerProjectedToJSONLD = new OrganizerProjectedToJSONLD(
-            $stadLeuvenId,
-            'organizers/' . $stadLeuvenId
-        );
-
-        $this->projector->handle(
-            new DomainMessage(
-                $organizerProjectedToJSONLD->getId(),
-                0,
-                new Metadata(),
-                $organizerProjectedToJSONLD,
-                $this->recordedOn->toBroadwayDateTime()
-            )
-        );
-
-        $expectedKantoorLeuvenBody = (object) [
-            'name' => (object) [
-                'nl' => 'Kantoor Leuven',
-            ],
-            'organizer' => (object) [
-                'name' => (object) [
-                    'nl' => 'Stad Leuven',
-                ],
-                'email' => [
-                    'info@leuven.be',
-                ],
-            ],
-            'languages' => ['nl'],
-            'completedLanguages' => ['nl'],
-            'modified' => $this->recordedOn->toString(),
-        ];
-
-        $expectedKantoorKesselLoBody = (object) [
-            'name' => (object) [
-                'nl' => 'Kantoor Kessel-Lo',
-            ],
-            'organizer' => (object) [
-                'name' => (object) [
-                    'nl' => 'Stad Leuven',
-                ],
-                'email' => [
-                    'info@leuven.be',
-                ],
-            ],
-            'languages' => ['nl'],
-            'completedLanguages' => ['nl'],
-            'modified' => $this->recordedOn->toString(),
-        ];
-
-        $this->assertEquals(
-            $expectedKantoorLeuvenBody,
-            $this->documentRepository->get($kantoorLeuvenId)->getBody()
-        );
-
-        $this->assertEquals(
-            $expectedKantoorKesselLoBody,
-            $this->documentRepository->get($kantoorKesselLoId)->getBody()
-        );
     }
 
     /**

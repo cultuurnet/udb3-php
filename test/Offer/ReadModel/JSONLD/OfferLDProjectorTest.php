@@ -88,11 +88,6 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
     protected $serializer;
 
     /**
-     * @var EventSpecification
-     */
-    protected $eventFilter;
-
-    /**
      * @var RecordedOn
      */
     protected $recordedOn;
@@ -114,15 +109,12 @@ class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $this->serializer = new MediaObjectSerializer($this->iriGenerator);
 
-        $this->eventFilter = $this->createMock(EventSpecification::class);
-
         $this->projector = new ItemLDProjector(
             $this->documentRepository,
             $this->iriGenerator,
             $this->organizerService,
             $this->serializer,
             new JsonDocumentNullEnricher(),
-            $this->eventFilter,
             [
                 'nl' => 'Basistarief',
                 'fr' => 'Tarif de base',

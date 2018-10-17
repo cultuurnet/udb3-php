@@ -54,7 +54,6 @@ use CultuurNet\UDB3\Place\Events\TitleUpdated;
 use CultuurNet\UDB3\Place\Events\TypeUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated;
-use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentMetaDataEnricherInterface;
 use CultuurNet\UDB3\Theme;
@@ -235,10 +234,8 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $jsonLD->modified = $jsonLD->created;
 
         $metaData = $domainMessage->getMetadata()->serialize();
-        if (isset($metaData['user_email'])) {
-            $jsonLD->creator = $metaData['user_email'];
-        } elseif (isset($metaData['user_nick'])) {
-            $jsonLD->creator = $metaData['user_nick'];
+        if (isset($metaData['user_id'])) {
+            $jsonLD->creator = $metaData['user_id'];
         }
 
         $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();

@@ -90,7 +90,7 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
             self::ID,
             0,
             new Metadata(),
-            null,
+            new \StdClass(),
             BroadwayDateTime::now()
         );
 
@@ -115,7 +115,7 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
             self::ID,
             0,
             new Metadata(),
-            null,
+            new \StdClass(),
             BroadwayDateTime::now()
         );
 
@@ -156,7 +156,7 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
             self::ID,
             0,
             new Metadata(),
-            null,
+            new \StdClass(),
             BroadwayDateTime::now()
         );
 
@@ -186,7 +186,7 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
             self::ID,
             0,
             new Metadata(),
-            null,
+            new \stdClass(),
             BroadwayDateTime::now()
         );
 

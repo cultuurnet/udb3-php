@@ -320,7 +320,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         ];
         $jsonLD->created = $created;
         $jsonLD->modified = $created;
-        $jsonLD->creator = 'Tester';
+        $jsonLD->creator = '20a72430-7e3e-4b75-ab59-043156b3169c';
         $jsonLD->workflowStatus = 'DRAFT';
         $jsonLD->availableTo = '2100-01-01T00:00:00+00:00';
         $jsonLD->languages = ['en'];
@@ -328,7 +328,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
 
         $metadata = new Metadata(
             [
-                'user_id' => '1',
+                'user_id' => '20a72430-7e3e-4b75-ab59-043156b3169c',
                 'user_nick' => 'Tester',
             ]
         );

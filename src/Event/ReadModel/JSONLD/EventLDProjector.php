@@ -49,7 +49,6 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentGoneException;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
-use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\AvailableTo;
@@ -351,11 +350,10 @@ class EventLDProjector extends OfferLDProjector implements
         $jsonLD->created = $created->toString();
         $jsonLD->modified = $created->toString();
 
-        $metaData = $domainMessage->getMetadata()->serialize();
-        if (isset($metaData['user_email'])) {
-            $jsonLD->creator = $metaData['user_email'];
-        } elseif (isset($metaData['user_nick'])) {
-            $jsonLD->creator = $metaData['user_nick'];
+        // Set the creator.
+        $author = $this->getAuthorFromMetadata($domainMessage->getMetadata());
+        if ($author) {
+            $jsonLD->creator = $author->toNative();
         }
 
         $jsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
@@ -384,7 +382,10 @@ class EventLDProjector extends OfferLDProjector implements
         $eventJsonLD->modified = $created->toString();
 
         // Set the creator.
-        $eventJsonLD->creator = $this->getAuthorFromMetadata($domainMessage->getMetadata())->toNative();
+        $author = $this->getAuthorFromMetadata($domainMessage->getMetadata());
+        if ($author) {
+            $eventJsonLD->creator = $author->toNative();
+        }
 
         // Set the id.
         $eventJsonLD->{'@id'} = $this->iriGenerator->iri($eventCopied->getItemId());
@@ -552,22 +553,19 @@ class EventLDProjector extends OfferLDProjector implements
         );
     }
 
-    private function getAuthorFromMetadata(Metadata $metadata)
+    /**
+     * @param Metadata $metadata
+     * @return null|StringLiteral
+     */
+    private function getAuthorFromMetadata(Metadata $metadata): ?StringLiteral
     {
         $properties = $metadata->serialize();
 
-        if (isset($properties['user_nick'])) {
-            return new StringLiteral($properties['user_nick']);
+        if (isset($properties['user_id'])) {
+            return new StringLiteral($properties['user_id']);
         }
-    }
 
-    private function getConsumerFromMetadata(Metadata $metadata)
-    {
-        $properties = $metadata->serialize();
-
-        if (isset($properties['consumer']['name'])) {
-            return new StringLiteral($properties['consumer']['name']);
-        }
+        return null;
     }
 
     /**

@@ -309,19 +309,27 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     [
                         'user_email' => 'foo@bar.com',
                         'user_nick' => 'foo',
-                        'user_id' => '123',
+                        'user_id' => '20a72430-7e3e-4b75-ab59-043156b3169c',
                     ]
                 ),
-                'foo@bar.com',
+                '20a72430-7e3e-4b75-ab59-043156b3169c',
             ],
             [
                 new Metadata(
                     [
                         'user_nick' => 'foo',
-                        'user_id' => '123',
+                        'user_id' => '20a72430-7e3e-4b75-ab59-043156b3169c',
                     ]
                 ),
-                'foo',
+                '20a72430-7e3e-4b75-ab59-043156b3169c',
+            ],
+            [
+                new Metadata(
+                    [
+                        'user_id' => '20a72430-7e3e-4b75-ab59-043156b3169c',
+                    ]
+                ),
+                '20a72430-7e3e-4b75-ab59-043156b3169c',
             ],
         ];
     }
@@ -378,14 +386,14 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project(
             $eventCopied,
             $eventId,
-            new Metadata(['user_nick' => 'info@2dotstwice.be']),
+            new Metadata(['user_id' => '20a72430-7e3e-4b75-ab59-043156b3169c']),
             DateTime::fromString($recordedOn)
         );
 
         $expectedJsonLD = json_decode(file_get_contents(__DIR__ . '/copied_event.json'));
         $expectedJsonLD->created = $recordedOn;
         $expectedJsonLD->modified = $recordedOn;
-        $expectedJsonLD->creator = 'info@2dotstwice.be';
+        $expectedJsonLD->creator = '20a72430-7e3e-4b75-ab59-043156b3169c';
 
         $this->assertEquals($expectedJsonLD, $body);
     }

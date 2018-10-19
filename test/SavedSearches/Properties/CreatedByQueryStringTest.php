@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Properties;
 
-use ValueObjects\Web\EmailAddress;
+use CultuurNet\UDB3\SavedSearches\ValueObject\UserId;
 
 class CreateByQueryStringTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,10 +11,10 @@ class CreateByQueryStringTest extends \PHPUnit_Framework_TestCase
      */
     public function it_creates_a_created_by_query_from_a_user_id()
     {
-        $emailAddress = new EmailAddress('foo@bar.com');
-        $queryString = new CreatedByQueryString($emailAddress);
+        $userId = new UserId('cef70b98-2d4d-40a9-95f0-762aae66ef3f');
+        $queryString = new CreatedByQueryString($userId);
 
-        $expected = 'createdby:' . $emailAddress;
+        $expected = 'createdby:' . $userId;
 
         $this->assertEquals($expected, $queryString);
     }

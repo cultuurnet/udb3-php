@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\ItemBaseAdapterFactory;
 use CultuurNet\UDB3\EventSourcing\DomainMessageBuilder;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +28,7 @@ class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
     private $domainMessageBuilder;
 
     /**
-     * @var \CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface
+     * @var \CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $userIdResolver;
 
@@ -62,7 +63,7 @@ class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
             ->with('info@example.be')
-            ->willReturn(self::USER_ID);
+            ->willReturn(new StringLiteral(self::USER_ID));
 
         $this->repository->expects($this->never())
             ->method('delete');
@@ -115,7 +116,7 @@ class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
             ->with('info@example.be')
-            ->willReturn(self::USER_ID);
+            ->willReturn(new StringLiteral(self::USER_ID));
 
         $this->repository->expects($this->once())
             ->method('delete')

@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\UiTID;
 
@@ -35,7 +32,7 @@ class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedBy
     /**
      * @inheritdoc
      */
-    public function resolveCreatedByToUserId(StringLiteral $createdByIdentifier)
+    public function resolveCreatedByToUserId(StringLiteral $createdByIdentifier): ?StringLiteral
     {
         $userId = null;
 
@@ -64,9 +61,9 @@ class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedBy
 
     /**
      * @param StringLiteral $createdByIdentifier
-     * @return String
+     * @return StringLiteral|null
      */
-    private function resolveByEmailOrByNick(StringLiteral $createdByIdentifier)
+    private function resolveByEmailOrByNick(StringLiteral $createdByIdentifier): ?StringLiteral
     {
         try {
             $email = new EmailAddress($createdByIdentifier->toNative());

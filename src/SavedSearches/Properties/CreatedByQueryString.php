@@ -2,29 +2,29 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Properties;
 
-use ValueObjects\Web\EmailAddress;
+use CultuurNet\UDB3\SavedSearches\ValueObject\UserId;
 
 class CreatedByQueryString extends QueryString
 {
     /**
-     * @var EmailAddress
+     * @var UserId
      */
-    protected $emailAddress;
+    protected $userId;
 
     /**
-     * @param EmailAddress $emailAddress
+     * @param UserId $userId
      */
-    public function __construct(EmailAddress $emailAddress)
+    public function __construct(UserId $userId)
     {
-        $this->emailAddress = $emailAddress;
+        $this->userId = $userId;
         parent::__construct($this->generateQuery());
     }
 
     /**
      * @return string
      */
-    private function generateQuery()
+    private function generateQuery(): string
     {
-        return 'createdby:' . $this->emailAddress;
+        return 'createdby:' . $this->userId->toNative();
     }
 }

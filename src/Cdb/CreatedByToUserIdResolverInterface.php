@@ -1,7 +1,5 @@
 <?php
-/**
- * @file
- */
+
 namespace CultuurNet\UDB3\Cdb;
 
 use ValueObjects\StringLiteral\StringLiteral;
@@ -10,7 +8,7 @@ interface CreatedByToUserIdResolverInterface
 {
     /**
      * @param StringLiteral $createdByIdentifier
-     * @return String
+     * @return StringLiteral|null
      */
-    public function resolveCreatedByToUserId(StringLiteral $createdByIdentifier);
+    public function resolveCreatedByToUserId(StringLiteral $createdByIdentifier): ?StringLiteral;
 }

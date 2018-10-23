@@ -16,6 +16,7 @@
     "php": ">=7.1",
     "ext-tidy": "*",
     "ext-json": "*",
+    "ext-pdo": "*",
     "2dotstwice/collection": "~1.1",
     "psr/log": "~1.0",
     "cultuurnet/auth": "~1.2",

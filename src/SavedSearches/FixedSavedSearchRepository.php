@@ -5,8 +5,8 @@ namespace CultuurNet\UDB3\SavedSearches;
 use CultuurNet\UDB3\SavedSearches\Properties\CreatedByQueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface;
+use CultuurNet\UDB3\SavedSearches\ValueObject\UserId;
 use ValueObjects\StringLiteral\StringLiteral;
-use ValueObjects\Web\EmailAddress;
 
 class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
 {
@@ -16,7 +16,7 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
     protected $user;
 
     /**
-     * @param StringLiteral $userId
+     * @param \CultureFeed_User $user
      */
     public function __construct(\CultureFeed_User $user)
     {
@@ -26,7 +26,7 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
     /**
      * @return SavedSearch[]
      */
-    public function ownedByCurrentUser()
+    public function ownedByCurrentUser(): array
     {
         return [
             $this->getCreatedByCurrentUserSearch(),
@@ -36,11 +36,11 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
     /**
      * @return SavedSearch
      */
-    protected function getCreatedByCurrentUserSearch()
+    protected function getCreatedByCurrentUserSearch(): SavedSearch
     {
         $name = new StringLiteral('Door mij ingevoerd');
-        $emailAddress = new EmailAddress($this->user->mbox);
-        $query = new CreatedByQueryString($emailAddress);
+        $userId = new UserId($this->user->id);
+        $query = new CreatedByQueryString($userId);
 
         return new SavedSearch($name, $query);
     }

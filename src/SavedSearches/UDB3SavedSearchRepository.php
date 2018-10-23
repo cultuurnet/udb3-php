@@ -125,7 +125,7 @@ class UDB3SavedSearchRepository implements SavedSearchReadModelRepositoryInterfa
             $savedSearches[] = new SavedSearch(
                 new StringLiteral($row[SchemaConfigurator::NAME]),
                 new QueryString($row[SchemaConfigurator::QUERY]),
-                new StringLiteral($row[SchemaConfigurator::USER])
+                new StringLiteral($row[SchemaConfigurator::ID])
             );
         }
 

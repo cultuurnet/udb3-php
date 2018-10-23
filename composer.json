@@ -30,6 +30,7 @@
     "cultuurnet/culturefeed-php": "~1.7",
     "cultuurnet/udb3-models": "~0.1",
     "cultuurnet/valueobjects": "~3.0",
+    "cultuurnet/udb3-udb2-bridge": "~0.1",
     "predis/predis": "~1.0",
     "league/flysystem": "~1.0",
     "danielstjules/stringy": "~1.9",

@@ -7,7 +7,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 class UnsubscribeFromSavedSearch extends SavedSearchCommand
 {
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $searchId;
 
@@ -22,7 +22,7 @@ class UnsubscribeFromSavedSearch extends SavedSearchCommand
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getSearchId()
     {

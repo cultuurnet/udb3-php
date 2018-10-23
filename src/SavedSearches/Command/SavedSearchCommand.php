@@ -7,7 +7,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 abstract class SavedSearchCommand
 {
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $userId;
 
@@ -20,7 +20,7 @@ abstract class SavedSearchCommand
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getUserId()
     {

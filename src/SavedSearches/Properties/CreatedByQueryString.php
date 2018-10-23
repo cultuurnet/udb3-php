@@ -12,7 +12,7 @@ class CreatedByQueryString extends QueryString
     protected $emailAddress;
 
     /**
-     * @param StringLiteral $userId
+     * @param EmailAddress $emailAddress
      */
     public function __construct(EmailAddress $emailAddress)
     {

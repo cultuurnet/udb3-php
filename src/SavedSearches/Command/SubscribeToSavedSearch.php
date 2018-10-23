@@ -8,7 +8,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 class SubscribeToSavedSearch extends SavedSearchCommand
 {
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $name;
 
@@ -30,7 +30,7 @@ class SubscribeToSavedSearch extends SavedSearchCommand
     }
 
     /**
-     * @return String
+     * @return StringLiteral
      */
     public function getName()
     {

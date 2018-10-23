@@ -16,7 +16,7 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
     protected $user;
 
     /**
-     * @param StringLiteral $userId
+     * @param \CultureFeed_User $user
      */
     public function __construct(\CultureFeed_User $user)
     {
@@ -26,7 +26,7 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
     /**
      * @return SavedSearch[]
      */
-    public function ownedByCurrentUser()
+    public function ownedByCurrentUser(): array
     {
         return [
             $this->getCreatedByCurrentUserSearch(),
@@ -36,7 +36,7 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
     /**
      * @return SavedSearch
      */
-    protected function getCreatedByCurrentUserSearch()
+    protected function getCreatedByCurrentUserSearch(): SavedSearch
     {
         $name = new StringLiteral('Door mij ingevoerd');
         $emailAddress = new EmailAddress($this->user->mbox);

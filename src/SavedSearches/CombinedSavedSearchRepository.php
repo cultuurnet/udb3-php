@@ -37,7 +37,7 @@ class CombinedSavedSearchRepository implements SavedSearchRepositoryInterface
     /**
      * @param SavedSearchRepositoryInterface $repository
      */
-    public function addRepository(SavedSearchRepositoryInterface $repository)
+    public function addRepository(SavedSearchRepositoryInterface $repository): void
     {
         $this->repositories[] = $repository;
     }
@@ -45,7 +45,7 @@ class CombinedSavedSearchRepository implements SavedSearchRepositoryInterface
     /**
      * @return SavedSearch[]
      */
-    public function ownedByCurrentUser()
+    public function ownedByCurrentUser(): array
     {
         $savedSearches = [];
 

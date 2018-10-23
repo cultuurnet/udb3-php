@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\EventSourcing\DomainMessageBuilder;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use PHPUnit_Framework_TestCase;
+use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Domain;
 
 class UDB2ProjectorTest extends PHPUnit_Framework_TestCase
@@ -64,7 +65,7 @@ class UDB2ProjectorTest extends PHPUnit_Framework_TestCase
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
             ->with('info@traeghe.be')
-            ->willReturn(self::USER_ID);
+            ->willReturn(new StringLiteral(self::USER_ID));
 
         $this->repository->expects($this->once())
             ->method('updateIndex')
@@ -120,7 +121,7 @@ class UDB2ProjectorTest extends PHPUnit_Framework_TestCase
     {
         $this->userIdResolver->expects($this->once())
             ->method('resolveCreatedByToUserId')
-            ->willReturn(self::USER_ID);
+            ->willReturn(new StringLiteral(self::USER_ID));
 
         $this->repository->expects($this->once())
             ->method('updateIndex')

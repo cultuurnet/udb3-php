@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
-use CultuurNet\UDB3\Organizer\Commands\ImportLabels;
+use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -457,6 +457,68 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                         $this->id,
                         new Title('Pièce'),
                         new Language('fr')
+                    ),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_translate_an_address()
+    {
+        $addressFr = new Address(
+            new Street('Rue de la Loi 1'),
+            new PostalCode('1000'),
+            new Locality('Bruxelles'),
+            Country::fromNative('BE')
+        );
+
+        $addressEn = new Address(
+            new Street('Gesetz Straße 1'),
+            new PostalCode('1000'),
+            new Locality('Brüssel'),
+            Country::fromNative('BE')
+        );
+
+        $this->scenario
+            ->given(
+                [
+                    $this->organizerCreatedWithUniqueWebsite,
+                    new AddressUpdated(
+                        $this->id,
+                        new Address(
+                            new Street('Wetstraat 1'),
+                            new PostalCode('1000'),
+                            new Locality('Brussel'),
+                            Country::fromNative('BE')
+                        )
+                    )
+                ]
+            )
+            ->when(
+                function (Organizer $organizer) use ($addressFr, $addressEn) {
+                    $organizer->updateAddress(
+                        $addressFr,
+                        new Language('fr')
+                    );
+                    $organizer->updateAddress(
+                        $addressEn,
+                        new Language('de')
+                    );
+                }
+            )
+            ->then(
+                [
+                    new AddressTranslated(
+                        $this->id,
+                        $addressFr,
+                        new Language('fr')
+                    ),
+                    new AddressTranslated(
+                        $this->id,
+                        $addressEn,
+                        new Language('de')
                     ),
                 ]
             );

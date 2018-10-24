@@ -138,7 +138,10 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     {
         $organizer = $this->loadOrganizer($updateAddress->getOrganizerId());
 
-        $organizer->updateAddress($updateAddress->getAddress());
+        $organizer->updateAddress(
+            $updateAddress->getAddress(),
+            $updateAddress->getLanguage()
+        );
 
         $this->organizerRepository->save($organizer);
     }

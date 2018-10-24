@@ -251,16 +251,18 @@ class OrganizerTest extends AggregateRootScenarioTestCase
             Country::fromNative('BE')
         );
 
+        $language = $this->organizerCreatedWithUniqueWebsite->getMainLanguage();
+
         $this->scenario
             ->given([$this->organizerCreatedWithUniqueWebsite])
             ->when(
-                function (Organizer $organizer) use ($initialAddress, $updatedAddress) {
-                    $organizer->updateAddress($initialAddress);
+                function (Organizer $organizer) use ($initialAddress, $updatedAddress, $language) {
+                    $organizer->updateAddress($initialAddress, $language);
 
                     // Update the address twice with the same value so we can
                     // test it doesn't get recorded the second time.
-                    $organizer->updateAddress($updatedAddress);
-                    $organizer->updateAddress($updatedAddress);
+                    $organizer->updateAddress($updatedAddress, $language);
+                    $organizer->updateAddress($updatedAddress, $language);
                 }
             )
             ->then(

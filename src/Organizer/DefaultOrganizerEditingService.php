@@ -77,7 +77,7 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
         $organizer = Organizer::create($id, $mainLanguage, $website, $title);
 
         if (!is_null($address)) {
-            $organizer->updateAddress($address);
+            $organizer->updateAddress($address, $mainLanguage);
         }
 
         if (!is_null($contactPoint)) {

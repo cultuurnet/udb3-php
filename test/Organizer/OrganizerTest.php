@@ -493,7 +493,7 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                             new Locality('Brussel'),
                             Country::fromNative('BE')
                         )
-                    )
+                    ),
                 ]
             )
             ->when(

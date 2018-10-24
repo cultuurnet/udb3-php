@@ -36,7 +36,7 @@ class UpdateAddress extends AbstractUpdateOrganizerCommand
     /**
      * @return Address
      */
-    public function getAddress()
+    public function getAddress(): Address
     {
         return $this->address;
     }

@@ -112,10 +112,10 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function updateAddress($organizerId, Address $address)
+    public function updateAddress($organizerId, Address $address, Language $language)
     {
         return $this->commandBus->dispatch(
-            new UpdateAddress($organizerId, $address)
+            new UpdateAddress($organizerId, $address, $language)
         );
     }
 

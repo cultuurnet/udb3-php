@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
+use CultuurNet\UDB3\Language;
 use ValueObjects\Geography\Country;
 
 class UpdateAddressTest extends \PHPUnit_Framework_TestCase
@@ -19,6 +20,11 @@ class UpdateAddressTest extends \PHPUnit_Framework_TestCase
      * @var Address
      */
     private $address;
+
+    /**
+     * @var Language
+     */
+    private $language;
 
     /**
      * @var UpdateAddress
@@ -36,9 +42,12 @@ class UpdateAddressTest extends \PHPUnit_Framework_TestCase
             Country::fromNative('BE')
         );
 
+        $this->language = new Language('nl');
+
         $this->updateAddress = new UpdateAddress(
             $this->organizerId,
-            $this->address
+            $this->address,
+            $this->language
         );
     }
 
@@ -61,6 +70,14 @@ class UpdateAddressTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             $this->address,
             $this->updateAddress->getAddress()
+        );
+    }
+
+    public function it_stores_a_language()
+    {
+        $this->assertEquals(
+            $this->language,
+            $this->updateAddress->getLanguage()
         );
     }
 }

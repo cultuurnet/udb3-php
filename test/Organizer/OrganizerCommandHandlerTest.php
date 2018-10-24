@@ -273,6 +273,8 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             Country::fromNative('BE')
         );
 
+        $language = new Language('nl');
+
         $this->scenario
             ->withAggregateId($organizerId)
             ->given(
@@ -283,7 +285,8 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->when(
                 new UpdateAddress(
                     $organizerId,
-                    $address
+                    $address,
+                    $language
                 )
             )
             ->then(

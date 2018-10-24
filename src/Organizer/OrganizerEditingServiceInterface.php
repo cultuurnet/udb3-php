@@ -45,9 +45,10 @@ interface OrganizerEditingServiceInterface
     /**
      * @param string $organizerId
      * @param Address $address
+     * @param Language $language
      * @return mixed
      */
-    public function updateAddress($organizerId, Address $address);
+    public function updateAddress($organizerId, Address $address, Language $language);
 
     /**
      * @param string $organizerId

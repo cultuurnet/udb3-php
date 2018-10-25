@@ -126,6 +126,7 @@ class OrganizerLDProjector implements EventListenerInterface
     /**
      * @param OrganizerImportedFromUDB2 $organizerImportedFromUDB2
      * @return JsonDocument
+     * @throws \CultureFeed_Cdb_ParseException
      */
     private function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImportedFromUDB2
@@ -174,12 +175,7 @@ class OrganizerLDProjector implements EventListenerInterface
         if (!empty($addresses)) {
             $address = $addresses[0];
             $jsonLD->address = [
-                $this->getMainLanguage($jsonLD)->getCode() => [
-                    'addressCountry' => $address->getCountry(),
-                    'addressLocality' => $address->getLocality(),
-                    'postalCode' => $address->getPostalCode(),
-                    'streetAddress' => $address->getStreetAddress(),
-                ],
+                $this->getMainLanguage($jsonLD)->getCode() => $address->toJsonLd(),
             ];
         }
 
@@ -198,6 +194,11 @@ class OrganizerLDProjector implements EventListenerInterface
         return $document->withBody($jsonLD);
     }
 
+    /**
+     * @param $jsonLD
+     * @param DomainMessage $domainMessage
+     * @return mixed
+     */
     private function appendCreator($jsonLD, $domainMessage)
     {
         $newJsonLD = clone $jsonLD;
@@ -323,6 +324,7 @@ class OrganizerLDProjector implements EventListenerInterface
     /**
      * @param OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
      * @return JsonDocument
+     * @throws \CultureFeed_Cdb_ParseException
      */
     private function applyOrganizerUpdatedFromUDB2(
         OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2

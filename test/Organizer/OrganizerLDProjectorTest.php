@@ -160,10 +160,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $jsonLD->address = [
             'nl' => [
-                'addressCountry' => $country,
-                'addressLocality' => $locality,
-                'postalCode' => $postalCode,
-                'streetAddress' => $street,
+                'addressCountry' => $country->getCode()->toNative(),
+                'addressLocality' => $locality->toNative(),
+                'postalCode' => $postalCode->toNative(),
+                'streetAddress' => $street->toNative(),
             ],
         ];
         $jsonLD->phone = ['050/123'];

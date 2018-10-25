@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -46,6 +47,7 @@ class OrganizerLDProjector implements EventListenerInterface
      * @uses applyTitleUpdated
      * @uses applyTitleTranslated
      * @uses applyAddressUpdated
+     * @uses applyAddressTranslated
      * @uses applyContactPointUpdated
      * @uses applyOrganizerUpdatedFRomUDB2
      * @uses applyLabelAdded
@@ -291,17 +293,16 @@ class OrganizerLDProjector implements EventListenerInterface
      */
     private function applyAddressUpdated(AddressUpdated $addressUpdated)
     {
-        $organizerId = $addressUpdated->getOrganizerId();
-        $address = $addressUpdated->getAddress();
+        return $this->applyAddress($addressUpdated);
+    }
 
-        $document = $this->repository->get($organizerId);
-
-        $jsonLD = $document->getBody();
-        $jsonLD->address = [
-            $this->getMainLanguage($jsonLD)->getCode() => $address->toJsonLd(),
-        ];
-
-        return $document->withBody($jsonLD);
+    /**
+     * @param AddressTranslated $addressTranslated
+     * @return JsonDocument
+     */
+    private function applyAddressTranslated(AddressTranslated $addressTranslated)
+    {
+        return $this->applyAddress($addressTranslated, $addressTranslated->getLanguage());
     }
 
     /**
@@ -477,6 +478,29 @@ class OrganizerLDProjector implements EventListenerInterface
         }
 
         $jsonLD->name->{$language->getCode()} = $title->toNative();
+
+        return $document->withBody($jsonLD);
+    }
+
+    /**
+     * @param AddressUpdated $addressUpdated
+     * @param Language $language
+     * @return JsonDocument|null
+     */
+    private function applyAddress(
+        AddressUpdated $addressUpdated,
+        Language $language = null
+    ) {
+        $organizerId = $addressUpdated->getOrganizerId();
+        $document = $this->repository->get($organizerId);
+        $jsonLD = $document->getBody();
+
+        $mainLanguage = $this->getMainLanguage($jsonLD);
+        if ($language === null) {
+            $language = $mainLanguage;
+        }
+
+        $jsonLD->address->{$language->getCode()} = $addressUpdated->getAddress()->toJsonLd();
 
         return $document->withBody($jsonLD);
     }

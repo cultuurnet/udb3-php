@@ -141,8 +141,6 @@ class OrganizerLDProjector implements EventListenerInterface
         $document = $this->newDocument($organizerImportedFromUDB2->getActorId());
         $actorLd = $document->getBody();
 
-        $this->setMainLanguage($actorLd, new Language('nl'));
-
         $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
             $actorLd,
             $udb2Actor
@@ -165,8 +163,6 @@ class OrganizerLDProjector implements EventListenerInterface
         $jsonLD->{'@id'} = $this->iriGenerator->iri(
             $organizerCreated->getOrganizerId()
         );
-
-        $this->setMainLanguage($jsonLD, new Language('nl'));
 
         $jsonLD->name = [
             $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle(),
@@ -441,6 +437,10 @@ class OrganizerLDProjector implements EventListenerInterface
         $organizerLd = $document->getBody();
         $organizerLd->{'@id'} = $this->iriGenerator->iri($id);
         $organizerLd->{'@context'} = '/contexts/organizer';
+        // For an new organizer document set a default language of nl.
+        // This avoids a missing language for imports.
+        // When created with UDB3 this main language gets overwritten by the real one.
+        $organizerLd->mainLanguage = 'nl';
 
         return $document->withBody($organizerLd);
     }

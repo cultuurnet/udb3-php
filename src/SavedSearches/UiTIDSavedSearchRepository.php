@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\SavedSearches;
 
@@ -40,7 +37,7 @@ class UiTIDSavedSearchRepository implements
     /**
      * @return SavedSearch[]
      */
-    public function ownedByCurrentUser()
+    public function ownedByCurrentUser(): array
     {
         $searches = array_values($this->savedSearches->getList());
 
@@ -84,7 +81,7 @@ class UiTIDSavedSearchRepository implements
     /**
      * {@inheritdoc}
      */
-    public function write(StringLiteral $userId, StringLiteral $name, QueryString $queryString)
+    public function write(StringLiteral $userId, StringLiteral $name, QueryString $queryString): void
     {
         $userId = (string) $userId;
         $name = (string) $name;
@@ -117,7 +114,7 @@ class UiTIDSavedSearchRepository implements
     /**
      * {@inheritdoc}
      */
-    public function delete(StringLiteral $userId, StringLiteral $searchId)
+    public function delete(StringLiteral $userId, StringLiteral $searchId): void
     {
         $userId = (string) $userId;
         $searchId = (string) $searchId;

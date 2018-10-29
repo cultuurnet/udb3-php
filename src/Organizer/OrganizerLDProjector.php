@@ -15,6 +15,7 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\WorkflowStatus;
+use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -46,6 +47,7 @@ class OrganizerLDProjector implements EventListenerInterface
      * @uses applyTitleUpdated
      * @uses applyTitleTranslated
      * @uses applyAddressUpdated
+     * @uses applyAddressTranslated
      * @uses applyContactPointUpdated
      * @uses applyOrganizerUpdatedFRomUDB2
      * @uses applyLabelAdded
@@ -126,6 +128,7 @@ class OrganizerLDProjector implements EventListenerInterface
     /**
      * @param OrganizerImportedFromUDB2 $organizerImportedFromUDB2
      * @return JsonDocument
+     * @throws \CultureFeed_Cdb_ParseException
      */
     private function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImportedFromUDB2
@@ -137,8 +140,6 @@ class OrganizerLDProjector implements EventListenerInterface
 
         $document = $this->newDocument($organizerImportedFromUDB2->getActorId());
         $actorLd = $document->getBody();
-
-        $this->setMainLanguage($actorLd, new Language('nl'));
 
         $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
             $actorLd,
@@ -163,8 +164,6 @@ class OrganizerLDProjector implements EventListenerInterface
             $organizerCreated->getOrganizerId()
         );
 
-        $this->setMainLanguage($jsonLD, new Language('nl'));
-
         $jsonLD->name = [
             $this->getMainLanguage($jsonLD)->getCode() => $organizerCreated->getTitle(),
         ];
@@ -174,12 +173,7 @@ class OrganizerLDProjector implements EventListenerInterface
         if (!empty($addresses)) {
             $address = $addresses[0];
             $jsonLD->address = [
-                $this->getMainLanguage($jsonLD)->getCode() => [
-                    'addressCountry' => $address->getCountry(),
-                    'addressLocality' => $address->getLocality(),
-                    'postalCode' => $address->getPostalCode(),
-                    'streetAddress' => $address->getStreetAddress(),
-                ],
+                $this->getMainLanguage($jsonLD)->getCode() => $address->toJsonLd(),
             ];
         }
 
@@ -198,6 +192,11 @@ class OrganizerLDProjector implements EventListenerInterface
         return $document->withBody($jsonLD);
     }
 
+    /**
+     * @param $jsonLD
+     * @param DomainMessage $domainMessage
+     * @return mixed
+     */
     private function appendCreator($jsonLD, $domainMessage)
     {
         $newJsonLD = clone $jsonLD;
@@ -290,17 +289,16 @@ class OrganizerLDProjector implements EventListenerInterface
      */
     private function applyAddressUpdated(AddressUpdated $addressUpdated)
     {
-        $organizerId = $addressUpdated->getOrganizerId();
-        $address = $addressUpdated->getAddress();
+        return $this->applyAddress($addressUpdated);
+    }
 
-        $document = $this->repository->get($organizerId);
-
-        $jsonLD = $document->getBody();
-        $jsonLD->address = [
-            $this->getMainLanguage($jsonLD)->getCode() => $address->toJsonLd(),
-        ];
-
-        return $document->withBody($jsonLD);
+    /**
+     * @param AddressTranslated $addressTranslated
+     * @return JsonDocument
+     */
+    private function applyAddressTranslated(AddressTranslated $addressTranslated)
+    {
+        return $this->applyAddress($addressTranslated, $addressTranslated->getLanguage());
     }
 
     /**
@@ -323,6 +321,7 @@ class OrganizerLDProjector implements EventListenerInterface
     /**
      * @param OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
      * @return JsonDocument
+     * @throws \CultureFeed_Cdb_ParseException
      */
     private function applyOrganizerUpdatedFromUDB2(
         OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
@@ -438,6 +437,10 @@ class OrganizerLDProjector implements EventListenerInterface
         $organizerLd = $document->getBody();
         $organizerLd->{'@id'} = $this->iriGenerator->iri($id);
         $organizerLd->{'@context'} = '/contexts/organizer';
+        // For an new organizer document set a default language of nl.
+        // This avoids a missing language for imports.
+        // When created with UDB3 this main language gets overwritten by the real one.
+        $organizerLd->mainLanguage = 'nl';
 
         return $document->withBody($organizerLd);
     }
@@ -475,6 +478,29 @@ class OrganizerLDProjector implements EventListenerInterface
         }
 
         $jsonLD->name->{$language->getCode()} = $title->toNative();
+
+        return $document->withBody($jsonLD);
+    }
+
+    /**
+     * @param AddressUpdated $addressUpdated
+     * @param Language $language
+     * @return JsonDocument|null
+     */
+    private function applyAddress(
+        AddressUpdated $addressUpdated,
+        Language $language = null
+    ) {
+        $organizerId = $addressUpdated->getOrganizerId();
+        $document = $this->repository->get($organizerId);
+        $jsonLD = $document->getBody();
+
+        $mainLanguage = $this->getMainLanguage($jsonLD);
+        if ($language === null) {
+            $language = $mainLanguage;
+        }
+
+        $jsonLD->address->{$language->getCode()} = $addressUpdated->getAddress()->toJsonLd();
 
         return $document->withBody($jsonLD);
     }

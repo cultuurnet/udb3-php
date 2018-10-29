@@ -18,6 +18,7 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
+use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
@@ -160,10 +161,10 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
 
         $jsonLD->address = [
             'nl' => [
-                'addressCountry' => $country,
-                'addressLocality' => $locality,
-                'postalCode' => $postalCode,
-                'streetAddress' => $street,
+                'addressCountry' => $country->getCode()->toNative(),
+                'addressLocality' => $locality->toNative(),
+                'postalCode' => $postalCode->toNative(),
+                'streetAddress' => $street->toNative(),
             ],
         ];
         $jsonLD->phone = ['050/123'];
@@ -377,6 +378,33 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->expectSave($organizerId, 'organizer_with_translated_title.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_address_translated()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $domainMessage = $this->createDomainMessage(
+            new AddressTranslated(
+                $organizerId,
+                new Address(
+                    new Street('Rue'),
+                    new PostalCode('3010'),
+                    new Locality('Kessel-Lo (Louvain)'),
+                    Country::fromNative('BE')
+                ),
+                new Language('fr')
+            )
+        );
+
+        $this->expectSave($organizerId, 'organizer_with_translated_address.json');
 
         $this->projector->handle($domainMessage);
     }

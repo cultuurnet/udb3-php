@@ -20,7 +20,6 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use \CultuurNet\UDB3\Media\Properties\Description as ImageDescription;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Events\AbstractBookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
@@ -601,28 +600,38 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
-     * @param AbstractUpdateImage $updateImageCommand
+     * @param UUID $mediaObjectId
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      */
-    public function updateImage(AbstractUpdateImage $updateImageCommand)
-    {
-        if ($this->updateImageAllowed($updateImageCommand)) {
+    public function updateImage(
+        UUID $mediaObjectId,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
+    ) {
+        if ($this->updateImageAllowed($mediaObjectId, $description, $copyrightHolder)) {
             $this->apply(
                 $this->createImageUpdatedEvent(
-                    $updateImageCommand->getMediaObjectId(),
-                    $updateImageCommand->getDescription(),
-                    $updateImageCommand->getCopyrightHolder()
+                    $mediaObjectId,
+                    $description,
+                    $copyrightHolder
                 )
             );
         }
     }
 
     /**
-     * @param AbstractUpdateImage $updateImageCommand
+     * @param UUID $mediaObjectId
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
      * @return bool
      */
-    private function updateImageAllowed(AbstractUpdateImage $updateImageCommand)
-    {
-        $image = $this->images->findImageByUUID($updateImageCommand->getMediaObjectId());
+    private function updateImageAllowed(
+        UUID $mediaObjectId,
+        StringLiteral $description,
+        StringLiteral $copyrightHolder
+    ) {
+        $image = $this->images->findImageByUUID($mediaObjectId);
 
         // Don't update if the image is not found based on UUID.
         if (!$image) {
@@ -630,8 +639,8 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         }
 
         // Update when copyright or description is changed.
-        return !$updateImageCommand->getCopyrightHolder()->sameValueAs($image->getCopyrightHolder()) ||
-            !$updateImageCommand->getDescription()->sameValueAs($image->getDescription());
+        return !$copyrightHolder->sameValueAs($image->getCopyrightHolder()) ||
+            !$description->sameValueAs($image->getDescription());
     }
 
     /**
@@ -659,7 +668,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      */
     public function selectMainImage(Image $image)
     {
-        if (!$this->images->contains($image)) {
+        if (!$this->images->findImageByUUID($image->getMediaObjectId())) {
             throw new \InvalidArgumentException('You can not select a random image to be main, it has to be added to the item.');
         }
 

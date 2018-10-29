@@ -455,14 +455,17 @@ class OfferTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
+     * @see https://jira.uitdatabank.be/browse/III-2693
      */
-    public function it_checks_for_presence_of_image_when_updating()
+    public function it_can_select_main_image_even_after_image_update(): void
     {
-        $updateImage = new UpdateImage(
-            'someId',
-            new UUID($this->image->getMediaObjectId()),
-            new Description('my favorite cat'),
-            new CopyrightHolder('Jane Doe')
+        $anotherImage = new Image(
+            new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
+            new MIMEType('image/jpeg'),
+            new Description('my best selfie'),
+            new CopyrightHolder('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/my_best_selfie.gif'),
+            new Language('en')
         );
 
         $this->scenario
@@ -473,12 +476,59 @@ class OfferTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Item $item) use ($updateImage) {
+                function (Item $item) use ($anotherImage) {
+                    $item->addImage($this->image);
+                    $item->addImage($anotherImage);
+                    $item->updateImage(
+                        $anotherImage->getMediaObjectId(),
+                        new Description('new description'),
+                        new CopyrightHolder('new copyright holder')
+                    );
+                    $item->selectMainImage($anotherImage);
+                }
+            )
+            ->then(
+                [
+                    new ImageAdded('someId', $this->image),
+                    new ImageAdded('someId', $anotherImage),
+                    new ImageUpdated(
+                        'someId',
+                        $anotherImage->getMediaObjectId(),
+                        new Description('new description'),
+                        new CopyrightHolder('new copyright holder')
+                    ),
+                    new MainImageSelected('someId', $anotherImage),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_for_presence_of_image_when_updating()
+    {
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new ItemCreated('someId'),
+                ]
+            )
+            ->when(
+                function (Item $item) {
                     $item->addImage($this->image);
                     $item->removeImage($this->image);
-                    $item->updateImage($updateImage);
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        new Description('my favorite cat'),
+                        new CopyrightHolder('Jane Doe')
+                    );
                     $item->addImage($this->image);
-                    $item->updateImage($updateImage);
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        new Description('my favorite cat'),
+                        new CopyrightHolder('Jane Doe')
+                    );
                 }
             )
             ->then(
@@ -501,27 +551,6 @@ class OfferTest extends AggregateRootScenarioTestCase
      */
     public function it_checks_for_difference_of_image_when_updating()
     {
-        $sameUpdateImage = new UpdateImage(
-            'someId',
-            new UUID($this->image->getMediaObjectId()),
-            $this->image->getDescription(),
-            $this->image->getCopyrightHolder()
-        );
-
-        $otherDescriptionUpdateImage = new UpdateImage(
-            'someId',
-            new UUID($this->image->getMediaObjectId()),
-            new Description('other description'),
-            $this->image->getCopyrightHolder()
-        );
-
-        $otherCopyrightUpdateImage = new UpdateImage(
-            'someId',
-            new UUID($this->image->getMediaObjectId()),
-            new Description('other description'),
-            new CopyrightHolder('other copyright')
-        );
-
         $this->scenario
             ->withAggregateId('someId')
             ->given(
@@ -530,15 +559,23 @@ class OfferTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Item $item) use (
-                    $sameUpdateImage,
-                    $otherDescriptionUpdateImage,
-                    $otherCopyrightUpdateImage
-                ) {
+                function (Item $item) {
                     $item->addImage($this->image);
-                    $item->updateImage($sameUpdateImage);
-                    $item->updateImage($otherDescriptionUpdateImage);
-                    $item->updateImage($otherCopyrightUpdateImage);
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        $this->image->getDescription(),
+                        $this->image->getCopyrightHolder()
+                    );
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        new Description('other description'),
+                        $this->image->getCopyrightHolder()
+                    );
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        new Description('other description'),
+                        new CopyrightHolder('other copyright')
+                    );
                 }
             )
             ->then(

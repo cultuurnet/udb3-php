@@ -44,7 +44,6 @@ class UDB3SavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\DBALException
      */
     public function it_can_save_a_query_with_name_for_a_user(): void
     {
@@ -74,7 +73,6 @@ class UDB3SavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\DBALException
      */
     public function it_can_delete_a_query_for_a_user(): void
     {

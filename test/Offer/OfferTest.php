@@ -19,6 +19,7 @@ use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
+use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
@@ -448,6 +449,61 @@ class OfferTest extends AggregateRootScenarioTestCase
                 [
                     new ImageAdded('someId', $image),
                     new ImageAdded('someId', $anotherImage),
+                    new MainImageSelected('someId', $anotherImage),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     * @see https://jira.uitdatabank.be/browse/III-2693
+     */
+    public function it_can_select_main_image_even_after_image_update(): void
+    {
+        $anotherImage = new Image(
+            new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
+            new MIMEType('image/jpeg'),
+            new Description('my best selfie'),
+            new CopyrightHolder('Dirk Dirkington'),
+            Url::fromNative('http://foo.bar/media/my_best_selfie.gif'),
+            new Language('en')
+        );
+
+        $updateImageCommand = $this->getMockForAbstractClass(
+            AbstractUpdateImage::class,
+            [
+                'someId',
+                new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
+                new Description('new description'),
+                new CopyrightHolder('new copyright holder'),
+            ]
+        );
+
+        $this->scenario
+            ->withAggregateId('someId')
+            ->given(
+                [
+                    new ItemCreated('someId'),
+                ]
+            )
+            ->when(
+                function (Item $item) use ($updateImageCommand, $anotherImage) {
+                    $item->addImage($this->image);
+                    $item->addImage($anotherImage);
+                    $item->updateImage($updateImageCommand);
+                    $item->selectMainImage($anotherImage);
+                }
+            )
+            ->then(
+                [
+                    new ImageAdded('someId', $this->image),
+                    new ImageAdded('someId', $anotherImage),
+                    new ImageUpdated(
+                        'someId',
+                        new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
+                        new Description('new description'),
+                        new CopyrightHolder('new copyright holder')
+                    ),
                     new MainImageSelected('someId', $anotherImage),
                 ]
             );

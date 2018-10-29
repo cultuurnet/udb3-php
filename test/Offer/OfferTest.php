@@ -19,7 +19,6 @@ use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
-use CultuurNet\UDB3\Offer\Commands\Image\AbstractUpdateImage;
 use CultuurNet\UDB3\Offer\Item\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\CalendarUpdated;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
@@ -469,16 +468,6 @@ class OfferTest extends AggregateRootScenarioTestCase
             new Language('en')
         );
 
-        $updateImageCommand = $this->getMockForAbstractClass(
-            AbstractUpdateImage::class,
-            [
-                'someId',
-                new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
-                new Description('new description'),
-                new CopyrightHolder('new copyright holder'),
-            ]
-        );
-
         $this->scenario
             ->withAggregateId('someId')
             ->given(
@@ -487,10 +476,14 @@ class OfferTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Item $item) use ($updateImageCommand, $anotherImage) {
+                function (Item $item) use ($anotherImage) {
                     $item->addImage($this->image);
                     $item->addImage($anotherImage);
-                    $item->updateImage($updateImageCommand);
+                    $item->updateImage(
+                        $anotherImage->getMediaObjectId(),
+                        new Description('new description'),
+                        new CopyrightHolder('new copyright holder')
+                    );
                     $item->selectMainImage($anotherImage);
                 }
             )
@@ -500,7 +493,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                     new ImageAdded('someId', $anotherImage),
                     new ImageUpdated(
                         'someId',
-                        new UUID('798b4619-07c4-456d-acca-8f3f3e6fd43f'),
+                        $anotherImage->getMediaObjectId(),
                         new Description('new description'),
                         new CopyrightHolder('new copyright holder')
                     ),
@@ -514,13 +507,6 @@ class OfferTest extends AggregateRootScenarioTestCase
      */
     public function it_checks_for_presence_of_image_when_updating()
     {
-        $updateImage = new UpdateImage(
-            'someId',
-            new UUID($this->image->getMediaObjectId()),
-            new Description('my favorite cat'),
-            new CopyrightHolder('Jane Doe')
-        );
-
         $this->scenario
             ->withAggregateId('someId')
             ->given(
@@ -529,12 +515,20 @@ class OfferTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Item $item) use ($updateImage) {
+                function (Item $item) {
                     $item->addImage($this->image);
                     $item->removeImage($this->image);
-                    $item->updateImage($updateImage);
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        new Description('my favorite cat'),
+                        new CopyrightHolder('Jane Doe')
+                    );
                     $item->addImage($this->image);
-                    $item->updateImage($updateImage);
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        new Description('my favorite cat'),
+                        new CopyrightHolder('Jane Doe')
+                    );
                 }
             )
             ->then(
@@ -557,27 +551,6 @@ class OfferTest extends AggregateRootScenarioTestCase
      */
     public function it_checks_for_difference_of_image_when_updating()
     {
-        $sameUpdateImage = new UpdateImage(
-            'someId',
-            new UUID($this->image->getMediaObjectId()),
-            $this->image->getDescription(),
-            $this->image->getCopyrightHolder()
-        );
-
-        $otherDescriptionUpdateImage = new UpdateImage(
-            'someId',
-            new UUID($this->image->getMediaObjectId()),
-            new Description('other description'),
-            $this->image->getCopyrightHolder()
-        );
-
-        $otherCopyrightUpdateImage = new UpdateImage(
-            'someId',
-            new UUID($this->image->getMediaObjectId()),
-            new Description('other description'),
-            new CopyrightHolder('other copyright')
-        );
-
         $this->scenario
             ->withAggregateId('someId')
             ->given(
@@ -586,15 +559,23 @@ class OfferTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Item $item) use (
-                    $sameUpdateImage,
-                    $otherDescriptionUpdateImage,
-                    $otherCopyrightUpdateImage
-                ) {
+                function (Item $item) {
                     $item->addImage($this->image);
-                    $item->updateImage($sameUpdateImage);
-                    $item->updateImage($otherDescriptionUpdateImage);
-                    $item->updateImage($otherCopyrightUpdateImage);
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        $this->image->getDescription(),
+                        $this->image->getCopyrightHolder()
+                    );
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        new Description('other description'),
+                        $this->image->getCopyrightHolder()
+                    );
+                    $item->updateImage(
+                        $this->image->getMediaObjectId(),
+                        new Description('other description'),
+                        new CopyrightHolder('other copyright')
+                    );
                 }
             )
             ->then(

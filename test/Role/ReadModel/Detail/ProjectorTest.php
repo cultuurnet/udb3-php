@@ -215,6 +215,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->name = $this->name->toNative();
         $json->permissions = [];
         $json->constraint = $this->query->toNative();
+        $json->constraints = new \stdClass();
+        $json->constraints->{$constraintAdded->getSapiVersion()->toNative()} = $this->query->toNative();
 
         $document = $document->withBody($json);
 
@@ -256,13 +258,19 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->name = $this->name->toNative();
         $json->permissions = [];
         $json->constraint = 'city:Kortrijk OR keywords:"zuidwest uitpas"';
+        $json->constraints = new \stdClass();
+        $json->constraints->{$constraintUpdated->getSapiVersion()->toNative()} =
+            $constraintUpdated->getQuery()->toNative();
 
         $document = $document->withBody($json);
 
         $this->repository->expects($this->once())
             ->method('get')
             ->with($this->uuid->toNative())
-            ->willReturn($this->initialDocument());
+            ->willReturn($this->documentWithConstraints(
+                $constraintUpdated->getSapiVersion(),
+                $constraintUpdated->getQuery()
+            ));
 
         $this->repository->expects($this->once())
             ->method('save')
@@ -503,6 +511,28 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [$permission->getName()];
+
+        $document = $document->withBody($json);
+
+        return $document;
+    }
+
+    /**
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     * @return JsonDocument
+     */
+    private function documentWithConstraints(SapiVersion $sapiVersion, Query $query): JsonDocument
+    {
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
+        $json->permissions = [];
+        $json->constraint = $query->toNative();
+        $json->constraints = new \stdClass();
+        $json->constraints->{$sapiVersion->toNative()} = $query->toNative();
 
         $document = $document->withBody($json);
 

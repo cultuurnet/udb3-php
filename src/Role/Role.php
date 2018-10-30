@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Role;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\LabelAdded;
@@ -103,7 +103,7 @@ class Role extends EventSourcedAggregateRoot
     ) {
         if (empty($this->query)) {
             if (!empty($query) && !$query->isEmpty()) {
-                $this->apply(new ConstraintCreated($uuid, $query));
+                $this->apply(new ConstraintAdded($uuid, $query));
             }
         } else {
             if (!empty($query) && !$query->isEmpty()) {
@@ -217,11 +217,11 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param ConstraintCreated $constraintCreated
+     * @param ConstraintAdded $constraintAdded
      */
-    public function applyConstraintCreated(ConstraintCreated $constraintCreated)
+    public function applyConstraintAdded(ConstraintAdded $constraintAdded)
     {
-        $this->query = $constraintCreated->getQuery();
+        $this->query = $constraintAdded->getQuery();
     }
 
     /**

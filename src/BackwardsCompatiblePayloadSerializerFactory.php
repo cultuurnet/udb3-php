@@ -31,6 +31,7 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PriceInfoUpdated as PlacePriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted as PlaceTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated as PlaceTypicalAgeRangeUpdated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use ValueObjects\Identity\UUID;
 
 /**
@@ -405,6 +406,18 @@ class BackwardsCompatiblePayloadSerializerFactory
                 }
             );
         }
+
+        /**
+         * Roles
+         */
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Role\Events\ConstraintCreated',
+            function (array $serializedObject) {
+                $serializedObject['class'] = ConstraintAdded::class;
+
+                return $serializedObject;
+            }
+        );
 
         return $payloadManipulatingSerializer;
     }

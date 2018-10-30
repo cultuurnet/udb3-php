@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Role\ReadModel\Search;
 use Broadway\EventHandling\EventListenerInterface;
 use Broadway\Domain\DomainMessage;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
@@ -69,13 +69,13 @@ class Projector implements EventListenerInterface
     }
 
     /**
-     * @param ConstraintCreated $constraintCreated
+     * @param ConstraintAdded $constraintAdded
      */
-    protected function applyConstraintCreated(ConstraintCreated $constraintCreated)
+    protected function applyConstraintAdded(ConstraintAdded $constraintAdded)
     {
         $this->repository->updateConstraint(
-            $constraintCreated->getUuid(),
-            $constraintCreated->getQuery()
+            $constraintAdded->getUuid(),
+            $constraintAdded->getQuery()
         );
     }
 

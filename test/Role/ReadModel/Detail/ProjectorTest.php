@@ -8,7 +8,7 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\Events\AbstractEvent;
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
@@ -194,14 +194,14 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_handles_constraint_created()
     {
-        $constraintCreated = new ConstraintCreated(
+        $constraintAdded = new ConstraintAdded(
             $this->uuid,
             $this->constraintName
         );
 
         $domainMessage = $this->createDomainMessage(
             $this->uuid,
-            $constraintCreated,
+            $constraintAdded,
             BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
         );
 

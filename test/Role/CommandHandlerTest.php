@@ -15,7 +15,7 @@ use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RemoveUser;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\LabelAdded;
@@ -84,9 +84,9 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $permissionRemoved;
 
     /**
-     * @var ConstraintCreated
+     * @var ConstraintAdded
      */
-    private $constraintCreated;
+    private $constraintAdded;
 
     /**
      * @var ConstraintUpdated
@@ -144,7 +144,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             $this->permission
         );
 
-        $this->constraintCreated = new ConstraintCreated(
+        $this->constraintAdded = new ConstraintAdded(
             $this->uuid,
             $this->query
         );
@@ -336,7 +336,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 $this->uuid,
                 $this->query
             ))
-            ->then([$this->constraintCreated]);
+            ->then([$this->constraintAdded]);
     }
 
     /**
@@ -346,7 +346,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintCreated])
+            ->given([$this->roleCreated, $this->constraintAdded])
             ->when(new SetConstraint(
                 $this->uuid,
                 $this->updatedQuery
@@ -363,7 +363,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintCreated])
+            ->given([$this->roleCreated, $this->constraintAdded])
             ->when(new SetConstraint(
                 $this->uuid,
                 $query

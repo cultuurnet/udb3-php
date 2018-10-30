@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Role;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
@@ -62,9 +62,9 @@ class RoleTest extends AggregateRootScenarioTestCase
     private $permissionRemoved;
 
     /**
-     * @var ConstraintCreated
+     * @var ConstraintAdded
      */
-    private $constraintCreated;
+    private $constraintAdded;
 
     /**
      * @var ConstraintUpdated
@@ -111,7 +111,7 @@ class RoleTest extends AggregateRootScenarioTestCase
             $this->permission
         );
 
-        $this->constraintCreated = new ConstraintCreated(
+        $this->constraintAdded = new ConstraintAdded(
             $this->uuid,
             $this->query
         );
@@ -276,7 +276,7 @@ class RoleTest extends AggregateRootScenarioTestCase
                     $query
                 );
             })
-            ->then([$this->constraintCreated]);
+            ->then([$this->constraintAdded]);
     }
 
     /**
@@ -289,7 +289,7 @@ class RoleTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintCreated])
+            ->given([$this->roleCreated, $this->constraintAdded])
             ->when(function (Role $role) use ($uuid, $query) {
                 /** @var Role $role */
                 $role->setConstraint(
@@ -310,7 +310,7 @@ class RoleTest extends AggregateRootScenarioTestCase
 
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintCreated])
+            ->given([$this->roleCreated, $this->constraintAdded])
             ->when(function (Role $role) use ($uuid, $query) {
                 /** @var Role $role */
                 $role->setConstraint(

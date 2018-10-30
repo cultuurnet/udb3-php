@@ -6,7 +6,7 @@ use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
@@ -105,15 +105,15 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
      */
     public function it_calls_update_constraint_on_constraint_created_event()
     {
-        $constraintCreated = new ConstraintCreated(
+        $constraintAdded = new ConstraintAdded(
             new UUID(),
             new StringLiteral('zipCode:3000')
         );
-        $domainMessage = $this->createDomainMessage($constraintCreated);
+        $domainMessage = $this->createDomainMessage($constraintAdded);
 
         $this->repository->expects($this->once())
             ->method('updateConstraint')
-            ->with($constraintCreated->getUuid(), $constraintCreated->getQuery());
+            ->with($constraintAdded->getUuid(), $constraintAdded->getQuery());
 
         $this->projector->handle($domainMessage);
     }

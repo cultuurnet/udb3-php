@@ -16,6 +16,8 @@ use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -101,13 +103,14 @@ class Role extends EventSourcedAggregateRoot
         UUID $uuid,
         StringLiteral $query
     ) {
+        $sapiVersion = SapiVersion::V2();
         if (empty($this->query)) {
             if (!empty($query) && !$query->isEmpty()) {
-                $this->apply(new ConstraintAdded($uuid, $query));
+                $this->apply(new ConstraintAdded($uuid, $sapiVersion, new Query($query)));
             }
         } else {
             if (!empty($query) && !$query->isEmpty()) {
-                $this->apply(new ConstraintUpdated($uuid, $query));
+                $this->apply(new ConstraintUpdated($uuid, $sapiVersion, new Query($query)));
             } else {
                 $this->apply(new ConstraintRemoved($uuid));
             }

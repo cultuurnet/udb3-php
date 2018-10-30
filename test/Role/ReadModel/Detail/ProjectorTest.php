@@ -17,15 +17,17 @@ use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var StringLiteral
+     * @var Query
      */
-    private $constraintName;
+    private $query;
 
     /**
      * @var UUID
@@ -60,7 +62,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->name = new StringLiteral('roleName');
 
         $this->constraintUuid = new UUID();
-        $this->constraintName = new StringLiteral('city:Leuven');
+        $this->query = new Query('city:Leuven');
         $this->repository = $this->createMock(DocumentRepositoryInterface::class);
 
         $this->projector = new Projector($this->repository);
@@ -196,7 +198,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $constraintAdded = new ConstraintAdded(
             $this->uuid,
-            $this->constraintName
+            SapiVersion::V2(),
+            $this->query
         );
 
         $domainMessage = $this->createDomainMessage(
@@ -211,7 +214,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [];
-        $json->constraint = $this->constraintName->toNative();
+        $json->constraint = $this->query->toNative();
 
         $document = $document->withBody($json);
 
@@ -236,7 +239,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     {
         $constraintUpdated = new ConstraintUpdated(
             $this->uuid,
-            new StringLiteral('city:Kortrijk OR keywords:"zuidwest uitpas"')
+            SapiVersion::V2(),
+            new Query('city:Kortrijk OR keywords:"zuidwest uitpas"')
         );
 
         $domainMessage = $this->createDomainMessage(

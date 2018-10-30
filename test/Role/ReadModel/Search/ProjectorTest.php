@@ -5,13 +5,14 @@ namespace CultuurNet\UDB3\Role\ReadModel\Search;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;
 use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
@@ -107,7 +108,8 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
     {
         $constraintAdded = new ConstraintAdded(
             new UUID(),
-            new StringLiteral('zipCode:3000')
+            SapiVersion::V2(),
+            new Query('zipCode:3000')
         );
         $domainMessage = $this->createDomainMessage($constraintAdded);
 
@@ -125,7 +127,8 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
     {
         $constraintUpdated = new ConstraintUpdated(
             new UUID(),
-            new StringLiteral('zipCode:3000')
+            SapiVersion::V2(),
+            new Query('zipCode:3000')
         );
         $domainMessage = $this->createDomainMessage($constraintUpdated);
 

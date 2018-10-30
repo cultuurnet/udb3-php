@@ -28,6 +28,8 @@ use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -49,12 +51,12 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $permission;
 
     /**
-     * @var StringLiteral
+     * @var Query
      */
     private $query;
 
     /**
-     * @var StringLiteral
+     * @var Query
      */
     private $updatedQuery;
 
@@ -120,8 +122,8 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->uuid = new UUID();
         $this->name = new StringLiteral('labelName');
         $this->permission = Permission::AANBOD_BEWERKEN();
-        $this->query = new StringLiteral('category_flandersregion_name:"Regio Aalst"');
-        $this->updatedQuery = new StringLiteral('category_flandersregion_name:"Regio Brussel"');
+        $this->query = new Query('category_flandersregion_name:"Regio Aalst"');
+        $this->updatedQuery = new Query('category_flandersregion_name:"Regio Brussel"');
         $this->labelId = new UUID();
 
         $this->roleCreated = new RoleCreated(
@@ -146,11 +148,13 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
 
         $this->constraintAdded = new ConstraintAdded(
             $this->uuid,
+            SapiVersion::V2(),
             $this->query
         );
 
         $this->constraintUpdated = new ConstraintUpdated(
             $this->uuid,
+            SapiVersion::V2(),
             $this->updatedQuery
         );
 

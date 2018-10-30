@@ -11,6 +11,8 @@ use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -32,14 +34,19 @@ class RoleTest extends AggregateRootScenarioTestCase
     private $permission;
 
     /**
-     * @var StringLiteral
+     * @var Query
      */
     private $query;
 
     /**
-     * @var StringLiteral
+     * @var Query
      */
     private $updatedQuery;
+
+    /**
+     * @var SapiVersion
+     */
+    private $sapiVersion;
 
     /**
      * @var RoleCreated
@@ -88,8 +95,9 @@ class RoleTest extends AggregateRootScenarioTestCase
         $this->uuid = new UUID();
         $this->name = new StringLiteral('roleName');
         $this->permission = Permission::AANBOD_BEWERKEN();
-        $this->query = new StringLiteral('category_flandersregion_name:"Regio Aalst"');
-        $this->updatedQuery = new StringLiteral('category_flandersregion_name:"Regio Brussel"');
+        $this->query = new Query('category_flandersregion_name:"Regio Aalst"');
+        $this->updatedQuery = new Query('category_flandersregion_name:"Regio Brussel"');
+        $this->sapiVersion = SapiVersion::V2();
 
         $this->roleCreated = new RoleCreated(
             $this->uuid,
@@ -113,11 +121,13 @@ class RoleTest extends AggregateRootScenarioTestCase
 
         $this->constraintAdded = new ConstraintAdded(
             $this->uuid,
+            $this->sapiVersion,
             $this->query
         );
 
         $this->constraintUpdated = new ConstraintUpdated(
             $this->uuid,
+            $this->sapiVersion,
             $this->updatedQuery
         );
 

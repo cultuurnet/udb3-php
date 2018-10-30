@@ -313,6 +313,101 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
+    public function it_can_add_a_constraint_with_sapi_version()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated])
+            ->when(function (Role $role) {
+                $role->addConstraint(
+                    $this->sapiVersion,
+                    $this->query
+                );
+            })
+            ->then([$this->constraintAdded]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_not_add_a_constraint_twice_with_sapi_version()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([
+                $this->roleCreated,
+                $this->constraintAdded,
+            ])
+            ->when(function (Role $role) {
+                $role->addConstraint(
+                    $this->sapiVersion,
+                    $this->query
+                );
+            })
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_an_empty_constraint_with_sapi_version()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated])
+            ->when(function (Role $role) {
+                $role->updateConstraint(
+                    $this->sapiVersion,
+                    $this->query
+                );
+            })
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_a_constraint_with_sapi_version()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([
+                $this->roleCreated,
+                $this->constraintAdded,
+            ])
+            ->when(function (Role $role) {
+                $role->updateConstraint(
+                    $this->sapiVersion,
+                    $this->updatedQuery
+                );
+            })
+            ->then([$this->constraintUpdated]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_a_constraint_with_same_query_twice()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([
+                $this->roleCreated,
+                $this->constraintAdded,
+                $this->constraintUpdated,
+            ])
+            ->when(function (Role $role) {
+                $role->updateConstraint(
+                    $this->sapiVersion,
+                    $this->updatedQuery
+                );
+            })
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
     public function it_can_remove_a_constraint()
     {
         $uuid = $this->uuid;

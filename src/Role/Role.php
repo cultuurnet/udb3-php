@@ -34,9 +34,9 @@ class Role extends EventSourcedAggregateRoot
     private $name;
 
     /**
-     * @var StringLiteral
+     * @var Query[]
      */
-    private $query;
+    private $queries = [];
 
     /**
      * @var Permission[]
@@ -104,7 +104,7 @@ class Role extends EventSourcedAggregateRoot
         StringLiteral $query
     ) {
         $sapiVersion = SapiVersion::V2();
-        if (empty($this->query)) {
+        if (empty($this->queries[$sapiVersion->toNative()])) {
             if (!empty($query) && !$query->isEmpty()) {
                 $this->apply(new ConstraintAdded($uuid, $sapiVersion, new Query($query)));
             }
@@ -115,6 +115,53 @@ class Role extends EventSourcedAggregateRoot
                 $this->apply(new ConstraintRemoved($uuid));
             }
         }
+    }
+
+    /**
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     */
+    public function addConstraint(SapiVersion $sapiVersion, Query $query): void
+    {
+        if ($this->queryEmpty($sapiVersion)) {
+            $this->apply(new ConstraintAdded($this->uuid, $sapiVersion, $query));
+        }
+    }
+
+    /**
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     */
+    public function updateConstraint(SapiVersion $sapiVersion, Query $query): void
+    {
+        if (!$this->queryEmpty($sapiVersion) &&
+        !$this->querySameValue($sapiVersion, $query)) {
+            $this->apply(new ConstraintUpdated($this->uuid, $sapiVersion, $query));
+        }
+    }
+
+    /*public function removeConstraint(SapiVersion $sapiVersion)
+    {
+        $this->apply(new ConstraintRemoved($this->uuid, $sapiVersion));
+    }*/
+
+    /**
+     * @param SapiVersion $sapiVersion
+     * @return bool
+     */
+    private function queryEmpty(SapiVersion $sapiVersion): bool
+    {
+        return empty($this->queries[$sapiVersion->toNative()]);
+    }
+
+    /**
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     * @return bool
+     */
+    private function querySameValue(SapiVersion $sapiVersion, Query $query): bool
+    {
+        return $this->queries[$sapiVersion->toNative()]->sameValueAs($query);
     }
 
     /**
@@ -224,7 +271,7 @@ class Role extends EventSourcedAggregateRoot
      */
     public function applyConstraintAdded(ConstraintAdded $constraintAdded)
     {
-        $this->query = $constraintAdded->getQuery();
+        $this->queries[$constraintAdded->getSapiVersion()->toNative()] = $constraintAdded->getQuery();
     }
 
     /**
@@ -232,7 +279,7 @@ class Role extends EventSourcedAggregateRoot
      */
     public function applyConstraintUpdated(ConstraintUpdated $constraintUpdated)
     {
-        $this->query = $constraintUpdated->getQuery();
+        $this->queries[$constraintUpdated->getSapiVersion()->toNative()] = $constraintUpdated->getQuery();
     }
 
     /**
@@ -240,7 +287,7 @@ class Role extends EventSourcedAggregateRoot
      */
     public function applyConstraintRemoved(ConstraintRemoved $constraintRemoved)
     {
-        $this->query = new StringLiteral('');
+        $this->queries[SapiVersion::V2] = null;
     }
 
     /**

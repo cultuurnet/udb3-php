@@ -3,6 +3,8 @@
 namespace CultuurNet\UDB3\Role\Services;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -65,6 +67,22 @@ interface RoleEditingServiceInterface
      * @return string
      */
     public function setConstraint(UUID $uuid, StringLiteral $query);
+
+    /**
+     * @param UUID $uuid
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     * @return string
+     */
+    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query);
+
+    /**
+     * @param UUID $uuid
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     * @return string
+     */
+    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query);
 
     /**
      * Add a label to a role.

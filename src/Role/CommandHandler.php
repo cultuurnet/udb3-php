@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Role;
 
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler as AbstractCommandHandler;
+use CultuurNet\UDB3\Role\Commands\AddConstraint;
 use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\AddUser;
@@ -14,6 +15,7 @@ use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RemoveUser;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
+use CultuurNet\UDB3\Role\Commands\UpdateConstraint;
 use ValueObjects\Identity\UUID;
 
 class CommandHandler extends AbstractCommandHandler
@@ -70,6 +72,36 @@ class CommandHandler extends AbstractCommandHandler
         $role->setConstraint(
             $setConstraint->getUuid(),
             $setConstraint->getQuery()
+        );
+
+        $this->save($role);
+    }
+
+    /**
+     * @param AddConstraint $addConstraint
+     */
+    public function handleAddConstraint(AddConstraint $addConstraint)
+    {
+        $role = $this->load($addConstraint->getUuid());
+
+        $role->addConstraint(
+            $addConstraint->getSapiVersion(),
+            $addConstraint->getQuery()
+        );
+
+        $this->save($role);
+    }
+
+    /**
+     * @param UpdateConstraint $updateConstraint
+     */
+    public function handleUpdateConstraint(UpdateConstraint $updateConstraint)
+    {
+        $role = $this->load($updateConstraint->getUuid());
+
+        $role->updateConstraint(
+            $updateConstraint->getSapiVersion(),
+            $updateConstraint->getQuery()
         );
 
         $this->save($role);

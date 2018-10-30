@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\Role;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use CultuurNet\UDB3\Role\Commands\AddConstraint;
 use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\AddUser;
@@ -15,6 +16,7 @@ use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RemoveUser;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
+use CultuurNet\UDB3\Role\Commands\UpdateConstraint;
 use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
@@ -59,6 +61,11 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
      * @var Query
      */
     private $updatedQuery;
+
+    /**
+     * @var SapiVersion
+     */
+    private $sapiVersion;
 
     /**
      * @var UUID
@@ -124,6 +131,7 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->permission = Permission::AANBOD_BEWERKEN();
         $this->query = new Query('category_flandersregion_name:"Regio Aalst"');
         $this->updatedQuery = new Query('category_flandersregion_name:"Regio Brussel"');
+        $this->sapiVersion = SapiVersion::V2();
         $this->labelId = new UUID();
 
         $this->roleCreated = new RoleCreated(
@@ -373,6 +381,38 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 $query
             ))
             ->then([$this->constraintRemoved]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_addConstraint()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated])
+            ->when(new AddConstraint(
+                $this->uuid,
+                $this->sapiVersion,
+                $this->query
+            ))
+            ->then([$this->constraintAdded]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_updateConstraint()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated, $this->constraintAdded])
+            ->when(new UpdateConstraint(
+                $this->uuid,
+                $this->sapiVersion,
+                $this->updatedQuery
+            ))
+            ->then([$this->constraintUpdated]);
     }
 
     /**

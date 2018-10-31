@@ -4,8 +4,10 @@ namespace CultuurNet\UDB3\SavedSearches;
 
 use CultuurNet\UDB3\SavedSearches\Properties\CreatedByQueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
+use CultuurNet\UDB3\SavedSearches\ValueObject\CreatedByQueryMode;
 use CultuurNet\UDB3\SavedSearches\ValueObject\UserId;
 use ValueObjects\StringLiteral\StringLiteral;
+use ValueObjects\Web\EmailAddress;
 
 class FixedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,8 +25,12 @@ class FixedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->user = new \CultureFeed_User();
         $this->user->id = 'cef70b98-2d4d-40a9-95f0-762aae66ef3f';
+        $this->user->mbox = 'foo@bar.com';
 
-        $this->repository = new FixedSavedSearchRepository($this->user);
+        $this->repository = new FixedSavedSearchRepository(
+            $this->user,
+            CreatedByQueryMode::UUID()
+        );
     }
 
     /**
@@ -35,7 +41,12 @@ class FixedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
         $name = new StringLiteral('Door mij ingevoerd');
 
         $userId = new UserId($this->user->id);
-        $query = new CreatedByQueryString($userId);
+        $emailAddress = new EmailAddress($this->user->mbox);
+        $query = new CreatedByQueryString(
+            $userId,
+            $emailAddress,
+            CreatedByQueryMode::UUID()
+        );
 
         $savedSearch = new SavedSearch($name, $query);
 

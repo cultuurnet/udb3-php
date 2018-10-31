@@ -6,8 +6,10 @@ use CultuurNet\UDB3\SavedSearches\Properties\CreatedByQueryString;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface;
+use CultuurNet\UDB3\SavedSearches\ValueObject\CreatedByQueryMode;
 use CultuurNet\UDB3\SavedSearches\ValueObject\UserId;
 use ValueObjects\StringLiteral\StringLiteral;
+use ValueObjects\Web\EmailAddress;
 
 class CombinedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +30,9 @@ class CombinedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
             new SavedSearch(
                 new StringLiteral('Saved search 2'),
                 new CreatedByQueryString(
-                    new UserId('cef70b98-2d4d-40a9-95f0-762aae66ef3f')
+                    new UserId('cef70b98-2d4d-40a9-95f0-762aae66ef3f'),
+                    new EmailAddress('foo@bar.com'),
+                    CreatedByQueryMode::UUID()
                 )
             ),
             new SavedSearch(

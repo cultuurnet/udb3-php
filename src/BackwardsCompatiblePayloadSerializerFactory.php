@@ -32,6 +32,7 @@ use CultuurNet\UDB3\Place\Events\PriceInfoUpdated as PlacePriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted as PlaceTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated as PlaceTypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Role\Events\ConstraintAdded;
+use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 
@@ -423,6 +424,15 @@ class BackwardsCompatiblePayloadSerializerFactory
 
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Role\Events\ConstraintUpdated',
+            function (array $serializedObject) {
+                $serializedObject['payload']['sapiVersion'] = SapiVersion::V2()->toNative();
+
+                return $serializedObject;
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Role\Events\ConstraintRemoved',
             function (array $serializedObject) {
                 $serializedObject['payload']['sapiVersion'] = SapiVersion::V2()->toNative();
 

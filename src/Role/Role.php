@@ -112,7 +112,7 @@ class Role extends EventSourcedAggregateRoot
             if (!empty($query) && !$query->isEmpty()) {
                 $this->apply(new ConstraintUpdated($uuid, $sapiVersion, new Query($query)));
             } else {
-                $this->apply(new ConstraintRemoved($uuid));
+                $this->apply(new ConstraintRemoved($uuid, $sapiVersion));
             }
         }
     }

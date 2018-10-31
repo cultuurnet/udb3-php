@@ -132,7 +132,8 @@ class RoleTest extends AggregateRootScenarioTestCase
         );
 
         $this->constraintRemoved = new ConstraintRemoved(
-            $this->uuid
+            $this->uuid,
+            $this->sapiVersion
         );
 
         $this->role = new Role();

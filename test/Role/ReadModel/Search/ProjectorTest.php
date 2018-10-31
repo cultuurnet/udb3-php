@@ -144,7 +144,7 @@ class ProjectorTest extends PHPUnit_Framework_TestCase
      */
     public function it_calls_update_constraint_on_constraint_removed_event()
     {
-        $constraintRemoved = new ConstraintRemoved(new UUID());
+        $constraintRemoved = new ConstraintRemoved(new UUID(), SapiVersion::V2());
         $domainMessage = $this->createDomainMessage($constraintRemoved);
 
         $this->repository->expects($this->once())

@@ -167,7 +167,8 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         );
 
         $this->constraintRemoved = new ConstraintRemoved(
-            $this->uuid
+            $this->uuid,
+            SapiVersion::V2()
         );
 
         $this->labelAdded = new LabelAdded(

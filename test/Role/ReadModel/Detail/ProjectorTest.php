@@ -287,7 +287,8 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     public function it_handles_constraint_removed()
     {
         $constraintRemoved = new ConstraintRemoved(
-            $this->uuid
+            $this->uuid,
+            SapiVersion::V2()
         );
 
         $domainMessage = $this->createDomainMessage(

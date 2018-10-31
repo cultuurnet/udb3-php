@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\AddUser;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
+use CultuurNet\UDB3\Role\Commands\RemoveConstraint;
 use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RemoveUser;
@@ -172,6 +173,18 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
             $uuid,
             $sapiVersion,
             $query
+        );
+
+        return $this->commandBus->dispatch($command);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion) {
+        $command = new RemoveConstraint(
+            $uuid,
+            $sapiVersion
         );
 
         return $this->commandBus->dispatch($command);

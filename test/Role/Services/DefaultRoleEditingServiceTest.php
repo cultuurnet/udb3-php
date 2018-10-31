@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
+use CultuurNet\UDB3\Role\Commands\RemoveConstraint;
 use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
@@ -271,6 +272,24 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->uuid,
             SapiVersion::V2(),
             new Query('test query')
+        );
+
+        $this->assertEquals($this->expectedCommandId, $commandId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_remove_a_constraint()
+    {
+        $this->commandBus->expects($this->once())
+            ->method('dispatch')
+            ->with(new RemoveConstraint($this->uuid, SapiVersion::V2()))
+            ->willReturn($this->expectedCommandId);
+
+        $commandId = $this->roleEditingService->removeConstraint(
+            $this->uuid,
+            SapiVersion::V2()
         );
 
         $this->assertEquals($this->expectedCommandId, $commandId);

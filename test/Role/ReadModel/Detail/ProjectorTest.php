@@ -303,13 +303,19 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [];
+        $json->constraint = null;
+        $json->constraints = new \stdClass();
+        $json->constraints->{$constraintRemoved->getSapiVersion()->toNative()} =
+            null;
 
         $document = $document->withBody($json);
 
         $this->repository->expects($this->once())
             ->method('get')
             ->with($this->uuid->toNative())
-            ->willReturn($this->initialDocument());
+            ->willReturn($this->documentWithEmptyConstraints(
+                $constraintRemoved->getSapiVersion()
+            ));
 
         $this->repository->expects($this->once())
             ->method('save')
@@ -534,6 +540,27 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->constraint = $query->toNative();
         $json->constraints = new \stdClass();
         $json->constraints->{$sapiVersion->toNative()} = $query->toNative();
+
+        $document = $document->withBody($json);
+
+        return $document;
+    }
+
+    /**
+     * @param SapiVersion $sapiVersion
+     * @return JsonDocument
+     */
+    private function documentWithEmptyConstraints(SapiVersion $sapiVersion): JsonDocument
+    {
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
+        $json->permissions = [];
+        $json->constraint = null;
+        $json->constraints = new \stdClass();
+        $json->constraints->{$sapiVersion->toNative()} = null;
 
         $document = $document->withBody($json);
 

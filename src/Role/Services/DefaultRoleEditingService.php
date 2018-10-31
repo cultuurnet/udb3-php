@@ -181,7 +181,8 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion) {
+    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion)
+    {
         $command = new RemoveConstraint(
             $uuid,
             $sapiVersion

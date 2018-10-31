@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\AddUser;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
+use CultuurNet\UDB3\Role\Commands\RemoveConstraint;
 use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RemoveUser;
@@ -102,6 +103,17 @@ class CommandHandler extends AbstractCommandHandler
         $role->updateConstraint(
             $updateConstraint->getSapiVersion(),
             $updateConstraint->getQuery()
+        );
+
+        $this->save($role);
+    }
+
+    public function handleRemoveConstraint(RemoveConstraint $removeConstraint)
+    {
+        $role = $this->load($removeConstraint->getUuid());
+
+        $role->removeConstraint(
+            $removeConstraint->getSapiVersion()
         );
 
         $this->save($role);

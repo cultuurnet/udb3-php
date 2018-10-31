@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\AddUser;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
+use CultuurNet\UDB3\Role\Commands\RemoveConstraint;
 use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RemoveUser;
@@ -414,6 +415,21 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
                 $this->updatedQuery
             ))
             ->then([$this->constraintUpdated]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_removeConstraint()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated, $this->constraintAdded])
+            ->when(new RemoveConstraint(
+                $this->uuid,
+                $this->sapiVersion
+            ))
+            ->then([$this->constraintRemoved]);
     }
 
     /**

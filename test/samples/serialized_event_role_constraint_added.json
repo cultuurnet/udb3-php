@@ -1,0 +1,6 @@
+{
+  "class": "CultuurNet\\UDB3\\Role\\Events\\ConstraintCreated",
+  "payload": {
+    "query": "city:3000"
+  }
+}

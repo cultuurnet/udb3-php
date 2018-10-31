@@ -24,7 +24,12 @@ use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\PriceInfo\Tariff;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
+use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
+use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -616,6 +621,76 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $actualPriceInfo = $event->getPriceInfo();
 
         $this->assertEquals($expectedPriceInfo, $actualPriceInfo);
+    }
+
+    /**
+     * @test
+     */
+    public function it_add_a_default_sapi_version_when_constraint_is_created()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_role_constraint_added.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+        $decoded['payload']['uuid'] = new UUID();
+
+        /* @var ConstraintAdded $constraintAdded */
+        $constraintAdded = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            SapiVersion::V2(),
+            $constraintAdded->getSapiVersion()
+        );
+
+        $this->assertEquals(
+            new Query('city:3000'),
+            $constraintAdded->getQuery()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_default_sapi_version_when_constraint_is_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_role_constraint_added.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+        $decoded['payload']['uuid'] = new UUID();
+
+        /* @var ConstraintUpdated $constraintUpdated */
+        $constraintUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            SapiVersion::V2(),
+            $constraintUpdated->getSapiVersion()
+        );
+
+        $this->assertEquals(
+            new Query('city:3000'),
+            $constraintUpdated->getQuery()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_default_sapi_version_when_constraint_is_removed()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_role_constraint_added.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+        $decoded['payload']['uuid'] = new UUID();
+
+        /* @var ConstraintRemoved $constraintRemoved */
+        $constraintRemoved = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            SapiVersion::V2(),
+            $constraintRemoved->getSapiVersion()
+        );
     }
 
     /**

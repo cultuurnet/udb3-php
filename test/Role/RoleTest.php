@@ -447,4 +447,41 @@ class RoleTest extends AggregateRootScenarioTestCase
             })
             ->then([]);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_remove_a_constraint_with_sapi_version()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([
+                $this->roleCreated,
+                $this->constraintAdded,
+            ])
+            ->when(function (Role $role) {
+                $role->removeConstraint(
+                    $this->sapiVersion
+                );
+            })
+            ->then([$this->constraintRemoved]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_remove_a_constraint_with_sapi_version_when_there_is_none()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([
+                $this->roleCreated,
+            ])
+            ->when(function (Role $role) {
+                $role->removeConstraint(
+                    $this->sapiVersion
+                );
+            })
+            ->then([]);
+    }
 }

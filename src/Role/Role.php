@@ -140,10 +140,15 @@ class Role extends EventSourcedAggregateRoot
         }
     }
 
-    /*public function removeConstraint(SapiVersion $sapiVersion)
+    /**
+     * @param SapiVersion $sapiVersion
+     */
+    public function removeConstraint(SapiVersion $sapiVersion): void
     {
-        $this->apply(new ConstraintRemoved($this->uuid, $sapiVersion));
-    }*/
+        if (!$this->queryEmpty($sapiVersion)) {
+            $this->apply(new ConstraintRemoved($this->uuid, $sapiVersion));
+        }
+    }
 
     /**
      * @param SapiVersion $sapiVersion
@@ -287,7 +292,7 @@ class Role extends EventSourcedAggregateRoot
      */
     public function applyConstraintRemoved(ConstraintRemoved $constraintRemoved)
     {
-        $this->queries[SapiVersion::V2] = null;
+        $this->queries[$constraintRemoved->getSapiVersion()->toNative()] = null;
     }
 
     /**

@@ -331,7 +331,7 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_not_add_a_constraint_twice_with_sapi_version()
+    public function it_can_not_add_a_constraint_with_sapi_version_twice()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
@@ -388,7 +388,7 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_does_not_update_a_constraint_with_same_query_twice()
+    public function it_does_not_update_a_constraint_with_same_query()
     {
         $this->scenario
             ->withAggregateId($this->uuid)

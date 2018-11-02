@@ -81,7 +81,7 @@ class CommandHandler extends AbstractCommandHandler
     /**
      * @param AddConstraint $addConstraint
      */
-    public function handleAddConstraint(AddConstraint $addConstraint)
+    public function handleAddConstraint(AddConstraint $addConstraint): void
     {
         $role = $this->load($addConstraint->getUuid());
 
@@ -96,7 +96,7 @@ class CommandHandler extends AbstractCommandHandler
     /**
      * @param UpdateConstraint $updateConstraint
      */
-    public function handleUpdateConstraint(UpdateConstraint $updateConstraint)
+    public function handleUpdateConstraint(UpdateConstraint $updateConstraint): void
     {
         $role = $this->load($updateConstraint->getUuid());
 
@@ -108,7 +108,10 @@ class CommandHandler extends AbstractCommandHandler
         $this->save($role);
     }
 
-    public function handleRemoveConstraint(RemoveConstraint $removeConstraint)
+    /**
+     * @param RemoveConstraint $removeConstraint
+     */
+    public function handleRemoveConstraint(RemoveConstraint $removeConstraint): void
     {
         $role = $this->load($removeConstraint->getUuid());
 

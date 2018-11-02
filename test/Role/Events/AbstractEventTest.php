@@ -46,6 +46,9 @@ class AbstractEventTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedArray, $actualArray);
     }
 
+    /**
+     * @test
+     */
     public function it_can_deserialize()
     {
         $data = ['uuid' => $this->uuid->toNative()];

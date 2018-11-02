@@ -74,7 +74,7 @@ interface RoleEditingServiceInterface
      * @param Query $query
      * @return string
      */
-    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query);
+    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string;
 
     /**
      * @param UUID $uuid
@@ -82,14 +82,14 @@ interface RoleEditingServiceInterface
      * @param Query $query
      * @return string
      */
-    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query);
+    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string;
 
     /**
      * @param UUID $uuid
      * @param SapiVersion $sapiVersion
      * @return string
      */
-    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion);
+    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion): string;
 
     /**
      * Add a label to a role.

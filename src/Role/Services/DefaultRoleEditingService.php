@@ -153,7 +153,7 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query)
+    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string
     {
         $command = new AddConstraint(
             $uuid,
@@ -167,7 +167,7 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query)
+    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string
     {
         $command = new UpdateConstraint(
             $uuid,
@@ -181,7 +181,7 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion)
+    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion): string
     {
         $command = new RemoveConstraint(
             $uuid,

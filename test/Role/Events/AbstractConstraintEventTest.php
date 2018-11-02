@@ -5,7 +5,6 @@ namespace CultuurNet\UDB3\Role\Events;
 use CultuurNet\UDB3\Role\ValueObjects\Query;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +19,7 @@ class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
     protected $sapiVersion;
 
     /**
-     * @var StringLiteral
+     * @var Query
      */
     protected $query;
 

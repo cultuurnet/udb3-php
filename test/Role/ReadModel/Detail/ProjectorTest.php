@@ -194,7 +194,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_constraint_created()
+    public function it_handles_constraint_added()
     {
         $constraintAdded = new ConstraintAdded(
             $this->uuid,
@@ -526,10 +526,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param SapiVersion $sapiVersion
-     * @param Query $query
+     * @param Query|null $query
      * @return JsonDocument
      */
-    private function documentWithConstraints(SapiVersion $sapiVersion, Query $query): JsonDocument
+    private function documentWithConstraints(SapiVersion $sapiVersion, ?Query $query): JsonDocument
     {
         $document = new JsonDocument($this->uuid->toNative());
 
@@ -537,9 +537,10 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [];
-        $json->constraint = $query->toNative();
+        $json->constraint = $query ? $query->toNative() : null;
         $json->constraints = new \stdClass();
-        $json->constraints->{$sapiVersion->toNative()} = $query->toNative();
+        $json->constraints->{$sapiVersion->toNative()} =
+            $query ? $query->toNative() : null;
 
         $document = $document->withBody($json);
 
@@ -552,18 +553,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      */
     private function documentWithEmptyConstraints(SapiVersion $sapiVersion): JsonDocument
     {
-        $document = new JsonDocument($this->uuid->toNative());
-
-        $json = $document->getBody();
-        $json->uuid = $this->uuid->toNative();
-        $json->name = $this->name->toNative();
-        $json->permissions = [];
-        $json->constraint = null;
-        $json->constraints = new \stdClass();
-        $json->constraints->{$sapiVersion->toNative()} = null;
-
-        $document = $document->withBody($json);
-
-        return $document;
+        return $this->documentWithConstraints($sapiVersion, null);
     }
 }

@@ -65,9 +65,8 @@ class Projector extends RoleProjector
 
         $json = $document->getBody();
         $json->constraint = $constraintAdded->getQuery()->toNative();
-        if (empty($json->constraints)) {
-            $json->constraints = new \stdClass();
-        }
+
+        $json->constraints = new \stdClass();
         $json->constraints->{$constraintAdded->getSapiVersion()->toNative()} = $constraintAdded->getQuery()->toNative();
 
         $this->repository->save($document->withBody($json));

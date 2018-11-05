@@ -687,7 +687,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->name = $this->name->toNative();
         $json->permissions = [];
         if ($sapiVersion->sameValueAs(SapiVersion::V2())) {
-            $json->constraint = $query ? $query->toNative() : NULL;
+            $json->constraint = $query ? $query->toNative() : null;
         }
         $json->constraints = new \stdClass();
         $json->constraints->{$sapiVersion->toNative()} =
@@ -721,7 +721,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json = $document->getBody();
         $json->constraints->{$sapiVersion->toNative()} = $query->toNative();
         if ($sapiVersion->sameValueAs(SapiVersion::V2())) {
-            $json->constraint = $query ? $query->toNative() : NULL;
+            $json->constraint = $query ? $query->toNative() : null;
         }
 
         $document = $document->withBody($json);

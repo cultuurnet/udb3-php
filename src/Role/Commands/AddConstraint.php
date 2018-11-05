@@ -9,7 +9,7 @@ use CultuurNet\UDB3\ValueObject\SapiVersion;
 class AddConstraint extends AbstractCommand
 {
     /**
-     * @var SapiVersion
+     * @var string
      */
     private $sapiVersion;
 
@@ -30,7 +30,7 @@ class AddConstraint extends AbstractCommand
         Query $query
     ) {
         parent::__construct($uuid);
-        $this->sapiVersion = $sapiVersion;
+        $this->sapiVersion = $sapiVersion->toNative();
         $this->query = $query;
     }
 
@@ -39,7 +39,7 @@ class AddConstraint extends AbstractCommand
      */
     public function getSapiVersion(): SapiVersion
     {
-        return $this->sapiVersion;
+        return SapiVersion::fromNative($this->sapiVersion);
     }
 
     /**

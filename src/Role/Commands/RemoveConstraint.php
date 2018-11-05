@@ -8,7 +8,7 @@ use CultuurNet\UDB3\ValueObject\SapiVersion;
 class RemoveConstraint extends AbstractCommand
 {
     /**
-     * @var SapiVersion
+     * @var string
      */
     private $sapiVersion;
 
@@ -21,7 +21,7 @@ class RemoveConstraint extends AbstractCommand
         SapiVersion $sapiVersion
     ) {
         parent::__construct($uuid);
-        $this->sapiVersion = $sapiVersion;
+        $this->sapiVersion = $sapiVersion->toNative();
     }
 
     /**
@@ -29,6 +29,6 @@ class RemoveConstraint extends AbstractCommand
      */
     public function getSapiVersion(): SapiVersion
     {
-        return $this->sapiVersion;
+        return SapiVersion::fromNative($this->sapiVersion);
     }
 }

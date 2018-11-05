@@ -237,7 +237,53 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_constraint_updated()
+    public function it_handles_constraint_added_with_other_sapi_version()
+    {
+        $constraintAdded = new ConstraintAdded(
+            $this->uuid,
+            SapiVersion::V3(),
+            $this->query
+        );
+
+        $queryV2 = new Query('city_v2: 3000');
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $constraintAdded,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
+        $json->permissions = [];
+        $json->constraint = $queryV2->toNative();
+        $json->constraints = new \stdClass();
+        $json->constraints->{SapiVersion::V2} = $queryV2->toNative();
+        $json->constraints->{$constraintAdded->getSapiVersion()->toNative()} = $this->query->toNative();
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('get')
+            ->with($this->uuid->toNative())
+            ->willReturn($this->documentWithConstraint(SapiVersion::V2(), $queryV2));
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_constraint_updated_with_sapi_verion_v2()
     {
         $constraintUpdated = new ConstraintUpdated(
             $this->uuid,
@@ -267,7 +313,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->repository->expects($this->once())
             ->method('get')
             ->with($this->uuid->toNative())
-            ->willReturn($this->documentWithConstraints(
+            ->willReturn($this->documentWithConstraint(
                 $constraintUpdated->getSapiVersion(),
                 $constraintUpdated->getQuery()
             ));
@@ -284,7 +330,55 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_constraint_removed()
+    public function it_handles_constraint_updated_with_sapi_version_v3()
+    {
+        $constraintUpdated = new ConstraintUpdated(
+            $this->uuid,
+            SapiVersion::V3(),
+            new Query('city_v3:3000')
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $constraintUpdated,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
+        $json->permissions = [];
+        $json->constraint = 'city:Kortrijk OR keywords:"zuidwest uitpas"';
+        $json->constraints = new \stdClass();
+        $json->constraints->{SapiVersion::V2} = 'city:Kortrijk OR keywords:"zuidwest uitpas"';
+        $json->constraints->{$constraintUpdated->getSapiVersion()->toNative()} =
+            $constraintUpdated->getQuery()->toNative();
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('get')
+            ->with($this->uuid->toNative())
+            ->willReturn($this->documentWithConstraint(
+                SapiVersion::V2(),
+                new Query('city:Kortrijk OR keywords:"zuidwest uitpas"')
+            ));
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_constraint_removed_with_sapi_version_v2()
     {
         $constraintRemoved = new ConstraintRemoved(
             $this->uuid,
@@ -313,9 +407,64 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $this->repository->expects($this->once())
             ->method('get')
             ->with($this->uuid->toNative())
-            ->willReturn($this->documentWithEmptyConstraints(
+            ->willReturn($this->documentWithEmptyConstraint(
                 $constraintRemoved->getSapiVersion()
             ));
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(
+                $document
+            );
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_constraint_removed_with_sapi_version_v3()
+    {
+        $constraintRemoved = new ConstraintRemoved(
+            $this->uuid,
+            SapiVersion::V3()
+        );
+
+        $domainMessage = $this->createDomainMessage(
+            $this->uuid,
+            $constraintRemoved,
+            BroadwayDateTime::fromString('2016-06-30T13:25:21+01:00')
+        );
+
+        $initialDocument = $this->documentWithConstraint(
+            SapiVersion::V2(),
+            new Query('city:Kortrijk OR keywords:"zuidwest uitpas"')
+        );
+
+        $initialDocument = $this->documentWithExtraConstraint(
+            $initialDocument,
+            SapiVersion::V3(),
+            new Query('city_v3:2300')
+        );
+
+        $document = new JsonDocument($this->uuid->toNative());
+
+        $json = $document->getBody();
+        $json->uuid = $this->uuid->toNative();
+        $json->name = $this->name->toNative();
+        $json->permissions = [];
+        $json->constraint = 'city:Kortrijk OR keywords:"zuidwest uitpas"';
+        $json->constraints = new \stdClass();
+        $json->constraints->{SapiVersion::V2} = 'city:Kortrijk OR keywords:"zuidwest uitpas"';
+        $json->constraints->{$constraintRemoved->getSapiVersion()->toNative()} =
+            null;
+
+        $document = $document->withBody($json);
+
+        $this->repository->expects($this->once())
+            ->method('get')
+            ->with($this->uuid->toNative())
+            ->willReturn($initialDocument);
 
         $this->repository->expects($this->once())
             ->method('save')
@@ -529,7 +678,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      * @param Query|null $query
      * @return JsonDocument
      */
-    private function documentWithConstraints(SapiVersion $sapiVersion, ?Query $query): JsonDocument
+    private function documentWithConstraint(SapiVersion $sapiVersion, ?Query $query): JsonDocument
     {
         $document = new JsonDocument($this->uuid->toNative());
 
@@ -537,7 +686,9 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [];
-        $json->constraint = $query ? $query->toNative() : null;
+        if ($sapiVersion->sameValueAs(SapiVersion::V2())) {
+            $json->constraint = $query ? $query->toNative() : NULL;
+        }
         $json->constraints = new \stdClass();
         $json->constraints->{$sapiVersion->toNative()} =
             $query ? $query->toNative() : null;
@@ -551,8 +702,30 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
      * @param SapiVersion $sapiVersion
      * @return JsonDocument
      */
-    private function documentWithEmptyConstraints(SapiVersion $sapiVersion): JsonDocument
+    private function documentWithEmptyConstraint(SapiVersion $sapiVersion): JsonDocument
     {
-        return $this->documentWithConstraints($sapiVersion, null);
+        return $this->documentWithConstraint($sapiVersion, null);
+    }
+
+    /**
+     * @param JsonDocument $document
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     * @return JsonDocument
+     */
+    private function documentWithExtraConstraint(
+        JsonDocument $document,
+        SapiVersion $sapiVersion,
+        Query $query
+    ): JsonDocument {
+        $json = $document->getBody();
+        $json->constraints->{$sapiVersion->toNative()} = $query->toNative();
+        if ($sapiVersion->sameValueAs(SapiVersion::V2())) {
+            $json->constraint = $query ? $query->toNative() : NULL;
+        }
+
+        $document = $document->withBody($json);
+
+        return $document;
     }
 }

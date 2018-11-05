@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ReadModel\RoleProjector;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 
 class Projector extends RoleProjector
 {
@@ -64,9 +65,13 @@ class Projector extends RoleProjector
         );
 
         $json = $document->getBody();
-        $json->constraint = $constraintAdded->getQuery()->toNative();
+        if ($constraintAdded->getSapiVersion()->sameValueAs(SapiVersion::V2())) {
+            $json->constraint = $constraintAdded->getQuery()->toNative();
+        }
 
-        $json->constraints = new \stdClass();
+        if (empty($json->constraints)) {
+            $json->constraints = new \stdClass();
+        }
         $json->constraints->{$constraintAdded->getSapiVersion()->toNative()} = $constraintAdded->getQuery()->toNative();
 
         $this->repository->save($document->withBody($json));
@@ -83,7 +88,9 @@ class Projector extends RoleProjector
         );
 
         $json = $document->getBody();
-        $json->constraint = $constraintUpdated->getQuery()->toNative();
+        if ($constraintUpdated->getSapiVersion()->sameValueAs(SapiVersion::V2())) {
+            $json->constraint = $constraintUpdated->getQuery()->toNative();
+        }
         $json->constraints->{$constraintUpdated->getSapiVersion()->toNative()} = $constraintUpdated->getQuery()->toNative();
 
         $this->repository->save($document->withBody($json));
@@ -100,7 +107,9 @@ class Projector extends RoleProjector
         );
 
         $json = $document->getBody();
-        $json->constraint = null;
+        if ($constraintRemoved->getSapiVersion()->sameValueAs(SapiVersion::V2())) {
+            $json->constraint = null;
+        }
         $json->constraints->{$constraintRemoved->getSapiVersion()->toNative()} = null;
 
         $this->repository->save($document->withBody($json));

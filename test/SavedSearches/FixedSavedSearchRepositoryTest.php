@@ -40,13 +40,7 @@ class FixedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $name = new StringLiteral('Door mij ingevoerd');
 
-        $userId = new UserId($this->user->id);
-        $emailAddress = new EmailAddress($this->user->mbox);
-        $query = new CreatedByQueryString(
-            $userId,
-            $emailAddress,
-            CreatedByQueryMode::UUID()
-        );
+        $query = new CreatedByQueryString([$this->user->id]);
 
         $savedSearch = new SavedSearch($name, $query);
 

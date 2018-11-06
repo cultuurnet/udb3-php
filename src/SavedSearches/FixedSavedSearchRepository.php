@@ -6,9 +6,7 @@ use CultuurNet\UDB3\SavedSearches\Properties\CreatedByQueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface;
 use CultuurNet\UDB3\SavedSearches\ValueObject\CreatedByQueryMode;
-use CultuurNet\UDB3\SavedSearches\ValueObject\UserId;
 use ValueObjects\StringLiteral\StringLiteral;
-use ValueObjects\Web\EmailAddress;
 
 class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
 {
@@ -50,15 +48,20 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
     protected function getCreatedByCurrentUserSearch(): SavedSearch
     {
         $name = new StringLiteral('Door mij ingevoerd');
-        $userId = new UserId($this->user->id);
-        $emailAddress = new EmailAddress($this->user->mbox);
 
-        $query = new CreatedByQueryString(
-            $userId,
-            $emailAddress,
-            $this->createdByQueryMode
-        );
+        $queryParts = [];
+        switch ($this->createdByQueryMode->toNative()) {
+            case CreatedByQueryMode::EMAIL:
+                $queryParts[] = $this->user->mbox;
+                break;
+            case CreatedByQueryMode::MIXED:
+                $queryParts[] = $this->user->mbox;
+                $queryParts[] = $this->user->id;
+                break;
+            default:
+                $queryParts[] = $this->user->id;
+        }
 
-        return new SavedSearch($name, $query);
+        return new SavedSearch($name, new CreatedByQueryString($queryParts));
     }
 }

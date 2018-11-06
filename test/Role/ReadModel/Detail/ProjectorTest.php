@@ -258,7 +258,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [];
-
         $json->constraints = new \stdClass();
         $json->constraints->{SapiVersion::V2} = $queryV2->toNative();
         $json->constraints->{$constraintAdded->getSapiVersion()->toNative()} = $this->query->toNative();
@@ -282,7 +281,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_constraint_updated_with_sapi_verion_v2()
+    public function it_handles_constraint_updated()
     {
         $constraintUpdated = new ConstraintUpdated(
             $this->uuid,
@@ -302,7 +301,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [];
-
         $json->constraints = new \stdClass();
         $json->constraints->{$constraintUpdated->getSapiVersion()->toNative()} =
             $constraintUpdated->getQuery()->toNative();
@@ -329,7 +327,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_constraint_updated_with_sapi_version_v3()
+    public function it_handles_constraint_updated_with_multiple_constraints()
     {
         $constraintUpdated = new ConstraintUpdated(
             $this->uuid,
@@ -349,7 +347,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [];
-
         $json->constraints = new \stdClass();
         $json->constraints->{SapiVersion::V2} = 'city:Kortrijk OR keywords:"zuidwest uitpas"';
         $json->constraints->{$constraintUpdated->getSapiVersion()->toNative()} =
@@ -377,7 +374,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_constraint_removed_with_sapi_version_v2()
+    public function it_handles_constraint_removed()
     {
         $constraintRemoved = new ConstraintRemoved(
             $this->uuid,
@@ -396,7 +393,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [];
-
         $json->constraints = new \stdClass();
         $json->constraints->{$constraintRemoved->getSapiVersion()->toNative()} =
             null;
@@ -422,7 +418,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_handles_constraint_removed_with_sapi_version_v3()
+    public function it_handles_constraint_removed_with_multiple_constraints()
     {
         $constraintRemoved = new ConstraintRemoved(
             $this->uuid,
@@ -452,7 +448,6 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
         $json->uuid = $this->uuid->toNative();
         $json->name = $this->name->toNative();
         $json->permissions = [];
-
         $json->constraints = new \stdClass();
         $json->constraints->{SapiVersion::V2} = 'city:Kortrijk OR keywords:"zuidwest uitpas"';
         $json->constraints->{$constraintRemoved->getSapiVersion()->toNative()} =

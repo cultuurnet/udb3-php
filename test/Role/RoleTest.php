@@ -272,7 +272,7 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_add_a_constraint_with_sapi_version()
+    public function it_can_add_a_constraint()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
@@ -289,7 +289,7 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_not_add_a_constraint_with_sapi_version_twice()
+    public function it_can_not_add_a_constraint_twice()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
@@ -309,7 +309,7 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_does_not_update_an_empty_constraint_with_sapi_version()
+    public function it_does_not_update_an_empty_constraint()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
@@ -326,7 +326,7 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_update_a_constraint_with_sapi_version()
+    public function it_can_update_a_constraint()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
@@ -367,7 +367,7 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_remove_a_constraint_with_sapi_version()
+    public function it_can_remove_a_constraint()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
@@ -386,7 +386,7 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_does_not_remove_a_constraint_with_sapi_version_when_there_is_none()
+    public function it_does_not_remove_a_constraint_when_there_is_none()
     {
         $this->scenario
             ->withAggregateId($this->uuid)

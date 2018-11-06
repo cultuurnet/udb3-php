@@ -13,8 +13,7 @@ class CreateByQueryStringTest extends \PHPUnit_Framework_TestCase
     public function it_can_create_query_strings(
         CreatedByQueryString $createdByQueryString,
         string $expectedQuery
-    ): void
-    {
+    ): void {
         $this->assertEquals(
             $createdByQueryString->toNative(),
             $expectedQuery
@@ -41,7 +40,7 @@ class CreateByQueryStringTest extends \PHPUnit_Framework_TestCase
             [
                 new CreatedByQueryString($userId, $emailAddress),
                 'createdby:' . '(' . $userId . ' OR ' . $emailAddress . ')',
-            ]
+            ],
         ];
     }
 }

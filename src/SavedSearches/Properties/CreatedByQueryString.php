@@ -5,9 +5,9 @@ namespace CultuurNet\UDB3\SavedSearches\Properties;
 class CreatedByQueryString extends QueryString
 {
     /**
-     * @param array $queryParts
+     * @param string[] $queryParts
      */
-    public function __construct(array $queryParts)
+    public function __construct(string ...$queryParts)
     {
         if (empty($queryParts)) {
             throw new \InvalidArgumentException('At least one query part is required.');

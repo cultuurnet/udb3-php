@@ -70,7 +70,7 @@ class CreateByQueryStringTest extends \PHPUnit_Framework_TestCase
 
         $uuid = $this->userId->toNative();
         $email = $this->emailAddress->toNative();
-        $expected = 'createdby:' . '(' . $uuid . ' OR ' .$email . ')';
+        $expected = 'createdby:' . '(' . $uuid . ' OR ' . $email . ')';
 
         $this->assertEquals($expected, $queryString);
     }

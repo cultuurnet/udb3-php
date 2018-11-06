@@ -17,10 +17,8 @@ use CultuurNet\UDB3\Role\Commands\RemoveConstraint;
 use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
-use CultuurNet\UDB3\Role\Commands\SetConstraint;
 use CultuurNet\UDB3\Role\Commands\UpdateConstraint;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
-use CultuurNet\UDB3\Role\Role;
 use CultuurNet\UDB3\Role\RoleRepository;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Role\ValueObjects\Query;
@@ -69,11 +67,6 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
      * @var RenameRole
      */
     private $renameRole;
-
-    /**
-     * @var SetConstraint
-     */
-    private $setConstraint;
 
     /**
      * @var AddPermission
@@ -134,11 +127,6 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
         $this->renameRole = new RenameRole(
             $this->uuid,
             new StringLiteral('new roleName')
-        );
-
-        $this->setConstraint = new SetConstraint(
-            $this->uuid,
-            new StringLiteral('category_flandersregion_name:"Regio Brussel"')
         );
 
         $this->addPermission = new AddPermission(
@@ -216,24 +204,6 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
         $commandId = $this->roleEditingService->rename(
             $this->uuid,
             new StringLiteral('new roleName')
-        );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_set_a_constraint()
-    {
-        $this->commandBus->expects($this->once())
-            ->method('dispatch')
-            ->with($this->setConstraint)
-            ->willReturn($this->expectedCommandId);
-
-        $commandId = $this->roleEditingService->setConstraint(
-            $this->uuid,
-            new StringLiteral('category_flandersregion_name:"Regio Brussel"')
         );
 
         $this->assertEquals($this->expectedCommandId, $commandId);

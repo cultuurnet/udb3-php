@@ -341,53 +341,6 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_handles_setConstraint_by_creating_the_constraint()
-    {
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated])
-            ->when(new SetConstraint(
-                $this->uuid,
-                $this->query
-            ))
-            ->then([$this->constraintAdded]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_setConstraint_by_updating_the_constraint()
-    {
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintAdded])
-            ->when(new SetConstraint(
-                $this->uuid,
-                $this->updatedQuery
-            ))
-            ->then([$this->constraintUpdated]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_setConstraint_by_removing_the_constraint()
-    {
-        $query = new StringLiteral('');
-
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintAdded])
-            ->when(new SetConstraint(
-                $this->uuid,
-                $query
-            ))
-            ->then([$this->constraintRemoved]);
-    }
-
-    /**
-     * @test
-     */
     public function it_handles_addConstraint()
     {
         $this->scenario

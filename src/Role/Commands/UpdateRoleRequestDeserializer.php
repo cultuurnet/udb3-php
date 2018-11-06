@@ -27,12 +27,6 @@ class UpdateRoleRequestDeserializer
                 );
                 break;
 
-            case 'application/ld+json;domain-model=SetConstraint':
-                return new SetConstraint(
-                    new UUID($roleId),
-                    new StringLiteral($body_content->constraint)
-                );
-                break;
             default:
                 throw new UnknownContentTypeException;
                 break;

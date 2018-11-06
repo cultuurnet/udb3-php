@@ -94,30 +94,6 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
-     * Set a constraint on the role.
-     *
-     * @param UUID $uuid
-     * @param StringLiteral $query
-     */
-    public function setConstraint(
-        UUID $uuid,
-        StringLiteral $query
-    ) {
-        $sapiVersion = SapiVersion::V2();
-        if (empty($this->queries[$sapiVersion->toNative()])) {
-            if (!empty($query) && !$query->isEmpty()) {
-                $this->apply(new ConstraintAdded($uuid, $sapiVersion, new Query($query)));
-            }
-        } else {
-            if (!empty($query) && !$query->isEmpty()) {
-                $this->apply(new ConstraintUpdated($uuid, $sapiVersion, new Query($query)));
-            } else {
-                $this->apply(new ConstraintRemoved($uuid, $sapiVersion));
-            }
-        }
-    }
-
-    /**
      * @param SapiVersion $sapiVersion
      * @param Query $query
      */

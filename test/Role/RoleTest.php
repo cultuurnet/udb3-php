@@ -272,48 +272,6 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_add_a_constraint()
-    {
-        $uuid = $this->uuid;
-        $query = $this->query;
-
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated])
-            ->when(function (Role $role) use ($uuid, $query) {
-                /** @var Role $role */
-                $role->setConstraint(
-                    $uuid,
-                    $query
-                );
-            })
-            ->then([$this->constraintAdded]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_update_an_existing_constraint()
-    {
-        $uuid = $this->uuid;
-        $query = $this->updatedQuery;
-
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintAdded])
-            ->when(function (Role $role) use ($uuid, $query) {
-                /** @var Role $role */
-                $role->setConstraint(
-                    $uuid,
-                    $query
-                );
-            })
-            ->then([$this->constraintUpdated]);
-    }
-
-    /**
-     * @test
-     */
     public function it_can_add_a_constraint_with_sapi_version()
     {
         $this->scenario
@@ -401,48 +359,6 @@ class RoleTest extends AggregateRootScenarioTestCase
                 $role->updateConstraint(
                     $this->sapiVersion,
                     $this->updatedQuery
-                );
-            })
-            ->then([]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_remove_a_constraint()
-    {
-        $uuid = $this->uuid;
-        $query = new StringLiteral('');
-
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintAdded])
-            ->when(function (Role $role) use ($uuid, $query) {
-                /** @var Role $role */
-                $role->setConstraint(
-                    $uuid,
-                    $query
-                );
-            })
-            ->then([$this->constraintRemoved]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_remove_a_constraint_when_there_is_none()
-    {
-        $uuid = $this->uuid;
-        $query = new StringLiteral('');
-
-        $this->scenario
-            ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated])
-            ->when(function (Role $role) use ($uuid, $query) {
-                /** @var Role $role */
-                $role->setConstraint(
-                    $uuid,
-                    $query
                 );
             })
             ->then([]);

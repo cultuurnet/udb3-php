@@ -60,15 +60,6 @@ interface RoleEditingServiceInterface
     public function removeUser(UUID $uuid, StringLiteral $userId);
 
     /**
-     * Setting a constraint on a role.
-     *
-     * @param UUID $uuid
-     * @param StringLiteral $query
-     * @return string
-     */
-    public function setConstraint(UUID $uuid, StringLiteral $query);
-
-    /**
      * @param UUID $uuid
      * @param SapiVersion $sapiVersion
      * @param Query $query

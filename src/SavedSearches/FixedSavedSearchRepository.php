@@ -49,19 +49,24 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
     {
         $name = new StringLiteral('Door mij ingevoerd');
 
-        $queryParts = [];
         switch ($this->createdByQueryMode->toNative()) {
             case CreatedByQueryMode::EMAIL:
-                $queryParts[] = $this->user->mbox;
+                $createdByQueryString = new CreatedByQueryString(
+                    $this->user->mbox
+                );
                 break;
             case CreatedByQueryMode::MIXED:
-                $queryParts[] = $this->user->mbox;
-                $queryParts[] = $this->user->id;
+                $createdByQueryString = new CreatedByQueryString(
+                    $this->user->mbox,
+                    $this->user->id
+                );
                 break;
             default:
-                $queryParts[] = $this->user->id;
+                $createdByQueryString = new CreatedByQueryString(
+                    $this->user->id
+                );
         }
 
-        return new SavedSearch($name, new CreatedByQueryString($queryParts));
+        return new SavedSearch($name, $createdByQueryString);
     }
 }

@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 
 class Projector implements EventListenerInterface
 {
@@ -22,10 +23,18 @@ class Projector implements EventListenerInterface
     private $repository;
 
     /**
-     * @param RepositoryInterface $repository
+     * @var SapiVersion
      */
-    public function __construct(RepositoryInterface $repository)
-    {
+    private $sapiVersion;
+
+    /**
+     * @param RepositoryInterface $repository
+     * @param SapiVersion $sapiVersion
+     */
+    public function __construct(
+        RepositoryInterface $repository,
+        SapiVersion $sapiVersion) {
+        $this->sapiVersion = $sapiVersion;
         $this->repository = $repository;
     }
 
@@ -71,12 +80,14 @@ class Projector implements EventListenerInterface
     /**
      * @param ConstraintAdded $constraintAdded
      */
-    protected function applyConstraintAdded(ConstraintAdded $constraintAdded)
-    {
-        $this->repository->updateConstraint(
-            $constraintAdded->getUuid(),
-            $constraintAdded->getQuery()
-        );
+    protected function applyConstraintAdded(ConstraintAdded $constraintAdded) {
+        if ($constraintAdded->getSapiVersion()
+                ->toNative() === $this->sapiVersion->toNative()) {
+            $this->repository->updateConstraint(
+                $constraintAdded->getUuid(),
+                $constraintAdded->getQuery()
+            );
+        }
     }
 
     /**
@@ -84,10 +95,13 @@ class Projector implements EventListenerInterface
      */
     protected function applyConstraintUpdated(ConstraintUpdated $constraintUpdated)
     {
-        $this->repository->updateConstraint(
-            $constraintUpdated->getUuid(),
-            $constraintUpdated->getQuery()
-        );
+        if ($constraintUpdated->getSapiVersion()
+                ->toNative() === $this->sapiVersion->toNative()) {
+            $this->repository->updateConstraint(
+                $constraintUpdated->getUuid(),
+                $constraintUpdated->getQuery()
+            );
+        }
     }
 
     /**
@@ -95,8 +109,11 @@ class Projector implements EventListenerInterface
      */
     protected function applyConstraintRemoved(ConstraintRemoved $constraintRemoved)
     {
-        $this->repository->updateConstraint(
-            $constraintRemoved->getUuid()
-        );
+        if ($constraintRemoved->getSapiVersion()
+                ->toNative() === $this->sapiVersion->toNative()) {
+            $this->repository->updateConstraint(
+                $constraintRemoved->getUuid()
+            );
+        }
     }
 }

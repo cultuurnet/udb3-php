@@ -33,7 +33,8 @@ class Projector implements EventListenerInterface
      */
     public function __construct(
         RepositoryInterface $repository,
-        SapiVersion $sapiVersion) {
+        SapiVersion $sapiVersion
+    ) {
         $this->sapiVersion = $sapiVersion;
         $this->repository = $repository;
     }
@@ -80,7 +81,8 @@ class Projector implements EventListenerInterface
     /**
      * @param ConstraintAdded $constraintAdded
      */
-    protected function applyConstraintAdded(ConstraintAdded $constraintAdded) {
+    protected function applyConstraintAdded(ConstraintAdded $constraintAdded)
+    {
         if ($constraintAdded->getSapiVersion()
                 ->toNative() === $this->sapiVersion->toNative()) {
             $this->repository->updateConstraint(

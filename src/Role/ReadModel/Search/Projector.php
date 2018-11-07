@@ -83,8 +83,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyConstraintAdded(ConstraintAdded $constraintAdded)
     {
-        if ($constraintAdded->getSapiVersion()
-                ->toNative() === $this->sapiVersion->toNative()) {
+        if ($constraintAdded->getSapiVersion()->sameValueAs($this->sapiVersion)) {
             $this->repository->updateConstraint(
                 $constraintAdded->getUuid(),
                 $constraintAdded->getQuery()
@@ -97,8 +96,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyConstraintUpdated(ConstraintUpdated $constraintUpdated)
     {
-        if ($constraintUpdated->getSapiVersion()
-                ->toNative() === $this->sapiVersion->toNative()) {
+        if ($constraintUpdated->getSapiVersion()->sameValueAs($this->sapiVersion)) {
             $this->repository->updateConstraint(
                 $constraintUpdated->getUuid(),
                 $constraintUpdated->getQuery()
@@ -111,8 +109,7 @@ class Projector implements EventListenerInterface
      */
     protected function applyConstraintRemoved(ConstraintRemoved $constraintRemoved)
     {
-        if ($constraintRemoved->getSapiVersion()
-                ->toNative() === $this->sapiVersion->toNative()) {
+        if ($constraintRemoved->getSapiVersion()->sameValueAs($this->sapiVersion)) {
             $this->repository->updateConstraint(
                 $constraintRemoved->getUuid()
             );

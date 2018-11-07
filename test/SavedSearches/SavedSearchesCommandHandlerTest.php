@@ -9,6 +9,7 @@ use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Command\UnsubscribeFromSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use Psr\Log\LoggerInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -61,15 +62,14 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
     /**
      * @return SubscribeToSavedSearch
      */
-    private function aSubscribeToSavedSearchCommand()
+    private function aSubscribeToSavedSearchCommand(): SubscribeToSavedSearch
     {
+        $sapiVersion = new SapiVersion(SapiVersion::V2);
         $userId = new StringLiteral('some-user-id');
         $name = new StringLiteral('My very first saved search!');
         $query = new QueryString('city:"Leuven"');
 
-        $subscribeToSavedSearch = new SubscribeToSavedSearch($userId, $name, $query);
-
-        return $subscribeToSavedSearch;
+        return new SubscribeToSavedSearch($sapiVersion, $userId, $name, $query);
     }
 
     /**
@@ -170,10 +170,11 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private function getUnsubscribeFromSavedSearchCommandStub()
     {
+        $sapiVersion = new SapiVersion(SapiVersion::V2);
         $userId = new StringLiteral('some-user-id');
         $searchId = new StringLiteral('some-search-id');
 
-        return new UnsubscribeFromSavedSearch($userId, $searchId);
+        return new UnsubscribeFromSavedSearch($sapiVersion, $userId, $searchId);
     }
 
     /**

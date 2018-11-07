@@ -5,6 +5,7 @@ namespace CultuurNet\UDB3\SavedSearches\Command;
 use CultuurNet\Deserializer\JSONDeserializer;
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\StringLiteral\StringLiteral;
 
 /**
@@ -35,6 +36,10 @@ class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
     {
         $json = parent::deserialize($data);
 
+        if (!isset($json->sapiVersion)) {
+            throw new MissingValueException('sapiVersion is missing');
+        }
+
         if (!isset($json->name)) {
             throw new MissingValueException('name is missing');
         }
@@ -44,6 +49,7 @@ class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
         }
 
         return new SubscribeToSavedSearch(
+            new SapiVersion($json->sapiVersion),
             $this->userId,
             new StringLiteral($json->name),
             new QueryString($json->query)

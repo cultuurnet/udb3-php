@@ -7,13 +7,13 @@ namespace CultuurNet\UDB3\SavedSearches\Command;
 
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
-     * @var String
+     * @var StringLiteral
      */
     protected $userId;
 
@@ -39,6 +39,7 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
 
         $this->assertEquals(
             new SubscribeToSavedSearch(
+                new SapiVersion(SapiVersion::V2),
                 $this->userId,
                 new StringLiteral('My very first saved search.'),
                 new QueryString('city:"Leuven"')
@@ -50,9 +51,25 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
     /**
      * @test
      */
+    public function it_requires_a_sapi_version()
+    {
+        $this->expectException(MissingValueException::class);
+        $this->expectExceptionMessage('sapiVersion is missing');
+
+        $this->deserializer->deserialize(
+            $this->getStringFromFile('subscribe_without_sapiVersion.json')
+        );
+    }
+
+
+    /**
+     * @test
+     */
     public function it_requires_a_query()
     {
-        $this->setExpectedException(MissingValueException::class, 'query is missing');
+        $this->expectException(MissingValueException::class);
+        $this->expectExceptionMessage('query is missing');
+
         $this->deserializer->deserialize(
             $this->getStringFromFile('subscribe_without_query.json')
         );
@@ -63,7 +80,9 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
      */
     public function it_requires_a_name()
     {
-        $this->setExpectedException(MissingValueException::class, 'name is missing');
+        $this->expectException(MissingValueException::class);
+        $this->expectExceptionMessage('name is missing');
+
         $this->deserializer->deserialize(
             $this->getStringFromFile('subscribe_without_name.json')
         );

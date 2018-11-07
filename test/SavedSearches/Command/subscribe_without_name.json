@@ -1,3 +1,4 @@
 {
+  "sapiVersion": "v2",
   "query": "city:\"Leuven\""
 }

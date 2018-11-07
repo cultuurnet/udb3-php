@@ -5,44 +5,50 @@ namespace CultuurNet\UDB3\SavedSearches;
 use Broadway\CommandHandling\CommandHandler;
 use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Command\UnsubscribeFromSavedSearch;
-use CultuurNet\UDB3\SavedSearches\WriteModel\SavedSearchRepositoryInterface;
 
 class UDB3SavedSearchesCommandHandler extends CommandHandler
 {
     /**
-     * @var SavedSearchRepositoryInterface
+     * @var SavedSearchRepositoryCollection
      */
-    private $savedSearchRepository;
+    private $savedSearchRepositoryCollection;
 
     /**
-     * @param SavedSearchRepositoryInterface $savedSearchRepository
+     * @param SavedSearchRepositoryCollection $savedSearchRepositoryCollection
      */
-    public function __construct(SavedSearchRepositoryInterface $savedSearchRepository)
+    public function __construct(SavedSearchRepositoryCollection $savedSearchRepositoryCollection)
     {
-        $this->savedSearchRepository = $savedSearchRepository;
+        $this->savedSearchRepositoryCollection = $savedSearchRepositoryCollection;
     }
 
     /**
      * @param SubscribeToSavedSearch $subscribeToSavedSearch
      */
-    public function handleSubscribeToSavedSearch(SubscribeToSavedSearch $subscribeToSavedSearch)
+    public function handleSubscribeToSavedSearch(SubscribeToSavedSearch $subscribeToSavedSearch): void
     {
         $userId = $subscribeToSavedSearch->getUserId();
         $name = $subscribeToSavedSearch->getName();
         $query = $subscribeToSavedSearch->getQuery();
 
+        $savedSearchRepository = $this->savedSearchRepositoryCollection->getRepository(
+            $subscribeToSavedSearch->getSapiVersion()
+        );
 
-        $this->savedSearchRepository->write($userId, $name, $query);
+        $savedSearchRepository->write($userId, $name, $query);
     }
 
     /**
      * @param UnsubscribeFromSavedSearch $unsubscribeFromSavedSearch
      */
-    public function handleUnsubscribeFromSavedSearch(UnsubscribeFromSavedSearch $unsubscribeFromSavedSearch)
+    public function handleUnsubscribeFromSavedSearch(UnsubscribeFromSavedSearch $unsubscribeFromSavedSearch): void
     {
         $userId = $unsubscribeFromSavedSearch->getUserId();
         $searchId = $unsubscribeFromSavedSearch->getSearchId();
 
-        $this->savedSearchRepository->delete($userId, $searchId);
+        $savedSearchRepository = $this->savedSearchRepositoryCollection->getRepository(
+            $unsubscribeFromSavedSearch->getSapiVersion()
+        );
+
+        $savedSearchRepository->delete($userId, $searchId);
     }
 }

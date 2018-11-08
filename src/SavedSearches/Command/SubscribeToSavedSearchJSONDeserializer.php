@@ -15,16 +15,26 @@ use ValueObjects\StringLiteral\StringLiteral;
 class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
 {
     /**
+     * @var SapiVersion
+     */
+    protected $sapiVersion;
+
+    /**
      * @var StringLiteral $userId
      */
     protected $userId;
 
     /**
+     * @param SapiVersion $sapiVersion
      * @param StringLiteral $userId
      */
-    public function __construct(StringLiteral $userId)
+    public function __construct(
+        SapiVersion $sapiVersion,
+        StringLiteral $userId)
     {
         parent::__construct();
+
+        $this->sapiVersion = $sapiVersion;
         $this->userId = $userId;
     }
 
@@ -36,10 +46,6 @@ class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
     {
         $json = parent::deserialize($data);
 
-        if (!isset($json->sapiVersion)) {
-            throw new MissingValueException('sapiVersion is missing');
-        }
-
         if (!isset($json->name)) {
             throw new MissingValueException('name is missing');
         }
@@ -49,7 +55,7 @@ class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
         }
 
         return new SubscribeToSavedSearch(
-            new SapiVersion($json->sapiVersion),
+            $this->sapiVersion,
             $this->userId,
             new StringLiteral($json->name),
             new QueryString($json->query)

@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
@@ -12,6 +9,11 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var SapiVersion
+     */
+    protected $sapiVersion;
+
     /**
      * @var StringLiteral
      */
@@ -24,8 +26,13 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
 
     public function setUp()
     {
+        $this->sapiVersion = new SapiVersion(SapiVersion::V2);
         $this->userId = new StringLiteral('xyx');
-        $this->deserializer = new SubscribeToSavedSearchJSONDeserializer($this->userId);
+
+        $this->deserializer = new SubscribeToSavedSearchJSONDeserializer(
+            $this->sapiVersion,
+            $this->userId
+        );
     }
 
     /**
@@ -39,7 +46,7 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
 
         $this->assertEquals(
             new SubscribeToSavedSearch(
-                new SapiVersion(SapiVersion::V2),
+                $this->sapiVersion,
                 $this->userId,
                 new StringLiteral('My very first saved search.'),
                 new QueryString('city:"Leuven"')
@@ -47,20 +54,6 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
             $command
         );
     }
-
-    /**
-     * @test
-     */
-    public function it_requires_a_sapi_version()
-    {
-        $this->expectException(MissingValueException::class);
-        $this->expectExceptionMessage('sapiVersion is missing');
-
-        $this->deserializer->deserialize(
-            $this->getStringFromFile('subscribe_without_sapiVersion.json')
-        );
-    }
-
 
     /**
      * @test

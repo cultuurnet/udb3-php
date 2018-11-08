@@ -2,17 +2,17 @@
 
 namespace CultuurNet\UDB3\SavedSearches;
 
-use CultuurNet\UDB3\SavedSearches\WriteModel\SavedSearchRepositoryInterface;
+use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
 
-class SavedSearchRepositoryCollectionTest extends \PHPUnit_Framework_TestCase
+class SavedSearchReadRepositoryCollectionTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
      */
     public function it_can_store_saved_search_repositories(): void
     {
-        $savedSearchRepositoryCollection = new SavedSearchRepositoryCollection();
+        $savedSearchRepositoryCollection = new SavedSearchReadRepositoryCollection();
 
         $sapi2SavedSearchRepository = $this->createMock(SavedSearchRepositoryInterface::class);
         $sapi3SavedSearchRepository = $this->createMock(SavedSearchRepositoryInterface::class);
@@ -47,7 +47,7 @@ class SavedSearchRepositoryCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function it_return_null_when_repo_not_found_for_given_sapi_version(): void
     {
-        $savedSearchRepositoryCollection = new SavedSearchRepositoryCollection();
+        $savedSearchRepositoryCollection = new SavedSearchReadRepositoryCollection();
 
         $sapi2SavedSearchRepository = $this->createMock(SavedSearchRepositoryInterface::class);
 

@@ -9,16 +9,16 @@ use CultuurNet\UDB3\SavedSearches\Command\UnsubscribeFromSavedSearch;
 class UDB3SavedSearchesCommandHandler extends CommandHandler
 {
     /**
-     * @var SavedSearchRepositoryCollection
+     * @var SavedSearchWriteRepositoryCollection
      */
-    private $savedSearchRepositoryCollection;
+    private $savedSearchWriteRepositoryCollection;
 
     /**
-     * @param SavedSearchRepositoryCollection $savedSearchRepositoryCollection
+     * @param SavedSearchWriteRepositoryCollection $savedSearchWriteRepositoryCollection
      */
-    public function __construct(SavedSearchRepositoryCollection $savedSearchRepositoryCollection)
+    public function __construct(SavedSearchWriteRepositoryCollection $savedSearchWriteRepositoryCollection)
     {
-        $this->savedSearchRepositoryCollection = $savedSearchRepositoryCollection;
+        $this->savedSearchWriteRepositoryCollection = $savedSearchWriteRepositoryCollection;
     }
 
     /**
@@ -30,7 +30,7 @@ class UDB3SavedSearchesCommandHandler extends CommandHandler
         $name = $subscribeToSavedSearch->getName();
         $query = $subscribeToSavedSearch->getQuery();
 
-        $savedSearchRepository = $this->savedSearchRepositoryCollection->getRepository(
+        $savedSearchRepository = $this->savedSearchWriteRepositoryCollection->getRepository(
             $subscribeToSavedSearch->getSapiVersion()
         );
 
@@ -45,7 +45,7 @@ class UDB3SavedSearchesCommandHandler extends CommandHandler
         $userId = $unsubscribeFromSavedSearch->getUserId();
         $searchId = $unsubscribeFromSavedSearch->getSearchId();
 
-        $savedSearchRepository = $this->savedSearchRepositoryCollection->getRepository(
+        $savedSearchRepository = $this->savedSearchWriteRepositoryCollection->getRepository(
             $unsubscribeFromSavedSearch->getSapiVersion()
         );
 

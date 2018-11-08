@@ -25,7 +25,7 @@ class UDB3SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->savedSearchesRepository = $this->createMock(SavedSearchRepositoryInterface::class);
 
-        $savedSearchRepositoryCollection = new SavedSearchRepositoryCollection();
+        $savedSearchRepositoryCollection = new SavedSearchWriteRepositoryCollection();
         $savedSearchRepositoryCollection = $savedSearchRepositoryCollection->withRepository(
             new SapiVersion(SapiVersion::V2),
             $this->savedSearchesRepository

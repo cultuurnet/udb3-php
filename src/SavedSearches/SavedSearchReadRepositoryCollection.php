@@ -2,10 +2,10 @@
 
 namespace CultuurNet\UDB3\SavedSearches;
 
-use CultuurNet\UDB3\SavedSearches\WriteModel\SavedSearchRepositoryInterface;
+use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
 
-class SavedSearchRepositoryCollection
+class SavedSearchReadRepositoryCollection
 {
     /**
      * @var SavedSearchRepositoryInterface
@@ -15,12 +15,12 @@ class SavedSearchRepositoryCollection
     /**
      * @param SapiVersion $sapiVersion
      * @param SavedSearchRepositoryInterface $savedSearchRepository
-     * @return SavedSearchRepositoryCollection
+     * @return SavedSearchReadRepositoryCollection
      */
     public function withRepository(
         SapiVersion $sapiVersion,
         SavedSearchRepositoryInterface $savedSearchRepository
-    ): SavedSearchRepositoryCollection {
+    ): SavedSearchReadRepositoryCollection {
         $c = clone $this;
         $c->savedSearchRepositories[$sapiVersion->toNative()] = $savedSearchRepository;
         return $c;

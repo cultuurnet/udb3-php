@@ -15,12 +15,15 @@ class SavedSearchRepositoryCollection
     /**
      * @param SapiVersion $sapiVersion
      * @param SavedSearchRepositoryInterface $savedSearchRepository
+     * @return SavedSearchRepositoryCollection
      */
-    public function addRepository(
+    public function withRepository(
         SapiVersion $sapiVersion,
         SavedSearchRepositoryInterface $savedSearchRepository
-    ): void {
-        $this->savedSearchRepositories[$sapiVersion->toNative()] = $savedSearchRepository;
+    ): SavedSearchRepositoryCollection {
+        $c = clone $this;
+        $c->savedSearchRepositories[$sapiVersion->toNative()] = $savedSearchRepository;
+        return $c;
     }
 
     /**

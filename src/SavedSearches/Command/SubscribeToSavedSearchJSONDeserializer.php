@@ -30,8 +30,8 @@ class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
      */
     public function __construct(
         SapiVersion $sapiVersion,
-        StringLiteral $userId)
-    {
+        StringLiteral $userId
+    ) {
         parent::__construct();
 
         $this->sapiVersion = $sapiVersion;

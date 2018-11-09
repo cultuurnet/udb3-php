@@ -3,10 +3,24 @@
 namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\Search\Parameter\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class SearchQueryFactory implements SearchQueryFactoryInterface
 {
+    /**
+     * @var SapiVersion
+     */
+    private $sapiVersion;
+
+    /**
+     * @param SapiVersion $sapiVersion
+     */
+    public function __construct(SapiVersion $sapiVersion)
+    {
+        $this->sapiVersion = $sapiVersion;
+    }
+
     /**
      * @inheritdoc
      */
@@ -49,6 +63,12 @@ class SearchQueryFactory implements SearchQueryFactoryInterface
         $constraintStr = '(' . strtolower($constraint->toNative()) . ')';
         $offerIdStr = $offerId->toNative();
 
-        return '(' . $constraintStr . ' AND cdbid:' . $offerIdStr . ')';
+        if ($this->sapiVersion->sameValueAs(SapiVersion::V3())) {
+            $id = 'id';
+        } else {
+            $id = 'cdbid';
+        }
+
+        return '(' . $constraintStr . ' AND ' . $id . ':' . $offerIdStr . ')';
     }
 }

@@ -56,9 +56,14 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider totalItemsDataProvider()
+     * @param Integer $totalItems
+     * @param bool $expected
      */
-    public function it_does_match_offer_when_total_found_items_is_exactly_one(): void
-    {
+    public function it_does_match_offer_based_on_total_items_count_of_one(
+        Integer $totalItems,
+        bool $expected
+    ): void {
         $userId = new StringLiteral('ff085fed-8500-4dd9-8ac0-459233c642f4');
         $permission = Permission::AANBOD_BEWERKEN();
         $constraints = [
@@ -91,11 +96,12 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
             ->willReturn(
                 new Results(
                     new OfferIdentifierCollection(),
-                    new Integer(1)
+                    $totalItems
                 )
             );
 
-        $this->assertTrue(
+        $this->assertEquals(
+            $expected,
             $this->sapi3UserPermissionMatcher->itMatchesOffer(
                 $userId,
                 $permission,
@@ -105,11 +111,24 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function it_does_not_match_offer_when_total_found_items_is_not_exactly_one(): void
+    public function totalItemsDataProvider(): array
     {
-
+        return [
+            [
+                new Integer(1),
+                true,
+            ],
+            [
+                new Integer(0),
+                false,
+            ],
+            [
+                new Integer(2),
+                false,
+            ],
+        ];
     }
 
     /**
@@ -117,6 +136,30 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_match_offer_when_user_has_no_matching_constraints(): void
     {
+        $userId = new StringLiteral('ff085fed-8500-4dd9-8ac0-459233c642f4');
+        $permission = Permission::AANBOD_BEWERKEN();
+        $offerId = new StringLiteral('625a4e74-a1ca-4bee-9e85-39869457d531');
 
+        $this->userConstraintsReadRepository->expects($this->once())
+            ->method('getByUserAndPermission')
+            ->with(
+                $userId,
+                $permission
+            )
+            ->willReturn([]);
+
+        $this->searchQueryFactory->expects($this->never())
+            ->method('createFromConstraints');
+
+        $this->searchService->expects($this->never())
+            ->method('search');
+
+        $this->assertFalse(
+            $this->sapi3UserPermissionMatcher->itMatchesOffer(
+                $userId,
+                $permission,
+                $offerId
+            )
+        );
     }
 }

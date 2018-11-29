@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\UiTID;
 
@@ -11,6 +8,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use ValueObjects\Exception\InvalidNativeArgumentException;
+use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
@@ -35,9 +33,21 @@ class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedBy
     /**
      * @inheritdoc
      */
-    public function resolveCreatedByToUserId(StringLiteral $createdByIdentifier)
+    public function resolveCreatedByToUserId(StringLiteral $createdByIdentifier): ?StringLiteral
     {
         $userId = null;
+
+        try {
+            UUID::fromNative($createdByIdentifier->toNative());
+            return $createdByIdentifier;
+        } catch (InvalidNativeArgumentException $exception) {
+            $this->logger->info(
+                'The provided createdByIdentifier ' . $createdByIdentifier->toNative() . ' is not a UUID.',
+                [
+                    'exception' => $exception,
+                ]
+            );
+        }
 
         try {
             $userId = $this->resolveByEmailOrByNick($createdByIdentifier);
@@ -64,9 +74,9 @@ class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedBy
 
     /**
      * @param StringLiteral $createdByIdentifier
-     * @return String
+     * @return StringLiteral|null
      */
-    private function resolveByEmailOrByNick(StringLiteral $createdByIdentifier)
+    private function resolveByEmailOrByNick(StringLiteral $createdByIdentifier): ?StringLiteral
     {
         try {
             $email = new EmailAddress($createdByIdentifier->toNative());

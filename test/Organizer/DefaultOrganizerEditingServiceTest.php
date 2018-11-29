@@ -219,14 +219,19 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
             new Locality('Leuven'),
             Country::fromNative('BE')
         );
+        $language = new Language('nl');
 
-        $expectedUpdateAddress = new UpdateAddress($organizerId, $address);
+        $expectedUpdateAddress = new UpdateAddress(
+            $organizerId,
+            $address,
+            $language
+        );
 
         $this->commandBus->expects($this->once())
             ->method('dispatch')
             ->with($expectedUpdateAddress);
 
-        $this->service->updateAddress($organizerId, $address);
+        $this->service->updateAddress($organizerId, $address, $language);
     }
 
     /**

@@ -17,7 +17,7 @@ interface SavedSearchRepositoryInterface
         StringLiteral $userId,
         StringLiteral $name,
         QueryString $queryString
-    );
+    ): void;
 
     /**
      * @param StringLiteral $userId
@@ -26,5 +26,5 @@ interface SavedSearchRepositoryInterface
     public function delete(
         StringLiteral $userId,
         StringLiteral $searchId
-    );
+    ): void;
 }

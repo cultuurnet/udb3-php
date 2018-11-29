@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
@@ -21,11 +18,19 @@ class SubscribeToSavedSearchJSONDeserializer extends JSONDeserializer
      */
     protected $userId;
 
+    /**
+     * @param StringLiteral $userId
+     */
     public function __construct(StringLiteral $userId)
     {
+        parent::__construct();
         $this->userId = $userId;
     }
 
+    /**
+     * @param StringLiteral $data
+     * @return SubscribeToSavedSearch|\stdClass
+     */
     public function deserialize(StringLiteral $data)
     {
         $json = parent::deserialize($data);

@@ -13,7 +13,7 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
-use CultuurNet\UDB3\Organizer\Commands\ImportLabels;
+use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
@@ -55,9 +55,9 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     private $titles;
 
     /**
-     * @var Address|null
+     * @var Address[]|null
      */
-    private $address;
+    private $addresses;
 
     /**
      * @var ContactPoint
@@ -198,13 +198,27 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     /**
      * @param Address $address
+     * @param Language $language
      */
-    public function updateAddress(Address $address)
-    {
-        if (is_null($this->address) || !$this->address->sameAs($address)) {
-            $this->apply(
-                new AddressUpdated($this->actorId, $address)
-            );
+    public function updateAddress(
+        Address $address,
+        Language $language
+    ) {
+        if ($this->isAddressChanged($address, $language)) {
+            if ($language->getCode() !== $this->mainLanguage->getCode()) {
+                $event = new AddressTranslated(
+                    $this->actorId,
+                    $address,
+                    $language
+                );
+            } else {
+                $event = new AddressUpdated(
+                    $this->actorId,
+                    $address
+                );
+            }
+
+            $this->apply($event);
         }
     }
 
@@ -336,6 +350,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     /**
      * @param OrganizerImportedFromUDB2 $organizerImported
+     * @throws \CultureFeed_Cdb_ParseException
      */
     protected function applyOrganizerImportedFromUDB2(
         OrganizerImportedFromUDB2 $organizerImported
@@ -357,6 +372,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     /**
      * @param OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
+     * @throws \CultureFeed_Cdb_ParseException
      */
     protected function applyOrganizerUpdatedFromUDB2(
         OrganizerUpdatedFromUDB2 $organizerUpdatedFromUDB2
@@ -402,7 +418,15 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
      */
     protected function applyAddressUpdated(AddressUpdated $addressUpdated)
     {
-        $this->address = $addressUpdated->getAddress();
+        $this->setAddress($addressUpdated->getAddress(), $this->mainLanguage);
+    }
+
+    /**
+     * @param AddressTranslated $addressTranslated
+     */
+    protected function applyAddressTranslated(AddressTranslated $addressTranslated)
+    {
+        $this->setAddress($addressTranslated->getAddress(), $addressTranslated->getLanguage());
     }
 
     /**
@@ -466,5 +490,25 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     {
         return !isset($this->titles[$language->getCode()]) ||
             !$title->sameValueAs($this->titles[$language->getCode()]);
+    }
+
+    /**
+     * @param Address $address
+     * @param Language $language
+     */
+    private function setAddress(Address $address, Language $language)
+    {
+        $this->addresses[$language->getCode()] = $address;
+    }
+
+    /**
+     * @param Address $address
+     * @param Language $language
+     * @return bool
+     */
+    private function isAddressChanged(Address $address, Language $language)
+    {
+        return !isset($this->addresses[$language->getCode()]) ||
+            !$address->sameAs($this->addresses[$language->getCode()]);
     }
 }

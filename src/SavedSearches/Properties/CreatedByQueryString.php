@@ -2,29 +2,23 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Properties;
 
-use ValueObjects\Web\EmailAddress;
-
 class CreatedByQueryString extends QueryString
 {
     /**
-     * @var EmailAddress
+     * @param string[] $queryParts
      */
-    protected $emailAddress;
-
-    /**
-     * @param StringLiteral $userId
-     */
-    public function __construct(EmailAddress $emailAddress)
+    public function __construct(string ...$queryParts)
     {
-        $this->emailAddress = $emailAddress;
-        parent::__construct($this->generateQuery());
-    }
+        if (empty($queryParts)) {
+            throw new \InvalidArgumentException('At least one query part is required.');
+        }
 
-    /**
-     * @return string
-     */
-    private function generateQuery()
-    {
-        return 'createdby:' . $this->emailAddress;
+        $query = implode(' OR ', $queryParts);
+        if (count($queryParts) > 1) {
+            $query = '(' . $query . ')';
+        }
+        $query = 'createdby:' . $query;
+
+        parent::__construct($query);
     }
 }

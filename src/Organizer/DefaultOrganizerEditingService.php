@@ -77,7 +77,7 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
         $organizer = Organizer::create($id, $mainLanguage, $website, $title);
 
         if (!is_null($address)) {
-            $organizer->updateAddress($address);
+            $organizer->updateAddress($address, $mainLanguage);
         }
 
         if (!is_null($contactPoint)) {
@@ -112,10 +112,10 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function updateAddress($organizerId, Address $address)
+    public function updateAddress($organizerId, Address $address, Language $language)
     {
         return $this->commandBus->dispatch(
-            new UpdateAddress($organizerId, $address)
+            new UpdateAddress($organizerId, $address, $language)
         );
     }
 

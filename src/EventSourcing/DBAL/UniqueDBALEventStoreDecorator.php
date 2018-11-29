@@ -4,11 +4,12 @@ namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
 use Broadway\Domain\DomainEventStreamInterface;
 use Broadway\Domain\DomainMessage;
-use Broadway\EventStore\DBALEventStore;
+use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\UDB3\EventSourcing\AbstractEventStoreDecorator;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -18,7 +19,7 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
     const UNIQUE_COLUMN = 'unique_col';
 
     /**
-     * @var DBALEventStore
+     * @var EventStoreInterface
      */
     private $dbalEventStore;
 
@@ -39,13 +40,13 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
 
     /**
      * UniqueNameDBALEventStoreDecorator constructor.
-     * @param DBALEventStore $dbalEventStore
+     * @param EventStoreInterface $dbalEventStore
      * @param Connection $connection
      * @param StringLiteral $uniqueTableName
      * @param UniqueConstraintServiceInterface $uniqueConstraintService
      */
     public function __construct(
-        DBALEventStore $dbalEventStore,
+        EventStoreInterface $dbalEventStore,
         Connection $connection,
         StringLiteral $uniqueTableName,
         UniqueConstraintServiceInterface $uniqueConstraintService
@@ -87,25 +88,21 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
      */
     public function configureSchema(Schema $schema)
     {
-        // Ensure that when creating the normal event store table the extra
-        // table, that ensures uniqueness of the entity, also gets created.
-        if (!$schema->hasTable($this->uniqueTableName->toNative())) {
-            $this->createUniqueTable($this->connection, $this->uniqueTableName);
+        if ($schema->hasTable($this->uniqueTableName->toNative())) {
+            return null;
         }
 
-        return $this->dbalEventStore->configureSchema($schema);
+        return $this->createUniqueTable($this->uniqueTableName);
     }
 
     /**
-     * @param Connection $connection
      * @param StringLiteral $tableName
+     * @return Table
      */
     private function createUniqueTable(
-        Connection $connection,
         StringLiteral $tableName
     ) {
-        $schemaManager = $connection->getSchemaManager();
-        $schema = $schemaManager->createSchema();
+        $schema = new Schema();
 
         $table = $schema->createTable($tableName->toNative());
 
@@ -121,7 +118,7 @@ class UniqueDBALEventStoreDecorator extends AbstractEventStoreDecorator
         $table->addUniqueIndex([self::UUID_COLUMN]);
         $table->addUniqueIndex([self::UNIQUE_COLUMN]);
 
-        $schemaManager->createTable($table);
+        return $table;
     }
 
     /**

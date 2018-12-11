@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use GuzzleHttp\Psr7\Request;
 use Http\Client\HttpClient;
+use function http_build_query;
 use Psr\Http\Message\UriInterface;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
@@ -44,7 +45,14 @@ class Sapi3SearchService implements SearchServiceInterface
 
     public function search($query, $limit = 30, $start = 0, $sort = null)
     {
-        $queryParameters = 'q=' . urlencode($query) . '&start=' . $start . '&limit=' . $limit;
+        $queryParameters = http_build_query(
+            [
+                'q' => $query,
+                'start' => $start,
+                'limit' => $limit,
+                'disableDefaultFilters' => 'true',
+            ]
+        );
 
         $offerQuery = $this->searchLocation->withQuery($queryParameters);
 

@@ -51,7 +51,7 @@ class Sapi3SearchService implements SearchServiceInterface
         $this->apiKey = $apiKey;
     }
 
-    public function search($query, $limit = 30, $start = 0, $sort = null)
+    public function search(string $query, $limit = 30, $start = 0, $sort = null)
     {
         $queryParameters = http_build_query(
             [

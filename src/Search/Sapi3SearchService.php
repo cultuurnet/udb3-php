@@ -29,18 +29,26 @@ class Sapi3SearchService implements SearchServiceInterface
     private $offerIdentifier;
 
     /**
+     * @var string|null
+     */
+    private $apiKey;
+
+    /**
      * @param UriInterface $searchLocation
      * @param HttpClient $httpClient
      * @param IriOfferIdentifierFactoryInterface $offerIdentifier
+     * @param string|null $apiKey
      */
     public function __construct(
         UriInterface $searchLocation,
         HttpClient $httpClient,
-        IriOfferIdentifierFactoryInterface $offerIdentifier
+        IriOfferIdentifierFactoryInterface $offerIdentifier,
+        string $apiKey = null
     ) {
         $this->searchLocation = $searchLocation;
         $this->httpClient = $httpClient;
         $this->offerIdentifier = $offerIdentifier;
+        $this->apiKey = $apiKey;
     }
 
     public function search($query, $limit = 30, $start = 0, $sort = null)
@@ -54,11 +62,18 @@ class Sapi3SearchService implements SearchServiceInterface
             ]
         );
 
+        $headers = [];
+
+        if ($this->apiKey) {
+            $headers['X-Api-Key'] = $this->apiKey;
+        }
+
         $offerQuery = $this->searchLocation->withQuery($queryParameters);
 
         $offerRequest = new Request(
             'GET',
-            (string) $offerQuery
+            (string) $offerQuery,
+            $headers
         );
 
         $searchResponseData = json_decode($this->httpClient

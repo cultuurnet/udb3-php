@@ -540,7 +540,8 @@ class BackwardsCompatiblePayloadSerializerFactory
         return $serializedObject;
     }
 
-    private static function addDefaultSapiVersion(array $serializedObject) {
+    private static function addDefaultSapiVersion(array $serializedObject)
+    {
         if (!isset($serializedObject['payload']['sapiVersion'])) {
             $serializedObject['payload']['sapiVersion'] = SapiVersion::V2;
         }

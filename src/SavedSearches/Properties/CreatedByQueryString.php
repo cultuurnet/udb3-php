@@ -2,29 +2,23 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Properties;
 
-use CultuurNet\UDB3\SavedSearches\ValueObject\UserId;
-
 class CreatedByQueryString extends QueryString
 {
     /**
-     * @var UserId
+     * @param string[] $queryParts
      */
-    protected $userId;
-
-    /**
-     * @param UserId $userId
-     */
-    public function __construct(UserId $userId)
+    public function __construct(string ...$queryParts)
     {
-        $this->userId = $userId;
-        parent::__construct($this->generateQuery());
-    }
+        if (empty($queryParts)) {
+            throw new \InvalidArgumentException('At least one query part is required.');
+        }
 
-    /**
-     * @return string
-     */
-    private function generateQuery(): string
-    {
-        return 'createdby:' . $this->userId->toNative();
+        $query = implode(' OR ', $queryParts);
+        if (count($queryParts) > 1) {
+            $query = '(' . $query . ')';
+        }
+        $query = 'createdby:' . $query;
+
+        parent::__construct($query);
     }
 }

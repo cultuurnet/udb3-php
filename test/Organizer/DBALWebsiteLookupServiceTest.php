@@ -44,7 +44,8 @@ class DBALWebsiteLookupServiceTest extends TestCase
         $schemaManager = $this->getConnection()->getSchemaManager();
         $schema = $schemaManager->createSchema();
 
-        $uniqueDBALEventStoreDecorator->configureSchema($schema);
+        $table = $uniqueDBALEventStoreDecorator->configureSchema($schema);
+        $schemaManager->createTable($table);
 
         $this->lookupService = new DBALWebsiteLookupService(
             $this->getConnection(),

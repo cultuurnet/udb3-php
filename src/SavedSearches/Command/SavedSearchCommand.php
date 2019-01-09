@@ -8,7 +8,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 abstract class SavedSearchCommand
 {
     /**
-     * @var SapiVersion
+     * @var string
      */
     protected $sapiVersion;
 
@@ -25,7 +25,7 @@ abstract class SavedSearchCommand
         SapiVersion $sapiVersion,
         StringLiteral $userId
     ) {
-        $this->sapiVersion = $sapiVersion;
+        $this->sapiVersion = $sapiVersion->toNative();
         $this->userId = $userId;
     }
 
@@ -34,7 +34,7 @@ abstract class SavedSearchCommand
      */
     public function getSapiVersion(): SapiVersion
     {
-        return $this->sapiVersion;
+        return SapiVersion::fromNative($this->sapiVersion);
     }
 
     /**

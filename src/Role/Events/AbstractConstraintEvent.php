@@ -2,31 +2,50 @@
 
 namespace CultuurNet\UDB3\Role\Events;
 
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractConstraintEvent extends AbstractEvent
 {
     /**
-     * @var StringLiteral
+     * @var SapiVersion
+     */
+    private $sapiVersion;
+
+    /**
+     * @var Query
      */
     private $query;
 
     /**
      * AbstractPermissionEvent constructor.
      * @param UUID $uuid
-     * @param StringLiteral $query
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
      */
-    public function __construct(UUID $uuid, StringLiteral $query)
-    {
+    public function __construct(
+        UUID $uuid,
+        SapiVersion $sapiVersion,
+        Query $query
+    ) {
         parent::__construct($uuid);
+        $this->sapiVersion = $sapiVersion;
         $this->query = $query;
     }
 
     /**
-     * @return StringLiteral
+     * @return SapiVersion
      */
-    public function getQuery()
+    public function getSapiVersion(): SapiVersion
+    {
+        return $this->sapiVersion;
+    }
+
+    /**
+     * @return Query
+     */
+    public function getQuery(): Query
     {
         return $this->query;
     }
@@ -36,7 +55,11 @@ class AbstractConstraintEvent extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static(new UUID($data['uuid']), new StringLiteral($data['query']));
+        return new static(
+            new UUID($data['uuid']),
+            SapiVersion::fromNative($data['sapiVersion']),
+            new Query($data['query'])
+        );
     }
 
     /**
@@ -45,6 +68,7 @@ class AbstractConstraintEvent extends AbstractEvent
     public function serialize()
     {
         return parent::serialize() + array(
+            'sapiVersion' => $this->sapiVersion->toNative(),
             'query' => $this->query->toNative(),
         );
     }

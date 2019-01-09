@@ -59,7 +59,7 @@ class CachedDefaultSearchService implements SearchServiceInterface, EventListene
      * @return array|\JsonSerializable
      *  A JSON-LD array or JSON serializable object.
      */
-    public function search($query, $limit = 30, $start = 0, $sort = null)
+    public function search(string $query, $limit = 30, $start = 0, $sort = null)
     {
         if ($query == '*.*' && $limit == 30 && $start == 0 && $sort == 'lastupdated desc') {
             $result = $this->fetchFromCache();

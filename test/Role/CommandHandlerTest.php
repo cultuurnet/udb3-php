@@ -5,17 +5,20 @@ namespace CultuurNet\UDB3\Role;
 use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
+use CultuurNet\UDB3\Role\Commands\AddConstraint;
 use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\AddUser;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
+use CultuurNet\UDB3\Role\Commands\RemoveConstraint;
 use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RemoveUser;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
 use CultuurNet\UDB3\Role\Commands\SetConstraint;
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Commands\UpdateConstraint;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\LabelAdded;
@@ -28,6 +31,8 @@ use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -49,14 +54,19 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $permission;
 
     /**
-     * @var StringLiteral
+     * @var Query
      */
     private $query;
 
     /**
-     * @var StringLiteral
+     * @var Query
      */
     private $updatedQuery;
+
+    /**
+     * @var SapiVersion
+     */
+    private $sapiVersion;
 
     /**
      * @var UUID
@@ -84,9 +94,9 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     private $permissionRemoved;
 
     /**
-     * @var ConstraintCreated
+     * @var ConstraintAdded
      */
-    private $constraintCreated;
+    private $constraintAdded;
 
     /**
      * @var ConstraintUpdated
@@ -120,8 +130,9 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->uuid = new UUID();
         $this->name = new StringLiteral('labelName');
         $this->permission = Permission::AANBOD_BEWERKEN();
-        $this->query = new StringLiteral('category_flandersregion_name:"Regio Aalst"');
-        $this->updatedQuery = new StringLiteral('category_flandersregion_name:"Regio Brussel"');
+        $this->query = new Query('category_flandersregion_name:"Regio Aalst"');
+        $this->updatedQuery = new Query('category_flandersregion_name:"Regio Brussel"');
+        $this->sapiVersion = SapiVersion::V2();
         $this->labelId = new UUID();
 
         $this->roleCreated = new RoleCreated(
@@ -144,18 +155,21 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
             $this->permission
         );
 
-        $this->constraintCreated = new ConstraintCreated(
+        $this->constraintAdded = new ConstraintAdded(
             $this->uuid,
+            SapiVersion::V2(),
             $this->query
         );
 
         $this->constraintUpdated = new ConstraintUpdated(
             $this->uuid,
+            SapiVersion::V2(),
             $this->updatedQuery
         );
 
         $this->constraintRemoved = new ConstraintRemoved(
-            $this->uuid
+            $this->uuid,
+            SapiVersion::V2()
         );
 
         $this->labelAdded = new LabelAdded(
@@ -327,28 +341,30 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_handles_setConstraint_by_creating_the_constraint()
+    public function it_handles_addConstraint()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
             ->given([$this->roleCreated])
-            ->when(new SetConstraint(
+            ->when(new AddConstraint(
                 $this->uuid,
+                $this->sapiVersion,
                 $this->query
             ))
-            ->then([$this->constraintCreated]);
+            ->then([$this->constraintAdded]);
     }
 
     /**
      * @test
      */
-    public function it_handles_setConstraint_by_updating_the_constraint()
+    public function it_handles_updateConstraint()
     {
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintCreated])
-            ->when(new SetConstraint(
+            ->given([$this->roleCreated, $this->constraintAdded])
+            ->when(new UpdateConstraint(
                 $this->uuid,
+                $this->sapiVersion,
                 $this->updatedQuery
             ))
             ->then([$this->constraintUpdated]);
@@ -357,16 +373,14 @@ class CommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
-    public function it_handles_setConstraint_by_removing_the_constraint()
+    public function it_handles_removeConstraint()
     {
-        $query = new StringLiteral('');
-
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintCreated])
-            ->when(new SetConstraint(
+            ->given([$this->roleCreated, $this->constraintAdded])
+            ->when(new RemoveConstraint(
                 $this->uuid,
-                $query
+                $this->sapiVersion
             ))
             ->then([$this->constraintRemoved]);
     }

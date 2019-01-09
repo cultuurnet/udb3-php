@@ -24,7 +24,11 @@ use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\PriceInfo\Tariff;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
+use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
+use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
@@ -616,6 +620,107 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
         $actualPriceInfo = $event->getPriceInfo();
 
         $this->assertEquals($expectedPriceInfo, $actualPriceInfo);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_default_sapi_version_and_changes_class_for_constraint_created()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_constraint_created.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var ConstraintAdded $constraintAdded */
+        $constraintAdded = $this->serializer->deserialize($decoded);
+
+        $this->assertTrue($constraintAdded instanceof ConstraintAdded);
+
+        $this->assertEquals(
+            SapiVersion::V2(),
+            $constraintAdded->getSapiVersion()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_default_sapi_version_when_constraint_is_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_constraint_updated.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var ConstraintUpdated $constraintUpdated */
+        $constraintUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertTrue($constraintUpdated instanceof ConstraintUpdated);
+
+        $this->assertEquals(
+            SapiVersion::V2(),
+            $constraintUpdated->getSapiVersion()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_replace_sapi_version_when_constraint_is_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_constraint_updated_with_sapi_version.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var ConstraintUpdated $constraintUpdated */
+        $constraintUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertTrue($constraintUpdated instanceof ConstraintUpdated);
+
+        $this->assertEquals(
+            SapiVersion::V3(),
+            $constraintUpdated->getSapiVersion()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_default_sapi_version_when_constraint_is_removed()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_constraint_removed.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var ConstraintRemoved $constraintRemoved */
+        $constraintRemoved = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            SapiVersion::V2(),
+            $constraintRemoved->getSapiVersion()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_replace_sapi_version_when_constraint_is_removed()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_constraint_removed_with_sapi_version.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var ConstraintRemoved $constraintRemoved */
+        $constraintRemoved = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            SapiVersion::V3(),
+            $constraintRemoved->getSapiVersion()
+        );
     }
 
     /**

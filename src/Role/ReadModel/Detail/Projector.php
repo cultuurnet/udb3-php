@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Role\ReadModel\Detail;
 
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
@@ -54,17 +54,21 @@ class Projector extends RoleProjector
     }
 
     /**
-     * @param ConstraintCreated $constraintCreated
+     * @param ConstraintAdded $constraintAdded
      */
-    protected function applyConstraintCreated(
-        ConstraintCreated $constraintCreated
+    protected function applyConstraintAdded(
+        ConstraintAdded $constraintAdded
     ) {
         $document = $this->loadDocumentFromRepositoryByUuid(
-            $constraintCreated->getUuid()->toNative()
+            $constraintAdded->getUuid()->toNative()
         );
 
         $json = $document->getBody();
-        $json->constraint = $constraintCreated->getQuery()->toNative();
+
+        if (empty($json->constraints)) {
+            $json->constraints = new \stdClass();
+        }
+        $json->constraints->{$constraintAdded->getSapiVersion()->toNative()} = $constraintAdded->getQuery()->toNative();
 
         $this->repository->save($document->withBody($json));
     }
@@ -80,7 +84,7 @@ class Projector extends RoleProjector
         );
 
         $json = $document->getBody();
-        $json->constraint = $constraintUpdated->getQuery()->toNative();
+        $json->constraints->{$constraintUpdated->getSapiVersion()->toNative()} = $constraintUpdated->getQuery()->toNative();
 
         $this->repository->save($document->withBody($json));
     }
@@ -96,7 +100,7 @@ class Projector extends RoleProjector
         );
 
         $json = $document->getBody();
-        unset($json->constraint);
+        $json->constraints->{$constraintRemoved->getSapiVersion()->toNative()} = null;
 
         $this->repository->save($document->withBody($json));
     }

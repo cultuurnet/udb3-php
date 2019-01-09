@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Role;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\PermissionAdded;
@@ -11,6 +11,8 @@ use CultuurNet\UDB3\Role\Events\PermissionRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -32,14 +34,19 @@ class RoleTest extends AggregateRootScenarioTestCase
     private $permission;
 
     /**
-     * @var StringLiteral
+     * @var Query
      */
     private $query;
 
     /**
-     * @var StringLiteral
+     * @var Query
      */
     private $updatedQuery;
+
+    /**
+     * @var SapiVersion
+     */
+    private $sapiVersion;
 
     /**
      * @var RoleCreated
@@ -62,9 +69,9 @@ class RoleTest extends AggregateRootScenarioTestCase
     private $permissionRemoved;
 
     /**
-     * @var ConstraintCreated
+     * @var ConstraintAdded
      */
-    private $constraintCreated;
+    private $constraintAdded;
 
     /**
      * @var ConstraintUpdated
@@ -88,8 +95,9 @@ class RoleTest extends AggregateRootScenarioTestCase
         $this->uuid = new UUID();
         $this->name = new StringLiteral('roleName');
         $this->permission = Permission::AANBOD_BEWERKEN();
-        $this->query = new StringLiteral('category_flandersregion_name:"Regio Aalst"');
-        $this->updatedQuery = new StringLiteral('category_flandersregion_name:"Regio Brussel"');
+        $this->query = new Query('category_flandersregion_name:"Regio Aalst"');
+        $this->updatedQuery = new Query('category_flandersregion_name:"Regio Brussel"');
+        $this->sapiVersion = SapiVersion::V2();
 
         $this->roleCreated = new RoleCreated(
             $this->uuid,
@@ -111,18 +119,21 @@ class RoleTest extends AggregateRootScenarioTestCase
             $this->permission
         );
 
-        $this->constraintCreated = new ConstraintCreated(
+        $this->constraintAdded = new ConstraintAdded(
             $this->uuid,
+            $this->sapiVersion,
             $this->query
         );
 
         $this->constraintUpdated = new ConstraintUpdated(
             $this->uuid,
+            $this->sapiVersion,
             $this->updatedQuery
         );
 
         $this->constraintRemoved = new ConstraintRemoved(
-            $this->uuid
+            $this->uuid,
+            $this->sapiVersion
         );
 
         $this->role = new Role();
@@ -263,38 +274,70 @@ class RoleTest extends AggregateRootScenarioTestCase
      */
     public function it_can_add_a_constraint()
     {
-        $uuid = $this->uuid;
-        $query = $this->query;
-
         $this->scenario
             ->withAggregateId($this->uuid)
             ->given([$this->roleCreated])
-            ->when(function (Role $role) use ($uuid, $query) {
-                /** @var Role $role */
-                $role->setConstraint(
-                    $uuid,
-                    $query
+            ->when(function (Role $role) {
+                $role->addConstraint(
+                    $this->sapiVersion,
+                    $this->query
                 );
             })
-            ->then([$this->constraintCreated]);
+            ->then([$this->constraintAdded]);
     }
 
     /**
      * @test
      */
-    public function it_can_update_an_existing_constraint()
+    public function it_can_not_add_a_constraint_twice()
     {
-        $uuid = $this->uuid;
-        $query = $this->updatedQuery;
-
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintCreated])
-            ->when(function (Role $role) use ($uuid, $query) {
-                /** @var Role $role */
-                $role->setConstraint(
-                    $uuid,
-                    $query
+            ->given([
+                $this->roleCreated,
+                $this->constraintAdded,
+            ])
+            ->when(function (Role $role) {
+                $role->addConstraint(
+                    $this->sapiVersion,
+                    $this->query
+                );
+            })
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_update_an_empty_constraint()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([$this->roleCreated])
+            ->when(function (Role $role) {
+                $role->updateConstraint(
+                    $this->sapiVersion,
+                    $this->query
+                );
+            })
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_update_a_constraint()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([
+                $this->roleCreated,
+                $this->constraintAdded,
+            ])
+            ->when(function (Role $role) {
+                $role->updateConstraint(
+                    $this->sapiVersion,
+                    $this->updatedQuery
                 );
             })
             ->then([$this->constraintUpdated]);
@@ -303,19 +346,38 @@ class RoleTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_remove_a_constraint()
+    public function it_does_not_update_a_constraint_with_same_query()
     {
-        $uuid = $this->uuid;
-        $query = new StringLiteral('');
-
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated, $this->constraintCreated])
-            ->when(function (Role $role) use ($uuid, $query) {
-                /** @var Role $role */
-                $role->setConstraint(
-                    $uuid,
-                    $query
+            ->given([
+                $this->roleCreated,
+                $this->constraintAdded,
+                $this->constraintUpdated,
+            ])
+            ->when(function (Role $role) {
+                $role->updateConstraint(
+                    $this->sapiVersion,
+                    $this->updatedQuery
+                );
+            })
+            ->then([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_remove_a_constraint()
+    {
+        $this->scenario
+            ->withAggregateId($this->uuid)
+            ->given([
+                $this->roleCreated,
+                $this->constraintAdded,
+            ])
+            ->when(function (Role $role) {
+                $role->removeConstraint(
+                    $this->sapiVersion
                 );
             })
             ->then([$this->constraintRemoved]);
@@ -326,17 +388,14 @@ class RoleTest extends AggregateRootScenarioTestCase
      */
     public function it_does_not_remove_a_constraint_when_there_is_none()
     {
-        $uuid = $this->uuid;
-        $query = new StringLiteral('');
-
         $this->scenario
             ->withAggregateId($this->uuid)
-            ->given([$this->roleCreated])
-            ->when(function (Role $role) use ($uuid, $query) {
-                /** @var Role $role */
-                $role->setConstraint(
-                    $uuid,
-                    $query
+            ->given([
+                $this->roleCreated,
+            ])
+            ->when(function (Role $role) {
+                $role->removeConstraint(
+                    $this->sapiVersion
                 );
             })
             ->then([]);

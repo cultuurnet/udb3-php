@@ -55,27 +55,6 @@ class UpdateRoleRequestDeserializerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedCommand, $command);
     }
 
-    /**
-     * @test
-     */
-    public function it_can_set_a_constraint_with_the_correct_content_type_set()
-    {
-        $request = $this->makeRequest();
-        $request->headers->set('Content-Type', 'application/ld+json;domain-model=SetConstraint');
-        $request->server->set('Content-Type', 'application/ld+json;domain-model=SetConstraint');
-
-        //var_dump($request);
-
-        $command = $this->deserializer->deserialize($request, $this->roleId);
-
-        $expectedCommand = new SetConstraint(
-            new UUID($this->roleId),
-            new StringLiteral('category_flandersregion_name:"Regio Aalst"')
-        );
-
-        $this->assertEquals($expectedCommand, $command);
-    }
-
     public function makeRequest()
     {
         $content = $this->getJson('update_role.json');

@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Role;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
-use CultuurNet\UDB3\Role\Events\ConstraintCreated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\Role\Events\LabelAdded;
@@ -16,6 +16,8 @@ use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -32,9 +34,9 @@ class Role extends EventSourcedAggregateRoot
     private $name;
 
     /**
-     * @var StringLiteral
+     * @var Query[]
      */
-    private $query;
+    private $queries = [];
 
     /**
      * @var Permission[]
@@ -92,26 +94,55 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
-     * Set a constraint on the role.
-     *
-     * @param UUID $uuid
-     * @param StringLiteral $query
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
      */
-    public function setConstraint(
-        UUID $uuid,
-        StringLiteral $query
-    ) {
-        if (empty($this->query)) {
-            if (!empty($query) && !$query->isEmpty()) {
-                $this->apply(new ConstraintCreated($uuid, $query));
-            }
-        } else {
-            if (!empty($query) && !$query->isEmpty()) {
-                $this->apply(new ConstraintUpdated($uuid, $query));
-            } else {
-                $this->apply(new ConstraintRemoved($uuid));
-            }
+    public function addConstraint(SapiVersion $sapiVersion, Query $query): void
+    {
+        if ($this->queryEmpty($sapiVersion)) {
+            $this->apply(new ConstraintAdded($this->uuid, $sapiVersion, $query));
         }
+    }
+
+    /**
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     */
+    public function updateConstraint(SapiVersion $sapiVersion, Query $query): void
+    {
+        if (!$this->queryEmpty($sapiVersion) &&
+            !$this->querySameValue($sapiVersion, $query)) {
+            $this->apply(new ConstraintUpdated($this->uuid, $sapiVersion, $query));
+        }
+    }
+
+    /**
+     * @param SapiVersion $sapiVersion
+     */
+    public function removeConstraint(SapiVersion $sapiVersion): void
+    {
+        if (!$this->queryEmpty($sapiVersion)) {
+            $this->apply(new ConstraintRemoved($this->uuid, $sapiVersion));
+        }
+    }
+
+    /**
+     * @param SapiVersion $sapiVersion
+     * @return bool
+     */
+    private function queryEmpty(SapiVersion $sapiVersion): bool
+    {
+        return empty($this->queries[$sapiVersion->toNative()]);
+    }
+
+    /**
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     * @return bool
+     */
+    private function querySameValue(SapiVersion $sapiVersion, Query $query): bool
+    {
+        return $this->queries[$sapiVersion->toNative()]->sameValueAs($query);
     }
 
     /**
@@ -217,11 +248,11 @@ class Role extends EventSourcedAggregateRoot
     }
 
     /**
-     * @param ConstraintCreated $constraintCreated
+     * @param ConstraintAdded $constraintAdded
      */
-    public function applyConstraintCreated(ConstraintCreated $constraintCreated)
+    public function applyConstraintAdded(ConstraintAdded $constraintAdded)
     {
-        $this->query = $constraintCreated->getQuery();
+        $this->queries[$constraintAdded->getSapiVersion()->toNative()] = $constraintAdded->getQuery();
     }
 
     /**
@@ -229,7 +260,7 @@ class Role extends EventSourcedAggregateRoot
      */
     public function applyConstraintUpdated(ConstraintUpdated $constraintUpdated)
     {
-        $this->query = $constraintUpdated->getQuery();
+        $this->queries[$constraintUpdated->getSapiVersion()->toNative()] = $constraintUpdated->getQuery();
     }
 
     /**
@@ -237,7 +268,7 @@ class Role extends EventSourcedAggregateRoot
      */
     public function applyConstraintRemoved(ConstraintRemoved $constraintRemoved)
     {
-        $this->query = new StringLiteral('');
+        $this->queries[$constraintRemoved->getSapiVersion()->toNative()] = null;
     }
 
     /**

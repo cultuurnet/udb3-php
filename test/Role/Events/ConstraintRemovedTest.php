@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\Role\Events;
 
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 
-class AbstractEventTest extends \PHPUnit_Framework_TestCase
+class ConstraintRemovedTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var UUID
@@ -12,26 +13,33 @@ class AbstractEventTest extends \PHPUnit_Framework_TestCase
     protected $uuid;
 
     /**
-     * @var AbstractEvent
+     * @var SapiVersion
+     */
+    protected $sapiVersion;
+
+    /**
+     * @var ConstraintRemoved
      */
     protected $event;
 
     protected function setUp()
     {
         $this->uuid = new UUID();
+        $this->sapiVersion = SapiVersion::V2();
 
-        $this->event = $this->getMockForAbstractClass(
-            AbstractEvent::class,
-            [$this->uuid]
+        $this->event = new ConstraintRemoved(
+            $this->uuid,
+            $this->sapiVersion
         );
     }
 
     /**
      * @test
      */
-    public function it_stores_a_uuid()
+    public function it_stores_a_uuid_and_a_sapi_version()
     {
         $this->assertEquals($this->uuid, $this->event->getUuid());
+        $this->assertEquals($this->sapiVersion, $this->event->getSapiVersion());
     }
 
     /**
@@ -41,7 +49,10 @@ class AbstractEventTest extends \PHPUnit_Framework_TestCase
     {
         $actualArray = $this->event->serialize();
 
-        $expectedArray = ['uuid' => $this->uuid->toNative()];
+        $expectedArray = [
+            'uuid' => $this->uuid->toNative(),
+            'sapiVersion' => $this->sapiVersion->toNative(),
+        ];
 
         $this->assertEquals($expectedArray, $actualArray);
     }
@@ -51,7 +62,10 @@ class AbstractEventTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_deserialize()
     {
-        $data = ['uuid' => $this->uuid->toNative()];
+        $data = [
+            'uuid' => $this->uuid->toNative(),
+            'sapiVersion' => $this->sapiVersion->toNative(),
+        ];
         $actualEvent = $this->event->deserialize($data);
         $expectedEvent = $this->event;
 

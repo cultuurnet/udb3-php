@@ -4,16 +4,18 @@ namespace CultuurNet\UDB3\Role;
 
 use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler as AbstractCommandHandler;
+use CultuurNet\UDB3\Role\Commands\AddConstraint;
 use CultuurNet\UDB3\Role\Commands\AddLabel;
 use CultuurNet\UDB3\Role\Commands\AddPermission;
 use CultuurNet\UDB3\Role\Commands\AddUser;
 use CultuurNet\UDB3\Role\Commands\CreateRole;
 use CultuurNet\UDB3\Role\Commands\DeleteRole;
+use CultuurNet\UDB3\Role\Commands\RemoveConstraint;
 use CultuurNet\UDB3\Role\Commands\RemoveLabel;
 use CultuurNet\UDB3\Role\Commands\RemovePermission;
 use CultuurNet\UDB3\Role\Commands\RemoveUser;
 use CultuurNet\UDB3\Role\Commands\RenameRole;
-use CultuurNet\UDB3\Role\Commands\SetConstraint;
+use CultuurNet\UDB3\Role\Commands\UpdateConstraint;
 use ValueObjects\Identity\UUID;
 
 class CommandHandler extends AbstractCommandHandler
@@ -61,15 +63,44 @@ class CommandHandler extends AbstractCommandHandler
     }
 
     /**
-     * @param SetConstraint $setConstraint
+     * @param AddConstraint $addConstraint
      */
-    public function handleSetConstraint(SetConstraint $setConstraint)
+    public function handleAddConstraint(AddConstraint $addConstraint): void
     {
-        $role = $this->load($setConstraint->getUuid());
+        $role = $this->load($addConstraint->getUuid());
 
-        $role->setConstraint(
-            $setConstraint->getUuid(),
-            $setConstraint->getQuery()
+        $role->addConstraint(
+            $addConstraint->getSapiVersion(),
+            $addConstraint->getQuery()
+        );
+
+        $this->save($role);
+    }
+
+    /**
+     * @param UpdateConstraint $updateConstraint
+     */
+    public function handleUpdateConstraint(UpdateConstraint $updateConstraint): void
+    {
+        $role = $this->load($updateConstraint->getUuid());
+
+        $role->updateConstraint(
+            $updateConstraint->getSapiVersion(),
+            $updateConstraint->getQuery()
+        );
+
+        $this->save($role);
+    }
+
+    /**
+     * @param RemoveConstraint $removeConstraint
+     */
+    public function handleRemoveConstraint(RemoveConstraint $removeConstraint): void
+    {
+        $role = $this->load($removeConstraint->getUuid());
+
+        $role->removeConstraint(
+            $removeConstraint->getSapiVersion()
         );
 
         $this->save($role);

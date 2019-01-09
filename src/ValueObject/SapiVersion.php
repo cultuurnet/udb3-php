@@ -62,4 +62,29 @@ class SapiVersion
             );
         }
     }
+
+    /**
+     * @param string $sapiVersion
+     * @return \CultuurNet\UDB3\ValueObject\SapiVersion
+     */
+    public static function fromNative(string $sapiVersion): SapiVersion
+    {
+        return new SapiVersion($sapiVersion);
+    }
+
+    /**
+     * @return \CultuurNet\UDB3\ValueObject\SapiVersion
+     */
+    public static function V2(): SapiVersion
+    {
+        return new SapiVersion(self::V2);
+    }
+
+    /**
+     * @return \CultuurNet\UDB3\ValueObject\SapiVersion
+     */
+    public static function V3(): SapiVersion
+    {
+        return new SapiVersion(self::V3);
+    }
 }

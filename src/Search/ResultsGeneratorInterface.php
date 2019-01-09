@@ -8,5 +8,5 @@ interface ResultsGeneratorInterface
      * @param string $query
      * @return \Iterator
      */
-    public function search($query);
+    public function search(string $query);
 }

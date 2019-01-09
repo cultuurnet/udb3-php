@@ -3,6 +3,8 @@
 namespace CultuurNet\UDB3\Role\Services;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -58,13 +60,27 @@ interface RoleEditingServiceInterface
     public function removeUser(UUID $uuid, StringLiteral $userId);
 
     /**
-     * Setting a constraint on a role.
-     *
      * @param UUID $uuid
-     * @param StringLiteral $query
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
      * @return string
      */
-    public function setConstraint(UUID $uuid, StringLiteral $query);
+    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string;
+
+    /**
+     * @param UUID $uuid
+     * @param SapiVersion $sapiVersion
+     * @param Query $query
+     * @return string
+     */
+    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string;
+
+    /**
+     * @param UUID $uuid
+     * @param SapiVersion $sapiVersion
+     * @return string
+     */
+    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion): string;
 
     /**
      * Add a label to a role.

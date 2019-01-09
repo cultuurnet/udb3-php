@@ -2,8 +2,9 @@
 
 namespace CultuurNet\UDB3\Role\Events;
 
+use CultuurNet\UDB3\Role\ValueObjects\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +14,12 @@ class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
     protected $uuid;
 
     /**
-     * @var StringLiteral
+     * @var SapiVersion
+     */
+    protected $sapiVersion;
+
+    /**
+     * @var Query
      */
     protected $query;
 
@@ -26,11 +32,13 @@ class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
     {
         $this->uuid = new UUID();
 
-        $this->query = new StringLiteral('category_flandersregion_name:"Regio Aalst"');
+        $this->sapiVersion = SapiVersion::V2();
+
+        $this->query = new Query('category_flandersregion_name:"Regio Aalst"');
 
         $this->event = $this->getMockForAbstractClass(
             AbstractConstraintEvent::class,
-            [$this->uuid, $this->query]
+            [$this->uuid, $this->sapiVersion, $this->query]
         );
     }
 
@@ -40,6 +48,7 @@ class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
     public function it_stores_a_uuid_and_a_query()
     {
         $this->assertEquals($this->uuid, $this->event->getUuid());
+        $this->assertEquals($this->sapiVersion, $this->event->getSapiVersion());
         $this->assertEquals($this->query, $this->event->getQuery());
     }
 
@@ -52,16 +61,21 @@ class AbstractConstraintEventTest extends \PHPUnit_Framework_TestCase
 
         $expectedArray = [
             'uuid' => $this->uuid->toNative(),
+            'sapiVersion' => $this->sapiVersion->toNative(),
             'query' => $this->query->toNative(),
         ];
 
         $this->assertEquals($expectedArray, $actualArray);
     }
 
+    /**
+     * @test
+     */
     public function it_can_deserialize()
     {
         $data = [
             'uuid' => $this->uuid->toNative(),
+            'sapiVersion' => $this->sapiVersion->toNative(),
             'query' => $this->query->toNative(),
         ];
         $actualEvent = $this->event->deserialize($data);

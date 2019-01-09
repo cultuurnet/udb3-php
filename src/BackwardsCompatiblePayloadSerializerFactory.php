@@ -31,6 +31,10 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PriceInfoUpdated as PlacePriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted as PlaceTypicalAgeRangeDeleted;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeUpdated as PlaceTypicalAgeRangeUpdated;
+use CultuurNet\UDB3\Role\Events\ConstraintAdded;
+use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
+use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 
 /**
@@ -406,6 +410,31 @@ class BackwardsCompatiblePayloadSerializerFactory
             );
         }
 
+        /**
+         * Roles
+         */
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            'CultuurNet\UDB3\Role\Events\ConstraintCreated',
+            function (array $serializedObject) {
+                $serializedObject['class'] = ConstraintAdded::class;
+                return self::addDefaultSapiVersion($serializedObject);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            ConstraintUpdated::class,
+            function (array $serializedObject) {
+                return self::addDefaultSapiVersion($serializedObject);
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            ConstraintRemoved::class,
+            function (array $serializedObject) {
+                return self::addDefaultSapiVersion($serializedObject);
+            }
+        );
+
         return $payloadManipulatingSerializer;
     }
 
@@ -506,6 +535,15 @@ class BackwardsCompatiblePayloadSerializerFactory
         if (!isset($serializedObject['payload']['main_language'])) {
             $mainLanguage = new Language('nl');
             $serializedObject['payload']['main_language'] = $mainLanguage->getCode();
+        }
+
+        return $serializedObject;
+    }
+
+    private static function addDefaultSapiVersion(array $serializedObject)
+    {
+        if (!isset($serializedObject['payload']['sapiVersion'])) {
+            $serializedObject['payload']['sapiVersion'] = SapiVersion::V2;
         }
 
         return $serializedObject;

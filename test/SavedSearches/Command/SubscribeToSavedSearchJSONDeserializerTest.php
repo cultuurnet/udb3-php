@@ -26,7 +26,7 @@ class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_Test
 
     public function setUp()
     {
-        $this->sapiVersion = new SapiVersion(SapiVersion::V2);
+        $this->sapiVersion = SapiVersion::V2();
         $this->userId = new StringLiteral('xyx');
 
         $this->deserializer = new SubscribeToSavedSearchJSONDeserializer(

@@ -18,26 +18,26 @@ class SavedSearchReadRepositoryCollectionTest extends \PHPUnit_Framework_TestCas
         $sapi3SavedSearchRepository = $this->createMock(SavedSearchRepositoryInterface::class);
 
         $savedSearchRepositoryCollection = $savedSearchRepositoryCollection->withRepository(
-            new SapiVersion(SapiVersion::V2),
+            SapiVersion::V2(),
             $sapi2SavedSearchRepository
         );
 
         $savedSearchRepositoryCollection = $savedSearchRepositoryCollection->withRepository(
-            new SapiVersion(SapiVersion::V3),
+            SapiVersion::V3(),
             $sapi3SavedSearchRepository
         );
 
         $this->assertEquals(
             $sapi2SavedSearchRepository,
             $savedSearchRepositoryCollection->getRepository(
-                new SapiVersion(SapiVersion::V2)
+                SapiVersion::V2()
             )
         );
 
         $this->assertEquals(
             $sapi3SavedSearchRepository,
             $savedSearchRepositoryCollection->getRepository(
-                new SapiVersion(SapiVersion::V3)
+                SapiVersion::V3()
             )
         );
     }
@@ -52,12 +52,12 @@ class SavedSearchReadRepositoryCollectionTest extends \PHPUnit_Framework_TestCas
         $sapi2SavedSearchRepository = $this->createMock(SavedSearchRepositoryInterface::class);
 
         $savedSearchRepositoryCollection->withRepository(
-            new SapiVersion(SapiVersion::V2),
+            SapiVersion::V2(),
             $sapi2SavedSearchRepository
         );
 
         $this->assertNull(
-            $savedSearchRepositoryCollection->getRepository(new SapiVersion(SapiVersion::V3))
+            $savedSearchRepositoryCollection->getRepository(SapiVersion::V3())
         );
     }
 }

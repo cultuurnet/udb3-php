@@ -11,7 +11,7 @@ class SapiVersionTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp(): void
     {
-        $this->sapiVersion = new SapiVersion(SapiVersion::V2);
+        $this->sapiVersion = SapiVersion::V2();
     }
 
     /**
@@ -30,15 +30,15 @@ class SapiVersionTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_compared(): void
     {
-        $sameSapiVersion = new SapiVersion(SapiVersion::V2);
-        $otherSapiVersion = new SapiVersion(SapiVersion::V3);
+        $sameSapiVersion = SapiVersion::V2();
+        $otherSapiVersion = SapiVersion::V3();
 
         $this->assertTrue(
-            $this->sapiVersion->equals($sameSapiVersion)
+            $this->sapiVersion->sameValueAs($sameSapiVersion)
         );
 
         $this->assertFalse(
-            $this->sapiVersion->equals($otherSapiVersion)
+            $this->sapiVersion->sameValueAs($otherSapiVersion)
         );
     }
 
@@ -48,8 +48,7 @@ class SapiVersionTest extends \PHPUnit_Framework_TestCase
     public function it_throws_for_invalid_values(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Sapi version "invalid" is not allowed.');
 
-        new SapiVersion('invalid');
+        SapiVersion::fromNative('invalid');
     }
 }

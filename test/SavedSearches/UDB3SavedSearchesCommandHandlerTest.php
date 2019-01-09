@@ -27,7 +27,7 @@ class UDB3SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
 
         $savedSearchRepositoryCollection = new SavedSearchWriteRepositoryCollection();
         $savedSearchRepositoryCollection = $savedSearchRepositoryCollection->withRepository(
-            new SapiVersion(SapiVersion::V2),
+            SapiVersion::V2(),
             $this->savedSearchesRepository
         );
 
@@ -41,7 +41,7 @@ class UDB3SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_handle_subscribe_to_saved_search_commands()
     {
-        $sapiVersion = new SapiVersion(SapiVersion::V2);
+        $sapiVersion = SapiVersion::V2();
         $userId = new StringLiteral('some-user-id');
         $name = new StringLiteral('My very first saved search!');
         $query = new QueryString('city:"Leuven"');
@@ -64,7 +64,7 @@ class UDB3SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_handle_unsubscribe_from_saved_search_commands()
     {
-        $sapiVersion = new SapiVersion(SapiVersion::V2);
+        $sapiVersion = SapiVersion::V2();
         $userId = new StringLiteral('some-user-id');
         $searchId = new StringLiteral('some-search-id');
 

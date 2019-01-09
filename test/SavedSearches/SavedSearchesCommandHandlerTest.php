@@ -64,7 +64,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private function aSubscribeToSavedSearchCommand(): SubscribeToSavedSearch
     {
-        $sapiVersion = new SapiVersion(SapiVersion::V2);
+        $sapiVersion = SapiVersion::V2();
         $userId = new StringLiteral('some-user-id');
         $name = new StringLiteral('My very first saved search!');
         $query = new QueryString('city:"Leuven"');
@@ -170,7 +170,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private function getUnsubscribeFromSavedSearchCommandStub()
     {
-        $sapiVersion = new SapiVersion(SapiVersion::V2);
+        $sapiVersion = SapiVersion::V2();
         $userId = new StringLiteral('some-user-id');
         $searchId = new StringLiteral('some-search-id');
 

@@ -12,7 +12,7 @@ class UnsubscribeFromSavedSearchTest extends \PHPUnit_Framework_TestCase
      */
     public function it_returns_the_stored_data()
     {
-        $sapiVersion = new SapiVersion(SapiVersion::V2);
+        $sapiVersion = SapiVersion::V2();
         $userId = new StringLiteral('some-user-id');
         $searchId = new StringLiteral('some-search-id');
 

@@ -13,6 +13,8 @@ use ValueObjects\StringLiteral\StringLiteral;
 /**
  * Implementation of a SavedSearchRepository on top of the UiTID saved searches
  * API.
+ *
+ * @deprecated Unused since III-2779.
  */
 class UiTIDSavedSearchRepository implements
     SavedSearchReadModelRepositoryInterface,

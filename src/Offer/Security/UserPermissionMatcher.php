@@ -10,6 +10,9 @@ use CultuurNet\UDB3\SearchAPI2\ResultSetPullParser;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
+/**
+ * Implementation of the user permission matcher for SAPI2.
+ */
 class UserPermissionMatcher implements UserPermissionMatcherInterface
 {
     /**

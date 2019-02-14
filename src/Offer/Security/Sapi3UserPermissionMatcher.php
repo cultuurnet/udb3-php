@@ -7,6 +7,9 @@ use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
+/**
+ * Implementation of the user permission matcher for SAPI3.
+ */
 class Sapi3UserPermissionMatcher implements UserPermissionMatcherInterface
 {
     /**

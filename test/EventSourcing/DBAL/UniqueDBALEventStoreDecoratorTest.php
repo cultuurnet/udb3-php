@@ -26,12 +26,12 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     private $uniqueDBALEventStoreDecorator;
 
     /**
-     * @var DBALEventStore|\PHPUnit_Framework_MockObject_MockObject $dbalEventStore
+     * @var DBALEventStore|\PHPUnit_Framework_MockObject_MockObject
      */
     private $dbalEventStore;
 
     /**
-     * @var UniqueConstraintServiceInterface|\PHPUnit_Framework_MockObject_MockObject $uniqueConstraintService
+     * @var UniqueConstraintServiceInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $uniqueConstraintService;
 
@@ -72,11 +72,11 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
         $schemaManager = $this->getConnection()->getSchemaManager();
         $schema = $schemaManager->createSchema();
 
-        $table = $this
-            ->uniqueDBALEventStoreDecorator
-            ->configureSchema($schema);
-
+        $table = $this->dbalEventStore->configureSchema($schema);
         $schemaManager->createTable($table);
+
+        $uniqueTable = $this->uniqueDBALEventStoreDecorator->configureSchema($schema);
+        $schemaManager->createTable($uniqueTable);
     }
 
     /**

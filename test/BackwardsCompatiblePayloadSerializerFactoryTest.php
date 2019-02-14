@@ -667,6 +667,27 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     /**
      * @test
      */
+    public function it_does_not_replace_sapi_version_when_constraint_is_updated()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_constraint_updated_with_sapi_version.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var ConstraintUpdated $constraintUpdated */
+        $constraintUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertTrue($constraintUpdated instanceof ConstraintUpdated);
+
+        $this->assertEquals(
+            SapiVersion::V3(),
+            $constraintUpdated->getSapiVersion()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_adds_a_default_sapi_version_when_constraint_is_removed()
     {
         $sampleFile = $this->sampleDir . 'serialized_event_constraint_removed.json';
@@ -679,6 +700,25 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
 
         $this->assertEquals(
             SapiVersion::V2(),
+            $constraintRemoved->getSapiVersion()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_replace_sapi_version_when_constraint_is_removed()
+    {
+        $sampleFile = $this->sampleDir . 'serialized_event_constraint_removed_with_sapi_version.json';
+
+        $serialized = file_get_contents($sampleFile);
+        $decoded = json_decode($serialized, true);
+
+        /* @var ConstraintRemoved $constraintRemoved */
+        $constraintRemoved = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(
+            SapiVersion::V3(),
             $constraintRemoved->getSapiVersion()
         );
     }

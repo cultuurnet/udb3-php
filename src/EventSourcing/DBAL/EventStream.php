@@ -54,6 +54,11 @@ class EventStream
     private $domainEventStreamDecorator;
 
     /**
+     * @var string
+     */
+    private $aggregateType;
+
+    /**
      * @param Connection $connection
      * @param SerializerInterface $payloadSerializer
      * @param SerializerInterface $metadataSerializer
@@ -70,6 +75,7 @@ class EventStream
         $this->metadataSerializer = $metadataSerializer;
         $this->tableName = $tableName;
         $this->startId = 0;
+        $this->aggregateType = '';
     }
 
     /**
@@ -90,6 +96,18 @@ class EventStream
         $c->startId = $startId;
         return $c;
     }
+
+    /**
+     * @param string $aggregateType
+     * @return EventStream
+     */
+    public function withAggregateType($aggregateType)
+    {
+        $c = clone $this;
+        $c->aggregateType = $aggregateType;
+        return $c;
+    }
+
 
     /**
      * @param string[] $cdbids
@@ -189,6 +207,11 @@ class EventStream
         if ($this->cdbids) {
             $queryBuilder->andWhere('uuid IN (:uuids)')
                 ->setParameter('uuids', $this->cdbids, Connection::PARAM_STR_ARRAY);
+        }
+
+        if (!empty($this->aggregateType)) {
+            $queryBuilder->andWhere('aggregate_type = :aggregate_type');
+            $queryBuilder->setParameter('aggregate_type', $this->aggregateType);
         }
 
         return $queryBuilder->execute();

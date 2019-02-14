@@ -24,5 +24,5 @@ interface SearchServiceInterface
      *
      * @return Results
      */
-    public function search($query, $limit = 30, $start = 0, $sort = null);
+    public function search(string $query, $limit = 30, $start = 0, $sort = null);
 }

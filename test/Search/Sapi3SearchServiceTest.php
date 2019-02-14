@@ -56,7 +56,7 @@ class Sapi3SearchServiceTest extends \PHPUnit_Framework_TestCase
 
         $expectedRequest = new Request(
             'GET',
-            $this->searchLocation->withQuery('q=foo%3Abar&start=0&limit=30')
+            $this->searchLocation->withQuery('q=foo%3Abar&start=0&limit=30&disableDefaultFilters=true')
         );
 
         $this->httpClient
@@ -96,7 +96,7 @@ class Sapi3SearchServiceTest extends \PHPUnit_Framework_TestCase
         $expectedRequest = new Request(
             'GET',
             $this->searchLocation->withQuery(
-                'q=modified%3A%5B2016-08-24T00%3A00%3A00%2B02%3A00+TO+%2A%5D&start=0&limit=30'
+                'q=modified%3A%5B2016-08-24T00%3A00%3A00%2B02%3A00+TO+%2A%5D&start=0&limit=30&disableDefaultFilters=true'
             )
         );
 

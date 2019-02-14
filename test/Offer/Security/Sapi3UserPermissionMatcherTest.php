@@ -70,7 +70,7 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
             new StringLiteral('address.\*.postalCode:3000'),
         ];
         $offerId = new StringLiteral('625a4e74-a1ca-4bee-9e85-39869457d531');
-        $query = new Query('(address.\*.postalCode:3000 AND id:625a4e74-a1ca-4bee-9e85-39869457d531)');
+        $query = '(address.\*.postalCode:3000 AND id:625a4e74-a1ca-4bee-9e85-39869457d531)';
 
         $this->userConstraintsReadRepository->expects($this->once())
             ->method('getByUserAndPermission')
@@ -87,7 +87,7 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
                 $offerId
             )
             ->willReturn(
-                $query
+                new Query($query)
             );
 
         $this->searchService->expects($this->once())

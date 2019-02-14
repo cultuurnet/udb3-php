@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Security;
 use CultuurNet\Search\Parameter\Query;
 use ValueObjects\StringLiteral\StringLiteral;
 
-abstract class SearchQueryFactoryTest extends \PHPUnit_Framework_TestCase
+abstract class SearchQueryFactoryTestBase extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var SearchQueryFactoryInterface

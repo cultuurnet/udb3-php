@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Security;
 
 use ValueObjects\StringLiteral\StringLiteral;
 
-class Sapi3SearchQueryFactoryTest extends SearchQueryFactoryBase
+class Sapi3SearchQueryFactoryTest extends SearchQueryFactoryTestBase
 {
     protected function setUp()
     {

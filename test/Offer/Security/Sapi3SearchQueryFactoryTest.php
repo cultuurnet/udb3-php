@@ -2,14 +2,13 @@
 
 namespace CultuurNet\UDB3\Offer\Security;
 
-use CultuurNet\Search\Parameter\Query;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SearchQueryFactoryTest extends SearchQueryFactoryBase
+class Sapi3SearchQueryFactoryTest extends SearchQueryFactoryBase
 {
     protected function setUp()
     {
-        $this->searchQueryFactory = new SearchQueryFactory();
+        $this->searchQueryFactory = new Sapi3SearchQueryFactory();
     }
 
     /**
@@ -17,13 +16,13 @@ class SearchQueryFactoryTest extends SearchQueryFactoryBase
      * @param StringLiteral $offerId
      * @return string
      */
-    protected function createQueryString(
+    public function createQueryString(
         StringLiteral $constraint,
         StringLiteral $offerId
     ) {
         $constraintStr = strtolower($constraint->toNative());
         $offerIdStr = $offerId->toNative();
 
-        return '((' . $constraintStr . ') AND cdbid:' . $offerIdStr . ')';
+        return '((' . $constraintStr . ') AND id:' . $offerIdStr . ')';
     }
 }

@@ -2,16 +2,14 @@
 
 namespace CultuurNet\UDB3\Offer\Security;
 
-use CultuurNet\Search\Parameter\Query;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SearchQueryFactoryTest extends SearchQueryFactoryTestBase
+/**
+ * Implementation of the search query factory for SAPI3.
+ */
+class Sapi3SearchQueryFactory extends SearchQueryFactoryBase
 {
-    protected function setUp()
-    {
-        $this->searchQueryFactory = new SearchQueryFactory();
-    }
-
     /**
      * @param StringLiteral $constraint
      * @param StringLiteral $offerId
@@ -21,9 +19,9 @@ class SearchQueryFactoryTest extends SearchQueryFactoryTestBase
         StringLiteral $constraint,
         StringLiteral $offerId
     ) {
-        $constraintStr = strtolower($constraint->toNative());
+        $constraintStr = '(' . $constraint->toNative() . ')';
         $offerIdStr = $offerId->toNative();
 
-        return '((' . $constraintStr . ') AND cdbid:' . $offerIdStr . ')';
+        return '(' . $constraintStr . ' AND id:' . $offerIdStr . ')';
     }
 }

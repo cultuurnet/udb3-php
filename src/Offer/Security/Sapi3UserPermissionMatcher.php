@@ -2,18 +2,15 @@
 
 namespace CultuurNet\UDB3\Offer\Security;
 
-use CultuurNet\Search\Parameter\FilterQuery;
-use CultuurNet\Search\Parameter\Group;
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
-use CultuurNet\UDB3\SearchAPI2\ResultSetPullParser;
-use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
+use CultuurNet\UDB3\Search\SearchServiceInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
 /**
- * Implementation of the user permission matcher for SAPI2.
+ * Implementation of the user permission matcher for SAPI3.
  */
-class UserPermissionMatcher implements UserPermissionMatcherInterface
+class Sapi3UserPermissionMatcher implements UserPermissionMatcherInterface
 {
     /**
      * @var UserConstraintsReadRepositoryInterface
@@ -31,27 +28,19 @@ class UserPermissionMatcher implements UserPermissionMatcherInterface
     private $searchService;
 
     /**
-     * @var ResultSetPullParser
-     */
-    private $resultSetPullParser;
-
-    /**
      * ConstraintsOfferFilter constructor.
      * @param UserConstraintsReadRepositoryInterface $userConstraintsReadRepository
      * @param SearchQueryFactoryInterface $searchQueryFactory
      * @param SearchServiceInterface $searchService
-     * @param ResultSetPullParser $resultSetPullParser
      */
     public function __construct(
         UserConstraintsReadRepositoryInterface $userConstraintsReadRepository,
         SearchQueryFactoryInterface $searchQueryFactory,
-        SearchServiceInterface $searchService,
-        ResultSetPullParser $resultSetPullParser
+        SearchServiceInterface $searchService
     ) {
         $this->userConstraintsReadRepository = $userConstraintsReadRepository;
         $this->searchQueryFactory = $searchQueryFactory;
         $this->searchService = $searchService;
-        $this->resultSetPullParser = $resultSetPullParser;
     }
 
     /**
@@ -74,18 +63,9 @@ class UserPermissionMatcher implements UserPermissionMatcherInterface
             $constraints,
             $offerId
         );
-        $response = $this->searchService->search(
-            [
-                $query,
-                new FilterQuery('private:*'),
-                new Group(true),
-            ]
-        );
-        if ($response->getStatusCode() != 200) {
-            return false;
-        }
 
-        $result = $this->resultSetPullParser->getResultSet($response->getBody());
-        return ($result->getTotalItems()->toNative() === 1);
+        $results = $this->searchService->search($query->getValue());
+
+        return ($results->getTotalItems()->toNative() === 1);
     }
 }

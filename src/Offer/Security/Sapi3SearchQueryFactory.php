@@ -19,7 +19,7 @@ class Sapi3SearchQueryFactory extends SearchQueryFactoryBase
         StringLiteral $constraint,
         StringLiteral $offerId
     ) {
-        $constraintStr = '(' . strtolower($constraint->toNative()) . ')';
+        $constraintStr = '(' . $constraint->toNative() . ')';
         $offerIdStr = $offerId->toNative();
 
         return '(' . $constraintStr . ' AND id:' . $offerIdStr . ')';

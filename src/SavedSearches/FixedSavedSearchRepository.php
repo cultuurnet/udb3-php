@@ -64,7 +64,7 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
         }
 
         return [
-            new SavedSearch($name, $createdByQueryString)
+            new SavedSearch($name, $createdByQueryString),
         ];
     }
 }

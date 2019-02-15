@@ -15,6 +15,7 @@ use Psr\Log\LoggerAwareTrait;
  * @package CultuurNet\UDB3\SavedSearches
  *
  * @property UiTIDSavedSearchRepository $repository
+ * @deprecated Unused since III-2779.
  */
 class SavedSearchesCommandHandler extends CommandHandler implements LoggerAwareInterface, ContextAwareInterface
 {

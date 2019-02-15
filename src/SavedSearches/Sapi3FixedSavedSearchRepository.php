@@ -2,19 +2,19 @@
 
 namespace CultuurNet\UDB3\SavedSearches;
 
-use CultuurNet\UDB3\SavedSearches\Properties\CreatedByQueryString;
+use CultuurNet\UDB3\SavedSearches\Properties\CreatorQueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface;
 use CultuurNet\UDB3\SavedSearches\ValueObject\CreatedByQueryMode;
 use ValueObjects\StringLiteral\StringLiteral;
 
 /**
- * FixedSavedSearchRepository is used for Sapi2.
+ * Sapi3FixedSavedSearchRepository is used for Sapi3.
  *
  * Class FixedSavedSearchRepository
  * @package CultuurNet\UDB3\SavedSearches
  */
-class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
+class Sapi3FixedSavedSearchRepository implements SavedSearchRepositoryInterface
 {
     /**
      * @var \CultureFeed_User
@@ -47,18 +47,18 @@ class FixedSavedSearchRepository implements SavedSearchRepositoryInterface
 
         switch ($this->createdByQueryMode->toNative()) {
             case CreatedByQueryMode::EMAIL:
-                $createdByQueryString = new CreatedByQueryString(
+                $createdByQueryString = new CreatorQueryString(
                     $this->user->mbox
                 );
                 break;
             case CreatedByQueryMode::MIXED:
-                $createdByQueryString = new CreatedByQueryString(
+                $createdByQueryString = new CreatorQueryString(
                     $this->user->mbox,
                     $this->user->id
                 );
                 break;
             default:
-                $createdByQueryString = new CreatedByQueryString(
+                $createdByQueryString = new CreatorQueryString(
                     $this->user->id
                 );
         }

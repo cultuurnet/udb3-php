@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class SubscribeToSavedSearch extends SavedSearchCommand
@@ -18,13 +19,18 @@ class SubscribeToSavedSearch extends SavedSearchCommand
     protected $query;
 
     /**
-     * {@inheritdoc}
+     * @param SapiVersion $sapiVersion
+     * @param StringLiteral $userId
      * @param StringLiteral $name
      * @param QueryString $query
      */
-    public function __construct(StringLiteral $userId, StringLiteral $name, QueryString $query)
-    {
-        parent::__construct($userId);
+    public function __construct(
+        SapiVersion $sapiVersion,
+        StringLiteral $userId,
+        StringLiteral $name,
+        QueryString $query
+    ) {
+        parent::__construct($sapiVersion, $userId);
         $this->name = $name;
         $this->query = $query;
     }

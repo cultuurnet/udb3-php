@@ -5,6 +5,9 @@ namespace CultuurNet\UDB3\SavedSearches;
 use CultuurNet\Auth\TokenCredentials;
 use CultuurNet\UDB3\UDB2\Consumer;
 
+/**
+ * @deprecated Unused since III-2779.
+ */
 class SavedSearchesServiceFactory implements SavedSearchesServiceFactoryInterface
 {
     /**

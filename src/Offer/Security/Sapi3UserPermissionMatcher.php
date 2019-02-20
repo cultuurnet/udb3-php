@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
-use CultuurNet\UDB3\Search\SearchServiceInterface;
+use CultuurNet\UDB3\Search\CountingSearchServiceInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
 /**
@@ -23,7 +23,7 @@ class Sapi3UserPermissionMatcher implements UserPermissionMatcherInterface
     private $searchQueryFactory;
 
     /**
-     * @var SearchServiceInterface
+     * @var CountingSearchServiceInterface
      */
     private $searchService;
 
@@ -31,12 +31,12 @@ class Sapi3UserPermissionMatcher implements UserPermissionMatcherInterface
      * ConstraintsOfferFilter constructor.
      * @param UserConstraintsReadRepositoryInterface $userConstraintsReadRepository
      * @param SearchQueryFactoryInterface $searchQueryFactory
-     * @param SearchServiceInterface $searchService
+     * @param CountingSearchServiceInterface $searchService
      */
     public function __construct(
         UserConstraintsReadRepositoryInterface $userConstraintsReadRepository,
         SearchQueryFactoryInterface $searchQueryFactory,
-        SearchServiceInterface $searchService
+        CountingSearchServiceInterface $searchService
     ) {
         $this->userConstraintsReadRepository = $userConstraintsReadRepository;
         $this->searchQueryFactory = $searchQueryFactory;
@@ -64,8 +64,8 @@ class Sapi3UserPermissionMatcher implements UserPermissionMatcherInterface
             $offerId
         );
 
-        $results = $this->searchService->search($query->getValue());
+        $totalItems = $this->searchService->search($query->getValue());
 
-        return ($results->getTotalItems()->toNative() === 1);
+        return $totalItems === 1;
     }
 }

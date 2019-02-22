@@ -6,8 +6,8 @@ use CultuurNet\Search\Parameter\Query;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use CultuurNet\UDB3\Search\CountingSearchServiceInterface;
 use CultuurNet\UDB3\Search\Results;
-use CultuurNet\UDB3\Search\SearchServiceInterface;
 use ValueObjects\Number\Integer;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -24,7 +24,7 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
     private $searchQueryFactory;
 
     /**
-     * @var SearchServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CountingSearchServiceInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $searchService;
 
@@ -44,7 +44,7 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->searchService = $this->createMock(
-            SearchServiceInterface::class
+            CountingSearchServiceInterface::class
         );
 
         $this->sapi3UserPermissionMatcher = new Sapi3UserPermissionMatcher(
@@ -57,11 +57,11 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider totalItemsDataProvider()
-     * @param Integer $totalItems
+     * @param int $totalItems
      * @param bool $expected
      */
     public function it_does_match_offer_based_on_total_items_count_of_one(
-        Integer $totalItems,
+        int $totalItems,
         bool $expected
     ): void {
         $userId = new StringLiteral('ff085fed-8500-4dd9-8ac0-459233c642f4');
@@ -94,10 +94,7 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
             ->method('search')
             ->with($query)
             ->willReturn(
-                new Results(
-                    new OfferIdentifierCollection(),
-                    $totalItems
-                )
+                $totalItems
             );
 
         $this->assertEquals(
@@ -117,15 +114,15 @@ class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                new Integer(1),
+                1,
                 true,
             ],
             [
-                new Integer(0),
+                0,
                 false,
             ],
             [
-                new Integer(2),
+                2,
                 false,
             ],
         ];

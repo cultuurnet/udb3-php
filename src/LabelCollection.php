@@ -195,21 +195,4 @@ class LabelCollection implements \Countable
 
         return $labels;
     }
-
-    /**
-     * @return \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels
-     */
-    public function toModelLabels()
-    {
-        return new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels(
-            ...array_map(
-                function (Label $label) {
-                    return new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName((string) $label)
-                    );
-                },
-                $this->labels
-            )
-        );
-    }
 }

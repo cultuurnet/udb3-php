@@ -15,6 +15,11 @@ abstract class AbstractImportLabels extends AbstractCommand implements LabelSecu
     private $labels;
 
     /**
+     * @var Labels
+     */
+    private $labelsToKeepIfAlreadyOnOffer;
+
+    /**
      * @param string $itemId
      * @param Labels $labels
      */
@@ -22,6 +27,19 @@ abstract class AbstractImportLabels extends AbstractCommand implements LabelSecu
     {
         parent::__construct($itemId);
         $this->labels = $labels;
+        $this->labelsToKeepIfAlreadyOnOffer = new Labels();
+    }
+
+    public function withLabelsToKeepIfAlreadyOnOffer(Labels $labels): self
+    {
+        $c = clone $this;
+        $c->labelsToKeepIfAlreadyOnOffer = $labels;
+        return $c;
+    }
+
+    public function getLabelsToKeepIfAlreadyOnOffer(): Labels
+    {
+        return $this->labelsToKeepIfAlreadyOnOffer;
     }
 
     /**

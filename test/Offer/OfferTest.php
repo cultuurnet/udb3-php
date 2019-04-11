@@ -379,16 +379,24 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
         );
 
+        $labelsToKeepIfApplied = new Labels(
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('existing_label_3'),
+                true
+            )
+        );
+
         $this->scenario
             ->given([
                 new ItemCreated($itemId),
                 new LabelAdded($itemId, new Label('existing_label_1')),
                 new LabelAdded($itemId, new Label('existing_label_2')),
+                new LabelAdded($itemId, new Label('existing_label_3')),
             ])
             ->when(
-                function (Item $item) use ($labels) {
-                    $item->importLabels($labels);
-                    $item->importLabels($labels);
+                function (Item $item) use ($labels, $labelsToKeepIfApplied) {
+                    $item->importLabels($labels, $labelsToKeepIfApplied);
+                    $item->importLabels($labels, $labelsToKeepIfApplied);
                 }
             )
             ->then([

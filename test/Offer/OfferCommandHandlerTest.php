@@ -249,18 +249,29 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->itemCreated,
+                    new LabelAdded($this->id, new Label('existing1')),
+                    new LabelAdded($this->id, new Label('existing2')),
                 ]
             )
             ->when(
-                new ImportLabels(
-                    $this->id,
+                (
+                    new ImportLabels(
+                        $this->id,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('foo'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('bar'),
+                                true
+                            )
+                        )
+                    )
+                )->withLabelsToKeepIfAlreadyOnOffer(
                     new Labels(
                         new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                            new LabelName('foo'),
-                            true
-                        ),
-                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                            new LabelName('bar'),
+                            new LabelName('existing2'),
                             true
                         )
                     )
@@ -283,6 +294,7 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                     ),
                     new LabelAdded($this->id, new Label('foo')),
                     new LabelAdded($this->id, new Label('bar')),
+                    new LabelRemoved($this->id, new Label('existing1')),
                 ]
             );
     }

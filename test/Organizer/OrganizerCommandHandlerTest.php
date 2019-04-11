@@ -475,19 +475,29 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->organizerCreated,
+                    new LabelAdded($organizerId, new Label('existing1')),
+                    new LabelAdded($organizerId, new Label('existing2')),
                 ]
             )
             ->when(
-                new ImportLabels(
-                    $organizerId,
+                (
+                    new ImportLabels(
+                        $organizerId,
+                        new Labels(
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('foo'),
+                                true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('bar'),
+                                true
+                            )
+                        )
+                    )
+                )->withLabelsToKeepIfAlreadyOnOrganizer(
                     new Labels(
                         new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                            new LabelName('foo'),
-                            true
-                        ),
-                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                            new LabelName('bar'),
-                            true
+                            new LabelName('existing2')
                         )
                     )
                 )
@@ -509,6 +519,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
                     ),
                     new LabelAdded($organizerId, new Label('foo')),
                     new LabelAdded($organizerId, new Label('bar')),
+                    new LabelRemoved($organizerId, new Label('existing1')),
                 ]
             );
     }

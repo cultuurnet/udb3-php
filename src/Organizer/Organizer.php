@@ -257,19 +257,23 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     /**
      * @param Labels $labels
      */
-    public function importLabels(Labels $labels)
+    public function importLabels(Labels $labels, Labels $labelsToKeepIfAlreadyOnOrganizer)
     {
+        $convertLabelClass = function (\CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label $label) {
+            return new Label(
+                $label->getName()->toString(),
+                $label->isVisible()
+            );
+        };
+
         // Convert the imported labels to label collection.
         $importLabelsCollection = new LabelCollection(
-            array_map(
-                function (\CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label $label) {
-                    return new Label(
-                        $label->getName()->toString(),
-                        $label->isVisible()
-                    );
-                },
-                $labels->toArray()
-            )
+            array_map($convertLabelClass, $labels->toArray())
+        );
+
+        // Convert the labels to keep if already applied.
+        $keepLabelsCollection = new LabelCollection(
+            array_map($convertLabelClass, $labelsToKeepIfAlreadyOnOrganizer->toArray())
         );
 
         // What are the added labels?
@@ -307,7 +311,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         // Labels which are inside the internal state but not inside imported labels.
         // For each deleted label fire a LabelDeleted event.
         foreach ($this->labels->asArray() as $label) {
-            if (!$importLabelsCollection->contains($label)) {
+            if (!$importLabelsCollection->contains($label) && !$keepLabelsCollection->contains($label)) {
                 $this->apply(new LabelRemoved($this->actorId, $label));
             }
         }

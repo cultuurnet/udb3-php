@@ -177,6 +177,17 @@ class OrganizerTest extends AggregateRootScenarioTestCase
             )
         );
 
+        $keepIfApplied = new Labels(
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('existing_label_3'),
+                true
+            ),
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('non_existing_label_1'),
+                true
+            )
+        );
+
         $this->scenario
             ->withAggregateId($this->id)
             ->given(
@@ -184,12 +195,13 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                     $this->organizerCreatedWithUniqueWebsite,
                     new LabelAdded($this->id, new Label('existing_label_1')),
                     new LabelAdded($this->id, new Label('existing_label_2')),
+                    new LabelAdded($this->id, new Label('existing_label_3')),
                 ]
             )
             ->when(
-                function (Organizer $organizer) use ($labels) {
-                    $organizer->importLabels($labels);
-                    $organizer->importLabels($labels);
+                function (Organizer $organizer) use ($labels, $keepIfApplied) {
+                    $organizer->importLabels($labels, $keepIfApplied);
+                    $organizer->importLabels($labels, $keepIfApplied);
                 }
             )
             ->then(

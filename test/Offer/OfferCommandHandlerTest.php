@@ -265,6 +265,10 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                             new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
                                 new LabelName('bar'),
                                 true
+                            ),
+                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                                new LabelName('existing2'),
+                                true
                             )
                         )
                     )

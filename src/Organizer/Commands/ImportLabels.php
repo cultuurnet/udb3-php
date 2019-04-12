@@ -51,7 +51,18 @@ class ImportLabels extends AbstractOrganizerCommand implements AuthorizableComma
      */
     public function getLabels()
     {
-        return $this->labels;
+        $labelNamesToKeep = array_map(
+            function (Label $label) {
+                return $label->getName();
+            },
+            $this->labelsToKeepIfAlreadyOnOrganizer->toArray()
+        );
+
+        return $this->labels->filter(
+            function (Label $label) use ($labelNamesToKeep) {
+                return !in_array($label->getName(), $labelNamesToKeep);
+            }
+        );
     }
 
     /**

@@ -58,7 +58,7 @@ class ImportLabelsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $this->labels,
-            $this->importLabels->getLabels()
+            $this->importLabels->getLabelsToImport()
         );
     }
 

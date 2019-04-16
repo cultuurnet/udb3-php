@@ -249,33 +249,18 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->itemCreated,
-                    new LabelAdded($this->id, new Label('existing1')),
-                    new LabelAdded($this->id, new Label('existing2')),
                 ]
             )
             ->when(
-                (
-                    new ImportLabels(
-                        $this->id,
-                        new Labels(
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('foo'),
-                                true
-                            ),
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('bar'),
-                                true
-                            ),
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('existing2'),
-                                true
-                            )
-                        )
-                    )
-                )->withLabelsToKeepIfAlreadyOnOffer(
+                new ImportLabels(
+                    $this->id,
                     new Labels(
                         new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                            new LabelName('existing2'),
+                            new LabelName('foo'),
+                            true
+                        ),
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('bar'),
                             true
                         )
                     )
@@ -298,7 +283,42 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                     ),
                     new LabelAdded($this->id, new Label('foo')),
                     new LabelAdded($this->id, new Label('bar')),
-                    new LabelRemoved($this->id, new Label('existing1')),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_not_replace_private_labels_that_are_already_on_the_offer()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                    new LabelAdded($this->id, new Label('existing_to_be_removed')),
+                    new LabelAdded($this->id, new Label('existing_private')),
+                ]
+            )
+            ->when(
+                (
+                    new ImportLabels(
+                        $this->id,
+                        new Labels()
+                    )
+                )->withLabelsToKeepIfAlreadyOnOffer(
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('existing_private'),
+                            true
+                        )
+                    )
+                )
+            )
+            ->then(
+                [
+                    new LabelRemoved($this->id, new Label('existing_to_be_removed')),
                 ]
             );
     }

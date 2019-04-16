@@ -475,32 +475,19 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->given(
                 [
                     $this->organizerCreated,
-                    new LabelAdded($organizerId, new Label('existing1')),
-                    new LabelAdded($organizerId, new Label('existing2')),
                 ]
             )
             ->when(
-                (
-                    new ImportLabels(
-                        $organizerId,
-                        new Labels(
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('foo'),
-                                true
-                            ),
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('bar'),
-                                true
-                            ),
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('existing2')
-                            )
-                        )
-                    )
-                )->withLabelsToKeepIfAlreadyOnOrganizer(
+                new ImportLabels(
+                    $organizerId,
                     new Labels(
                         new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                            new LabelName('existing2')
+                            new LabelName('foo'),
+                            true
+                        ),
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('bar'),
+                            true
                         )
                     )
                 )
@@ -522,10 +509,47 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
                     ),
                     new LabelAdded($organizerId, new Label('foo')),
                     new LabelAdded($organizerId, new Label('bar')),
-                    new LabelRemoved($organizerId, new Label('existing1')),
                 ]
             );
     }
+
+    /**
+     * @test
+     */
+    public function it_will_not_replace_private_labels_that_are_already_on_the_organizer()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+
+        $this->scenario
+            ->withAggregateId($organizerId)
+            ->given(
+                [
+                    $this->organizerCreated,
+                    new LabelAdded($organizerId, new Label('existing_to_be_removed')),
+                    new LabelAdded($organizerId, new Label('existing_private')),
+                ]
+            )
+            ->when(
+                (
+                    new ImportLabels(
+                        $organizerId,
+                        new Labels()
+                    )
+                )->withLabelsToKeepIfAlreadyOnOrganizer(
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('existing_private')
+                        )
+                    )
+                )
+            )
+            ->then(
+                [
+                    new LabelRemoved($organizerId, new Label('existing_to_be_removed')),
+                ]
+            );
+    }
+
 
     /**
      * @test

@@ -290,6 +290,42 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_will_not_replace_private_labels_that_are_already_on_the_offer()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                    new LabelAdded($this->id, new Label('existing_to_be_removed')),
+                    new LabelAdded($this->id, new Label('existing_private')),
+                ]
+            )
+            ->when(
+                (
+                    new ImportLabels(
+                        $this->id,
+                        new Labels()
+                    )
+                )->withLabelsToKeepIfAlreadyOnOffer(
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('existing_private'),
+                            true
+                        )
+                    )
+                )
+            )
+            ->then(
+                [
+                    new LabelRemoved($this->id, new Label('existing_to_be_removed')),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
     public function it_handles_translate_title_commands_from_the_correct_namespace()
     {
         $this->scenario

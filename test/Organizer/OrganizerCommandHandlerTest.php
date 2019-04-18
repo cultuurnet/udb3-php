@@ -516,6 +516,44 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_will_not_replace_private_labels_that_are_already_on_the_organizer()
+    {
+        $organizerId = $this->organizerCreated->getOrganizerId();
+
+        $this->scenario
+            ->withAggregateId($organizerId)
+            ->given(
+                [
+                    $this->organizerCreated,
+                    new LabelAdded($organizerId, new Label('existing_to_be_removed')),
+                    new LabelAdded($organizerId, new Label('existing_private')),
+                ]
+            )
+            ->when(
+                (
+                    new ImportLabels(
+                        $organizerId,
+                        new Labels()
+                    )
+                )->withLabelsToKeepIfAlreadyOnOrganizer(
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('existing_private')
+                        )
+                    )
+                )
+            )
+            ->then(
+                [
+                    new LabelRemoved($organizerId, new Label('existing_to_be_removed')),
+                ]
+            );
+    }
+
+
+    /**
+     * @test
+     */
     public function it_handles_delete_commands()
     {
         $organizerId = $this->organizerCreated->getOrganizerId();

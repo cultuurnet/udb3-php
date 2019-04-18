@@ -189,7 +189,7 @@ class OrganizerCommandHandler implements CommandHandlerInterface
     {
         $organizer = $this->loadOrganizer($importLabels->getOrganizerId());
 
-        $organizer->importLabels($importLabels->getLabels());
+        $organizer->importLabels($importLabels->getLabels(), $importLabels->getLabelsToKeepIfAlreadyOnOrganizer());
 
         $this->organizerRepository->save($organizer);
     }

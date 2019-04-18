@@ -17,6 +17,11 @@ class ImportLabels extends AbstractOrganizerCommand implements AuthorizableComma
     private $labels;
 
     /**
+     * @var Labels
+     */
+    private $labelsToKeepIfAlreadyOnOrganizer;
+
+    /**
      * @param string $organizerId
      * @param Labels $label
      */
@@ -26,6 +31,19 @@ class ImportLabels extends AbstractOrganizerCommand implements AuthorizableComma
     ) {
         parent::__construct($organizerId);
         $this->labels = $label;
+        $this->labelsToKeepIfAlreadyOnOrganizer = new Labels();
+    }
+
+    public function withLabelsToKeepIfAlreadyOnOrganizer(Labels $labels): self
+    {
+        $c = clone $this;
+        $c->labelsToKeepIfAlreadyOnOrganizer = $labels;
+        return $c;
+    }
+
+    public function getLabelsToKeepIfAlreadyOnOrganizer(): Labels
+    {
+        return $this->labelsToKeepIfAlreadyOnOrganizer;
     }
 
     /**
@@ -33,7 +51,18 @@ class ImportLabels extends AbstractOrganizerCommand implements AuthorizableComma
      */
     public function getLabels()
     {
-        return $this->labels;
+        $labelNamesToKeep = array_map(
+            function (Label $label) {
+                return $label->getName();
+            },
+            $this->labelsToKeepIfAlreadyOnOrganizer->toArray()
+        );
+
+        return $this->labels->filter(
+            function (Label $label) use ($labelNamesToKeep) {
+                return !in_array($label->getName(), $labelNamesToKeep);
+            }
+        );
     }
 
     /**

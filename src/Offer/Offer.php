@@ -261,20 +261,25 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
 
     /**
      * @param Labels $labels
+     * @param Labels $labelsToKeepIfAlreadyOnOffer
      */
-    public function importLabels(Labels $labels)
+    public function importLabels(Labels $labels, Labels $labelsToKeepIfAlreadyOnOffer)
     {
+        $convertLabelClass = function (\CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label $label) {
+            return new Label(
+                $label->getName()->toString(),
+                $label->isVisible()
+            );
+        };
+
         // Convert the imported labels to label collection.
         $importLabelsCollection = new LabelCollection(
-            array_map(
-                function (\CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label $label) {
-                    return new Label(
-                        $label->getName()->toString(),
-                        $label->isVisible()
-                    );
-                },
-                $labels->toArray()
-            )
+            array_map($convertLabelClass, $labels->toArray())
+        );
+
+        // Convert the labels to keep if already applied.
+        $keepLabelsCollection = new LabelCollection(
+            array_map($convertLabelClass, $labelsToKeepIfAlreadyOnOffer->toArray())
         );
 
         // What are the added labels?
@@ -306,10 +311,10 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         }
 
         // What are the deleted labels?
-        // Labels which are inside the internal state but not inside imported labels.
+        // Labels which are inside the internal state but not inside imported labels or labels to keep.
         // For each deleted label fire a LabelDeleted event.
         foreach ($this->labels->asArray() as $label) {
-            if (!$importLabelsCollection->contains($label)) {
+            if (!$importLabelsCollection->contains($label) && !$keepLabelsCollection->contains($label)) {
                 $this->apply($this->createLabelRemovedEvent($label));
             }
         }

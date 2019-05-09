@@ -84,6 +84,10 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
 
         $events = array();
         while ($row = $statement->fetch()) {
+            // Drop events that do not match the aggregate type.
+            if ($row['aggregate_type'] !== $this->aggregateType) {
+                continue;
+            }
             $events[] = $this->deserializeEvent($row);
         }
 
@@ -185,7 +189,7 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
             $queryBuilder = $this->connection->createQueryBuilder();
 
             $queryBuilder->select(
-                ['uuid', 'playhead', 'metadata', 'payload', 'recorded_on']
+                ['uuid', 'playhead', 'metadata', 'payload', 'recorded_on', 'aggregate_type']
             )
                 ->from($this->tableName)
                 ->where('uuid = :uuid')

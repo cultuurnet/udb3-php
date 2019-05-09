@@ -49,7 +49,7 @@ class CdbXMLImporter
 
         $jsonLD->name = $detail->getTitle();
 
-        $jsonLD->address = array();
+        $jsonLD->address = new \stdClass();
         $cdbContact = $actor->getContactInfo();
         if ($cdbContact) {
             /** @var \CultureFeed_Cdb_Data_Address[] $addresses * */
@@ -67,7 +67,7 @@ class CdbXMLImporter
                         Country::fromNative($address->getCountry())
                     );
 
-                    $jsonLD->address[$jsonLD->mainLanguage] = $address->toJsonLd();
+                    $jsonLD->address->{$jsonLD->mainLanguage} = $address->toJsonLd();
                 }
             }
 

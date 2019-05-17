@@ -294,13 +294,31 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
+     * Data provider for it_handles_address_updated()
      */
-    public function it_handles_address_updated()
+    public function addressUpdatesDataProvider()
+    {
+        return [
+            'organizer with former address' => [
+                'currentJson' => 'organizer.json',
+                'expectedJson' => 'organizer_with_updated_address.json',
+            ],
+            'organizer without former address' => [
+                'currentJson' => 'organizer_without_address.json',
+                'expectedJson' => 'organizer_without_address_after_address_update.json',
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider addressUpdatesDataProvider
+     */
+    public function it_handles_address_updated($currentJson, $expectedJson)
     {
         $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
 
-        $this->mockGet($organizerId, 'organizer.json');
+        $this->mockGet($organizerId, $currentJson);
 
         $domainMessage = $this->createDomainMessage(
             new AddressUpdated(
@@ -314,7 +332,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->expectSave($organizerId, 'organizer_with_updated_address.json');
+        $this->expectSave($organizerId, $expectedJson);
 
         $this->projector->handle($domainMessage);
     }

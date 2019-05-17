@@ -225,21 +225,24 @@ class CdbXMLItemBaseImporter
                 continue;
             }
 
-            // Skip the base price.
-            array_shift($translatedTariffs);
+            // Skip the base price. We do not use array_shift() here, because it will not preserve keys when there are
+            // only numeric keys left.
+            reset($translatedTariffs);
+            $basePriceKey = key($translatedTariffs);
+            unset($translatedTariffs[$basePriceKey]);
 
             $tariffIndex = 0;
             foreach ($translatedTariffs as $tariffName => $tariffPrice) {
                 if (!isset($tariffs[$tariffIndex])) {
                     $tariff = new Tariff(
-                        new MultilingualString(new Language($language), new StringLiteral($tariffName)),
+                        new MultilingualString(new Language($language), new StringLiteral((string) $tariffName)),
                         Price::fromFloat($tariffPrice),
                         Currency::fromNative('EUR')
                     );
                 } else {
                     $tariff = $tariffs[$tariffIndex];
                     $name = $tariff->getName();
-                    $name = $name->withTranslation(new Language($language), new StringLiteral($tariffName));
+                    $name = $name->withTranslation(new Language($language), new StringLiteral((string) $tariffName));
                     $tariff = new Tariff(
                         $name,
                         $tariff->getPrice(),

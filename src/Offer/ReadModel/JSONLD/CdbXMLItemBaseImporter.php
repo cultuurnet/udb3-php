@@ -192,7 +192,7 @@ class CdbXMLItemBaseImporter
             $basePrice = floatval($basePrice);
         }
 
-        if (!$basePrice) {
+        if (!$basePrice || $basePrice < 0) {
             return;
         }
 

@@ -569,6 +569,37 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_handles_uncommon_numeric_price_names()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_numeric_price_names_in_price_description.cdbxml.xml');
+
+        $this->assertEquals(
+            [
+                [
+                    'category' => 'base',
+                    'name' => [
+                        'nl' => 'Basistarief',
+                        'fr' => 'Tarif de base',
+                        'en' => 'Base tarif',
+                        'de' => 'Basisrate',
+                    ],
+                    'price' => 15,
+                    'priceCurrency' => 'EUR',
+                ],
+                [
+                    'category' => 'tariff',
+                    'name' => ['nl' => '15'],
+                    'price' => 15,
+                    'priceCurrency' => 'EUR',
+                ],
+            ],
+            $jsonEvent->priceInfo
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_should_import_a_calendar_with_timestamp_without_timing()
     {
         $jsonEvent = $this->createJsonEventFromCalendarSample('event_with_timestamp_without_timing.xml');

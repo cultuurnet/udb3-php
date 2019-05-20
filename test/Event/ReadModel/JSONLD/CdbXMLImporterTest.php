@@ -544,6 +544,16 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function it_ignores_price_and_price_description_when_price_is_below_zero()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_negative_base_price.cdbxml.xml');
+
+        $this->assertObjectNotHasAttribute('priceInfo', $jsonEvent);
+    }
+
+    /**
+     * @test
+     */
     public function it_falls_back_to_price_value_without_proper_description()
     {
         $jsonEvent = $this->createJsonEventFromCdbXml('event_without_properly_formatted_price_description.cdbxml.xml');
@@ -559,6 +569,37 @@ class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
                         'de' => 'Basisrate',
                     ],
                     'price' => 12.5,
+                    'priceCurrency' => 'EUR',
+                ],
+            ],
+            $jsonEvent->priceInfo
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_uncommon_numeric_price_names()
+    {
+        $jsonEvent = $this->createJsonEventFromCdbXml('event_with_numeric_price_names_in_price_description.cdbxml.xml');
+
+        $this->assertEquals(
+            [
+                [
+                    'category' => 'base',
+                    'name' => [
+                        'nl' => 'Basistarief',
+                        'fr' => 'Tarif de base',
+                        'en' => 'Base tarif',
+                        'de' => 'Basisrate',
+                    ],
+                    'price' => 15,
+                    'priceCurrency' => 'EUR',
+                ],
+                [
+                    'category' => 'tariff',
+                    'name' => ['nl' => '15'],
+                    'price' => 15,
                     'priceCurrency' => 'EUR',
                 ],
             ],

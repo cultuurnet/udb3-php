@@ -500,6 +500,10 @@ class OrganizerLDProjector implements EventListenerInterface
             $language = $mainLanguage;
         }
 
+        if (!isset($jsonLD->address)) {
+            $jsonLD->address = new \stdClass();
+        }
+
         $jsonLD->address->{$language->getCode()} = $addressUpdated->getAddress()->toJsonLd();
 
         return $document->withBody($jsonLD);

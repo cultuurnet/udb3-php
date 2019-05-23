@@ -14,7 +14,7 @@ class NeedsModerationNarrowerTest extends \PHPUnit_Framework_TestCase
         $narrowedQuery = $narrower->narrow('address.\*.postalCode:3000');
 
         $this->assertSame(
-            '(address.\*.postalCode:3000) AND workflowStatus:READY_FOR_VALIDATION AND availableRange:[now TO *]',
+            '(address.\*.postalCode:3000) AND workflowStatus:READY_FOR_VALIDATION AND availableRange:[now TO *] AND audienceType:everyone',
             $narrowedQuery
         );
     }

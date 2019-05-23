@@ -12,6 +12,7 @@ class NeedsModerationNarrower extends EmbeddingQueryNarrower
             '(%s)',
             'workflowStatus:READY_FOR_VALIDATION',
             'availableRange:[now TO *]',
+            'audienceType:everyone',
         ];
 
         $query = implode(

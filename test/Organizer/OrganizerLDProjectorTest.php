@@ -172,6 +172,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->url = ['http://www.google.be'];
         $jsonLD->created = $this->recordedOn->toString();
         $jsonLD->creator = '28f69301-13bc-4153-a9d2-e91e89cbe156';
+        $jsonLD->workflowStatus = 'ACTIVE';
         $jsonLD->languages = ['nl'];
         $jsonLD->completedLanguages = ['nl'];
         $jsonLD->modified = $this->recordedOn->toString();
@@ -222,6 +223,7 @@ class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
         $jsonLD->name['en'] = 'some representative title';
         $jsonLD->created = $this->recordedOn->toString();
         $jsonLD->creator = '28f69301-13bc-4153-a9d2-e91e89cbe156';
+        $jsonLD->workflowStatus = 'ACTIVE';
         $jsonLD->languages = ['en'];
         $jsonLD->completedLanguages = ['en'];
         $jsonLD->modified = $this->recordedOn->toString();

@@ -14,7 +14,6 @@ use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Offer\WorkflowStatus;
 use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
@@ -139,14 +138,16 @@ class OrganizerLDProjector implements EventListenerInterface
         );
 
         $document = $this->newDocument($organizerImportedFromUDB2->getActorId());
-        $actorLd = $document->getBody();
+        $jsonLD = $document->getBody();
 
-        $actorLd = $this->cdbXMLImporter->documentWithCdbXML(
-            $actorLd,
+        $jsonLD = $this->cdbXMLImporter->documentWithCdbXML(
+            $jsonLD,
             $udb2Actor
         );
 
-        return $document->withBody($actorLd);
+        $jsonLD->workflowStatus = WorkflowStatus::ACTIVE()->getName();
+
+        return $document->withBody($jsonLD);
     }
 
     /**
@@ -188,6 +189,8 @@ class OrganizerLDProjector implements EventListenerInterface
         )->format('c');
 
         $jsonLD = $this->appendCreator($jsonLD, $domainMessage);
+
+        $jsonLD->workflowStatus = WorkflowStatus::ACTIVE()->getName();
 
         return $document->withBody($jsonLD);
     }
@@ -241,6 +244,8 @@ class OrganizerLDProjector implements EventListenerInterface
         )->format('c');
 
         $jsonLD = $this->appendCreator($jsonLD, $domainMessage);
+
+        $jsonLD->workflowStatus = WorkflowStatus::ACTIVE()->getName();
 
         return $document->withBody($jsonLD);
     }

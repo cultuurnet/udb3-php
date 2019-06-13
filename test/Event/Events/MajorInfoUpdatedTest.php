@@ -60,13 +60,6 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                     ),
                     'location' => array(
                         'cdbid' => '395fe7eb-9bac-4647-acae-316b6446a85e',
-                        'name' => 'Repeteerkot',
-                        'address' => array(
-                            'addressCountry' => 'BE',
-                            'addressLocality' => 'Zottegem',
-                            'postalCode' => '9620',
-                            'streetAddress' => 'Kerkstraat 69',
-                        ),
                     ),
                     'calendar' => array(
                         'type' => 'permanent',
@@ -81,16 +74,7 @@ class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
                     'test 456',
                     new Title('title'),
                     new EventType('bar_id', 'bar'),
-                    new Location(
-                        '395fe7eb-9bac-4647-acae-316b6446a85e',
-                        new StringLiteral('Repeteerkot'),
-                        new Address(
-                            new Street('Kerkstraat 69'),
-                            new PostalCode('9620'),
-                            new Locality('Zottegem'),
-                            Country::fromNative('BE')
-                        )
-                    ),
+                    new Location('395fe7eb-9bac-4647-acae-316b6446a85e'),
                     new Calendar(
                         CalendarType::PERMANENT()
                     ),

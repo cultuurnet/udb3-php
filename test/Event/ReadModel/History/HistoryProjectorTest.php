@@ -194,16 +194,7 @@ class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
             new Language('en'),
             new Title('Faith no More'),
             new EventType('0.50.4.0.0', 'Concert'),
-            new Location(
-                '7a59de16-6111-4658-aa6e-958ff855d14e',
-                new StringLiteral('Het Depot'),
-                new Address(
-                    new Street('Martelarenplein'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new Location('7a59de16-6111-4658-aa6e-958ff855d14e'),
             new Calendar(CalendarType::PERMANENT()),
             new Theme('1.8.1.0.0', 'Rock')
         );

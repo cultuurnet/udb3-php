@@ -193,12 +193,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $street = new Street('Kerkstraat 69');
-        $locality = new Locality('Leuven');
-        $postalCode = new PostalCode('3000');
-        $country = Country::fromNative('BE');
-        $address = new Address($street, $postalCode, $locality, $country);
-        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $location = new Location(UUID::generateAsString());
         $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
 
@@ -242,12 +237,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $street = new Street('Kerkstraat 69');
-        $locality = new Locality('Leuven');
-        $postalCode = new PostalCode('3000');
-        $country = Country::fromNative('BE');
-        $address = new Address($street, $postalCode, $locality, $country);
-        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $location = new Location(UUID::generateAsString());
         $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
 
@@ -301,16 +291,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $location = new Location(
-            UUID::generateAsString(),
-            new StringLiteral('Het Depot'),
-            new Address(
-                new Street('Martelarenplein'),
-                new PostalCode('3000'),
-                new Locality('Leuven'),
-                Country::fromNative('BE')
-            )
-        );
+        $location = new Location(UUID::generateAsString());
         $theme = null;
 
         $this->eventStore->trace();
@@ -392,12 +373,7 @@ class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
         $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $street = new Street('Kerkstraat 69');
-        $locality = new Locality('Leuven');
-        $postalCode = new PostalCode('3000');
-        $country = Country::fromNative('BE');
-        $address = new Address($street, $postalCode, $locality, $country);
-        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $location = new Location(UUID::generateAsString());
         $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
         $publicationDate = \DateTimeImmutable::createFromFormat(

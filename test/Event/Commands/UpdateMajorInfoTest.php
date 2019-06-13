@@ -28,16 +28,7 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
             'id',
             new Title('title'),
             new EventType('bar_id', 'bar'),
-            new Location(
-                '335be568-aaf0-4147-80b6-9267daafe23b',
-                new StringLiteral('Repeteerkot'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('9630'),
-                    new Locality('Zottegem'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new Location('335be568-aaf0-4147-80b6-9267daafe23b'),
             new Calendar(
                 CalendarType::PERMANENT()
             ),
@@ -53,16 +44,7 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
         $expectedId = 'id';
         $expectedTitle = new Title('title');
         $expectedEventType = new EventType('bar_id', 'bar');
-        $expectedLocation = new Location(
-            '335be568-aaf0-4147-80b6-9267daafe23b',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9630'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
+        $expectedLocation = new Location('335be568-aaf0-4147-80b6-9267daafe23b');
         $expectedCalendar = new Calendar(
             CalendarType::PERMANENT()
         );

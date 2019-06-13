@@ -16,16 +16,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_be_serialized_and_deserialized()
     {
-        $originalLocation = new Location(
-            '335be568-aaf0-4147-80b6-9267daafe23b',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9630'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
+        $originalLocation = new Location('335be568-aaf0-4147-80b6-9267daafe23b');
 
         $serializedLocation = $originalLocation->serialize();
 

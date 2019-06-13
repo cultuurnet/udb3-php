@@ -113,16 +113,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             new Language('nl'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                'd0cd4e9d-3cf1-4324-9835-2bfba63ac015',
-                new StringLiteral('Repeteerkot'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('9630'),
-                    new Locality('Zottegem'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new Location('d0cd4e9d-3cf1-4324-9835-2bfba63ac015'),
             new Calendar(CalendarType::PERMANENT())
         );
     }
@@ -136,16 +127,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $language = new Language('nl');
         $title = new Title('some representative title');
         $type = new EventType('0.50.4.0.0', 'concert');
-        $location = new Location(
-            'd0cd4e9d-3cf1-4324-9835-2bfba63ac015',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9630'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
+        $location = new Location('d0cd4e9d-3cf1-4324-9835-2bfba63ac015');
         $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = new Theme('0.1.0.1.0.1', 'blues');
         $publicationDate = new \DateTimeImmutable();
@@ -364,16 +346,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $id = '1';
         $title = new Title('foo');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $location = new Location(
-            'd0cd4e9d-3cf1-4324-9835-2bfba63ac015',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9630'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
+        $location = new Location('d0cd4e9d-3cf1-4324-9835-2bfba63ac015');
         $calendar = new Calendar(CalendarType::PERMANENT());
 
         $this->scenario

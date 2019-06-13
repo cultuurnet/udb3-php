@@ -131,16 +131,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             new Language('nl'),
             new Title('test 123'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                '395fe7eb-9bac-4647-acae-316b6446a85e',
-                new StringLiteral('Repeteerkot'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('9620'),
-                    new Locality('Zottegem'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new Location('395fe7eb-9bac-4647-acae-316b6446a85e'),
             new Calendar(
                 CalendarType::PERMANENT()
             )

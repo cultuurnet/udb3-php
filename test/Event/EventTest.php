@@ -83,16 +83,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                UUID::generateAsString(),
-                new StringLiteral('P-P-Partyzone'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new Location(UUID::generateAsString()),
             new Calendar(CalendarType::PERMANENT())
         );
     }
@@ -104,16 +95,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                UUID::generateAsString(),
-                new StringLiteral('P-P-Partyzone'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new Location(UUID::generateAsString()),
             new Calendar(CalendarType::PERMANENT())
         );
     }
@@ -125,16 +107,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                UUID::generateAsString(),
-                new StringLiteral('P-P-Partyzone'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new Location(UUID::generateAsString()),
             new Calendar(CalendarType::PERMANENT()),
             new Theme('1.8.3.1.0', 'Pop en rock')
         );
@@ -153,16 +126,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                UUID::generateAsString(),
-                new StringLiteral('P-P-Partyzone'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new Location(UUID::generateAsString()),
             new Calendar(CalendarType::PERMANENT())
         );
     }

@@ -11,49 +11,20 @@ use ValueObjects\StringLiteral\StringLiteral;
  */
 class Location implements SerializableInterface
 {
-
     /**
      * Cdbid of the connected place.
      * @var string
      */
     protected $cdbid;
 
-    /**
-     * @var StringLiteral
-     */
-    protected $name;
-
-    /**
-     * @var Address
-     */
-    protected $address;
-
-    public function __construct($cdbid, StringLiteral $name, Address $address)
+    public function __construct($cdbid)
     {
         $this->cdbid = $cdbid;
-        $this->name = $name;
-        $this->address = $address;
     }
 
     public function getCdbid()
     {
         return $this->cdbid;
-    }
-
-    /**
-     * @return StringLiteral
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return Address
-     */
-    public function getAddress()
-    {
-        return $this->address;
     }
 
     /**
@@ -63,8 +34,6 @@ class Location implements SerializableInterface
     {
         return [
           'cdbid' => $this->cdbid,
-          'name' => $this->name->toNative(),
-          'address' => $this->address->serialize(),
         ];
     }
 
@@ -73,10 +42,6 @@ class Location implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(
-            $data['cdbid'],
-            new StringLiteral($data['name']),
-            Address::deserialize($data['address'])
-        );
+        return new static($data['cdbid']);
     }
 }

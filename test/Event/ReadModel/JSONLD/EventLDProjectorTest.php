@@ -786,16 +786,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $id = 'foo';
         $title = new Title('new title');
         $eventType = new EventType('0.50.4.0.1', 'concertnew');
-        $location = new Location(
-            '395fe7eb-9bac-4647-acae-316b6446a85e',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9620'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
+        $location = new Location('395fe7eb-9bac-4647-acae-316b6446a85e');
         $calendar = new Calendar(
             CalendarType::SINGLE(),
             \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
@@ -1008,16 +999,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $title = new Title('new title');
         $eventType = new EventType('0.50.4.0.1', 'concertnew');
-        $location = new Location(
-            '395fe7eb-9bac-4647-acae-316b6446a85e',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9620'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
+        $location = new Location('395fe7eb-9bac-4647-acae-316b6446a85e');
         $calendar = new Calendar(
             CalendarType::SINGLE(),
             \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
@@ -1204,16 +1186,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                '395fe7eb-9bac-4647-acae-316b6446a85e',
-                new StringLiteral('Repeteerkot'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('9620'),
-                    new Locality('Zottegem'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new Location('395fe7eb-9bac-4647-acae-316b6446a85e'),
             $calendar,
             $theme
         );

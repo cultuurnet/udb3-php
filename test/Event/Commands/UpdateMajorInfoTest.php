@@ -2,18 +2,12 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Theme;
-use ValueObjects\Geography\Country;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +22,7 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
             'id',
             new Title('title'),
             new EventType('bar_id', 'bar'),
-            new Location('335be568-aaf0-4147-80b6-9267daafe23b'),
+            new LocationId('335be568-aaf0-4147-80b6-9267daafe23b'),
             new Calendar(
                 CalendarType::PERMANENT()
             ),
@@ -44,7 +38,7 @@ class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
         $expectedId = 'id';
         $expectedTitle = new Title('title');
         $expectedEventType = new EventType('bar_id', 'bar');
-        $expectedLocation = new Location('335be568-aaf0-4147-80b6-9267daafe23b');
+        $expectedLocation = new LocationId('335be568-aaf0-4147-80b6-9267daafe23b');
         $expectedCalendar = new Calendar(
             CalendarType::PERMANENT()
         );

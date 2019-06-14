@@ -4,10 +4,6 @@ namespace CultuurNet\UDB3\Event\ReadModel\Permission;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
@@ -16,10 +12,9 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Title;
-use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class ProjectorTest extends \PHPUnit_Framework_TestCase
@@ -131,7 +126,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
             new Language('nl'),
             new Title('test 123'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location('395fe7eb-9bac-4647-acae-316b6446a85e'),
+            new LocationId('395fe7eb-9bac-4647-acae-316b6446a85e'),
             new Calendar(
                 CalendarType::PERMANENT()
             )

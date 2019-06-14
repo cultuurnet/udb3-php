@@ -11,10 +11,6 @@ use CultureFeed_Cdb_Data_File;
 use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;
 use CultuurNet\Geocoding\Coordinate\Longitude;
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
@@ -42,7 +38,6 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
@@ -62,8 +57,6 @@ use CultuurNet\UDB3\Title;
 use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 use Symfony\Component\Serializer\Serializer;
-use ValueObjects\Geography\Country;
-use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
 class EventLDProjectorTest extends OfferLDProjectorTestBase
@@ -786,7 +779,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $id = 'foo';
         $title = new Title('new title');
         $eventType = new EventType('0.50.4.0.1', 'concertnew');
-        $location = new Location('395fe7eb-9bac-4647-acae-316b6446a85e');
+        $location = new LocationId('395fe7eb-9bac-4647-acae-316b6446a85e');
         $calendar = new Calendar(
             CalendarType::SINGLE(),
             \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
@@ -999,7 +992,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $title = new Title('new title');
         $eventType = new EventType('0.50.4.0.1', 'concertnew');
-        $location = new Location('395fe7eb-9bac-4647-acae-316b6446a85e');
+        $location = new LocationId('395fe7eb-9bac-4647-acae-316b6446a85e');
         $calendar = new Calendar(
             CalendarType::SINGLE(),
             \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
@@ -1186,7 +1179,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location('395fe7eb-9bac-4647-acae-316b6446a85e'),
+            new LocationId('395fe7eb-9bac-4647-acae-316b6446a85e'),
             $calendar,
             $theme
         );

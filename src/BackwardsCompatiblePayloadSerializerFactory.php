@@ -70,7 +70,18 @@ class BackwardsCompatiblePayloadSerializerFactory
         $payloadManipulatingSerializer->manipulateEventsOfClass(
             'CultuurNet\UDB3\Event\Events\EventCreated',
             function (array $serializedObject) {
-                return self::addDefaultMainLanguage($serializedObject);
+                return self::removeLocationNameAndAddress(
+                    self::addDefaultMainLanguage($serializedObject)
+                );
+            }
+        );
+
+        $payloadManipulatingSerializer->manipulateEventsOfClass(
+            MajorInfoUpdated::class,
+            function (array $serializedObject) {
+                return self::removeLocationNameAndAddress(
+                    self::replaceEventIdWithItemId($serializedObject)
+                );
             }
         );
 
@@ -339,7 +350,6 @@ class BackwardsCompatiblePayloadSerializerFactory
             EventTypicalAgeRangeDeleted::class,
             EventTypicalAgeRangeUpdated::class,
             EventContactPointUpdated::class,
-            MajorInfoUpdated::class,
             EventOrganizerUpdated::class,
             EventOrganizerDeleted::class,
             EventDescriptionUpdated::class,
@@ -521,6 +531,20 @@ class BackwardsCompatiblePayloadSerializerFactory
 
             $serializedObject['payload']['label'] = $label->getName()->toNative();
             $serializedObject['payload']['visibility'] = $label->getVisibility() === Visibility::VISIBLE();
+        }
+
+        return $serializedObject;
+    }
+
+    /**
+     * @param array $serializedObject
+     * @return array
+     */
+    private static function removeLocationNameAndAddress(array $serializedObject)
+    {
+        if (isset($serializedObject['payload']['location']) && !is_string($serializedObject['payload']['location'])) {
+            $locationId = $serializedObject['payload']['location']['cdbid'];
+            $serializedObject['payload']['location'] = $locationId;
         }
 
         return $serializedObject;

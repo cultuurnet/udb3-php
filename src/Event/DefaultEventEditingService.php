@@ -14,7 +14,6 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\Offer\DefaultOfferEditingService;
@@ -71,7 +70,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         CalendarInterface $calendar,
         $theme = null
     ) {
@@ -100,7 +99,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         CalendarInterface $calendar,
         Theme $theme = null
     ) {
@@ -157,7 +156,7 @@ class DefaultEventEditingService extends DefaultOfferEditingService implements E
     /**
      * {@inheritdoc}
      */
-    public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null)
+    public function updateMajorInfo($eventId, Title $title, EventType $eventType, LocationId $location, CalendarInterface $calendar, $theme = null)
     {
         $this->guardId($eventId);
 

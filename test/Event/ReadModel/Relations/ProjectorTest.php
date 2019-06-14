@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nicolas
- * Date: 20/10/15
- * Time: 10:27
- */
 
 namespace CultuurNet\UDB3\Event\ReadModel\Relations;
 

@@ -7,7 +7,6 @@ use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\AgeRange;
@@ -114,7 +113,7 @@ interface EventEditingServiceInterface
      * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param LocationId $location
      * @param CalendarInterface $calendar
      * @param Theme/null $theme
      *
@@ -124,7 +123,7 @@ interface EventEditingServiceInterface
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         CalendarInterface $calendar,
         $theme = null
     );
@@ -133,7 +132,7 @@ interface EventEditingServiceInterface
      * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param LocationId $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @return string $eventId
@@ -142,7 +141,7 @@ interface EventEditingServiceInterface
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         CalendarInterface $calendar,
         Theme $theme = null
     );
@@ -160,13 +159,13 @@ interface EventEditingServiceInterface
      * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param LocationId $location
      * @param CalendarInterface $calendar
      * @param Theme/null $theme
      *
      * @return string $commandId
      */
-    public function updateMajorInfo($eventId, Title $title, EventType $eventType, Location $location, CalendarInterface $calendar, $theme = null);
+    public function updateMajorInfo($eventId, Title $title, EventType $eventType, LocationId $location, CalendarInterface $calendar, $theme = null);
 
     /**
      * @param string $eventId

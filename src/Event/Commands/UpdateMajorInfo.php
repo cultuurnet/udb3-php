@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -30,7 +30,7 @@ class UpdateMajorInfo extends AbstractCommand
     private $theme;
 
     /**
-     * @var Location
+     * @var LocationId
      */
     private $location;
 
@@ -44,7 +44,7 @@ class UpdateMajorInfo extends AbstractCommand
      * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param LocationId $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      */
@@ -52,7 +52,7 @@ class UpdateMajorInfo extends AbstractCommand
         $eventId,
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         CalendarInterface $calendar,
         Theme $theme = null
     ) {
@@ -89,7 +89,7 @@ class UpdateMajorInfo extends AbstractCommand
     }
 
     /**
-     * @return Location
+     * @return LocationId
      */
     public function getLocation()
     {

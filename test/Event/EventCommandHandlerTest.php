@@ -6,10 +6,6 @@ use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Description;
@@ -45,7 +41,6 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Media\MediaManager;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
@@ -56,7 +51,6 @@ use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
-use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -113,7 +107,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
             new Language('nl'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location('d0cd4e9d-3cf1-4324-9835-2bfba63ac015'),
+            new LocationId('d0cd4e9d-3cf1-4324-9835-2bfba63ac015'),
             new Calendar(CalendarType::PERMANENT())
         );
     }
@@ -127,7 +121,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $language = new Language('nl');
         $title = new Title('some representative title');
         $type = new EventType('0.50.4.0.0', 'concert');
-        $location = new Location('d0cd4e9d-3cf1-4324-9835-2bfba63ac015');
+        $location = new LocationId('d0cd4e9d-3cf1-4324-9835-2bfba63ac015');
         $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = new Theme('0.1.0.1.0.1', 'blues');
         $publicationDate = new \DateTimeImmutable();
@@ -346,7 +340,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
         $id = '1';
         $title = new Title('foo');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $location = new Location('d0cd4e9d-3cf1-4324-9835-2bfba63ac015');
+        $location = new LocationId('d0cd4e9d-3cf1-4324-9835-2bfba63ac015');
         $calendar = new Calendar(CalendarType::PERMANENT());
 
         $this->scenario

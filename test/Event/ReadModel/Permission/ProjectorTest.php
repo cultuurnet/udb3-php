@@ -12,7 +12,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Title;
 use ValueObjects\StringLiteral\StringLiteral;

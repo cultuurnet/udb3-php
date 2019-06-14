@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 
 class LocationUpdatedTest extends \PHPUnit_Framework_TestCase
 {

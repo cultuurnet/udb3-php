@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Location;
+namespace CultuurNet\UDB3\Event\ValueObjects;
 
 class LocationIdTest extends \PHPUnit_Framework_TestCase
 {

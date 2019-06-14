@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 

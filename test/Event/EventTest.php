@@ -31,7 +31,7 @@ use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;

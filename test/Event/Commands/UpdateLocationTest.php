@@ -3,7 +3,7 @@
 namespace Event\Commands;
 
 use CultuurNet\UDB3\Event\Commands\UpdateLocation;
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 
 class UpdateLocationTest extends \PHPUnit_Framework_TestCase
 {

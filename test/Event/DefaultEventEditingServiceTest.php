@@ -25,7 +25,7 @@ use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use ValueObjects\Identity\UUID;

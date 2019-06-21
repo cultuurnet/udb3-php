@@ -114,7 +114,7 @@ class Projector implements EventListenerInterface
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
     {
         $eventId = $majorInfoUpdated->getItemId();
-        $cdbId = $majorInfoUpdated->getLocation()->getCdbid();
+        $cdbId = $majorInfoUpdated->getLocation()->toNative();
         $this->repository->storePlace($eventId, $cdbId);
     }
 

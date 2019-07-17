@@ -69,15 +69,12 @@ class ImageUploaderService implements ImageUploaderInterface
         $this->maxFileSize = $maxFileSize;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function upload(
         UploadedFile $file,
         StringLiteral $description,
         StringLiteral $copyrightHolder,
         Language $language
-    ) {
+    ): UUID {
         if (!$file->isValid()) {
             throw new \InvalidArgumentException('The file did not upload correctly.');
         }
@@ -106,7 +103,7 @@ class ImageUploaderService implements ImageUploaderInterface
         $this->filesystem->writeStream($destination, $stream);
         fclose($stream);
 
-        $jobId = $this->commandBus->dispatch(
+        $this->commandBus->dispatch(
             new UploadImage(
                 $fileId,
                 $mimeType,
@@ -117,10 +114,7 @@ class ImageUploaderService implements ImageUploaderInterface
             )
         );
 
-        return new ImageUploadResult(
-            $fileId,
-            $jobId
-        );
+        return $fileId;
     }
 
     private function guardFileSizeLimit(UploadedFile $file)

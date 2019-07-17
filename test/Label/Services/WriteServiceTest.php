@@ -17,8 +17,6 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 class WriteServiceTest extends \PHPUnit_Framework_TestCase
 {
-    const COMMAND_ID = 'commandId';
-
     /**
      * @var UUID
      */
@@ -28,11 +26,6 @@ class WriteServiceTest extends \PHPUnit_Framework_TestCase
      * @var Create
      */
     private $create;
-
-    /**
-     * @var WriteResult
-     */
-    private $expectedWriteResult;
 
     /**
      * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -60,16 +53,11 @@ class WriteServiceTest extends \PHPUnit_Framework_TestCase
             Privacy::PRIVACY_PRIVATE()
         );
 
-        $this->expectedWriteResult = new WriteResult(
-            new StringLiteral(self::COMMAND_ID),
-            $this->uuid
-        );
-
         $this->commandBus = $this->createMock(CommandBusInterface::class);
-        $this->mockDispatch();
 
         $this->uuidGenerator = $this->createMock(UuidGeneratorInterface::class);
-        $this->mockGenerate();
+        $this->uuidGenerator->method('generate')
+            ->willReturn($this->create->getUuid()->toNative());
 
         $this->writeService = new WriteService(
             $this->commandBus,
@@ -86,25 +74,13 @@ class WriteServiceTest extends \PHPUnit_Framework_TestCase
             ->method('dispatch')
             ->with($this->create);
 
-        $this->writeService->create(
-            $this->create->getName(),
-            $this->create->getVisibility(),
-            $this->create->getPrivacy()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_write_result_for_create()
-    {
-        $writeResult = $this->writeService->create(
+        $uuid = $this->writeService->create(
             $this->create->getName(),
             $this->create->getVisibility(),
             $this->create->getPrivacy()
         );
 
-        $this->assertEquals($this->expectedWriteResult, $writeResult);
+        $this->assertEquals($this->uuid, $uuid);
     }
 
     /**
@@ -122,16 +98,6 @@ class WriteServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_returns_write_result_for_make_visible()
-    {
-        $writeResult = $this->writeService->makeVisible($this->uuid);
-
-        $this->assertEquals($this->expectedWriteResult, $writeResult);
-    }
-
-    /**
-     * @test
-     */
     public function it_calls_dispatch_with_make_invisible_command_for_make_invisible()
     {
         $this->commandBus->expects($this->once())
@@ -139,16 +105,6 @@ class WriteServiceTest extends \PHPUnit_Framework_TestCase
             ->with(new MakeInvisible($this->uuid));
 
         $this->writeService->makeInvisible($this->uuid);
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_write_result_for_make_invisible()
-    {
-        $writeResult = $this->writeService->makeInvisible($this->uuid);
-
-        $this->assertEquals($this->expectedWriteResult, $writeResult);
     }
 
     /**
@@ -166,16 +122,6 @@ class WriteServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_returns_write_result_for_make_public()
-    {
-        $writeResult = $this->writeService->makePublic($this->uuid);
-
-        $this->assertEquals($this->expectedWriteResult, $writeResult);
-    }
-
-    /**
-     * @test
-     */
     public function it_calls_dispatch_with_make_private_command_for_make_private()
     {
         $this->commandBus->expects($this->once())
@@ -183,27 +129,5 @@ class WriteServiceTest extends \PHPUnit_Framework_TestCase
             ->with(new MakePrivate($this->uuid));
 
         $this->writeService->makePrivate($this->uuid);
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_write_result_for_make_private()
-    {
-        $writeResult = $this->writeService->makePrivate($this->uuid);
-
-        $this->assertEquals($this->expectedWriteResult, $writeResult);
-    }
-
-    private function mockGenerate()
-    {
-        $this->uuidGenerator->method('generate')
-            ->willReturn($this->create->getUuid()->toNative());
-    }
-
-    private function mockDispatch()
-    {
-        $this->commandBus->method('dispatch')
-            ->willReturn(self::COMMAND_ID);
     }
 }

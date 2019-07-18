@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class WebsiteUpdatedTest extends \PHPUnit_Framework_TestCase
+class WebsiteUpdatedTest extends TestCase
 {
     /**
      * @var string

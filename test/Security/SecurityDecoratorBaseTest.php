@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SecurityDecoratorBaseTest extends \PHPUnit_Framework_TestCase
+class SecurityDecoratorBaseTest extends TestCase
 {
     /**
      * @var SecurityInterface|\PHPUnit_Framework_MockObject_MockObject

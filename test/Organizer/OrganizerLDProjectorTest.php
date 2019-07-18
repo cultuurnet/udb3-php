@@ -36,10 +36,11 @@ use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\Web\Url;
 
-class OrganizerLDProjectorTest extends \PHPUnit_Framework_TestCase
+class OrganizerLDProjectorTest extends TestCase
 {
     /**
      * @var OrganizerLDProjector

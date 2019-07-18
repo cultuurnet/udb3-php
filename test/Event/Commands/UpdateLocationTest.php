@@ -4,8 +4,9 @@ namespace Event\Commands;
 
 use CultuurNet\UDB3\Event\Commands\UpdateLocation;
 use CultuurNet\UDB3\Location\LocationId;
+use PHPUnit\Framework\TestCase;
 
-class UpdateLocationTest extends \PHPUnit_Framework_TestCase
+class UpdateLocationTest extends TestCase
 {
     /**
      * @var string

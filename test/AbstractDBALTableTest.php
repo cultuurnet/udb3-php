@@ -3,9 +3,9 @@
 namespace CultuurNet\UDB3;
 
 use PDO;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-abstract class AbstractDBALTableTest extends PHPUnit_Framework_TestCase
+abstract class AbstractDBALTableTest extends TestCase
 {
     use DBALTestConnectionTrait;
     

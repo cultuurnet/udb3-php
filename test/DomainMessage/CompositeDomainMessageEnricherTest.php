@@ -7,8 +7,9 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use PHPUnit\Framework\TestCase;
 
-class CompositeDomainMessageEnricherTest extends \PHPUnit_Framework_TestCase
+class CompositeDomainMessageEnricherTest extends TestCase
 {
     use DomainMessageTestDataTrait;
 

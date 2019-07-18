@@ -2,9 +2,6 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index;
 
-use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainMessage;
-use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
@@ -28,12 +25,13 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Domain;
 use ValueObjects\Web\Url;
 
-class ProjectorTest extends \PHPUnit_Framework_TestCase
+class ProjectorTest extends TestCase
 {
     /**
      * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject

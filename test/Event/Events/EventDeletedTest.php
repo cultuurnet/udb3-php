@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-class EventDeletedTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class EventDeletedTest extends TestCase
 {
     /**
      * @test

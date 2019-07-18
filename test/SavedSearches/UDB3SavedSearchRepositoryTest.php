@@ -7,9 +7,10 @@ use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\SavedSearches\Doctrine\SchemaConfigurator;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UDB3SavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
+class UDB3SavedSearchRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

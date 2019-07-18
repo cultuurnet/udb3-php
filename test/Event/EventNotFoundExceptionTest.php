@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event;
 
-class EventNotFoundExceptionTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class EventNotFoundExceptionTest extends TestCase
 {
     /**
      * @test

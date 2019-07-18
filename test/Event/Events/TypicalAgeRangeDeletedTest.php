@@ -3,8 +3,9 @@
 namespace test\Event\Events;
 
 use CultuurNet\UDB3\Event\Events\TypicalAgeRangeDeleted;
+use PHPUnit\Framework\TestCase;
 
-class TypicalAgeRangeDeletedTest extends \PHPUnit_Framework_TestCase
+class TypicalAgeRangeDeletedTest extends TestCase
 {
     /**
      * @test

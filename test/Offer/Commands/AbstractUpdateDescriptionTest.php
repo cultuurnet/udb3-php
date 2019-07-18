@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Language;
+use PHPUnit\Framework\TestCase;
 
-class AbstractUpdateDescriptionTest extends \PHPUnit_Framework_TestCase
+class AbstractUpdateDescriptionTest extends TestCase
 {
     /**
      * @var AbstractUpdateDescription|\PHPUnit_Framework_MockObject_MockObject

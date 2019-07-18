@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\SearchAPI2;
 
 use CultuurNet\UDB3\SearchAPI2\Filters\SearchFilterInterface;
+use PHPUnit\Framework\TestCase;
 
-class FilteredSearchServiceTest extends \PHPUnit_Framework_TestCase
+class FilteredSearchServiceTest extends TestCase
 {
     /**
      * @var SearchServiceInterface|\PHPUnit_Framework_MockObject_MockObject

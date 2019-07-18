@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Offer\Item\Events\ContactPointUpdated;
+use PHPUnit\Framework\TestCase;
 
-class AbstractContactPointUpdatedTest extends \PHPUnit_Framework_TestCase
+class AbstractContactPointUpdatedTest extends TestCase
 {
     /**
      * @var AbstractContactPointUpdated

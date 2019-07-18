@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\Deserializer\MissingValueException;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class DescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class DescriptionJSONDeserializerTest extends TestCase
 {
     /**
      * @var DescriptionJSONDeserializer

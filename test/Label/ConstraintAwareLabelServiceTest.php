@@ -12,9 +12,10 @@ use CultuurNet\UDB3\Label\Events\Created;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class ConstraintAwareLabelServiceTest extends \PHPUnit_Framework_TestCase
+class ConstraintAwareLabelServiceTest extends TestCase
 {
     /**
      * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject

@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
-class AbstractUpdateTypicalAgeRangeTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AbstractUpdateTypicalAgeRangeTest extends TestCase
 {
     /**
      * @var AbstractUpdateTypicalAgeRange|\PHPUnit_Framework_MockObject_MockObject

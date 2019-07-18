@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3;
 
-class LabelTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class LabelTest extends TestCase
 {
     /**
      * @test

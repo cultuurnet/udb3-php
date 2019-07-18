@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Variations\Command\ValidationException;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
+class IriOfferIdentifierFactoryTest extends TestCase
 {
     /**
      * @var string

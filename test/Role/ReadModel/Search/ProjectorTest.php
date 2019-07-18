@@ -13,12 +13,12 @@ use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ValueObjects\Query;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ProjectorTest extends PHPUnit_Framework_TestCase
+class ProjectorTest extends TestCase
 {
     /**
      * @var DomainMessage

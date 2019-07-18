@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Log;
 
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class ContextEnrichingLoggerTest extends \PHPUnit_Framework_TestCase
+class ContextEnrichingLoggerTest extends TestCase
 {
     /**
      * @test

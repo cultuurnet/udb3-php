@@ -23,10 +23,11 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Geography\Country;
 
-class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
+class GeoCoordinatesProcessManagerTest extends TestCase
 {
     /**
      * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject

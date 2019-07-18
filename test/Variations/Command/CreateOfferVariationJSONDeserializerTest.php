@@ -8,9 +8,10 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\Model\Properties\UrlValidator;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class CreateOfferVariationJSONDeserializerTest extends TestCase
 {
     /**
      * @var CreateOfferVariationJSONDeserializer

@@ -11,10 +11,10 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\RecordedOn;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
 
-class RelatedPlaceLDProjectorTest extends PHPUnit_Framework_TestCase
+class RelatedPlaceLDProjectorTest extends TestCase
 {
     /**
      * @var \CultuurNet\UDB3\Place\ReadModel\JSONLD\RelatedPlaceLDProjector

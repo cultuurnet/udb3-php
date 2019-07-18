@@ -19,10 +19,11 @@ use CultuurNet\UDB3\Role\Events\RoleRenamed;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Role\ValueObjects\Query;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ProjectorTest extends \PHPUnit_Framework_TestCase
+class ProjectorTest extends TestCase
 {
     /**
      * @var Query

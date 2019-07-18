@@ -10,9 +10,10 @@ use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\SearchAPI2\ResultSetPullParser;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use Guzzle\Http\Message\Response;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
+class UserPermissionMatcherTest extends TestCase
 {
     /**
      * @var UserConstraintsReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject

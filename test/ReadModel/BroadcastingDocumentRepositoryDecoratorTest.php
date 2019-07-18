@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\ReadModel;
 
 use Broadway\EventHandling\EventBusInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use PHPUnit\Framework\TestCase;
 
-class BroadcastingDocumentRepositoryDecoratorTest extends \PHPUnit_Framework_TestCase
+class BroadcastingDocumentRepositoryDecoratorTest extends TestCase
 {
     /**
      * @var EventBusInterface|\PHPUnit_Framework_MockObject_MockObject

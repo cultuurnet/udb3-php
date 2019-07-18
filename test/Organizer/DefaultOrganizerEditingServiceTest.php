@@ -26,12 +26,13 @@ use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
 use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
-class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultOrganizerEditingServiceTest extends TestCase
 {
     /**
      * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject

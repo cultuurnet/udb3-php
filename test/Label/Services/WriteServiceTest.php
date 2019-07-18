@@ -12,9 +12,10 @@ use CultuurNet\UDB3\Label\Commands\MakeVisible;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class WriteServiceTest extends \PHPUnit_Framework_TestCase
+class WriteServiceTest extends TestCase
 {
     /**
      * @var UUID

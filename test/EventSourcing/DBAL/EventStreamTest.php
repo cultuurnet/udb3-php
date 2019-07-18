@@ -11,8 +11,9 @@ use Broadway\EventStore\DBALEventStore;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use PHPUnit\Framework\TestCase;
 
-class EventStreamTest extends \PHPUnit_Framework_TestCase
+class EventStreamTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

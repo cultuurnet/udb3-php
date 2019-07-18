@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Http;
 
 use GuzzleHttp\Psr7\Request;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ApiKeyPsr7RequestAuthorizerTest extends \PHPUnit_Framework_TestCase
+class ApiKeyPsr7RequestAuthorizerTest extends TestCase
 {
     /**
      * @test

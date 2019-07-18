@@ -7,8 +7,9 @@ use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventStore\EventStoreInterface;
+use PHPUnit\Framework\TestCase;
 
-class CopyAwareEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
+class CopyAwareEventStoreDecoratorTest extends TestCase
 {
     /**
      * @var EventStoreInterface|\PHPUnit_Framework_MockObject_MockObject

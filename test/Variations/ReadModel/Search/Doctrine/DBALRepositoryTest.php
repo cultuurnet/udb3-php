@@ -7,7 +7,6 @@ namespace CultuurNet\UDB3\Variations\ReadModel\Search\Doctrine;
 
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\OfferVariation;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
@@ -15,9 +14,9 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class DBALRepositoryTest extends PHPUnit_Framework_TestCase
+class DBALRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

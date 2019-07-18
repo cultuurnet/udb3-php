@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Http;
 
 use GuzzleHttp\Psr7\Request;
+use PHPUnit\Framework\TestCase;
 
-class CompositePsr7RequestAuthorizerTest extends \PHPUnit_Framework_TestCase
+class CompositePsr7RequestAuthorizerTest extends TestCase
 {
     /**
      * @test

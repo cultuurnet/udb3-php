@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class OfferIdentifierCollectionTest extends \PHPUnit_Framework_TestCase
+class OfferIdentifierCollectionTest extends TestCase
 {
     /**
      * @test

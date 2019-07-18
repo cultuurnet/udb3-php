@@ -17,12 +17,12 @@ use CultuurNet\UDB3\Role\Events\LabelAdded;
 use CultuurNet\UDB3\Role\Events\LabelRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class RoleLabelsProjectorTest extends PHPUnit_Framework_TestCase
+class RoleLabelsProjectorTest extends TestCase
 {
     /**
      * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject

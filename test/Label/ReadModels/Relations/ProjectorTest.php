@@ -35,10 +35,11 @@ use CultuurNet\UDB3\Place\Events\LabelRemoved as LabelRemovedFromPlace;
 use CultuurNet\UDB3\Place\Events\LabelsImported as PlaceLabelsImported;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ProjectorTest extends \PHPUnit_Framework_TestCase
+class ProjectorTest extends TestCase
 {
     /**
      * @var UUID

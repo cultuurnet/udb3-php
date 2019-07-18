@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3\Place\Events;
 
-class OrganizerDeletedTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class OrganizerDeletedTest extends TestCase
 {
     public function serializationDataProvider()
     {

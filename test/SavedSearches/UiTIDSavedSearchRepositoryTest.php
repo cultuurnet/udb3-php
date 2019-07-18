@@ -7,10 +7,11 @@ namespace CultuurNet\UDB3\SavedSearches;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UiTIDSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
+class UiTIDSavedSearchRepositoryTest extends TestCase
 {
     /**
      * @var \CultureFeed_SavedSearches|\PHPUnit_Framework_MockObject_MockObject

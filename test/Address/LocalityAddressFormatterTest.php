@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\Address;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 
-class LocalityAddressFormatterTest extends \PHPUnit_Framework_TestCase
+class LocalityAddressFormatterTest extends TestCase
 {
     /**
      * @test

@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\StringFilter;
 
-abstract class StringFilterTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+abstract class StringFilterTest extends TestCase
 {
     /**
      * Name of the filter class to instantiate.

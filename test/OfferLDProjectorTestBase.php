@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Person\Age;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -22,7 +23,7 @@ use ValueObjects\Web\Url;
  * Base test  case class for testing common Offer JSON-LD projector
  * functionality.
  */
-abstract class OfferLDProjectorTestBase extends \PHPUnit_Framework_TestCase
+abstract class OfferLDProjectorTestBase extends TestCase
 {
     /**
      * @var InMemoryDocumentRepository

@@ -12,10 +12,11 @@ use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use Http\Client\Exception\HttpException;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Web\Url;
 
-class BulkLabelCommandHandlerTest extends \PHPUnit_Framework_TestCase
+class BulkLabelCommandHandlerTest extends TestCase
 {
     /**
      * @var ResultsGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject

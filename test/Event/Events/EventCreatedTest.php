@@ -15,10 +15,11 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class EventCreatedTest extends \PHPUnit_Framework_TestCase
+class EventCreatedTest extends TestCase
 {
     /**
      * @var Location

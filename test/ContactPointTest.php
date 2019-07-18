@@ -8,8 +8,9 @@ use CultuurNet\UDB3\Model\ValueObject\Web\EmailAddress;
 use CultuurNet\UDB3\Model\ValueObject\Web\EmailAddresses;
 use CultuurNet\UDB3\Model\ValueObject\Web\Url;
 use CultuurNet\UDB3\Model\ValueObject\Web\Urls;
+use PHPUnit\Framework\TestCase;
 
-class ContactPointTest extends \PHPUnit_Framework_TestCase
+class ContactPointTest extends TestCase
 {
     /**
      * @var array

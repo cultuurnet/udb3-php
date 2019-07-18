@@ -8,10 +8,11 @@ use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\SearchAPI2\ResultSetPullParser;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
 
-class ResultSetPullParserTest extends \PHPUnit_Framework_TestCase
+class ResultSetPullParserTest extends TestCase
 {
     /**
      * @var IriGeneratorInterface | \PHPUnit_Framework_MockObject_MockObject

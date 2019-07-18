@@ -7,8 +7,9 @@ namespace CultuurNet\UDB3\CommandHandling;
 
 use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\Domain\Metadata;
+use PHPUnit\Framework\TestCase;
 
-class SimpleContextAwareCommandBusTest extends \PHPUnit_Framework_TestCase
+class SimpleContextAwareCommandBusTest extends TestCase
 {
     /**
      * @var SimpleContextAwareCommandBus

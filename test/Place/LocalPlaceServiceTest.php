@@ -6,8 +6,9 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface as PlaceRelationsRepositoryInterface;
+use PHPUnit\Framework\TestCase;
 
-class LocalPlaceServiceTest extends \PHPUnit_Framework_TestCase
+class LocalPlaceServiceTest extends TestCase
 {
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject

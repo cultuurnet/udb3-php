@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\Label\ValueObjects;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 
-class LabelNameTest extends \PHPUnit_Framework_TestCase
+class LabelNameTest extends TestCase
 {
     /**
      * @dataProvider labelNameValues

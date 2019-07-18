@@ -6,8 +6,9 @@ use CultuurNet\UDB3\Event\Events\LabelAdded as EventLabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved as EventLabelRemoved;
 use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved as PlaceLabelRemoved;
+use PHPUnit\Framework\TestCase;
 
-class LabelEventIsOfEventTypeTest extends \PHPUnit_Framework_TestCase
+class LabelEventIsOfEventTypeTest extends TestCase
 {
     /**
      * @var LabelEventIsOfEventType

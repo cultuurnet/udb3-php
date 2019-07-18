@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AbstractLabelCommandTest extends \PHPUnit_Framework_TestCase
+class AbstractLabelCommandTest extends TestCase
 {
     /**
      * @var AbstractLabelCommand|\PHPUnit_Framework_MockObject_MockObject

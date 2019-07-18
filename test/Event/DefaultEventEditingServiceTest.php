@@ -33,12 +33,13 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use CultuurNet\UDB3\Title;
 
-class DefaultEventEditingServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultEventEditingServiceTest extends TestCase
 {
     /**
      * @var DefaultEventEditingService

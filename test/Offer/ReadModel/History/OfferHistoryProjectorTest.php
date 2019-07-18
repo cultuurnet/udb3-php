@@ -16,8 +16,9 @@ use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Offer\Item\ReadModel\History\ItemHistoryProjector;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 
-class OfferHistoryProjectorTest extends \PHPUnit_Framework_TestCase
+class OfferHistoryProjectorTest extends TestCase
 {
     const EVENT_ID_1 = 'a0ee7b1c-a9c1-4da1-af7e-d15496014656';
     const EVENT_ID_2 = 'a2d50a8d-5b83-4c8b-84e6-e9c0bacbb1a3';

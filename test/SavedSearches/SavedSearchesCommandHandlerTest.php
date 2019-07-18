@@ -10,10 +10,11 @@ use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Command\UnsubscribeFromSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
+class SavedSearchesCommandHandlerTest extends TestCase
 {
     /**
      * @var SavedSearches|\PHPUnit_Framework_MockObject_MockObject

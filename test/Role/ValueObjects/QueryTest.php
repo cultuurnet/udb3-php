@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Role\ValueObjects;
 
-class QueryTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class QueryTest extends TestCase
 {
     /**
      * @test

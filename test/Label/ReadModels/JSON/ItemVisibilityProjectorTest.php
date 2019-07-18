@@ -16,12 +16,13 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
+class ItemVisibilityProjectorTest extends TestCase
 {
     /**
      * @var ItemVisibilityProjector

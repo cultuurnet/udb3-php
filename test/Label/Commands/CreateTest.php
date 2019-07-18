@@ -5,9 +5,10 @@ namespace CultuurNet\UDB3\Label\Commands;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class CreateTest extends \PHPUnit_Framework_TestCase
+class CreateTest extends TestCase
 {
     /**
      * @var UUID

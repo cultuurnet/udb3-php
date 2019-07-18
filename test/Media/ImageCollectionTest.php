@@ -6,11 +6,12 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class ImageCollectionTest extends \PHPUnit_Framework_TestCase
+class ImageCollectionTest extends TestCase
 {
     /**
      * @test

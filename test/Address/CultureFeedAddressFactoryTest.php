@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\Address;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 
-class CultureFeedAddressFactoryTest extends \PHPUnit_Framework_TestCase
+class CultureFeedAddressFactoryTest extends TestCase
 {
     /**
      * @var CultureFeedAddressFactory

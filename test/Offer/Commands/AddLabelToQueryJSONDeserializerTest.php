@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\Label;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class AddLabelToQueryJSONDeserializerTest extends TestCase
 {
     /**
      * @var AddLabelToQueryJSONDeserializer

@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Offer\Events\Moderation;
 
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
+use PHPUnit\Framework\TestCase;
 
-class AbstractPublishedTest extends \PHPUnit_Framework_TestCase
+class AbstractPublishedTest extends TestCase
 {
     /**
      * @var string

@@ -5,9 +5,10 @@ namespace CultuurNet\UDB3\Security\Permission;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\UserPermissionsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\Permission\UserPermissionVoter;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UserPermissionVoterTest extends \PHPUnit_Framework_TestCase
+class UserPermissionVoterTest extends TestCase
 {
     /**
      * @var UserPermissionsReadRepositoryInterface

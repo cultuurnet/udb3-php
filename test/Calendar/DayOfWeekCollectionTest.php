@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Calendar;
 
-class DayOfWeekCollectionTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class DayOfWeekCollectionTest extends TestCase
 {
     /**
      * @var DayOfWeekCollection

@@ -1,13 +1,10 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\ReadModel\Index;
 
-use \PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class EntityTypeTest extends PHPUnit_Framework_TestCase
+class EntityTypeTest extends TestCase
 {
     /**
      * Data provider with the expected allowed values for

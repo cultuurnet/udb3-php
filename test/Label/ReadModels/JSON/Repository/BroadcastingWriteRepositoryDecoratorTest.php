@@ -5,12 +5,12 @@ namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository;
 use Broadway\EventHandling\EventBusInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class BroadcastingWriteRepositoryDecoratorTest extends PHPUnit_Framework_TestCase
+class BroadcastingWriteRepositoryDecoratorTest extends TestCase
 {
     /**
      * @var BroadcastingWriteRepositoryDecorator

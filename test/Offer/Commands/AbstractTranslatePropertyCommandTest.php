@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Language;
+use PHPUnit\Framework\TestCase;
 
-class AbstractTranslatePropertyCommandTest extends \PHPUnit_Framework_TestCase
+class AbstractTranslatePropertyCommandTest extends TestCase
 {
     /**
      * @var AbstractTranslatePropertyCommand|\PHPUnit_Framework_MockObject_MockObject

@@ -8,8 +8,9 @@ use CultuurNet\UDB3\DomainMessage\DomainMessageEnricherInterface;
 use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use PHPUnit\Framework\TestCase;
 
-class EnrichingEventListenerDecoratorTest extends \PHPUnit_Framework_TestCase
+class EnrichingEventListenerDecoratorTest extends TestCase
 {
     use DomainMessageTestDataTrait;
 

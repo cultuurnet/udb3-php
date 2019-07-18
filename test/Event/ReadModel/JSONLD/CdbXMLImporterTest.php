@@ -12,8 +12,9 @@ use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;
+use PHPUnit\Framework\TestCase;
 
-class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
+class CdbXMLImporterTest extends TestCase
 {
 
     /**

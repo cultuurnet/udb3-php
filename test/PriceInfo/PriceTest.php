@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\PriceInfo;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 
-class PriceTest extends \PHPUnit_Framework_TestCase
+class PriceTest extends TestCase
 {
     /**
      * @test

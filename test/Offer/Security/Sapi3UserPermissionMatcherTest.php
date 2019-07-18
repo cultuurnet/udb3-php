@@ -8,10 +8,11 @@ use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInte
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Search\CountingSearchServiceInterface;
 use CultuurNet\UDB3\Search\Results;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Number\Integer;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class Sapi3UserPermissionMatcherTest extends \PHPUnit_Framework_TestCase
+class Sapi3UserPermissionMatcherTest extends TestCase
 {
     /**
      * @var UserConstraintsReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject

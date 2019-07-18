@@ -5,12 +5,13 @@ namespace CultuurNet\UDB3\Search;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_Error;
 use TypeError;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
 
-class ResultsTest extends \PHPUnit_Framework_TestCase
+class ResultsTest extends TestCase
 {
     /**
      * @test

@@ -10,9 +10,10 @@ use CultuurNet\UDB3\Offer\Security\Permission\OwnerVoter;
 use CultuurNet\UDB3\Offer\Security\Permission\RoleConstraintVoter;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SecurityTest extends \PHPUnit_Framework_TestCase
+class SecurityTest extends TestCase
 {
     /**
      * @var UserIdentificationInterface|\PHPUnit_Framework_MockObject_MockObject

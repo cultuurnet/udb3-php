@@ -13,8 +13,9 @@ use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use Guzzle\Http\QueryString;
+use PHPUnit\Framework\TestCase;
 
-class DefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultSearchServiceTest extends TestCase
 {
     /**
      * @var ConsumerCredentials

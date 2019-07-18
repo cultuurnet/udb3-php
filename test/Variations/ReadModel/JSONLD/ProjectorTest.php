@@ -21,9 +21,10 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface as SearchRepositoryInterface;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class ProjectorTest extends \PHPUnit_Framework_TestCase
+class ProjectorTest extends TestCase
 {
     /**
      * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject

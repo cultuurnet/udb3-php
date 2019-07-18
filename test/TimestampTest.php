@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3;
 
 use DateTime;
 use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 
-class TimestampTest extends \PHPUnit_Framework_TestCase
+class TimestampTest extends TestCase
 {
     const START_DATE_KEY = 'startDate';
     const END_DATE_KEY = 'endDate';

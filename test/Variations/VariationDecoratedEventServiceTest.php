@@ -15,9 +15,9 @@ use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class VariationDecoratedEventServiceTest extends PHPUnit_Framework_TestCase
+class VariationDecoratedEventServiceTest extends TestCase
 {
     /**
      * @var EventServiceInterface|\PHPUnit_Framework_MockObject_MockObject

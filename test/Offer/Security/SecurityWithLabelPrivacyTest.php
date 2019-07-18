@@ -10,9 +10,10 @@ use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Mock\Commands\UpdateTitle;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
+class SecurityWithLabelPrivacyTest extends TestCase
 {
     /**
      * @var SecurityInterface|\PHPUnit_Framework_MockObject_MockObject

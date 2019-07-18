@@ -2,10 +2,10 @@
 
 namespace CultuurNet\UDB3\Role\Events;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class AbstractLabelEventTest extends PHPUnit_Framework_TestCase
+class AbstractLabelEventTest extends TestCase
 {
     /**
      * @var UUID

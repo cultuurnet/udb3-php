@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\ReadModel\Index;
 
-class EntityIriGeneratorFactoryTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class EntityIriGeneratorFactoryTest extends TestCase
 {
     private $baseUrl = 'http://hello.world';
 

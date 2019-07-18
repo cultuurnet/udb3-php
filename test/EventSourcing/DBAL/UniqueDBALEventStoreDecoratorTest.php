@@ -9,9 +9,10 @@ use Broadway\Domain\Metadata;
 use Broadway\EventStore\DBALEventStore;
 use Broadway\Serializer\SerializerInterface;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
+class UniqueDBALEventStoreDecoratorTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

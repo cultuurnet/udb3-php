@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3\Iri;
 
-class CallableIriGeneratorTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CallableIriGeneratorTest extends TestCase
 {
     public function testUsesResultOfCallable()
     {

@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Facility;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class EventFacilityResolverTest extends \PHPUnit_Framework_TestCase
+class EventFacilityResolverTest extends TestCase
 {
     /**
      * @test

@@ -8,12 +8,13 @@ use CultuurNet\UDB3\Language;
 use League\Flysystem\FilesystemInterface;
 use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
+class ImageUploaderServiceTest extends TestCase
 {
     /**
      * @var UUID

@@ -27,10 +27,11 @@ use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultOfferEditingServiceTest extends TestCase
 {
     /**
      * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject

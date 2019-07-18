@@ -6,8 +6,9 @@ use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use PHPUnit\Framework\TestCase;
 
-class OfferLocatorTest extends \PHPUnit_Framework_TestCase
+class OfferLocatorTest extends TestCase
 {
     /**
      * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject

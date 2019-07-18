@@ -9,8 +9,9 @@ use CultuurNet\UDB3\Organizer\Events\LabelAdded as OrganizerLabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved as OrganizerLabelRemoved;
 use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved as PlaceLabelRemoved;
+use PHPUnit\Framework\TestCase;
 
-class LabelEventRelationTypeResolverTest extends \PHPUnit_Framework_TestCase
+class LabelEventRelationTypeResolverTest extends TestCase
 {
     /**
      * @var LabelEventRelationTypeResolver

@@ -14,10 +14,11 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Event\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\EventUpdatedFromUDB2;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use ValueObjects\Geography\Country;
 
-class GeoCoordinatesProcessManagerTest extends \PHPUnit_Framework_TestCase
+class GeoCoordinatesProcessManagerTest extends TestCase
 {
     /**
      * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject

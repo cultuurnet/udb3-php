@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Place\Events;
 use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;
 use CultuurNet\Geocoding\Coordinate\Longitude;
+use PHPUnit\Framework\TestCase;
 
-class GeoCoordinatesUpdatedTest extends \PHPUnit_Framework_TestCase
+class GeoCoordinatesUpdatedTest extends TestCase
 {
     /**
      * @test

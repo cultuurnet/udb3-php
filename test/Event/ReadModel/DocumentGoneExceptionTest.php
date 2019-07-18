@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel;
 
-class DocumentGoneExceptionTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class DocumentGoneExceptionTest extends TestCase
 {
     /**
      * @test

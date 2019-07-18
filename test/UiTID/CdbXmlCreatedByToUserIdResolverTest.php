@@ -2,12 +2,13 @@
 
 namespace CultuurNet\UDB3\UiTID;
 
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
-class CdbXmlCreatedByToUserIdResolverTest extends \PHPUnit_Framework_TestCase
+class CdbXmlCreatedByToUserIdResolverTest extends TestCase
 {
     /**
      * @var UsersInterface|\PHPUnit_Framework_MockObject_MockObject

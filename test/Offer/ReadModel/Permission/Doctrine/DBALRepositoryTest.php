@@ -6,9 +6,10 @@
 namespace CultuurNet\UDB3\Offer\ReadModel\Permission\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
+class DBALRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

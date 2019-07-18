@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\ContactPoint;
+use PHPUnit\Framework\TestCase;
 
-class AbstractUpdateContactPointTest extends \PHPUnit_Framework_TestCase
+class AbstractUpdateContactPointTest extends TestCase
 {
     /**
      * @var AbstractUpdateContactPoint|\PHPUnit_Framework_MockObject_MockObject

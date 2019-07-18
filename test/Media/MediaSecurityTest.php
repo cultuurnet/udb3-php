@@ -8,10 +8,11 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\SecurityInterface;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class MediaSecurityTest extends \PHPUnit_Framework_TestCase
+class MediaSecurityTest extends TestCase
 {
     /**
      * @var SecurityInterface|\PHPUnit_Framework_MockObject_MockObject

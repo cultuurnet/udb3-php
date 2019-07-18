@@ -14,10 +14,11 @@ use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
 
-class CachedDefaultSearchServiceTest extends \PHPUnit_Framework_TestCase
+class CachedDefaultSearchServiceTest extends TestCase
 {
     /**
      * @var Results

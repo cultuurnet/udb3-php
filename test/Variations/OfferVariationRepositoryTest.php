@@ -15,9 +15,9 @@ use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class OfferVariationRepositoryTest extends PHPUnit_Framework_TestCase
+class OfferVariationRepositoryTest extends TestCase
 {
     /**
      * @var OfferVariationRepository

@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Variations\Model\Events;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use PHPUnit\Framework\TestCase;
 
-class DescriptionEditedTest extends \PHPUnit_Framework_TestCase
+class DescriptionEditedTest extends TestCase
 {
     /**
      * @test

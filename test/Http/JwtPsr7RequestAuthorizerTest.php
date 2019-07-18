@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Http;
 use GuzzleHttp\Psr7\Request;
 use Lcobucci\JWT\Signature;
 use Lcobucci\JWT\Token as Jwt;
+use PHPUnit\Framework\TestCase;
 
-class JwtPsr7RequestAuthorizerTest extends \PHPUnit_Framework_TestCase
+class JwtPsr7RequestAuthorizerTest extends TestCase
 {
     /**
      * @test

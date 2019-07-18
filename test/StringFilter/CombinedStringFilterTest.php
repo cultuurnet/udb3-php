@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3\StringFilter;
 
-class CombinedStringFilterTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CombinedStringFilterTest extends TestCase
 {
     /**
      * @test

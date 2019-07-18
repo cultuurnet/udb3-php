@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use PHPUnit\Framework\TestCase;
 
-class RecordedOnTest extends \PHPUnit_Framework_TestCase
+class RecordedOnTest extends TestCase
 {
     /**
      * @var RecordedOn

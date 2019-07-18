@@ -6,8 +6,9 @@
 namespace CultuurNet\UDB3\Variations\Model\Events;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use PHPUnit\Framework\TestCase;
 
-class OfferVariationEventTest extends \PHPUnit_Framework_TestCase
+class OfferVariationEventTest extends TestCase
 {
     /**
      * @test

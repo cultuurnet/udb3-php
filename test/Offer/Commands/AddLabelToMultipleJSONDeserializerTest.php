@@ -8,10 +8,11 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class AddLabelToMultipleJSONDeserializerTest extends TestCase
 {
     /**
      * @var DeserializerInterface|\PHPUnit_Framework_MockObject_MockObject

@@ -14,8 +14,9 @@ use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
+use PHPUnit\Framework\TestCase;
 
-class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultOfferVariationServiceTest extends TestCase
 {
     /**
      * @var TraceableEventStore

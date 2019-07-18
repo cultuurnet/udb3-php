@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use PHPUnit\Framework\TestCase;
 
-class CalendarUpdatedTest extends \PHPUnit_Framework_TestCase
+class CalendarUpdatedTest extends TestCase
 {
     /**
      * @var string

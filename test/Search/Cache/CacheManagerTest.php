@@ -11,9 +11,10 @@ use CultuurNet\UDB3\Event\Events\LabelAdded as EventLabelAdded;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Place\Events\LabelAdded as PlaceLabelAdded;
 use CultuurNet\UDB3\Label;
+use PHPUnit\Framework\TestCase;
 use Predis\ClientInterface;
 
-class CacheManagerTest extends \PHPUnit_Framework_TestCase
+class CacheManagerTest extends TestCase
 {
     /**
      * @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject

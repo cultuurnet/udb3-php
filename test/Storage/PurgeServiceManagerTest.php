@@ -2,10 +2,10 @@
 
 namespace CultuurNet\UDB3\Storage;
 
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
 
-class PurgeServiceManagerTest extends PHPUnit_Framework_TestCase
+class PurgeServiceManagerTest extends TestCase
 {
     /**
      * @var PurgeServiceManager

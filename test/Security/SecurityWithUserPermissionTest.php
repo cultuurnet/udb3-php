@@ -5,9 +5,10 @@ namespace CultuurNet\UDB3\Security;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\Security\Permission\PermissionVoterInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SecurityWithUserPermissionTest extends \PHPUnit_Framework_TestCase
+class SecurityWithUserPermissionTest extends TestCase
 {
     /**
      * @var SecurityInterface|\PHPUnit_Framework_MockObject_MockObject

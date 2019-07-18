@@ -23,10 +23,11 @@ use CultuurNet\UDB3\Role\RoleRepository;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Role\ValueObjects\Query;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultRoleEditingServiceTest extends TestCase
 {
     /**
      * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject

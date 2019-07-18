@@ -5,9 +5,10 @@ namespace CultuurNet\UDB3\Offer\Commands;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AbstractUpdateBookingInfoTest extends \PHPUnit_Framework_TestCase
+class AbstractUpdateBookingInfoTest extends TestCase
 {
     /**
      * @var AbstractUpdateBookingInfo|\PHPUnit_Framework_MockObject_MockObject

@@ -7,9 +7,10 @@ use CultuurNet\UDB3\SavedSearches\Command\UnsubscribeFromSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\SavedSearches\WriteModel\SavedSearchRepositoryInterface;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UDB3SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
+class UDB3SavedSearchesCommandHandlerTest extends TestCase
 {
     /**
      * @var SavedSearchRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject

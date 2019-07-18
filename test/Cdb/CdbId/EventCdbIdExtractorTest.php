@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Cdb\CdbId;
 
 use CultuurNet\UDB3\Cdb\ExternalId\ArrayMappingService;
+use PHPUnit\Framework\TestCase;
 
-class EventCdbIdExtractorTest extends \PHPUnit_Framework_TestCase
+class EventCdbIdExtractorTest extends TestCase
 {
     /**
      * @var ArrayMappingService

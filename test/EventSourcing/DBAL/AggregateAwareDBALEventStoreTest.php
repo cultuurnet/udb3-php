@@ -10,9 +10,10 @@ use Broadway\EventStore\EventStreamNotFoundException;
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class AggregateAwareDBALEventStoreTest extends \PHPUnit_Framework_TestCase
+class AggregateAwareDBALEventStoreTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
+class LocalOfferReadingServiceTest extends TestCase
 {
     /**
      * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject

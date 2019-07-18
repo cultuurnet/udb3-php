@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
+use PHPUnit\Framework\TestCase;
 
-class AbstractLabelEventTest extends \PHPUnit_Framework_TestCase
+class AbstractLabelEventTest extends TestCase
 {
     /**
      * @var AbstractLabelEvent|\PHPUnit_Framework_MockObject_MockObject

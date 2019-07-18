@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Organizer\Commands;
 
-class AbstractOrganizerCommandTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AbstractOrganizerCommandTest extends TestCase
 {
     /**
      * @var string

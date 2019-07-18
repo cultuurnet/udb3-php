@@ -3,8 +3,9 @@
 namespace test\Event\Events;
 
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
+use PHPUnit\Framework\TestCase;
 
-class EventImportedFromUDB2Test extends \PHPUnit_Framework_TestCase
+class EventImportedFromUDB2Test extends TestCase
 {
     const NS_CDBXML_3_2 = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
     const NS_CDBXML_3_3 = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';

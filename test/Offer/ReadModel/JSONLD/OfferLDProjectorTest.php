@@ -54,13 +54,14 @@ use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class OfferLDProjectorTest extends \PHPUnit_Framework_TestCase
+class OfferLDProjectorTest extends TestCase
 {
     /**
      * @var InMemoryDocumentRepository

@@ -11,8 +11,9 @@ use CultuurNet\UDB3\Event\EventNotFoundException;
 use CultuurNet\UDB3\Event\LocalEventService;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use PHPUnit\Framework\TestCase;
 
-class LocalEventServiceTest extends \PHPUnit_Framework_TestCase
+class LocalEventServiceTest extends TestCase
 {
     /**
      * @var LocalEventService

@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface;
+use PHPUnit\Framework\TestCase;
 
-class EventOrganizerRelationServiceTest extends \PHPUnit_Framework_TestCase
+class EventOrganizerRelationServiceTest extends TestCase
 {
     /**
      * @var EventEditingServiceInterface|\PHPUnit_Framework_MockObject_MockObject

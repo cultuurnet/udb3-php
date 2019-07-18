@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 
-class CdbXmlContactInfoImporterTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CdbXmlContactInfoImporterTest extends TestCase
 {
     /**
      * @var CdbXmlContactInfoImporter

@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use PHPUnit\Framework\TestCase;
 
-class EventJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
+class EventJsonDocumentLanguageAnalyzerTest extends TestCase
 {
     /**
      * @var EventJsonDocumentLanguageAnalyzer

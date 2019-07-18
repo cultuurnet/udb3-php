@@ -35,7 +35,7 @@ class CreateOfferVariationJSONDeserializerTest extends TestCase
      */
     public function it_validates_the_json()
     {
-        $this->setExpectedException(ValidationException::class, 'Invalid data');
+        $this->expectException(ValidationException::class, 'Invalid data');
 
         try {
             $this->deserializer->deserialize(new StringLiteral('{"owner": "foo"}'));

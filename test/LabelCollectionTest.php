@@ -28,7 +28,7 @@ class LabelCollectionTest extends TestCase
      */
     public function it_can_only_contain_labels($notALabel)
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         new LabelCollection(
             [

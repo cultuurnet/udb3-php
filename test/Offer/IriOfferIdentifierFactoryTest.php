@@ -31,7 +31,7 @@ class IriOfferIdentifierFactoryTest extends TestCase
      */
     public function it_throws_an_error_when_using_a_malformed_url()
     {
-        $this->setExpectedException(
+        $this->expectException(
             ValidationException::class,
             'Invalid data'
         );
@@ -46,7 +46,7 @@ class IriOfferIdentifierFactoryTest extends TestCase
      */
     public function it_throws_an_error_when_using_an_unsupported_offer_type()
     {
-        $this->setExpectedException(
+        $this->expectException(
             ValidationException::class,
             'Invalid data'
         );
@@ -65,7 +65,7 @@ class IriOfferIdentifierFactoryTest extends TestCase
             'https?://foo\.bar/(?<offer>[event|place]+)/(?<offerid>[a-zA-Z0-9\-]+)'
         );
 
-        $this->setExpectedException(
+        $this->expectException(
             \InvalidArgumentException::class,
             'Regular expression pattern should capture group named "offertype"'
         );
@@ -84,7 +84,7 @@ class IriOfferIdentifierFactoryTest extends TestCase
             'https?://foo\.bar/(?<offertype>[event|place]+)/(?<id>[a-zA-Z0-9\-]+)'
         );
 
-        $this->setExpectedException(
+        $this->expectException(
             \InvalidArgumentException::class,
             'Regular expression pattern should capture group named "offerid"'
         );

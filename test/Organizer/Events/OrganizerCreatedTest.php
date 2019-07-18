@@ -29,7 +29,7 @@ class OrganizerCreatedTest extends TestCase
         $emails = ['foo@bar.com'];
         $urls = ['http://bar.com'];
 
-        $this->setExpectedException(
+        $this->expectException(
             \InvalidArgumentException::class,
             'Argument should be of type Address, stdClass given.'
         );

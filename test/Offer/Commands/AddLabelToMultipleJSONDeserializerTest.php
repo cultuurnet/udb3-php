@@ -91,7 +91,7 @@ class AddLabelToMultipleJSONDeserializerTest extends TestCase
     {
         $json = new StringLiteral('{"offers":[]}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing value "label".'
         );
@@ -106,7 +106,7 @@ class AddLabelToMultipleJSONDeserializerTest extends TestCase
     {
         $json = new StringLiteral('{"label":"foo"}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing value "offers".'
         );

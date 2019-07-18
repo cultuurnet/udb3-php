@@ -106,7 +106,7 @@ class LabelEventRelationTypeResolverTest extends TestCase
      */
     public function it_throws_illegal_argument_for_label_events_other_then_added_or_removed()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         $dummyLabelEvent = $this->createEvent(DummyLabelEvent::class);
         $this->labelEventRelationTypeResolver->getRelationType($dummyLabelEvent);

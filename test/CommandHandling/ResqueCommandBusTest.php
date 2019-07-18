@@ -96,7 +96,7 @@ class ResqueCommandBusTest extends TestCase
         $decoratee->expects($this->once())
             ->method('isAuthorized');
 
-        $this->setExpectedException(CommandAuthorizationException::class);
+        $this->expectException(CommandAuthorizationException::class);
 
         $commandBus->dispatch($command);
     }
@@ -180,7 +180,7 @@ class ResqueCommandBusTest extends TestCase
             ->with(null)
             ->after('dispatched');
 
-        $this->setExpectedException(
+        $this->expectException(
             get_class($exception),
             $exception->getMessage()
         );

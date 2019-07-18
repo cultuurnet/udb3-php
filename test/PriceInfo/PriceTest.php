@@ -15,7 +15,7 @@ class PriceTest extends TestCase
         new Price(0);
         new Price(1050);
 
-        $this->setExpectedException(InvalidNativeArgumentException::class);
+        $this->expectException(InvalidNativeArgumentException::class);
 
         new Price(-1);
     }

@@ -22,12 +22,12 @@ class QueryStringTest extends TestCase
 
         // Valid URL query string, but without "q" parameter.
         $invalidUrlQueryString = 'a=b&c=d';
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         QueryString::fromURLQueryString($invalidUrlQueryString);
 
         // Invalid URL query string.
         $invalidUrlQueryString = 'this is not a url query string';
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         QueryString::fromURLQueryString($invalidUrlQueryString);
     }
 }

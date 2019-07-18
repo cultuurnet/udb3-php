@@ -90,7 +90,7 @@ class AggregateAwareDBALEventStoreTest extends TestCase
     {
         $uuid = new UUID();
 
-        $this->setExpectedException(
+        $this->expectException(
             EventStreamNotFoundException::class,
             sprintf(
                 'EventStream not found for aggregate with id %s',
@@ -144,7 +144,7 @@ class AggregateAwareDBALEventStoreTest extends TestCase
         );
 
         // Use of PHPUnit_Framework_Error is intended.
-        $this->setExpectedException(
+        $this->expectException(
             \PHPUnit_Framework_Error::class,
             'Object of class CultuurNet\UDB3\EventSourcing\DBAL\NonCompatibleUuid could not be converted to string'
         );

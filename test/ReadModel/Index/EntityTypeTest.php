@@ -32,7 +32,7 @@ class EntityTypeTest extends TestCase
      */
     public function it_does_not_accept_other_values()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         EntityType::getByName('foo');
     }
 

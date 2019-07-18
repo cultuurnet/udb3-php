@@ -106,7 +106,7 @@ class OfferVariationTest extends TestCase
         $eventVariation->markDeleted();
         $this->assertTrue($eventVariation->isDeleted());
 
-        $this->setExpectedException(AggregateDeletedException::class);
+        $this->expectException(AggregateDeletedException::class);
         $eventVariation->markDeleted();
     }
 

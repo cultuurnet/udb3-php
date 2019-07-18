@@ -14,7 +14,7 @@ class LabelTest extends TestCase
      */
     public function it_refuses_value_that_are_not_strings()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         new Label(null);
     }
@@ -24,7 +24,7 @@ class LabelTest extends TestCase
      */
     public function it_refuses_visible_that_is_not_a_boolean()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         new Label('keyword 1', null);
     }
@@ -34,7 +34,7 @@ class LabelTest extends TestCase
      */
     public function it_refuses_value_with_length_less_than_three()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         new Label('k');
     }
@@ -44,7 +44,7 @@ class LabelTest extends TestCase
      */
     public function it_refuses_value_with_length_longer_than_255()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         new Label(
             'turnip greens yarrow ricebean rutabaga endive cauliflower sea lettuce kohlrabi amaranth water spinach avocado daikon napa cabbage asparagus winter purslane kale celery potato scallion desert raisin horseradish spinach carrot soko Lotus root water spinach fennel'

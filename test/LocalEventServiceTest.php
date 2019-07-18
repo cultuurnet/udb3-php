@@ -76,7 +76,7 @@ class LocalEventServiceTest extends TestCase
             ->with($id)
             ->willThrowException(new AggregateNotFoundException());
 
-        $this->setExpectedException(EventNotFoundException::class, 'Event with id: ' . $id . ' not found');
+        $this->expectException(EventNotFoundException::class, 'Event with id: ' . $id . ' not found');
 
         $this->eventService->getEvent($id);
     }

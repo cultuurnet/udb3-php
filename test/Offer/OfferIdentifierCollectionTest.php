@@ -24,7 +24,7 @@ class OfferIdentifierCollectionTest extends TestCase
 
         $this->assertEquals(1, $collection->length());
 
-        $this->setExpectedException(
+        $this->expectException(
             \InvalidArgumentException::class,
             'Expected instance of CultuurNet\UDB3\Offer\IriOfferIdentifier, found stdClass instead.'
         );

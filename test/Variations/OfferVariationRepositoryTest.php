@@ -53,7 +53,7 @@ class OfferVariationRepositoryTest extends TestCase
 
         $this->repository->save($variation);
 
-        $this->setExpectedException(
+        $this->expectException(
             AggregateDeletedException::class,
             "Aggregate with id '{$id}' was deleted"
         );

@@ -149,7 +149,7 @@ class LocalOfferReadingServiceTest extends TestCase
             );
 
         // Make sure an exception is thrown when trying to load the iri.
-        $this->setExpectedException(
+        $this->expectException(
             \LogicException::class,
             'No document repository found for offer type Place.'
         );

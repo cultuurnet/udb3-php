@@ -133,7 +133,7 @@ class DefaultUrlValidatorTest extends TestCase
             ->with('https://foo-bar/event/foo-bar')
             ->willReturn($identifier);
 
-        $this->setExpectedException(
+        $this->expectException(
             ValidationException::class,
             'Invalid data.'
         );
@@ -168,7 +168,7 @@ class DefaultUrlValidatorTest extends TestCase
             ->with('https://foo-bar/place/foo-bar-place')
             ->willReturn($identifier);
 
-        $this->setExpectedException(
+        $this->expectException(
             \LogicException::class,
             'Found no repository for type Place.'
         );

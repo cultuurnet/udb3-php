@@ -33,7 +33,7 @@ class UpdateRoleRequestDeserializerTest extends TestCase
     {
         $request = $this->makeRequest();
 
-        $this->setExpectedException(MissingContentTypeException::class);
+        $this->expectException(MissingContentTypeException::class);
 
         $this->deserializer->deserialize($request, $this->roleId);
     }

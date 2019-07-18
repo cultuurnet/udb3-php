@@ -76,7 +76,7 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
             new UUID()
         );
 
-        $this->setExpectedException(UniqueConstraintViolationException::class);
+        $this->expectException(UniqueConstraintViolationException::class);
 
         $this->dbalWriteRepository->save(
             $entity2->getUuid(),
@@ -110,7 +110,7 @@ class DBALWriteRepositoryTest extends BaseDBALRepositoryTest
             new UUID()
         );
 
-        $this->setExpectedException(UniqueConstraintViolationException::class);
+        $this->expectException(UniqueConstraintViolationException::class);
 
         $this->dbalWriteRepository->save(
             $entity2->getUuid(),

@@ -43,7 +43,7 @@ class EventDeletedTest extends TestCase
      */
     public function it_throws_an_error_if_a_wrong_type_is_given()
     {
-        $this->setExpectedException(
+        $this->expectException(
             \InvalidArgumentException::class,
             'Expected itemId to be a string, received integer'
         );

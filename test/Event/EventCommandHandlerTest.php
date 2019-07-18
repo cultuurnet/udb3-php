@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
-use CultuurNet\UDB3\CommandHandling\CommandHandlerScenarioTestCase;
+use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Event\Commands\AddLabel;
 use CultuurNet\UDB3\Event\Commands\CreateEvent;

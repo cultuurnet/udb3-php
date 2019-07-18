@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\CommandHandling\CommandHandlerInterface;
-use CultuurNet\UDB3\CommandHandling\CommandHandlerScenarioTestCase;
+use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\EventStore\InMemoryEventStore;

@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-use CultuurNet\UDB3\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;

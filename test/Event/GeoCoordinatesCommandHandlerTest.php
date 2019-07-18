@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Event;
 
-use CultuurNet\UDB3\CommandHandling\CommandHandlerScenarioTestCase;
+use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\Geocoding\Coordinate\Coordinates;

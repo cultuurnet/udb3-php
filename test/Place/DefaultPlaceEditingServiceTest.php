@@ -26,6 +26,7 @@ use CultuurNet\UDB3\Place\Events\Moderation\Published;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 
@@ -38,32 +39,32 @@ class DefaultPlaceEditingServiceTest extends TestCase
     protected $placeEditingService;
 
     /**
-     * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandBusInterface|MockObject
      */
     protected $commandBus;
 
     /**
-     * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UuidGeneratorInterface|MockObject
      */
     protected $uuidGenerator;
 
     /**
-     * @var OfferCommandFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OfferCommandFactoryInterface|MockObject
      */
     protected $commandFactory;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     protected $readRepository;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     protected $writeRepository;
 
     /**
-     * @var LabelServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var LabelServiceInterface|MockObject
      */
     protected $labelService;
 

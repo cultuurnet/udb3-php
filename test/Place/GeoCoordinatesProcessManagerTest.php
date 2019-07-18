@@ -23,6 +23,7 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Geography\Country;
@@ -30,7 +31,7 @@ use ValueObjects\Geography\Country;
 class GeoCoordinatesProcessManagerTest extends TestCase
 {
     /**
-     * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandBusInterface|MockObject
      */
     private $commandBus;
 
@@ -40,7 +41,7 @@ class GeoCoordinatesProcessManagerTest extends TestCase
     private $addressFactory;
 
     /**
-     * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var LoggerInterface|MockObject
      */
     private $logger;
 
@@ -138,7 +139,7 @@ class GeoCoordinatesProcessManagerTest extends TestCase
             )
         );
 
-        /** @var CultureFeedAddressFactory|\PHPUnit_Framework_MockObject_MockObject $addressFactory */
+        /** @var CultureFeedAddressFactory|MockObject $addressFactory */
         $addressFactory = $this->createMock(CultureFeedAddressFactoryInterface::class);
 
         $processManager = new GeoCoordinatesProcessManager(

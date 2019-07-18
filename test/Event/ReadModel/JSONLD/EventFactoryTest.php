@@ -4,12 +4,13 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Event\Events\EventProjectedToJSONLD;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class EventFactoryTest extends TestCase
 {
     /**
-     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriGeneratorInterface|MockObject
      */
     private $iriGenerator;
 

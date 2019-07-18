@@ -11,6 +11,7 @@ use CultureFeed_Cdb_Data_Calendar_Timestamp as Timestamp;
 use CultureFeed_Cdb_Data_Calendar_TimestampList as TimestampList;
 use CultureFeed_Cdb_Data_Calendar_Weekscheme as WeekScheme;
 use CultuurNet\UDB3\Event\CdbXMLEventFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class EventCalendarProjectorTest extends TestCase
@@ -19,7 +20,7 @@ class EventCalendarProjectorTest extends TestCase
     const CDBXML_NAMESPACE_32 = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.2/FINAL';
 
     /**
-     * @var \CultuurNet\UDB3\Event\ReadModel\Calendar\CalendarRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CalendarRepositoryInterface|MockObject
      */
     protected $repository;
 

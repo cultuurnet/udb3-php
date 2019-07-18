@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Event\EventNotFoundException;
 use CultuurNet\UDB3\Event\LocalEventService;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class LocalEventServiceTest extends TestCase
@@ -21,22 +22,22 @@ class LocalEventServiceTest extends TestCase
     protected $eventService;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     protected $documentRepository;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     protected $eventRepository;
 
     /**
-     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriGeneratorInterface|MockObject
      */
     protected $iriGenerator;
 
     /**
-     * @var \CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface||\PHPUnit_Framework_MockObject_MockObject
+     * @var \CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface||MockObject
      */
     protected $eventRelationsRepository;
 

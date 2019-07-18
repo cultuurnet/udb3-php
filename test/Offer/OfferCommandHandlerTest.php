@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
+use CultuurNet\UDB3\CommandHandling\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use Broadway\Repository\RepositoryInterface;
@@ -51,7 +51,7 @@ use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Title;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -94,17 +94,17 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     protected $itemCreated;
 
     /**
-     * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     protected $organizerRepository;
 
     /**
-     * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     protected $labelRepository;
 
     /**
-     * @var MediaManager|\PHPUnit_Framework_MockObject_MockObject
+     * @var MediaManager|MockObject
      */
     protected $mediaManager;
 

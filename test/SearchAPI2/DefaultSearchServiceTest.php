@@ -13,6 +13,7 @@ use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use Guzzle\Http\QueryString;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class DefaultSearchServiceTest extends TestCase
@@ -33,7 +34,7 @@ class DefaultSearchServiceTest extends TestCase
     protected $baseUrl = 'http://acc.uitid.be/uitid/rest/searchv2';
 
     /**
-     * @var HttpClientFactory | \PHPUnit_Framework_MockObject_MockObject
+     * @var HttpClientFactory | MockObject
      */
     protected $clientFactory;
 

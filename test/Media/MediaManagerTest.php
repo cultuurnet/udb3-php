@@ -11,6 +11,7 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use League\Flysystem\FilesystemInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
@@ -26,17 +27,17 @@ class MediaManagerTest extends TestCase
     protected $mediaManager;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     protected $repository;
 
     /**
-     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriGeneratorInterface|MockObject
      */
     protected $iriGenerator;
 
     /**
-     * @var PathGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var PathGeneratorInterface|MockObject
      */
     protected $pathGenerator;
 
@@ -46,7 +47,7 @@ class MediaManagerTest extends TestCase
     protected $mediaDirectory = '/media';
 
     /**
-     * @var FilesystemInterface|\PHPUnit_Framework_MockObject_MockObject;
+     * @var FilesystemInterface|MockObject;
      */
     protected $filesystem;
 

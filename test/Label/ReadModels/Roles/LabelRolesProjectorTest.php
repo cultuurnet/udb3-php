@@ -9,13 +9,14 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Role\Events\LabelAdded;
 use CultuurNet\UDB3\Role\Events\LabelRemoved;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
 class LabelRolesProjectorTest extends TestCase
 {
     /**
-     * @var LabelRolesWriteRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var LabelRolesWriteRepositoryInterface|MockObject
      */
     private $labelRolesWriteRepository;
 

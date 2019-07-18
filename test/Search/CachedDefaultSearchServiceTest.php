@@ -14,6 +14,7 @@ use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
@@ -31,12 +32,12 @@ class CachedDefaultSearchServiceTest extends TestCase
     protected $searchParams;
 
     /**
-     * @var SearchServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SearchServiceInterface|MockObject
      */
     protected $searchService;
 
     /**
-     * @var Cache|\PHPUnit_Framework_MockObject_MockObject
+     * @var Cache|MockObject
      */
     protected $cache;
 

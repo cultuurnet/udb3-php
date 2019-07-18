@@ -8,6 +8,7 @@ use CultuurNet\UDB3\Language;
 use League\Flysystem\FilesystemInterface;
 use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Identity\UUID;
@@ -27,12 +28,12 @@ class ImageUploaderServiceTest extends TestCase
     protected $uploader;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|UuidGeneratorInterface
+     * @var MockObject|UuidGeneratorInterface
      */
     protected $uuidGenerator;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|FilesystemInterface
+     * @var MockObject|FilesystemInterface
      */
     protected $filesystem;
 
@@ -42,7 +43,7 @@ class ImageUploaderServiceTest extends TestCase
     protected $directory = '/uploads';
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|CommandBusInterface
+     * @var MockObject|CommandBusInterface
      */
     protected $commandBus;
 
@@ -267,7 +268,7 @@ class ImageUploaderServiceTest extends TestCase
     }
 
     /**
-     * @return UploadedFile|\PHPUnit_Framework_MockObject_MockObject
+     * @return UploadedFile|MockObject
      */
     private function getMockFile()
     {
@@ -282,7 +283,7 @@ class ImageUploaderServiceTest extends TestCase
      * @param int $imageSize
      *  Image size in bytes.
      *
-     * @return UploadedFile|\PHPUnit_Framework_MockObject_MockObject
+     * @return UploadedFile|MockObject
      */
     private function getMockImage($imageSize)
     {

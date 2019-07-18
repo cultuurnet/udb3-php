@@ -5,12 +5,13 @@ namespace CultuurNet\UDB3\EventSourcing;
 use Broadway\Domain\DomainEventStream;
 use Broadway\Domain\DomainEventStreamInterface;
 use Broadway\EventStore\EventStoreInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class AbstractEventStoreDecoratorTest extends TestCase
 {
     /**
-     * @var EventStoreInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventStoreInterface|MockObject
      */
     private $eventStore;
 

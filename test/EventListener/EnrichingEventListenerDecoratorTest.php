@@ -8,6 +8,7 @@ use CultuurNet\UDB3\DomainMessage\DomainMessageEnricherInterface;
 use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class EnrichingEventListenerDecoratorTest extends TestCase
@@ -15,12 +16,12 @@ class EnrichingEventListenerDecoratorTest extends TestCase
     use DomainMessageTestDataTrait;
 
     /**
-     * @var DomainMessageEnricherInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DomainMessageEnricherInterface|MockObject
      */
     private $enricher;
 
     /**
-     * @var EventListenerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventListenerInterface|MockObject
      */
     private $decoratee;
 

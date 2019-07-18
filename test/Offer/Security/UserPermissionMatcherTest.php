@@ -10,33 +10,34 @@ use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\SearchAPI2\ResultSetPullParser;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface;
 use Guzzle\Http\Message\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class UserPermissionMatcherTest extends TestCase
 {
     /**
-     * @var UserConstraintsReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UserConstraintsReadRepositoryInterface|MockObject
      */
     private $userConstraintsReadRepository;
 
     /**
-     * @var SearchQueryFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SearchQueryFactoryInterface|MockObject
      */
     private $searchQueryFactory;
 
     /**
-     * @var SearchServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SearchServiceInterface|MockObject
      */
     private $searchService;
 
     /**
-     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriGeneratorInterface|MockObject
      */
     private $eventIriGenerator;
 
     /**
-     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriGeneratorInterface|MockObject
      */
     private $placeIriGenerator;
 

@@ -7,6 +7,7 @@ use CultuurNet\UDB3\Cdb\ItemBaseAdapterFactory;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\EventSourcing\DomainMessageBuilder;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Domain;
@@ -14,12 +15,12 @@ use ValueObjects\Web\Domain;
 class UDB2ProjectorTest extends TestCase
 {
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     private $repository;
 
     /**
-     * @var CreatedByToUserIdResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CreatedByToUserIdResolverInterface|MockObject
      */
     private $userIdResolver;
 

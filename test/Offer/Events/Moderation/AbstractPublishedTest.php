@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Offer\Events\Moderation;
 
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class AbstractPublishedTest extends TestCase
@@ -18,7 +19,7 @@ class AbstractPublishedTest extends TestCase
     private $publicationDate;
 
     /**
-     * @var AbstractPublished|\PHPUnit_Framework_MockObject_MockObject
+     * @var AbstractPublished|MockObject
      */
     private $abstractPublished;
 

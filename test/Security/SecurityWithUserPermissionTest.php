@@ -5,28 +5,29 @@ namespace CultuurNet\UDB3\Security;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Offer\Security\Permission\PermissionVoterInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class SecurityWithUserPermissionTest extends TestCase
 {
     /**
-     * @var SecurityInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SecurityInterface|MockObject
      */
     private $security;
 
     /**
-     * @var UserIdentificationInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UserIdentificationInterface|MockObject
      */
     private $userIdentification;
 
     /**
-     * @var PermissionVoterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var PermissionVoterInterface|MockObject
      */
     private $permissionVoter;
 
     /**
-     * @var CommandFilterInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandFilterInterface|MockObject
      */
     private $commandFilter;
 
@@ -58,7 +59,7 @@ class SecurityWithUserPermissionTest extends TestCase
      */
     public function it_delegates_to_permission_voter_when_command_matches()
     {
-        /** @var AuthorizableCommandInterface|\PHPUnit_Framework_MockObject_MockObject $command */
+        /** @var AuthorizableCommandInterface|MockObject $command */
         $command = $this->createMock(AuthorizableCommandInterface::class);
         $command->expects($this->once())
             ->method('getPermission')

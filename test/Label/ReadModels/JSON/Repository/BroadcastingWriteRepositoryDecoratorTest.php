@@ -5,8 +5,8 @@ namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository;
 use Broadway\EventHandling\EventBusInterface;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -18,12 +18,12 @@ class BroadcastingWriteRepositoryDecoratorTest extends TestCase
     private $broadcastingWriteRepositoryDecorator;
 
     /**
-     * @var EventBusInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var EventBusInterface|MockObject
      */
     private $eventBus;
 
     /**
-     * @var WriteRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var WriteRepositoryInterface|MockObject
      */
     private $writeRepository;
 

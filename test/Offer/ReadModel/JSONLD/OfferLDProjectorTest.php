@@ -54,6 +54,7 @@ use CultuurNet\UDB3\RecordedOn;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use ValueObjects\Identity\UUID;
@@ -79,7 +80,7 @@ class OfferLDProjectorTest extends TestCase
     private $iriGenerator;
 
     /**
-     * @var OrganizerService|\PHPUnit_Framework_MockObject_MockObject
+     * @var OrganizerService|MockObject
      */
     protected $organizerService;
 

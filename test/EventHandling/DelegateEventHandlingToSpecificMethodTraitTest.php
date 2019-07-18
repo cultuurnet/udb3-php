@@ -10,13 +10,13 @@ use CultuurNet\UDB3\EventHandling\Mock\MockLabelRemoved;
 use CultuurNet\UDB3\EventHandling\Mock\MockLabelUpdated;
 use CultuurNet\UDB3\EventHandling\Mock\MockLDProjector;
 use CultuurNet\UDB3\EventHandling\Mock\MockTitleTranslated;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 class DelegateEventHandlingToSpecificMethodTraitTest extends TestCase
 {
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject
+     * @var MockObject
      */
     private $mockedMockLDProjector;
 

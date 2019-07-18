@@ -2,13 +2,14 @@
 
 namespace CultuurNet\UDB3\Offer\ReadModel\Permission;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class CombinedPermissionQueryTest extends TestCase
 {
     /**
-     * @var PermissionQueryInterface[]|\PHPUnit_Framework_MockObject_MockObject[]
+     * @var PermissionQueryInterface[]|MockObject[]
      */
     private $permissionQueries;
 

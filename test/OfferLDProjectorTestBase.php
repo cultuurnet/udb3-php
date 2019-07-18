@@ -13,6 +13,7 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Person\Age;
@@ -46,7 +47,7 @@ abstract class OfferLDProjectorTestBase extends TestCase
     protected $recordedOn;
 
     /**
-     * @var OrganizerService|\PHPUnit_Framework_MockObject_MockObject
+     * @var OrganizerService|MockObject
      */
     protected $organizerService;
 

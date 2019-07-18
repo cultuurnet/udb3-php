@@ -4,17 +4,18 @@ namespace CultuurNet\UDB3\ReadModel;
 
 use Broadway\EventHandling\EventBusInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class BroadcastingDocumentRepositoryDecoratorTest extends TestCase
 {
     /**
-     * @var EventBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventBusInterface|MockObject
      */
     protected $eventBus;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     protected $decoratedRepository;
 
@@ -24,7 +25,7 @@ class BroadcastingDocumentRepositoryDecoratorTest extends TestCase
     protected $repository;
 
     /**
-     * @var DocumentEventFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentEventFactory|MockObject
      */
     protected $eventFactory;
 

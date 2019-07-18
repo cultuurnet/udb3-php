@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\Deserializer\NotWellFormedException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
@@ -16,7 +17,7 @@ class IriOfferIdentifierJSONDeserializerTest extends TestCase
     private $deserializer;
 
     /**
-     * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriOfferIdentifierFactoryInterface|MockObject
      */
     private $iriOfferIdentifierFactory;
 

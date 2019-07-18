@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Role\Events\RoleDeleted;
 use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -19,7 +20,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 class UserPermissionsProjectorTest extends TestCase
 {
     /**
-     * @var UserPermissionsWriteRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UserPermissionsWriteRepositoryInterface|MockObject
      */
     private $userPermissionsWriteRepository;
 

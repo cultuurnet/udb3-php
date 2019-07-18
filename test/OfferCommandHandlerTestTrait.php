@@ -15,7 +15,7 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
 use CultuurNet\UDB3\Organizer\Organizer;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Person\Age;
@@ -29,17 +29,17 @@ use ValueObjects\Web\Url;
 trait OfferCommandHandlerTestTrait
 {
     /**
-     * @var RepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     protected $organizerRepository;
 
     /**
-     * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     protected $labelRepository;
 
     /**
-     * @var MediaManager|\PHPUnit_Framework_MockObject_MockObject
+     * @var MediaManager|MockObject
      */
     protected $mediaManager;
 

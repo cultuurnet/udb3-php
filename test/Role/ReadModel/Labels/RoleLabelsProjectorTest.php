@@ -17,20 +17,20 @@ use CultuurNet\UDB3\Role\Events\LabelAdded;
 use CultuurNet\UDB3\Role\Events\LabelRemoved;
 use CultuurNet\UDB3\Role\Events\RoleCreated;
 use CultuurNet\UDB3\Role\Events\RoleDeleted;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class RoleLabelsProjectorTest extends TestCase
 {
     /**
-     * @var ReadRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     private $labelJsonRepository;
 
     /**
-     * @var DocumentRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     private $labelRolesRepository;
 
@@ -40,7 +40,7 @@ class RoleLabelsProjectorTest extends TestCase
     private $roleLabelsProjector;
 
     /**
-     * @var DocumentRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     private $roleLabelsRepository;
 

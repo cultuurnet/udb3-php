@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\CommandAuthorizationException;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
@@ -16,7 +17,7 @@ class ResqueCommandBusTest extends TestCase
 {
 
     /**
-     * @var CommandBusInterface|ContextAwareInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandBusInterface|ContextAwareInterface|MockObject
      */
     protected $decoratedCommandBus;
 
@@ -26,7 +27,7 @@ class ResqueCommandBusTest extends TestCase
     protected $commandBus;
 
     /**
-     * @var EventDispatcherInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventDispatcherInterface|MockObject
      */
     protected $dispatcher;
 

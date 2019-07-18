@@ -11,8 +11,8 @@ use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\RecordedOn;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 class RelatedPlaceLDProjectorTest extends TestCase
 {
@@ -22,7 +22,7 @@ class RelatedPlaceLDProjectorTest extends TestCase
     protected $projector;
 
     /**
-     * @var DocumentRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     protected $documentRepository;
 
@@ -32,7 +32,7 @@ class RelatedPlaceLDProjectorTest extends TestCase
     private $organizerService;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     private $placeRelations;
 

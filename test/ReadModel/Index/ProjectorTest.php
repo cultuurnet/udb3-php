@@ -25,6 +25,7 @@ use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -34,12 +35,12 @@ use ValueObjects\Web\Url;
 class ProjectorTest extends TestCase
 {
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     private $repository;
 
     /**
-     * @var CreatedByToUserIdResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CreatedByToUserIdResolverInterface|MockObject
      */
     private $userIdResolver;
 
@@ -49,7 +50,7 @@ class ProjectorTest extends TestCase
     private $projector;
 
     /**
-     * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriOfferIdentifierFactoryInterface|MockObject
      */
     private $iriOfferIdentifierFactory;
 

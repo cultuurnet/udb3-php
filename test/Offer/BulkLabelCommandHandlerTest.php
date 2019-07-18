@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use Http\Client\Exception\HttpException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Web\Url;
@@ -19,12 +20,12 @@ use ValueObjects\Web\Url;
 class BulkLabelCommandHandlerTest extends TestCase
 {
     /**
-     * @var ResultsGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ResultsGeneratorInterface|MockObject
      */
     private $resultGenerator;
 
     /**
-     * @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var LoggerInterface|MockObject
      */
     private $logger;
 
@@ -49,17 +50,17 @@ class BulkLabelCommandHandlerTest extends TestCase
     private $offerIdentifiers;
 
     /**
-     * @var Event|\PHPUnit_Framework_MockObject_MockObject
+     * @var Event|MockObject
      */
     private $eventMock;
 
     /**
-     * @var Place|\PHPUnit_Framework_MockObject_MockObject
+     * @var Place|MockObject
      */
     private $placeMock;
 
     /**
-     * @var ExternalOfferEditingServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ExternalOfferEditingServiceInterface|MockObject
      */
     private $externalOfferEditingService;
 

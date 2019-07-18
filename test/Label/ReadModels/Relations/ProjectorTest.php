@@ -35,6 +35,7 @@ use CultuurNet\UDB3\Place\Events\LabelRemoved as LabelRemovedFromPlace;
 use CultuurNet\UDB3\Place\Events\LabelsImported as PlaceLabelsImported;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
 use CultuurNet\UDB3\Place\Events\PlaceUpdatedFromUDB2;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -57,17 +58,17 @@ class ProjectorTest extends TestCase
     private $relationId;
 
     /**
-     * @var WriteRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var WriteRepositoryInterface|MockObject
      */
     private $writeRepository;
 
     /**
-     * @var RelationsReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RelationsReadRepositoryInterface|MockObject
      */
     private $relationsReadRepository;
 
     /**
-     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     private $readRepository;
 

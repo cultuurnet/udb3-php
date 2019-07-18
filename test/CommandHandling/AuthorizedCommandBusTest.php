@@ -9,28 +9,29 @@ use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\CommandAuthorizationException;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class AuthorizedCommandBusTest extends TestCase
 {
     /**
-     * @var CommandBusInterface|ContextAwareInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandBusInterface|ContextAwareInterface|MockObject
      */
     private $decoratee;
 
     /**
-     * @var UserIdentificationInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UserIdentificationInterface|MockObject
      */
     private $userIdentification;
 
     /**
-     * @var SecurityInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SecurityInterface|MockObject
      */
     private $security;
 
     /**
-     * @var AuthorizableCommandInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var AuthorizableCommandInterface|MockObject
      */
     private $command;
 

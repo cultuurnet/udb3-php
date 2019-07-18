@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Label;
 
-use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use CultuurNet\UDB3\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Label\Events\CopyCreated;
 use CultuurNet\UDB3\Label\Events\Created;
 use CultuurNet\UDB3\Label\Events\MadeInvisible;

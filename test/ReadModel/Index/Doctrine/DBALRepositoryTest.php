@@ -10,6 +10,7 @@ use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\ReadModel\Index\EntityIriGeneratorFactoryInterface;
 use CultuurNet\UDB3\ReadModel\Index\EntityType;
 use PDO;
+use PHPUnit\Framework\MockObject\MockObject;
 use ValueObjects\Number\Integer;
 use ValueObjects\Number\Natural;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -24,12 +25,12 @@ class DBALRepositoryTest extends AbstractDBALTableTest
     protected $repository;
 
     /**
-     * @var EntityIriGeneratorFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EntityIriGeneratorFactoryInterface|MockObject
      */
     protected $iriGeneratorFactory;
 
     /**
-     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriGeneratorInterface|MockObject
      */
     protected $iriGenerator;
 

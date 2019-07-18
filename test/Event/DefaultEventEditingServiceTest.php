@@ -33,6 +33,7 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Location\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
@@ -47,37 +48,37 @@ class DefaultEventEditingServiceTest extends TestCase
     protected $eventEditingService;
 
     /**
-     * @var EventServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventServiceInterface|MockObject
      */
     protected $eventService;
 
     /**
-     * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandBusInterface|MockObject
      */
     protected $commandBus;
 
     /**
-     * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UuidGeneratorInterface|MockObject
      */
     protected $uuidGenerator;
 
     /**
-     * @var OfferCommandFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OfferCommandFactoryInterface|MockObject
      */
     protected $commandFactory;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     protected $readRepository;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     protected $writeRepository;
 
     /**
-     * @var Label\LabelServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var Label\LabelServiceInterface|MockObject
      */
     protected $labelService;
 

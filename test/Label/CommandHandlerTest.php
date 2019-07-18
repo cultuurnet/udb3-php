@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Label;
 
-use Broadway\CommandHandling\Testing\CommandHandlerScenarioTestCase;
+use CultuurNet\UDB3\CommandHandling\CommandHandlerScenarioTestCase;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventStore\EventStoreInterface;
 use CultuurNet\UDB3\Label as OfferLabel;

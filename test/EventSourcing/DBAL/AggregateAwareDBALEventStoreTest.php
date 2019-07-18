@@ -10,6 +10,7 @@ use Broadway\EventStore\EventStreamNotFoundException;
 use Broadway\Serializer\SerializerInterface;
 use Broadway\Serializer\SimpleInterfaceSerializer;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
@@ -145,7 +146,7 @@ class AggregateAwareDBALEventStoreTest extends TestCase
 
         // Use of PHPUnit_Framework_Error is intended.
         $this->expectException(
-            \PHPUnit_Framework_Error::class,
+            Exception::class,
             'Object of class CultuurNet\UDB3\EventSourcing\DBAL\NonCompatibleUuid could not be converted to string'
         );
 

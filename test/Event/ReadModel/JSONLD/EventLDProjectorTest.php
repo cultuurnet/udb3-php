@@ -581,6 +581,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             'samples/event_with_empty_keyword.cdbxml.xml'
         );
         $this->project($eventUpdatedFromUdb2, $eventUpdatedFromUdb2->getEventId());
+        
+        $this->expectNotToPerformAssertions();
     }
 
     /**

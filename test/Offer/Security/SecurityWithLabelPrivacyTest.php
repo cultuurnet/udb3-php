@@ -73,6 +73,8 @@ class SecurityWithLabelPrivacyTest extends TestCase
             ->with($offerId);
 
         $this->securityWithLabelPrivacy->allowsUpdateWithCdbXml($offerId);
+
+        $this->expectNotToPerformAssertions();
     }
 
     /**
@@ -90,6 +92,8 @@ class SecurityWithLabelPrivacyTest extends TestCase
             ->with($translateTitle);
 
         $this->securityWithLabelPrivacy->isAuthorized($translateTitle);
+
+        $this->expectNotToPerformAssertions();
     }
 
     /**

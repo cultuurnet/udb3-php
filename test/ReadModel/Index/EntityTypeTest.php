@@ -25,6 +25,7 @@ class EntityTypeTest extends TestCase
     public function it_accepts_a_limited_set_of_values($allowedValue)
     {
         EntityType::getByName($allowedValue);
+        $this->expectNotToPerformAssertions();
     }
 
     /**

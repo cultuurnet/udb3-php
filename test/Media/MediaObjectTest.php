@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Media;
 
-use CultuurNet\UDB3\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;

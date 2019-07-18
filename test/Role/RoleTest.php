@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Role;
 
-use CultuurNet\UDB3\EventSourcing\Testing\AggregateRootScenarioTestCase;
+use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\Role\Events\ConstraintAdded;
 use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;

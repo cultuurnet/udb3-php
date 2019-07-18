@@ -11,68 +11,25 @@ use ValueObjects\Web\Url;
 
 interface OrganizerEditingServiceInterface
 {
-    /**
-     * @param Language $mainLanguage
-     * @param Url $website
-     * @param Title $title
-     * @param Address|null $address
-     * @param ContactPoint|null $contactPoint
-     * @return string $organizerId
-     */
     public function create(
         Language $mainLanguage,
         Url $website,
         Title $title,
-        Address $address = null,
-        ContactPoint $contactPoint = null
-    );
+        ?Address $address = null,
+        ?ContactPoint $contactPoint = null
+    ): string;
 
-    /**
-     * @param string $organizerId
-     * @param Url $website
-     * @return mixed
-     */
-    public function updateWebsite($organizerId, Url $website);
+    public function updateWebsite(string $organizerId, Url $website): void;
 
-    /**
-     * @param string $organizerId
-     * @param Title $title
-     * @param Language $language
-     * @return mixed
-     */
-    public function updateTitle($organizerId, Title $title, Language $language);
+    public function updateTitle(string $organizerId, Title $title, Language $language): void;
 
-    /**
-     * @param string $organizerId
-     * @param Address $address
-     * @param Language $language
-     * @return mixed
-     */
-    public function updateAddress($organizerId, Address $address, Language $language);
+    public function updateAddress(string $organizerId, Address $address, Language $language): void;
 
-    /**
-     * @param string $organizerId
-     * @param ContactPoint $contactPoint
-     * @return mixed
-     */
-    public function updateContactPoint($organizerId, ContactPoint $contactPoint);
+    public function updateContactPoint(string $organizerId, ContactPoint $contactPoint): void;
 
-    /**
-     * @param string $organizerId
-     * @param Label $label
-     * @return
-     */
-    public function addLabel($organizerId, Label $label);
+    public function addLabel(string $organizerId, Label $label): void;
 
-    /**
-     * @param string $organizerId
-     * @param Label $label
-     * @return
-     */
-    public function removeLabel($organizerId, Label $label);
+    public function removeLabel(string $organizerId, Label $label): void;
 
-    /**
-     * @param $id
-     */
-    public function delete($id);
+    public function delete(string $id): void;
 }

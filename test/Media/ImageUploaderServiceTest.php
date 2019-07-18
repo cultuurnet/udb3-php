@@ -118,16 +118,13 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
             ->method('writeStream')
             ->with($expectedDestination, $this->anything());
 
-        $jobId = 'b7df66b0-b772-43db-b7c8-eb58f444817c';
         $this->commandBus
             ->expects($this->once())
-            ->method('dispatch')
-            ->willReturn($jobId);
+            ->method('dispatch');
 
-        $uploadImageResult = $this->uploader->upload($file, $description, $copyrightHolder, $language);
+        $imageId = $this->uploader->upload($file, $description, $copyrightHolder, $language);
 
-        $this->assertEquals($generatedUuid, $uploadImageResult->getImageId());
-        $this->assertEquals($jobId, $uploadImageResult->getJobId());
+        $this->assertEquals($generatedUuid, $imageId);
     }
 
     /**
@@ -259,16 +256,13 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
             ->method('writeStream')
             ->with($expectedDestination, $this->anything());
 
-        $jobId = 'b7df66b0-b772-43db-b7c8-eb58f444817c';
         $this->commandBus
             ->expects($this->once())
-            ->method('dispatch')
-            ->willReturn($jobId);
+            ->method('dispatch');
 
-        $uploadImageResult = $uploader->upload($file, $description, $copyrightHolder, $language);
+        $imageId = $uploader->upload($file, $description, $copyrightHolder, $language);
 
-        $this->assertEquals($generatedUuid, $uploadImageResult->getImageId());
-        $this->assertEquals($jobId, $uploadImageResult->getJobId());
+        $this->assertEquals($generatedUuid, $imageId);
     }
 
     /**

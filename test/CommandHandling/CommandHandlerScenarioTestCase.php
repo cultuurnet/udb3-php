@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\CommandHandling;
 
-
 use Broadway\CommandHandling\CommandHandlerInterface;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\EventHandling\SimpleEventBus;

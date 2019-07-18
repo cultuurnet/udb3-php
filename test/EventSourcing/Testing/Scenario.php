@@ -67,12 +67,16 @@ class Scenario
         foreach ($givens as $event) {
             $playhead++;
             $messages[] = DomainMessage::recordNow(
-                $this->aggregateId, $playhead, new Metadata([]), $event
+                $this->aggregateId,
+                $playhead,
+                new Metadata([]),
+                $event
             );
         }
 
         $this->aggregateRootInstance = $this->factory->create(
-            $this->aggregateRootClass, new DomainEventStream($messages)
+            $this->aggregateRootClass,
+            new DomainEventStream($messages)
         );
 
         return $this;

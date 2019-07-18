@@ -13,7 +13,6 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class WriteServiceTest extends \PHPUnit_Framework_TestCase
 {

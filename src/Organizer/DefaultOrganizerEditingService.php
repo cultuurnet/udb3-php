@@ -43,12 +43,6 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
      */
     protected $labelService;
 
-    /**
-     * @param CommandBusInterface $commandBus
-     * @param UuidGeneratorInterface $uuidGenerator
-     * @param RepositoryInterface $organizerRepository
-     * @param LabelServiceInterface $labelService
-     */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,

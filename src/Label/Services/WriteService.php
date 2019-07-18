@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Label\Services;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Label\Commands\AbstractCommand;
 use CultuurNet\UDB3\Label\Commands\Create;
 use CultuurNet\UDB3\Label\Commands\MakeInvisible;
 use CultuurNet\UDB3\Label\Commands\MakePrivate;
@@ -14,7 +13,6 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class WriteService implements WriteServiceInterface
 {

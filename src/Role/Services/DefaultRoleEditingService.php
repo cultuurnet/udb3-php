@@ -40,13 +40,6 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
      */
     private $writeRepository;
 
-    /**
-     * DefaultRoleEditingService constructor.
-     *
-     * @param CommandBusInterface $commandBus
-     * @param UuidGeneratorInterface $uuidGenerator
-     * @param RepositoryInterface $writeRepository
-     */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,

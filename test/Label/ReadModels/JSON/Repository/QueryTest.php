@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Number\Natural;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class QueryTest extends \PHPUnit_Framework_TestCase
+class QueryTest extends TestCase
 {
     const NAME = 'name';
     const USER_ID = 'userId';

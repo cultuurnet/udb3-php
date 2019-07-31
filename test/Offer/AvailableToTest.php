@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Offer;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\CalendarType;
+use PHPUnit\Framework\TestCase;
 
-class AvailableToTest extends \PHPUnit_Framework_TestCase
+class AvailableToTest extends TestCase
 {
     /**
      * @test

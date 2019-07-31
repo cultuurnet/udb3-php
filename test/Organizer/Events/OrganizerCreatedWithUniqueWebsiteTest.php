@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class OrganizerCreatedWithUniqueWebsiteTest extends \PHPUnit_Framework_TestCase
+class OrganizerCreatedWithUniqueWebsiteTest extends TestCase
 {
     /**
      * @test

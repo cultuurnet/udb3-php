@@ -8,8 +8,9 @@ namespace CultuurNet\UDB3\EventSourcing;
 use Broadway\Domain\Metadata;
 use Broadway\EventSourcing\MetadataEnrichment\MetadataEnricherInterface;
 use CultuurNet\UDB3\CommandHandling\ContextAwareInterface;
+use PHPUnit\Framework\TestCase;
 
-class ExecutionContextMetadataEnricherTest extends \PHPUnit_Framework_TestCase
+class ExecutionContextMetadataEnricherTest extends TestCase
 {
     /**
      * @var ExecutionContextMetadataEnricher

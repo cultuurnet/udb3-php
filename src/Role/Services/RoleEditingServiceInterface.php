@@ -10,101 +10,27 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 interface RoleEditingServiceInterface
 {
-    /**
-     * Create a role.
-     *
-     * @param StringLiteral $name
-     * @return string
-     */
-    public function create(StringLiteral $name);
+    public function create(StringLiteral $name): UUID;
 
-    /**
-     * Rename a role.
-     *
-     * @param UUID $uuid
-     * @param StringLiteral $name
-     * @return string
-     */
-    public function rename(UUID $uuid, StringLiteral $name);
+    public function rename(UUID $uuid, StringLiteral $name): void;
 
-    /**
-     * Add a permission to a role.
-     *
-     * @param UUID $uuid
-     * @param Permission $permission
-     * @return string
-     */
-    public function addPermission(UUID $uuid, Permission $permission);
+    public function addPermission(UUID $uuid, Permission $permission): void;
 
-    /**
-     * Remove a permission from a role.
-     *
-     * @param UUID $uuid
-     * @param Permission $permission
-     * @return string
-     */
-    public function removePermission(UUID $uuid, Permission $permission);
+    public function removePermission(UUID $uuid, Permission $permission): void;
 
-    /**
-     * @param UUID $uuid
-     * @param StringLiteral $userId
-     * @return string
-     */
-    public function addUser(UUID $uuid, StringLiteral $userId);
+    public function addUser(UUID $uuid, StringLiteral $userId): void;
 
-    /**
-     * @param UUID $uuid
-     * @param StringLiteral $userId
-     * @return string
-     */
-    public function removeUser(UUID $uuid, StringLiteral $userId);
+    public function removeUser(UUID $uuid, StringLiteral $userId): void;
 
-    /**
-     * @param UUID $uuid
-     * @param SapiVersion $sapiVersion
-     * @param Query $query
-     * @return string
-     */
-    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string;
+    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): void;
 
-    /**
-     * @param UUID $uuid
-     * @param SapiVersion $sapiVersion
-     * @param Query $query
-     * @return string
-     */
-    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string;
+    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): void;
 
-    /**
-     * @param UUID $uuid
-     * @param SapiVersion $sapiVersion
-     * @return string
-     */
-    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion): string;
+    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion): void;
 
-    /**
-     * Add a label to a role.
-     *
-     * @param UUID $uuid
-     * @param UUID $labelId
-     * @return string
-     */
-    public function addLabel(UUID $uuid, UUID $labelId);
+    public function addLabel(UUID $uuid, UUID $labelId): void;
 
-    /**
-     * Remove a label from a role.
-     *
-     * @param UUID $uuid
-     * @param UUID $labelId
-     * @return string
-     */
-    public function removeLabel(UUID $uuid, UUID $labelId);
+    public function removeLabel(UUID $uuid, UUID $labelId): void;
 
-    /**
-     * Deleting a role.
-     *
-     * @param UUID $uuid
-     * @return string
-     */
-    public function delete(UUID $uuid);
+    public function delete(UUID $uuid): void;
 }

@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Event\EventType;
+use PHPUnit\Framework\TestCase;
 
-class TypeUpdatedTest extends \PHPUnit_Framework_TestCase
+class TypeUpdatedTest extends TestCase
 {
     /**
      * @test

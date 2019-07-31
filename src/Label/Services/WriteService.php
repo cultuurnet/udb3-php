@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Label\Services;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
-use CultuurNet\UDB3\Label\Commands\AbstractCommand;
 use CultuurNet\UDB3\Label\Commands\Create;
 use CultuurNet\UDB3\Label\Commands\MakeInvisible;
 use CultuurNet\UDB3\Label\Commands\MakePrivate;
@@ -14,7 +13,6 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use ValueObjects\Identity\UUID;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class WriteService implements WriteServiceInterface
 {
@@ -28,11 +26,6 @@ class WriteService implements WriteServiceInterface
      */
     private $uuidGenerator;
 
-    /**
-     * WriteService constructor.
-     * @param CommandBusInterface $commandBus
-     * @param UuidGeneratorInterface $uuidGenerator
-     */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator
@@ -41,14 +34,11 @@ class WriteService implements WriteServiceInterface
         $this->uuidGenerator = $uuidGenerator;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function create(
         LabelName $name,
         Visibility $visibility,
         Privacy $privacy
-    ) {
+    ): UUID {
         $uuid = new UUID($this->uuidGenerator->generate());
 
         $command = new Create(
@@ -58,56 +48,28 @@ class WriteService implements WriteServiceInterface
             $privacy
         );
 
-        return $this->dispatch($command);
+        $this->commandBus->dispatch($command);
+
+        return $uuid;
     }
 
-    /**
-     * @param UUID $uuid
-     * @return WriteResult
-     */
-    public function makeVisible(UUID $uuid)
+    public function makeVisible(UUID $uuid): void
     {
-        return $this->dispatch(new MakeVisible($uuid));
+        $this->commandBus->dispatch(new MakeVisible($uuid));
     }
 
-    /**
-     * @param UUID $uuid
-     * @return WriteResult
-     */
-    public function makeInvisible(UUID $uuid)
+    public function makeInvisible(UUID $uuid): void
     {
-        return $this->dispatch(new MakeInvisible($uuid));
+        $this->commandBus->dispatch(new MakeInvisible($uuid));
     }
 
-    /**
-     * @param UUID $uuid
-     * @return WriteResult
-     */
-    public function makePublic(UUID $uuid)
+    public function makePublic(UUID $uuid): void
     {
-        return $this->dispatch(new MakePublic($uuid));
+        $this->commandBus->dispatch(new MakePublic($uuid));
     }
 
-    /**
-     * @param UUID $uuid
-     * @return WriteResult
-     */
-    public function makePrivate(UUID $uuid)
+    public function makePrivate(UUID $uuid): void
     {
-        return $this->dispatch(new MakePrivate($uuid));
-    }
-
-    /**
-     * @param AbstractCommand $command
-     * @return WriteResult
-     */
-    private function dispatch(AbstractCommand $command)
-    {
-        $commandId = $this->commandBus->dispatch($command);
-
-        return new WriteResult(
-            new StringLiteral($commandId),
-            $command->getUuid()
-        );
+        $this->commandBus->dispatch(new MakePrivate($uuid));
     }
 }

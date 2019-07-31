@@ -7,9 +7,11 @@ use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\SavedSearches\Doctrine\SchemaConfigurator;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UDB3SavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
+class UDB3SavedSearchRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 
@@ -19,7 +21,7 @@ class UDB3SavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
     private $tableName;
 
     /**
-     * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UuidGeneratorInterface|MockObject
      */
     private $uuidGenerator;
 

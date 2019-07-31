@@ -29,12 +29,13 @@ use CultuurNet\UDB3\Role\Events\ConstraintRemoved;
 use CultuurNet\UDB3\Role\Events\ConstraintUpdated;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_TestCase
+class BackwardsCompatiblePayloadSerializerFactoryTest extends TestCase
 {
     /**
      * @var SerializableInterface
@@ -42,7 +43,7 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends PHPUnit_Framework_
     protected $serializer;
 
     /**
-     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     private $labelRepository;
 

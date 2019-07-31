@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\ReadModel;
 
 use Broadway\Domain\Metadata;
+use PHPUnit\Framework\TestCase;
 
-class JsonDocumentNullEnricherTest extends \PHPUnit_Framework_TestCase
+class JsonDocumentNullEnricherTest extends TestCase
 {
     /**
      * @var JsonDocumentNullEnricher

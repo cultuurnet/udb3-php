@@ -10,22 +10,24 @@ use CultuurNet\UDB3\Offer\Mock\Commands\AddLabel;
 use CultuurNet\UDB3\Offer\Mock\Commands\UpdateTitle;
 use CultuurNet\UDB3\Security\SecurityInterface;
 use CultuurNet\UDB3\Security\UserIdentificationInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
+class SecurityWithLabelPrivacyTest extends TestCase
 {
     /**
-     * @var SecurityInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SecurityInterface|MockObject
      */
     private $securityDecoratee;
 
     /**
-     * @var UserIdentificationInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UserIdentificationInterface|MockObject
      */
     private $userIdentification;
 
     /**
-     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     private $labelReadRepository;
 
@@ -71,6 +73,8 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
             ->with($offerId);
 
         $this->securityWithLabelPrivacy->allowsUpdateWithCdbXml($offerId);
+
+        $this->expectNotToPerformAssertions();
     }
 
     /**
@@ -88,6 +92,8 @@ class SecurityWithLabelPrivacyTest extends \PHPUnit_Framework_TestCase
             ->with($translateTitle);
 
         $this->securityWithLabelPrivacy->isAuthorized($translateTitle);
+
+        $this->expectNotToPerformAssertions();
     }
 
     /**

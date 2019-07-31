@@ -6,9 +6,10 @@ use CultuurNet\UDB3\SavedSearches\Properties\CreatedByQueryString;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearchRepositoryInterface;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class CombinedSavedSearchRepositoryTest extends \PHPUnit_Framework_TestCase
+class CombinedSavedSearchRepositoryTest extends TestCase
 {
     /**
      * @test

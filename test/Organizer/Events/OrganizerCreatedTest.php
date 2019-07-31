@@ -8,9 +8,10 @@ use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Place\Events\OrganizerUpdated;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 
-class OrganizerCreatedTest extends \PHPUnit_Framework_TestCase
+class OrganizerCreatedTest extends TestCase
 {
     /**
      * @test
@@ -28,7 +29,7 @@ class OrganizerCreatedTest extends \PHPUnit_Framework_TestCase
         $emails = ['foo@bar.com'];
         $urls = ['http://bar.com'];
 
-        $this->setExpectedException(
+        $this->expectException(
             \InvalidArgumentException::class,
             'Argument should be of type Address, stdClass given.'
         );

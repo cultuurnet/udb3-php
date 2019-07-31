@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-class DeleteOrganizerTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class DeleteOrganizerTest extends TestCase
 {
     /**
      * @var DeleteOrganizer

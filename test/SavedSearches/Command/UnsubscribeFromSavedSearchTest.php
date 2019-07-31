@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\SavedSearches\Command;
 
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UnsubscribeFromSavedSearchTest extends \PHPUnit_Framework_TestCase
+class UnsubscribeFromSavedSearchTest extends TestCase
 {
     /**
      * @test

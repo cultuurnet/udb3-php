@@ -4,11 +4,12 @@ namespace CultuurNet\UDB3\Http;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class GuzzlePsr7FactoryTest extends \PHPUnit_Framework_TestCase
+class GuzzlePsr7FactoryTest extends TestCase
 {
     /**
      * @var GuzzlePsr7Factory

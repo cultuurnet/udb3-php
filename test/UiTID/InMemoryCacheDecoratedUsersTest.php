@@ -5,13 +5,15 @@
 
 namespace CultuurNet\UDB3\UiTID;
 
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
-class InMemoryCacheDecoratedUsersTest extends \PHPUnit_Framework_TestCase
+class InMemoryCacheDecoratedUsersTest extends TestCase
 {
     /**
-     * @var UsersInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UsersInterface|MockObject
      */
     private $wrapped;
 

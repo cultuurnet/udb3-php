@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Offer\ReadModel\JSONLD;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use PHPUnit\Framework\TestCase;
 
-class OfferUpdateTest extends \PHPUnit_Framework_TestCase
+class OfferUpdateTest extends TestCase
 {
     /**
      * @test

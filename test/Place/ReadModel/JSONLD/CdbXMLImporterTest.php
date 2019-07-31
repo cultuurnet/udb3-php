@@ -10,8 +10,9 @@ use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 
-class CdbXMLImporterTest extends \PHPUnit_Framework_TestCase
+class CdbXMLImporterTest extends TestCase
 {
 
     /**

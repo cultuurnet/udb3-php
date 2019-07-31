@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-class UpdateOrganizerTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class UpdateOrganizerTest extends TestCase
 {
     /**
      * @var UpdateOrganizer

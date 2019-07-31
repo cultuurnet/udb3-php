@@ -5,10 +5,11 @@ namespace CultuurNet\UDB3\Media\Commands;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UploadImageTest extends \PHPUnit_Framework_TestCase
+class UploadImageTest extends TestCase
 {
     /**
      * @var UploadImage

@@ -5,11 +5,10 @@ namespace CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\UserPermissionsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
-use GuzzleHttp\Tests\Psr7\Str;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UserPermissionsReadRepositoryTest extends PHPUnit_Framework_TestCase
+class UserPermissionsReadRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

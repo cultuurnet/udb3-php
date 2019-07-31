@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
-class AbstractEventWithIriTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AbstractEventWithIriTest extends TestCase
 {
     /**
      * @var AbstractEventWithIri

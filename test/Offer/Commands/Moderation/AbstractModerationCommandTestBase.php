@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Offer\Commands\Moderation;
 
-abstract class AbstractModerationCommandTestBase extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+abstract class AbstractModerationCommandTestBase extends TestCase
 {
     /**
      * @test

@@ -21,37 +21,39 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface as SearchRepositoryInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class ProjectorTest extends \PHPUnit_Framework_TestCase
+class ProjectorTest extends TestCase
 {
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     private $repository;
 
     /**
-     * @var Projector|\PHPUnit_Framework_MockObject_MockObject
+     * @var Projector|MockObject
      */
     private $projector;
 
     /**
-     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriGeneratorInterface|MockObject
      */
     protected $eventIriGenerator;
 
     /**
-     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriGeneratorInterface|MockObject
      */
     protected $variationIriGenerator;
 
     /**
-     * @var SearchRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SearchRepositoryInterface|MockObject
      */
     protected $searchRepository;
 
     /**
-     * @var OfferReadingServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OfferReadingServiceInterface|MockObject
      */
     protected $offerReadingService;
 

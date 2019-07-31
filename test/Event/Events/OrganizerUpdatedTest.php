@@ -5,7 +5,9 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-class OrganizerUpdatedTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class OrganizerUpdatedTest extends TestCase
 {
     public function serializationDataProvider()
     {

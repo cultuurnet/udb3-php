@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\ValueObject;
 
-class SapiVersionTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SapiVersionTest extends TestCase
 {
     /**
      * @var SapiVersion

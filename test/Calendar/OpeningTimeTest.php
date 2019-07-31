@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Calendar;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\DateTime\Hour;
 use ValueObjects\DateTime\Minute;
 
-class OpeningTimeTest extends \PHPUnit_Framework_TestCase
+class OpeningTimeTest extends TestCase
 {
     /**
      * @var Hour

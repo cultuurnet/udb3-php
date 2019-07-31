@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Address;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\Geography\CountryCode;
 
-class AddressTest extends \PHPUnit_Framework_TestCase
+class AddressTest extends TestCase
 {
     /**
      * @test

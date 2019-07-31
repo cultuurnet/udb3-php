@@ -6,10 +6,11 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class WebsiteUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
+class WebsiteUniqueConstraintServiceTest extends TestCase
 {
     /**
      * @var WebsiteUniqueConstraintService

@@ -9,39 +9,13 @@ use ValueObjects\Identity\UUID;
 
 interface WriteServiceInterface
 {
-    /**
-     * @param LabelName $name
-     * @param Visibility $visibility
-     * @param Privacy $privacy
-     * @return WriteResult
-     */
-    public function create(
-        LabelName $name,
-        Visibility $visibility,
-        Privacy $privacy
-    );
+    public function create(LabelName $name, Visibility $visibility, Privacy $privacy): UUID;
 
-    /**
-     * @param UUID $uuid
-     * @return WriteResult
-     */
-    public function makeVisible(UUID $uuid);
+    public function makeVisible(UUID $uuid): void;
 
-    /**
-     * @param UUID $uuid
-     * @return WriteResult
-     */
-    public function makeInvisible(UUID $uuid);
+    public function makeInvisible(UUID $uuid): void;
 
-    /**
-     * @param UUID $uuid
-     * @return WriteResult
-     */
-    public function makePublic(UUID $uuid);
+    public function makePublic(UUID $uuid): void;
 
-    /**
-     * @param UUID $uuid
-     * @return WriteResult
-     */
-    public function makePrivate(UUID $uuid);
+    public function makePrivate(UUID $uuid): void;
 }

@@ -10,13 +10,15 @@ use CultuurNet\UDB3\SavedSearches\Command\SubscribeToSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Command\UnsubscribeFromSavedSearch;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
+class SavedSearchesCommandHandlerTest extends TestCase
 {
     /**
-     * @var SavedSearches|\PHPUnit_Framework_MockObject_MockObject
+     * @var SavedSearches|MockObject
      */
     protected $savedSearchesService;
 
@@ -88,7 +90,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
             ->willThrowException(new \CultureFeed_Exception($error, 'UNKNOWN_ERROR'));
 
         // We expect the logger's error method to be called when the exception is thrown.
-        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
+        /** @var LoggerInterface|MockObject $logger */
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('error')
@@ -146,7 +148,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
             ->willThrowException(new \CultureFeed_Exception($error, 'UNKNOWN_ERROR'));
 
         // We expect the logger's error method to be called when the exception is thrown.
-        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
+        /** @var LoggerInterface|MockObject $logger */
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('error')
@@ -186,7 +188,7 @@ class SavedSearchesCommandHandlerTest extends \PHPUnit_Framework_TestCase
         $tokenCredentials = new TokenCredentials('token', 'secret');
 
         // Saved searches service factory used to instantiate the saved searches service.
-        /** @var SavedSearchesServiceFactoryInterface|\PHPUnit_Framework_MockObject_MockObject $savedSearchesServiceFactory */
+        /** @var SavedSearchesServiceFactoryInterface|MockObject $savedSearchesServiceFactory */
         $savedSearchesServiceFactory = $this->createMock(
             SavedSearchesServiceFactoryInterface::class
         );

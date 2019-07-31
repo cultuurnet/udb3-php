@@ -6,9 +6,9 @@
 namespace CultuurNet\UDB3\Cdb\Event;
 
 use CultureFeed_Cdb_Item_Event;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class NotTest extends PHPUnit_Framework_TestCase
+class NotTest extends TestCase
 {
     /**
      * @test

@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\SavedSearches\Properties;
 
-class CreatorQueryStringTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class CreatorQueryStringTest extends TestCase
 {
     /**
      * @test

@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Role\Events;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class RoleRenamedTest extends \PHPUnit_Framework_TestCase
+class RoleRenamedTest extends TestCase
 {
     /**
      * @var UUID

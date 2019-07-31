@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3;
 
 use DateTime;
 use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 
-class TimestampTest extends \PHPUnit_Framework_TestCase
+class TimestampTest extends TestCase
 {
     const START_DATE_KEY = 'startDate';
     const END_DATE_KEY = 'endDate';
@@ -63,7 +64,7 @@ class TimestampTest extends \PHPUnit_Framework_TestCase
     {
         $pastDate = '2016-01-03T00:01:01+01:00';
 
-        $this->setExpectedException(InvalidArgumentException::class, 'End date can not be earlier than start date.');
+        $this->expectException(InvalidArgumentException::class, 'End date can not be earlier than start date.');
 
         new Timestamp(
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),

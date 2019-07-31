@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Offer\Commands\Moderation;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 
-class AbstractModerationCommandTest extends \PHPUnit_Framework_TestCase
+class AbstractModerationCommandTest extends TestCase
 {
     /**
      * @test

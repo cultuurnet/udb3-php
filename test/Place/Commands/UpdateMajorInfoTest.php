@@ -11,9 +11,10 @@ use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Theme;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 
-class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
+class UpdateMajorInfoTest extends TestCase
 {
     /**
      * @var UpdateMajorInfo

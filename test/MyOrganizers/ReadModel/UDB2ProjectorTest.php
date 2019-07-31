@@ -6,9 +6,11 @@ use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
 use CultuurNet\UDB3\Cdb\ItemBaseAdapterFactory;
 use CultuurNet\UDB3\EventSourcing\DomainMessageBuilder;
 use CultuurNet\UDB3\Organizer\Events\OrganizerImportedFromUDB2;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
+class UDB2ProjectorTest extends TestCase
 {
     private const USER_ID = '1adf21b4-711d-4e33-b9ef-c96843582a56';
 
@@ -18,7 +20,7 @@ class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
     private $projector;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     private $repository;
 
@@ -28,7 +30,7 @@ class UDB2ProjectorTest extends \PHPUnit_Framework_TestCase
     private $domainMessageBuilder;
 
     /**
-     * @var \CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var \CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface|MockObject
      */
     private $userIdResolver;
 

@@ -21,11 +21,12 @@ use CultuurNet\UDB3\Model\ValueObject\Calendar\PermanentCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\SingleDateRangeCalendar;
 use DateTime;
 use DateTimeInterface;
+use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 use ValueObjects\DateTime\Hour;
 use ValueObjects\DateTime\Minute;
 
-class CalendarTest extends \PHPUnit_Framework_TestCase
+class CalendarTest extends TestCase
 {
     const START_DATE = '2016-03-06T10:00:00+01:00';
     const END_DATE = '2016-03-13T12:00:00+01:00';

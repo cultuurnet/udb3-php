@@ -5,9 +5,10 @@ namespace CultuurNet\UDB3\EventListener;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Item\Events\LabelAdded;
 use CultuurNet\UDB3\Offer\Item\Events\LabelRemoved;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ClassNameEventSpecificationTest extends \PHPUnit_Framework_TestCase
+class ClassNameEventSpecificationTest extends TestCase
 {
     /**
      * @var LabelAdded

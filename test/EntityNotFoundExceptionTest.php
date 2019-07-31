@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3;
 
-class EntityNotFoundExceptionTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class EntityNotFoundExceptionTest extends TestCase
 {
     /**
      * @test

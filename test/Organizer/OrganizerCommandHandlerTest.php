@@ -42,6 +42,7 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\TitleUpdated;
 use CultuurNet\UDB3\Organizer\Events\WebsiteUpdated;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\MockObject\MockObject;
 use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
@@ -60,7 +61,7 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     private $eventStore;
 
     /**
-     * @var EventBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EventBusInterface|MockObject
      */
     private $eventBus;
 
@@ -70,17 +71,17 @@ class OrganizerCommandHandlerTest extends CommandHandlerScenarioTestCase
     private $repository;
 
     /**
-     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     private $labelRepository;
 
     /**
-     * @var OrganizerRelationServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OrganizerRelationServiceInterface|MockObject
      */
     private $eventOrganizerRelationService;
 
     /**
-     * @var OrganizerRelationServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OrganizerRelationServiceInterface|MockObject
      */
     private $placeOrganizerRelationService;
 

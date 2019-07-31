@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Place\Commands\UpdateFacilities;
 use CultuurNet\UDB3\Role\Commands\AddLabel;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ClassNameCommandFilterTest extends \PHPUnit_Framework_TestCase
+class ClassNameCommandFilterTest extends TestCase
 {
     /**
      * @var UpdateFacilities

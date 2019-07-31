@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\MyOrganizers\ReadModel\Doctrine;
 
-class DBALHelperTraitTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class DBALHelperTraitTest extends TestCase
 {
     /**
      * @var \DBALHelperTrait

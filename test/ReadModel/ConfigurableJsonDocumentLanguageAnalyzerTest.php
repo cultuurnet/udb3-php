@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\ReadModel;
 
 use CultuurNet\UDB3\Language;
+use PHPUnit\Framework\TestCase;
 
-class ConfigurableJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
+class ConfigurableJsonDocumentLanguageAnalyzerTest extends TestCase
 {
     /**
      * @var ConfigurableJsonDocumentLanguageAnalyzer

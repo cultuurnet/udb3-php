@@ -3,10 +3,10 @@
 namespace CultuurNet\UDB3\Role\ReadModel\Search\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class DBALRepositoryTest extends PHPUnit_Framework_TestCase
+class DBALRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

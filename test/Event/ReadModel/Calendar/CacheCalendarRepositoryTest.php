@@ -6,8 +6,9 @@ use CultureFeed_Cdb_Data_Calendar_Period;
 use CultureFeed_Cdb_Data_Calendar_PeriodList;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use PHPUnit\Framework\TestCase;
 
-class CacheCalendarRepositoryTest extends \PHPUnit_Framework_TestCase
+class CacheCalendarRepositoryTest extends TestCase
 {
     /**
      * @var int

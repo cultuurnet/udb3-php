@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Event\Commands;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 
-class UpdateCalendarTest extends \PHPUnit_Framework_TestCase
+class UpdateCalendarTest extends TestCase
 {
     /**
      * @var string

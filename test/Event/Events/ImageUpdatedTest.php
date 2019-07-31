@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ImageUpdatedTest extends \PHPUnit_Framework_TestCase
+class ImageUpdatedTest extends TestCase
 {
     /**
      * @test

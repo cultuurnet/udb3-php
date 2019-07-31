@@ -11,12 +11,14 @@ use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
 use League\Flysystem\FilesystemInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class MediaManagerTest extends \PHPUnit_Framework_TestCase
+class MediaManagerTest extends TestCase
 {
 
     /**
@@ -25,17 +27,17 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
     protected $mediaManager;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     protected $repository;
 
     /**
-     * @var IriGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriGeneratorInterface|MockObject
      */
     protected $iriGenerator;
 
     /**
-     * @var PathGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var PathGeneratorInterface|MockObject
      */
     protected $pathGenerator;
 
@@ -45,7 +47,7 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
     protected $mediaDirectory = '/media';
 
     /**
-     * @var FilesystemInterface|\PHPUnit_Framework_MockObject_MockObject;
+     * @var FilesystemInterface|MockObject;
      */
     protected $filesystem;
 
@@ -192,7 +194,7 @@ class MediaManagerTest extends \PHPUnit_Framework_TestCase
             ->with($id)
             ->willThrowException(new AggregateNotFoundException());
 
-        $this->setExpectedException(
+        $this->expectException(
             MediaObjectNotFoundException::class,
             "Media object with id '" . $id . "' not found"
         );

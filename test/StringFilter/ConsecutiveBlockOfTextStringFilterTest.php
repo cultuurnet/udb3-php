@@ -17,7 +17,7 @@ class ConsecutiveBlockOfTextStringFilterTest extends StringFilterTest
      */
     public function it_only_filters_strings()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->filter->filter(12345);
     }
 

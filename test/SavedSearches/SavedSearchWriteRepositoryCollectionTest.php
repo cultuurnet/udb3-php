@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\SavedSearches;
 
 use CultuurNet\UDB3\SavedSearches\WriteModel\SavedSearchRepositoryInterface;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 
-class SavedSearchWriteRepositoryCollectionTest extends \PHPUnit_Framework_TestCase
+class SavedSearchWriteRepositoryCollectionTest extends TestCase
 {
     /**
      * @test

@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Event\ReadModel\Relations\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use PDO;
+use PHPUnit\Framework\TestCase;
 
-class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
+class DBALRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\Label;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class AddLabelToQueryJSONDeserializerTest extends TestCase
 {
     /**
      * @var AddLabelToQueryJSONDeserializer
@@ -41,7 +42,7 @@ class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $json = new StringLiteral('{"query": "city:leuven"}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing value "label".'
         );
@@ -56,7 +57,7 @@ class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $json = new StringLiteral('{"label": "", "query": "city:leuven"}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing value "label".'
         );
@@ -71,7 +72,7 @@ class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $json = new StringLiteral('{"label": "foo"}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing value "query".'
         );
@@ -86,7 +87,7 @@ class AddLabelToQueryJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $json = new StringLiteral('{"label": "foo", "query": ""}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing value "query".'
         );

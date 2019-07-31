@@ -4,9 +4,9 @@ namespace CultuurNet\UDB3\Storage;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use Doctrine\DBAL\Schema\Schema;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class DBALPurgeServiceTest extends PHPUnit_Framework_TestCase
+class DBALPurgeServiceTest extends TestCase
 {
     const PERSON = 'person';
     const ID = 'id';

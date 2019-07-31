@@ -4,22 +4,24 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
+class LocalOfferReadingServiceTest extends TestCase
 {
     /**
-     * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriOfferIdentifierFactoryInterface|MockObject
      */
     private $iriOfferIdentifierFactory;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     private $eventDocumentRepository;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     private $placeDocumentRepository;
 
@@ -89,7 +91,7 @@ class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
             ->willReturn($expectedDocument);
 
         // Make sure the get() method will not be called on the other repositories.
-        /* @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject $incorrectRepository */
+        /* @var DocumentRepositoryInterface|MockObject $incorrectRepository */
         foreach ($incorrectRepositories as $incorrectRepository) {
             $incorrectRepository->expects($this->never())
                 ->method('get');
@@ -147,7 +149,7 @@ class LocalOfferReadingServiceTest extends \PHPUnit_Framework_TestCase
             );
 
         // Make sure an exception is thrown when trying to load the iri.
-        $this->setExpectedException(
+        $this->expectException(
             \LogicException::class,
             'No document repository found for offer type Place.'
         );

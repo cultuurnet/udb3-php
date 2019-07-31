@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Role\Commands;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class RemoveUserTest extends \PHPUnit_Framework_TestCase
+class RemoveUserTest extends TestCase
 {
     /**
      * @var RemoveUser

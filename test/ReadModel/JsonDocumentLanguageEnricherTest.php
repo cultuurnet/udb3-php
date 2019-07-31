@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\ReadModel;
 
 use Broadway\Domain\Metadata;
+use PHPUnit\Framework\TestCase;
 
-class JsonDocumentLanguageEnricherTest extends \PHPUnit_Framework_TestCase
+class JsonDocumentLanguageEnricherTest extends TestCase
 {
     /**
      * @var ConfigurableJsonDocumentLanguageAnalyzer

@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Event\Events;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use DateTime;
+use PHPUnit\Framework\TestCase;
 
-class EventCopiedTest extends \PHPUnit_Framework_TestCase
+class EventCopiedTest extends TestCase
 {
     /**
      * @var string

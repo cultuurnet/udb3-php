@@ -4,9 +4,11 @@ namespace CultuurNet\UDB3\Offer\Commands\Moderation;
 
 use DateTime;
 use DateTimeInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class AbstractPublishTest extends \PHPUnit_Framework_TestCase
+class AbstractPublishTest extends TestCase
 {
     /**
      * @var UUID
@@ -19,7 +21,7 @@ class AbstractPublishTest extends \PHPUnit_Framework_TestCase
     private $publicationDate;
 
     /**
-     * @var AbstractPublish|\PHPUnit_Framework_MockObject_MockObject
+     * @var AbstractPublish|MockObject
      */
     private $abstractPublish;
 

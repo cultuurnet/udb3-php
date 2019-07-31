@@ -29,10 +29,11 @@ use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class HistoryProjectorTest extends \PHPUnit_Framework_TestCase
+class HistoryProjectorTest extends TestCase
 {
     const EVENT_ID_1 = 'a0ee7b1c-a9c1-4da1-af7e-d15496014656';
     const EVENT_ID_2 = 'a2d50a8d-5b83-4c8b-84e6-e9c0bacbb1a3';

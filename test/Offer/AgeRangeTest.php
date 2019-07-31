@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Person\Age;
 
-class AgeRangeTest extends \PHPUnit_Framework_TestCase
+class AgeRangeTest extends TestCase
 {
     /**
      * @test

@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-class DeleteEventTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class DeleteEventTest extends TestCase
 {
     /**
      * @var DeleteEvent

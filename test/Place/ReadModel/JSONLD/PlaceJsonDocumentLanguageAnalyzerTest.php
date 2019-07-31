@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Place\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use PHPUnit\Framework\TestCase;
 
-class PlaceJsonDocumentLanguageAnalyzerTest extends \PHPUnit_Framework_TestCase
+class PlaceJsonDocumentLanguageAnalyzerTest extends TestCase
 {
     /**
      * @var PlaceJsonDocumentLanguageAnalyzer

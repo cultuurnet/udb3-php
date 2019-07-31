@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-class OfferTypeTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class OfferTypeTest extends TestCase
 {
     /**
      * @test

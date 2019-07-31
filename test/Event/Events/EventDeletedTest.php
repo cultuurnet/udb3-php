@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-class EventDeletedTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class EventDeletedTest extends TestCase
 {
     /**
      * @test
@@ -41,7 +43,7 @@ class EventDeletedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_error_if_a_wrong_type_is_given()
     {
-        $this->setExpectedException(
+        $this->expectException(
             \InvalidArgumentException::class,
             'Expected itemId to be a string, received integer'
         );

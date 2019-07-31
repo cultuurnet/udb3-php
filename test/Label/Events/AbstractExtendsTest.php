@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Label\Events;
 
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-abstract class AbstractExtendsTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractExtendsTest extends TestCase
 {
     /**
      * @var UUID

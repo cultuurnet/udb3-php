@@ -8,18 +8,20 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Security\SecurityInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class MediaSecurityTest extends \PHPUnit_Framework_TestCase
+class MediaSecurityTest extends TestCase
 {
     /**
-     * @var SecurityInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SecurityInterface|MockObject
      */
     private $baseSecurity;
 
     /**
-     * @var MediaSecurity|\PHPUnit_Framework_MockObject_MockObject
+     * @var MediaSecurity|MockObject
      */
     private $mediaSecurity;
 
@@ -53,7 +55,7 @@ class MediaSecurityTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_delegate_authorization_of_non_media_commands_to_the_decorated_security()
     {
-        /** @var AuthorizableCommandInterface|\PHPUnit_Framework_MockObject_MockObject $command */
+        /** @var AuthorizableCommandInterface|MockObject $command */
         $command = $this->createMock(AuthorizableCommandInterface::class);
         $command
             ->expects($this->once())

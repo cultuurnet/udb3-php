@@ -5,9 +5,10 @@ namespace CultuurNet\UDB3\SavedSearches\Command;
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SubscribeToSavedSearchJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class SubscribeToSavedSearchJSONDeserializerTest extends TestCase
 {
     /**
      * @var SapiVersion

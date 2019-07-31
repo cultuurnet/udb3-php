@@ -14,8 +14,10 @@ use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultOfferVariationServiceTest extends TestCase
 {
     /**
      * @var TraceableEventStore
@@ -28,7 +30,7 @@ class DefaultOfferVariationServiceTest extends \PHPUnit_Framework_TestCase
     private $eventBus;
 
     /**
-     * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UuidGeneratorInterface|MockObject
      */
     private $uuidGenerator;
 

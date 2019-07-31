@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Organizer\Commands;
 
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 
-class UpdateTitleTest extends \PHPUnit_Framework_TestCase
+class UpdateTitleTest extends TestCase
 {
     /**
      * @var string

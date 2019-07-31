@@ -10,22 +10,24 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Command\ValidationException;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url as ValueObjectsUrl;
 
-class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
+class DefaultUrlValidatorTest extends TestCase
 {
     /**
-     * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriOfferIdentifierFactoryInterface|MockObject
      */
     private $iriOfferIdentifierFactory;
 
     /**
-     * @var EntityServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EntityServiceInterface|MockObject
      */
     private $eventService;
 
     /**
-     * @var EntityServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var EntityServiceInterface|MockObject
      */
     private $placeService;
 
@@ -131,7 +133,7 @@ class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
             ->with('https://foo-bar/event/foo-bar')
             ->willReturn($identifier);
 
-        $this->setExpectedException(
+        $this->expectException(
             ValidationException::class,
             'Invalid data.'
         );
@@ -166,7 +168,7 @@ class DefaultUrlValidatorTest extends \PHPUnit_Framework_TestCase
             ->with('https://foo-bar/place/foo-bar-place')
             ->willReturn($identifier);
 
-        $this->setExpectedException(
+        $this->expectException(
             \LogicException::class,
             'Found no repository for type Place.'
         );

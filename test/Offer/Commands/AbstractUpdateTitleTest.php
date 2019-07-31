@@ -3,12 +3,14 @@
 namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Language;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AbstractUpdateTitleTest extends \PHPUnit_Framework_TestCase
+class AbstractUpdateTitleTest extends TestCase
 {
     /**
-     * @var AbstractUpdateTitle|\PHPUnit_Framework_MockObject_MockObject
+     * @var AbstractUpdateTitle|MockObject
      */
     protected $updateTitleCommand;
 

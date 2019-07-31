@@ -14,19 +14,21 @@ use CultuurNet\UDB3\Role\Events\UserAdded;
 use CultuurNet\UDB3\Role\Events\UserRemoved;
 use CultuurNet\UDB3\User\UserIdentityDetails;
 use CultuurNet\UDB3\User\UserIdentityResolverInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
-class RoleUsersProjectorTest extends \PHPUnit_Framework_TestCase
+class RoleUsersProjectorTest extends TestCase
 {
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     private $repository;
 
     /**
-     * @var UserIdentityResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UserIdentityResolverInterface|MockObject
      */
     private $userIdentityResolver;
 

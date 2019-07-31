@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\ValueObjects;
 
-class AudienceTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AudienceTest extends TestCase
 {
     /**
      * @var string

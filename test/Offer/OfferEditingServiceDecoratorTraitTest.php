@@ -11,20 +11,22 @@ use CultuurNet\UDB3\Media\Properties\MIMEType;
 use CultuurNet\UDB3\PriceInfo\BasePrice;
 use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\Web\Url;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class OfferEditingServiceDecoratorTraitTest extends \PHPUnit_Framework_TestCase
+class OfferEditingServiceDecoratorTraitTest extends TestCase
 {
     /**
-     * @var OfferEditingServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OfferEditingServiceInterface|MockObject
      */
     private $decoratee;
 
     /**
-     * @var OfferEditingServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OfferEditingServiceInterface|MockObject
      */
     private $trait;
 

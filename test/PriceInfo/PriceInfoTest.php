@@ -8,10 +8,11 @@ use CultuurNet\UDB3\Model\ValueObject\Price\Tariffs;
 use CultuurNet\UDB3\Model\ValueObject\Price\TranslatedTariffName;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
 use Money\Money;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class PriceInfoTest extends \PHPUnit_Framework_TestCase
+class PriceInfoTest extends TestCase
 {
     /**
      * @var BasePrice

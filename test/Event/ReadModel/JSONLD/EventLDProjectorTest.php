@@ -59,19 +59,18 @@ use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Timestamp;
 use CultuurNet\UDB3\Title;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 use Symfony\Component\Serializer\Serializer;
 use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
-use ValueObjects\Web\Url;
 
 class EventLDProjectorTest extends OfferLDProjectorTestBase
 {
     const CDBXML_NAMESPACE = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
 
     /**
-     * @var PlaceService|PHPUnit_Framework_MockObject_MockObject
+     * @var PlaceService|MockObject
      */
     private $placeService;
 
@@ -91,17 +90,17 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     protected $projector;
 
     /**
-     * @var Serializer|PHPUnit_Framework_MockObject_MockObject
+     * @var Serializer|MockObject
      */
     protected $serializer;
 
     /**
-     * @var IriOfferIdentifierFactoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var IriOfferIdentifierFactoryInterface|MockObject
      */
     protected $iriOfferIdentifierFactory;
 
     /**
-     * @var CdbXMLImporter|PHPUnit_Framework_MockObject_MockObject
+     * @var CdbXMLImporter|MockObject
      */
     protected $cdbXMLImporter;
 
@@ -582,6 +581,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             'samples/event_with_empty_keyword.cdbxml.xml'
         );
         $this->project($eventUpdatedFromUdb2, $eventUpdatedFromUdb2->getEventId());
+        
+        $this->expectNotToPerformAssertions();
     }
 
     /**

@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Label\Commands;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class AbstractCommandTest extends \PHPUnit_Framework_TestCase
+class AbstractCommandTest extends TestCase
 {
     /**
      * @var UUID

@@ -24,6 +24,7 @@ use CultuurNet\UDB3\Place\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\MockObject\MockObject;
 use ValueObjects\Geography\Country;
 
 class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
@@ -39,7 +40,7 @@ class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
     private $localityAddressFormatter;
 
     /**
-     * @var GeocodingServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var GeocodingServiceInterface|MockObject
      */
     private $geocodingService;
 

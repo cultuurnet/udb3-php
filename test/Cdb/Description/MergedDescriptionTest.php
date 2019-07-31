@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Cdb\Description;
 
-class MergedDescriptionTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class MergedDescriptionTest extends TestCase
 {
     /**
      * @test

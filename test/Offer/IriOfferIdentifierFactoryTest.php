@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\UDB3\Variations\Command\ValidationException;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
+class IriOfferIdentifierFactoryTest extends TestCase
 {
     /**
      * @var string
@@ -30,7 +31,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_error_when_using_a_malformed_url()
     {
-        $this->setExpectedException(
+        $this->expectException(
             ValidationException::class,
             'Invalid data'
         );
@@ -45,7 +46,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function it_throws_an_error_when_using_an_unsupported_offer_type()
     {
-        $this->setExpectedException(
+        $this->expectException(
             ValidationException::class,
             'Invalid data'
         );
@@ -64,7 +65,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
             'https?://foo\.bar/(?<offer>[event|place]+)/(?<offerid>[a-zA-Z0-9\-]+)'
         );
 
-        $this->setExpectedException(
+        $this->expectException(
             \InvalidArgumentException::class,
             'Regular expression pattern should capture group named "offertype"'
         );
@@ -83,7 +84,7 @@ class IriOfferIdentifierFactoryTest extends \PHPUnit_Framework_TestCase
             'https?://foo\.bar/(?<offertype>[event|place]+)/(?<id>[a-zA-Z0-9\-]+)'
         );
 
-        $this->setExpectedException(
+        $this->expectException(
             \InvalidArgumentException::class,
             'Regular expression pattern should capture group named "offerid"'
         );

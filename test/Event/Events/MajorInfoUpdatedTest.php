@@ -13,10 +13,11 @@ use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class MajorInfoUpdatedTest extends \PHPUnit_Framework_TestCase
+class MajorInfoUpdatedTest extends TestCase
 {
     /**
      * @test

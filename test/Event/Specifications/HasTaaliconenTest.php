@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications;
 
-class HasTaaliconenTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class HasTaaliconenTest extends TestCase
 {
 
     use EventSpecificationTestTrait;

@@ -11,9 +11,11 @@ use CultuurNet\UDB3\Organizer\Events\OrganizerDeleted;
 use CultuurNet\UDB3\Organizer\Events\OrganizerEvent;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class ProjectorTest extends \PHPUnit_Framework_TestCase
+class ProjectorTest extends TestCase
 {
     private const DATETIME = '2018-08-07T12:01:00.034024+00:00';
     private const USER_ID = '1adf21b4-711d-4e33-b9ef-c96843582a56';
@@ -24,7 +26,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $projector;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     private $repository;
 

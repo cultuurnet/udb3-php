@@ -19,13 +19,15 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Location\Location;
 use CultuurNet\UDB3\Offer\ReadModel\Permission\PermissionRepositoryInterface;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ProjectorTest extends \PHPUnit_Framework_TestCase
+class ProjectorTest extends TestCase
 {
     /**
-     * @var PermissionRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var PermissionRepositoryInterface|MockObject
      */
     private $repository;
 
@@ -35,7 +37,7 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $projector;
 
     /**
-     * @var CreatedByToUserIdResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CreatedByToUserIdResolverInterface|MockObject
      */
     private $userIdResolver;
 

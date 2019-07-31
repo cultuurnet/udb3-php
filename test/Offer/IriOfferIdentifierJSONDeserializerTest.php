@@ -4,10 +4,12 @@ namespace CultuurNet\UDB3\Offer;
 
 use CultuurNet\Deserializer\MissingValueException;
 use CultuurNet\Deserializer\NotWellFormedException;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class IriOfferIdentifierJSONDeserializerTest extends TestCase
 {
     /**
      * @var IriOfferIdentifierJSONDeserializer
@@ -15,7 +17,7 @@ class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     private $deserializer;
 
     /**
-     * @var IriOfferIdentifierFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IriOfferIdentifierFactoryInterface|MockObject
      */
     private $iriOfferIdentifierFactory;
 
@@ -57,7 +59,7 @@ class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $json = new StringLiteral('{"foo"');
 
-        $this->setExpectedException(
+        $this->expectException(
             NotWellFormedException::class,
             'Invalid JSON'
         );
@@ -72,7 +74,7 @@ class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $json = new StringLiteral('{"@type":"Event"}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing property "@id".'
         );
@@ -87,7 +89,7 @@ class IriOfferIdentifierJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $json = new StringLiteral('{"@id":"http://du.de/event/1"}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing property "@type".'
         );

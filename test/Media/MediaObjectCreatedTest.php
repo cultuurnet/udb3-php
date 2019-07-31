@@ -5,11 +5,12 @@ namespace CultuurNet\UDB3\Media;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Media\Events\MediaObjectCreated;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class MediaObjectCreatedTest extends \PHPUnit_Framework_TestCase
+class MediaObjectCreatedTest extends TestCase
 {
     /**
      * @test

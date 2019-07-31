@@ -8,9 +8,10 @@ use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class LabelNameUniqueConstraintServiceTest extends \PHPUnit_Framework_TestCase
+class LabelNameUniqueConstraintServiceTest extends TestCase
 {
     /**
      * @var LabelName

@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Label\ValueObjects;
 
-class PrivacyTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class PrivacyTest extends TestCase
 {
     /**
      * @test

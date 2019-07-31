@@ -13,13 +13,15 @@ use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\SearchAPI2\SearchServiceInterface as SAPI2;
 use Guzzle\Http\Message\Response;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
 
-class PullParsingSearchServiceTest extends \PHPUnit_Framework_TestCase
+class PullParsingSearchServiceTest extends TestCase
 {
     /**
-     * @var SAPI2|\PHPUnit_Framework_MockObject_MockObject
+     * @var SAPI2|MockObject
      */
     private $sapi2;
 

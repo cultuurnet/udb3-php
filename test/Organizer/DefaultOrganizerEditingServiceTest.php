@@ -26,20 +26,22 @@ use CultuurNet\UDB3\Organizer\Commands\UpdateTitle;
 use CultuurNet\UDB3\Organizer\Commands\UpdateWebsite;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
-class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultOrganizerEditingServiceTest extends TestCase
 {
     /**
-     * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandBusInterface|MockObject
      */
     private $commandBus;
 
     /**
-     * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UuidGeneratorInterface|MockObject
      */
     private $uuidGenerator;
 
@@ -54,7 +56,7 @@ class DefaultOrganizerEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $organizerRepository;
 
     /**
-     * @var LabelServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var LabelServiceInterface|MockObject
      */
     private $labelService;
 

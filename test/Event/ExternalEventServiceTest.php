@@ -4,13 +4,13 @@ namespace CultuurNet\UDB3\Event;
 
 use GuzzleHttp\Psr7\Response;
 use Http\Client\HttpClient;
-use PHPUnit_Framework_TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-class ExternalEventServiceTest extends PHPUnit_Framework_TestCase
+class ExternalEventServiceTest extends TestCase
 {
     /**
-     * @var HttpClient|PHPUnit_Framework_MockObject_MockObject
+     * @var HttpClient|MockObject
      */
     protected $httpClient;
 

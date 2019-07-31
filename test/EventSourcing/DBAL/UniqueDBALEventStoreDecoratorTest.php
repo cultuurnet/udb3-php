@@ -9,9 +9,11 @@ use Broadway\Domain\Metadata;
 use Broadway\EventStore\DBALEventStore;
 use Broadway\Serializer\SerializerInterface;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
+class UniqueDBALEventStoreDecoratorTest extends TestCase
 {
     use DBALTestConnectionTrait;
 
@@ -26,12 +28,12 @@ class UniqueDBALEventStoreDecoratorTest extends \PHPUnit_Framework_TestCase
     private $uniqueDBALEventStoreDecorator;
 
     /**
-     * @var DBALEventStore|\PHPUnit_Framework_MockObject_MockObject
+     * @var DBALEventStore|MockObject
      */
     private $dbalEventStore;
 
     /**
-     * @var UniqueConstraintServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UniqueConstraintServiceInterface|MockObject
      */
     private $uniqueConstraintService;
 

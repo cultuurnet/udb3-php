@@ -8,10 +8,10 @@ namespace CultuurNet\UDB3\Variations\ReadModel\Search;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class CriteriaFromParameterBagFactoryTest extends PHPUnit_Framework_TestCase
+class CriteriaFromParameterBagFactoryTest extends TestCase
 {
     /**
      * @var CriteriaFromParameterBagFactory

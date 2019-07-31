@@ -23,7 +23,6 @@ use ValueObjects\Web\Url;
 
 class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
 {
-
     /**
      * @var CommandBusInterface
      */
@@ -44,12 +43,6 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
      */
     protected $labelService;
 
-    /**
-     * @param CommandBusInterface $commandBus
-     * @param UuidGeneratorInterface $uuidGenerator
-     * @param RepositoryInterface $organizerRepository
-     * @param LabelServiceInterface $labelService
-     */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
@@ -62,16 +55,13 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
         $this->labelService = $labelService;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function create(
         Language $mainLanguage,
         Url $website,
         Title $title,
-        Address $address = null,
-        ContactPoint $contactPoint = null
-    ) {
+        ?Address $address = null,
+        ?ContactPoint $contactPoint = null
+    ): string {
         $id = $this->uuidGenerator->generate();
 
         $organizer = Organizer::create($id, $mainLanguage, $website, $title);
@@ -89,12 +79,9 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
         return $id;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function updateWebsite($organizerId, Url $website)
+    public function updateWebsite(string $organizerId, Url $website): void
     {
-        return $this->commandBus->dispatch(
+        $this->commandBus->dispatch(
             new UpdateWebsite($organizerId, $website)
         );
     }
@@ -102,9 +89,9 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function updateTitle($organizerId, Title $title, Language $language)
+    public function updateTitle(string $organizerId, Title $title, Language $language): void
     {
-        return $this->commandBus->dispatch(
+        $this->commandBus->dispatch(
             new UpdateTitle($organizerId, $title, $language)
         );
     }
@@ -112,9 +99,9 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function updateAddress($organizerId, Address $address, Language $language)
+    public function updateAddress(string $organizerId, Address $address, Language $language): void
     {
-        return $this->commandBus->dispatch(
+        $this->commandBus->dispatch(
             new UpdateAddress($organizerId, $address, $language)
         );
     }
@@ -122,9 +109,9 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function updateContactPoint($organizerId, ContactPoint $contactPoint)
+    public function updateContactPoint(string $organizerId, ContactPoint $contactPoint): void
     {
-        return $this->commandBus->dispatch(
+        $this->commandBus->dispatch(
             new UpdateContactPoint($organizerId, $contactPoint)
         );
     }
@@ -132,14 +119,14 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function addLabel($organizerId, Label $label)
+    public function addLabel(string $organizerId, Label $label): void
     {
         $this->labelService->createLabelAggregateIfNew(
             new LabelName((string) $label),
             $label->isVisible()
         );
 
-        return $this->commandBus->dispatch(
+        $this->commandBus->dispatch(
             new AddLabel($organizerId, $label)
         );
     }
@@ -147,9 +134,9 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function removeLabel($organizerId, Label $label)
+    public function removeLabel(string $organizerId, Label $label): void
     {
-        return $this->commandBus->dispatch(
+        $this->commandBus->dispatch(
             new RemoveLabel($organizerId, $label)
         );
     }
@@ -157,9 +144,9 @@ class DefaultOrganizerEditingService implements OrganizerEditingServiceInterface
     /**
      * @inheritdoc
      */
-    public function delete($id)
+    public function delete(string $id): void
     {
-        return $this->commandBus->dispatch(
+        $this->commandBus->dispatch(
             new DeleteOrganizer($id)
         );
     }

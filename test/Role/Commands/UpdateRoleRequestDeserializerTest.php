@@ -3,11 +3,12 @@
 namespace CultuurNet\UDB3\Role\Commands;
 
 use CultuurNet\UDB3\Role\MissingContentTypeException;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UpdateRoleRequestDeserializerTest extends \PHPUnit_Framework_TestCase
+class UpdateRoleRequestDeserializerTest extends TestCase
 {
     /**
      * @var UpdateRoleRequestDeserializer
@@ -32,7 +33,7 @@ class UpdateRoleRequestDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $request = $this->makeRequest();
 
-        $this->setExpectedException(MissingContentTypeException::class);
+        $this->expectException(MissingContentTypeException::class);
 
         $this->deserializer->deserialize($request, $this->roleId);
     }

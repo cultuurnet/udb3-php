@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-class DeleteTypicalAgeRangeTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class DeleteTypicalAgeRangeTest extends TestCase
 {
     /**
      * @var DeleteTypicalAgeRange

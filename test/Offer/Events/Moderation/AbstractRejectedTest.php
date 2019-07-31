@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Offer\Events\Moderation;
 
 use CultuurNet\UDB3\Offer\Commands\Moderation\AbstractReject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AbstractRejectedTest extends \PHPUnit_Framework_TestCase
+class AbstractRejectedTest extends TestCase
 {
     /**
      * @var string

@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Organizer;
 
-class OrganizerProjectedToJSONLDTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class OrganizerProjectedToJSONLDTest extends TestCase
 {
     /**
      * @test

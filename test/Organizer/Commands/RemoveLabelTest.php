@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Organizer\Commands;
 
 use CultuurNet\UDB3\Label;
+use PHPUnit\Framework\TestCase;
 
-class RemoveLabelTest extends \PHPUnit_Framework_TestCase
+class RemoveLabelTest extends TestCase
 {
     /**
      * @test

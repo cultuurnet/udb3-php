@@ -5,12 +5,11 @@ namespace CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\UserPermissionsWriteRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
-use PHPUnit_Framework_TestCase;
-use Symfony\Component\Security\Acl\Dbal\Schema;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UserPermissionsWriteRepositoryTest extends PHPUnit_Framework_TestCase
+class UserPermissionsWriteRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

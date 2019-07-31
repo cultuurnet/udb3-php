@@ -7,9 +7,10 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Language;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 
-class UpdateAddressTest extends \PHPUnit_Framework_TestCase
+class UpdateAddressTest extends TestCase
 {
     /**
      * @var string

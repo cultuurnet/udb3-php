@@ -16,12 +16,14 @@ use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
+class ItemVisibilityProjectorTest extends TestCase
 {
     /**
      * @var ItemVisibilityProjector
@@ -29,12 +31,12 @@ class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
     private $projector;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     private $itemRepository;
 
     /**
-     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     private $relationRepository;
 
@@ -402,7 +404,7 @@ class ItemVisibilityProjectorTest extends \PHPUnit_Framework_TestCase
         $placeId = new StringLiteral('B8A3FF1E-64A3-41C4-A2DB-A6FA35E4219A');
         $madeVisibleEvent = new MadeInvisible($labelId, $labelName);
 
-        /** @var LoggerInterface|\PHPUnit_Framework_MockObject_MockObject $logger */
+        /** @var LoggerInterface|MockObject $logger */
         $logger = $this->createMock(AbstractLogger::class);
         $logger
             ->expects($this->once())

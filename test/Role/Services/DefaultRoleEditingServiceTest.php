@@ -23,18 +23,20 @@ use CultuurNet\UDB3\Role\RoleRepository;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Role\ValueObjects\Query;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultRoleEditingServiceTest extends TestCase
 {
     /**
-     * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandBusInterface|MockObject
      */
     private $commandBus;
 
     /**
-     * @var UuidGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var UuidGeneratorInterface|MockObject
      */
     private $uuidGenerator;
 
@@ -44,7 +46,7 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     protected $eventStore;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     private $writeRepository;
 
@@ -97,11 +99,6 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
      * @var DefaultRoleEditingService
      */
     private $roleEditingService;
-
-    /**
-     * @var string
-     */
-    private $expectedCommandId;
 
     public function setUp()
     {
@@ -161,8 +158,6 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
             $this->uuidGenerator,
             $this->writeRepository
         );
-
-        $this->expectedCommandId = '123456789';
     }
 
     /**
@@ -198,15 +193,12 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus->expects($this->once())
             ->method('dispatch')
-            ->with($this->renameRole)
-            ->willReturn($this->expectedCommandId);
+            ->with($this->renameRole);
 
-        $commandId = $this->roleEditingService->rename(
+        $this->roleEditingService->rename(
             $this->uuid,
             new StringLiteral('new roleName')
         );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 
     /**
@@ -216,16 +208,13 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus->expects($this->once())
             ->method('dispatch')
-            ->with(new AddConstraint($this->uuid, SapiVersion::V2(), new Query('test query')))
-            ->willReturn($this->expectedCommandId);
+            ->with(new AddConstraint($this->uuid, SapiVersion::V2(), new Query('test query')));
 
-        $commandId = $this->roleEditingService->addConstraint(
+        $this->roleEditingService->addConstraint(
             $this->uuid,
             SapiVersion::V2(),
             new Query('test query')
         );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 
     /**
@@ -235,16 +224,13 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus->expects($this->once())
             ->method('dispatch')
-            ->with(new UpdateConstraint($this->uuid, SapiVersion::V2(), new Query('test query')))
-            ->willReturn($this->expectedCommandId);
+            ->with(new UpdateConstraint($this->uuid, SapiVersion::V2(), new Query('test query')));
 
-        $commandId = $this->roleEditingService->updateConstraint(
+        $this->roleEditingService->updateConstraint(
             $this->uuid,
             SapiVersion::V2(),
             new Query('test query')
         );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 
     /**
@@ -254,15 +240,12 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus->expects($this->once())
             ->method('dispatch')
-            ->with(new RemoveConstraint($this->uuid, SapiVersion::V2()))
-            ->willReturn($this->expectedCommandId);
+            ->with(new RemoveConstraint($this->uuid, SapiVersion::V2()));
 
-        $commandId = $this->roleEditingService->removeConstraint(
+        $this->roleEditingService->removeConstraint(
             $this->uuid,
             SapiVersion::V2()
         );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 
     /**
@@ -272,15 +255,12 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus->expects($this->once())
             ->method('dispatch')
-            ->with($this->addPermission)
-            ->willReturn($this->expectedCommandId);
+            ->with($this->addPermission);
 
-        $commandId = $this->roleEditingService->addPermission(
+        $this->roleEditingService->addPermission(
             $this->uuid,
             Permission::AANBOD_BEWERKEN()
         );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 
     /**
@@ -290,15 +270,12 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus->expects($this->once())
             ->method('dispatch')
-            ->with($this->removePermission)
-            ->willReturn($this->expectedCommandId);
+            ->with($this->removePermission);
 
-        $commandId = $this->roleEditingService->removePermission(
+        $this->roleEditingService->removePermission(
             $this->uuid,
             Permission::AANBOD_BEWERKEN()
         );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 
     /**
@@ -308,15 +285,12 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus->expects($this->once())
             ->method('dispatch')
-            ->with($this->addLabel)
-            ->willReturn($this->expectedCommandId);
+            ->with($this->addLabel);
 
-        $commandId = $this->roleEditingService->addLabel(
+        $this->roleEditingService->addLabel(
             $this->uuid,
             $this->labelId
         );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 
     /**
@@ -326,15 +300,12 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus->expects($this->once())
             ->method('dispatch')
-            ->with($this->removeLabel)
-            ->willReturn($this->expectedCommandId);
+            ->with($this->removeLabel);
 
-        $commandId = $this->roleEditingService->removeLabel(
+        $this->roleEditingService->removeLabel(
             $this->uuid,
             $this->labelId
         );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 
     /**
@@ -344,13 +315,10 @@ class DefaultRoleEditingServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->commandBus->expects($this->once())
             ->method('dispatch')
-            ->with($this->deleteRole)
-            ->willReturn($this->expectedCommandId);
+            ->with($this->deleteRole);
 
-        $commandId = $this->roleEditingService->delete(
+        $this->roleEditingService->delete(
             $this->uuid
         );
-
-        $this->assertEquals($this->expectedCommandId, $commandId);
     }
 }

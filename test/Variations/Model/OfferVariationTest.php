@@ -16,8 +16,9 @@ use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
+use PHPUnit\Framework\TestCase;
 
-class OfferVariationTest extends \PHPUnit_Framework_TestCase
+class OfferVariationTest extends TestCase
 {
     /**
      * @test
@@ -105,7 +106,7 @@ class OfferVariationTest extends \PHPUnit_Framework_TestCase
         $eventVariation->markDeleted();
         $this->assertTrue($eventVariation->isDeleted());
 
-        $this->setExpectedException(AggregateDeletedException::class);
+        $this->expectException(AggregateDeletedException::class);
         $eventVariation->markDeleted();
     }
 

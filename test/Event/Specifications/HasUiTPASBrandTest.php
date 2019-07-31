@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD\Specifications;
 
-class HasUiTPASBrandTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class HasUiTPASBrandTest extends TestCase
 {
     use EventSpecificationTestTrait;
 

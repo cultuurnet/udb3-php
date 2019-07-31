@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-class UpdateTypicalAgeRangeTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class UpdateTypicalAgeRangeTest extends TestCase
 {
     /**
      * @var UpdateTypicalAgeRange

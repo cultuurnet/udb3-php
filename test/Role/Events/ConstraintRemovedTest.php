@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Role\Events;
 
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class ConstraintRemovedTest extends \PHPUnit_Framework_TestCase
+class ConstraintRemovedTest extends TestCase
 {
     /**
      * @var UUID

@@ -9,10 +9,11 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Timestamp;
 use DateTime;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\DateTime\Hour;
 use ValueObjects\DateTime\Minute;
 
-class CalendarConverterTest extends \PHPUnit_Framework_TestCase
+class CalendarConverterTest extends TestCase
 {
     /**
      * @var CalendarConverter

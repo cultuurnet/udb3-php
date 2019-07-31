@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Role\Events;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class AbstractPermissionEventTest extends \PHPUnit_Framework_TestCase
+class AbstractPermissionEventTest extends TestCase
 {
     /**
      * @var UUID

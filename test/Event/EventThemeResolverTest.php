@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Theme;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class EventThemeResolverTest extends \PHPUnit_Framework_TestCase
+class EventThemeResolverTest extends TestCase
 {
     /**
      * @var EventThemeResolver

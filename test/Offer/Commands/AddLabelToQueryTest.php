@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Offer\Commands;
 
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
+use PHPUnit\Framework\TestCase;
 
-class AddLabelToQueryTest extends \PHPUnit_Framework_TestCase
+class AddLabelToQueryTest extends TestCase
 {
     /**
      * @var AddLabelToQuery

@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\Search\Parameter\Query;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-abstract class SearchQueryFactoryTestBase extends \PHPUnit_Framework_TestCase
+abstract class SearchQueryFactoryTestBase extends TestCase
 {
     /**
      * @var SearchQueryFactoryInterface

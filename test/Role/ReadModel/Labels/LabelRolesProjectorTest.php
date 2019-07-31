@@ -14,11 +14,11 @@ use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Role\Events\LabelAdded;
 use CultuurNet\UDB3\Role\Events\LabelRemoved;
-use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class LabelRolesProjectorTest extends PHPUnit_Framework_TestCase
+class LabelRolesProjectorTest extends TestCase
 {
 
     /**
@@ -27,7 +27,7 @@ class LabelRolesProjectorTest extends PHPUnit_Framework_TestCase
     private $labelRolesProjector;
 
     /**
-     * @var DocumentRepositoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     private $labelRolesRepository;
 

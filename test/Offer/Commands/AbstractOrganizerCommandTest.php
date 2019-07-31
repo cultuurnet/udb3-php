@@ -2,12 +2,13 @@
 
 namespace CultuurNet\UDB3\Offer\Commands;
 
-use CultuurNet\UDB3\Organizer\Organizer;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-class AbstractOrganizerCommandTest extends \PHPUnit_Framework_TestCase
+class AbstractOrganizerCommandTest extends TestCase
 {
     /**
-     * @var AbstractOrganizerCommand|\PHPUnit_Framework_MockObject_MockObject
+     * @var AbstractOrganizerCommand|MockObject
      */
     protected $organizerCommand;
 

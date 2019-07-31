@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\Label\Events;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class LabelDetailsProjectedToJSONLDTest extends \PHPUnit_Framework_TestCase
+class LabelDetailsProjectedToJSONLDTest extends TestCase
 {
     /**
      * @var UUID

@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\SearchAPI2\Filters;
 
 use CultuurNet\Search\Parameter\FilterQuery;
+use PHPUnit\Framework\TestCase;
 
-class NotUDB3PlaceTest extends \PHPUnit_Framework_TestCase
+class NotUDB3PlaceTest extends TestCase
 {
     /**
      * @test

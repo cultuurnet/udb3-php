@@ -27,13 +27,15 @@ use CultuurNet\UDB3\PriceInfo\Price;
 use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Money\Currency;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultOfferEditingServiceTest extends TestCase
 {
     /**
-     * @var CommandBusInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var CommandBusInterface|MockObject
      */
     private $commandBus;
 
@@ -43,17 +45,17 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $uuidGenerator;
 
     /**
-     * @var DocumentRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DocumentRepositoryInterface|MockObject
      */
     private $offerRepository;
 
     /**
-     * @var OfferCommandFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OfferCommandFactoryInterface|MockObject
      */
     private $commandFactory;
 
     /**
-     * @var LabelServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var LabelServiceInterface|MockObject
      */
     private $labelService;
 
@@ -83,12 +85,12 @@ class DefaultOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
     private $translateTitleCommand;
 
     /**
-     * @var TypeResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var TypeResolverInterface|MockObject
      */
     private $typeResolver;
 
     /**
-     * @var ThemeResolverInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ThemeResolverInterface|MockObject
      */
     private $themeResolver;
 

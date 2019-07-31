@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Event\Events\Moderation;
 
-class PublishedTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class PublishedTest extends TestCase
 {
     /**
      * @var string

@@ -2,9 +2,6 @@
 
 namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 
-use Broadway\Domain\DateTime;
-use Broadway\Domain\DomainMessage;
-use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\EventSourcing\DomainMessageBuilder;
@@ -16,11 +13,10 @@ use CultuurNet\UDB3\OrganizerService;
 use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
-use CultuurNet\UDB3\RecordedOn;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class RelatedEventLDProjectorTest extends PHPUnit_Framework_TestCase
+class RelatedEventLDProjectorTest extends TestCase
 {
     /**
      * @var DomainMessageBuilder

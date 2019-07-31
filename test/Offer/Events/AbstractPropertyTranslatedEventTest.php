@@ -3,12 +3,14 @@
 namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Language;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AbstractPropertyTranslatedEventTest extends \PHPUnit_Framework_TestCase
+class AbstractPropertyTranslatedEventTest extends TestCase
 {
     /**
-     * @var AbstractPropertyTranslatedEvent|\PHPUnit_Framework_MockObject_MockObject
+     * @var AbstractPropertyTranslatedEvent|MockObject
      */
     protected $propertyTranslatedEvent;
 

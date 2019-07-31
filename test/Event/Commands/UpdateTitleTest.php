@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\Language;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class UpdateTitleTest extends \PHPUnit_Framework_TestCase
+class UpdateTitleTest extends TestCase
 {
     /**
      * @var UpdateTitle

@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Event\ValueObjects\LocationId;
+use PHPUnit\Framework\TestCase;
 
-class LocationUpdatedTest extends \PHPUnit_Framework_TestCase
+class LocationUpdatedTest extends TestCase
 {
     /**
      * @var string

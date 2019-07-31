@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Place\Commands;
 
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 
-class UpdateFacilitiesTest extends \PHPUnit_Framework_TestCase
+class UpdateFacilitiesTest extends TestCase
 {
     /**
      * @var UpdateFacilities

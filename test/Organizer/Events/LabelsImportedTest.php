@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Organizer\Events;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
+use PHPUnit\Framework\TestCase;
 
-class LabelsImportedTest extends \PHPUnit_Framework_TestCase
+class LabelsImportedTest extends TestCase
 {
     /**
      * @var LabelsImported

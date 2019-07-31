@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Offer\Item\Events\DescriptionUpdated;
+use PHPUnit\Framework\TestCase;
 
-class AbstractDescriptionUpdatedTest extends \PHPUnit_Framework_TestCase
+class AbstractDescriptionUpdatedTest extends TestCase
 {
     /**
      * @var AbstractDescriptionUpdated

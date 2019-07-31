@@ -8,9 +8,11 @@ use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\Model\Properties\UrlValidator;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class CreateOfferVariationJSONDeserializerTest extends TestCase
 {
     /**
      * @var CreateOfferVariationJSONDeserializer
@@ -18,7 +20,7 @@ class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
     private $deserializer;
 
     /**
-     * @var DefaultUrlValidator|\PHPUnit_Framework_MockObject_MockObject
+     * @var DefaultUrlValidator|MockObject
      */
     private $defaultUrlValidator;
 
@@ -33,7 +35,7 @@ class CreateOfferVariationJSONDeserializerTest extends \PHPUnit_Framework_TestCa
      */
     public function it_validates_the_json()
     {
-        $this->setExpectedException(ValidationException::class, 'Invalid data');
+        $this->expectException(ValidationException::class, 'Invalid data');
 
         try {
             $this->deserializer->deserialize(new StringLiteral('{"owner": "foo"}'));

@@ -4,10 +4,12 @@ namespace CultuurNet\UDB3\UiTID;
 
 use CultuurNet\UDB3\User\CultureFeedUserIdentityDetailsFactory;
 use CultuurNet\UDB3\User\CultureFeedUserIdentityResolver;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
-class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
+class CultureFeedUsersTest extends TestCase
 {
     /**
      * @var CultureFeedUsers
@@ -15,7 +17,7 @@ class CultureFeedUsersTest extends \PHPUnit_Framework_TestCase
     private $users;
 
     /**
-     * @var \ICultureFeed|\PHPUnit_Framework_MockObject_MockObject
+     * @var \ICultureFeed|MockObject
      */
     private $cultureFeed;
 

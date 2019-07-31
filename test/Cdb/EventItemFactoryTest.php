@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Cdb;
 
-class EventItemFactoryTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class EventItemFactoryTest extends TestCase
 {
     /**
      * @var EventItemFactory

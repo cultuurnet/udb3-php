@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Place\ReadModel\Relations\Doctrine;
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
 use Doctrine\DBAL\Connection;
+use PHPUnit\Framework\TestCase;
 
-class DBALRepositoryTest extends \PHPUnit_Framework_TestCase
+class DBALRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

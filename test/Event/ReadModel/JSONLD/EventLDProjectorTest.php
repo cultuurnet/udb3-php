@@ -7,7 +7,6 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
-use CultureFeed_Cdb_Data_File;
 use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;
 use CultuurNet\Geocoding\Coordinate\Longitude;
@@ -33,38 +32,32 @@ use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
-use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
-use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
-use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
-use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
-use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Timestamp;
 use CultuurNet\UDB3\Title;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 use Symfony\Component\Serializer\Serializer;
-use ValueObjects\Web\Url;
 
 class EventLDProjectorTest extends OfferLDProjectorTestBase
 {
     const CDBXML_NAMESPACE = 'http://www.cultuurdatabank.com/XMLSchema/CdbXSD/3.3/FINAL';
 
     /**
-     * @var PlaceService|PHPUnit_Framework_MockObject_MockObject
+     * @var PlaceService|MockObject
      */
     private $placeService;
 
@@ -84,17 +77,17 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     protected $projector;
 
     /**
-     * @var Serializer|PHPUnit_Framework_MockObject_MockObject
+     * @var Serializer|MockObject
      */
     protected $serializer;
 
     /**
-     * @var IriOfferIdentifierFactoryInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var IriOfferIdentifierFactoryInterface|MockObject
      */
     protected $iriOfferIdentifierFactory;
 
     /**
-     * @var CdbXMLImporter|PHPUnit_Framework_MockObject_MockObject
+     * @var CdbXMLImporter|MockObject
      */
     protected $cdbXMLImporter;
 
@@ -575,6 +568,8 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             'samples/event_with_empty_keyword.cdbxml.xml'
         );
         $this->project($eventUpdatedFromUdb2, $eventUpdatedFromUdb2->getEventId());
+        
+        $this->expectNotToPerformAssertions();
     }
 
     /**

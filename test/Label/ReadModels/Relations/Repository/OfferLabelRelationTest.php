@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Label\ReadModels\Relations\Repository;
 
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\RelationType;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class OfferLabelRelationTest extends \PHPUnit_Framework_TestCase
+class OfferLabelRelationTest extends TestCase
 {
     /**
      * @var LabelName

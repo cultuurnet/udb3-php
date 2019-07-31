@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Role\Commands;
 
 use CultuurNet\UDB3\Role\ValueObjects\Query;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 
-class UpdateConstraintTest extends \PHPUnit_Framework_TestCase
+class UpdateConstraintTest extends TestCase
 {
     /**
      * @var UUID

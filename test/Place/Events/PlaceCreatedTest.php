@@ -14,9 +14,10 @@ use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;
 
-class PlaceCreatedTest extends \PHPUnit_Framework_TestCase
+class PlaceCreatedTest extends TestCase
 {
     /**
      * @var Address

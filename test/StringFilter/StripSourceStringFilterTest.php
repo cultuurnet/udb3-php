@@ -101,6 +101,7 @@ class StripSourceStringFilterTest extends StringFilterTest
         // would cause a notice. If the test doesn't fail on this notice,
         // it does not occur anymore.
         $this->filter('');
+        $this->expectNotToPerformAssertions();
     }
 
     /**
@@ -108,7 +109,7 @@ class StripSourceStringFilterTest extends StringFilterTest
      */
     public function it_only_filters_strings()
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->filter->filter(12345);
     }
 }

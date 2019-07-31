@@ -2,10 +2,11 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SimplePathGeneratorTest extends \PHPUnit_Framework_TestCase
+class SimplePathGeneratorTest extends TestCase
 {
     /**
      * @test

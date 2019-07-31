@@ -8,13 +8,15 @@ use CultuurNet\UDB3\Label;
 use Http\Client\HttpClient;
 use Lcobucci\JWT\Signature;
 use Lcobucci\JWT\Token as Jwt;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use ValueObjects\Web\Url;
 
-class DefaultExternalOfferEditingServiceTest extends \PHPUnit_Framework_TestCase
+class DefaultExternalOfferEditingServiceTest extends TestCase
 {
     /**
-     * @var HttpClient|\PHPUnit_Framework_MockObject_MockObject
+     * @var HttpClient|MockObject
      */
     private $httpClient;
 

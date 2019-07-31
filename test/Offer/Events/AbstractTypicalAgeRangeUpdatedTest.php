@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Offer\Events;
 
 use CultuurNet\UDB3\Offer\AgeRange;
 use CultuurNet\UDB3\Offer\Item\Events\TypicalAgeRangeUpdated;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Person\Age;
 
-class AbstractTypicalAgeRangeUpdatedTest extends \PHPUnit_Framework_TestCase
+class AbstractTypicalAgeRangeUpdatedTest extends TestCase
 {
     /**
      * @var AbstractTypicalAgeRangeUpdated

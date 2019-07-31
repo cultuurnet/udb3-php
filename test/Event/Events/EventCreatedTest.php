@@ -11,8 +11,9 @@ use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
+use PHPUnit\Framework\TestCase;
 
-class EventCreatedTest extends \PHPUnit_Framework_TestCase
+class EventCreatedTest extends TestCase
 {
     /**
      * @var LocationId

@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Label\ValueObjects;
 
-class VisibilityTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class VisibilityTest extends TestCase
 {
     /**
      * @test

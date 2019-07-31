@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Label\ReadModels\JSON\Repository;
 
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
@@ -12,7 +13,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 class GodUserReadRepositoryDecoratorTest extends TestCase
 {
     /**
-     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     private $mockRepository;
 

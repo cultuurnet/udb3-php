@@ -5,17 +5,18 @@ namespace CultuurNet\UDB3\DomainMessage;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
+use PHPUnit\Framework\TestCase;
 use Rhumsaa\Uuid\Uuid;
 
 trait DomainMessageTestDataTrait
 {
     /**
-     * @param \PHPUnit_Framework_TestCase $testCase
+     * @param TestCase $testCase
      * @param string $payloadClassName
      * @return DomainMessage
      */
     private function createDomainMessage(
-        \PHPUnit_Framework_TestCase $testCase,
+        TestCase $testCase,
         $payloadClassName
     ) {
         $payload = $testCase->createMock($payloadClassName);

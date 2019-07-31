@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Cdb;
 
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
+use PHPUnit\Framework\TestCase;
 
-class PriceDescriptionParserTest extends \PHPUnit_Framework_TestCase
+class PriceDescriptionParserTest extends TestCase
 {
     /**
      * @var PriceDescriptionParser

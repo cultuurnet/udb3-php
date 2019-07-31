@@ -40,13 +40,6 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
      */
     private $writeRepository;
 
-    /**
-     * DefaultRoleEditingService constructor.
-     *
-     * @param CommandBusInterface $commandBus
-     * @param UuidGeneratorInterface $uuidGenerator
-     * @param RepositoryInterface $writeRepository
-     */
     public function __construct(
         CommandBusInterface $commandBus,
         UuidGeneratorInterface $uuidGenerator,
@@ -57,10 +50,7 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
         $this->writeRepository = $writeRepository;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function create(StringLiteral $name)
+    public function create(StringLiteral $name): UUID
     {
         $uuid = new UUID($this->uuidGenerator->generate());
 
@@ -68,78 +58,60 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
 
         $this->writeRepository->save($role);
 
-        return $uuid->toNative();
+        return $uuid;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function rename(UUID $uuid, StringLiteral $name)
+    public function rename(UUID $uuid, StringLiteral $name): void
     {
         $command = new RenameRole(
             $uuid,
             $name
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function addPermission(UUID $uuid, Permission $permission)
+    public function addPermission(UUID $uuid, Permission $permission): void
     {
         $command = new AddPermission(
             $uuid,
             $permission
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function removePermission(UUID $uuid, Permission $permission)
+    public function removePermission(UUID $uuid, Permission $permission): void
     {
         $command = new RemovePermission(
             $uuid,
             $permission
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function addUser(UUID $uuid, StringLiteral $userId)
+    public function addUser(UUID $uuid, StringLiteral $userId): void
     {
         $command = new AddUser(
             $uuid,
             $userId
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function removeUser(UUID $uuid, StringLiteral $userId)
+    public function removeUser(UUID $uuid, StringLiteral $userId): void
     {
         $command = new RemoveUser(
             $uuid,
             $userId
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string
+    public function addConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): void
     {
         $command = new AddConstraint(
             $uuid,
@@ -147,13 +119,10 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
             $query
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): string
+    public function updateConstraint(UUID $uuid, SapiVersion $sapiVersion, Query $query): void
     {
         $command = new UpdateConstraint(
             $uuid,
@@ -161,57 +130,45 @@ class DefaultRoleEditingService implements RoleEditingServiceInterface
             $query
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion): string
+    public function removeConstraint(UUID $uuid, SapiVersion $sapiVersion): void
     {
         $command = new RemoveConstraint(
             $uuid,
             $sapiVersion
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function addLabel(UUID $uuid, UUID $labelId)
+    public function addLabel(UUID $uuid, UUID $labelId): void
     {
         $command = new AddLabel(
             $uuid,
             $labelId
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function removeLabel(UUID $uuid, UUID $labelId)
+    public function removeLabel(UUID $uuid, UUID $labelId): void
     {
         $command = new RemoveLabel(
             $uuid,
             $labelId
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function delete(UUID $uuid)
+    public function delete(UUID $uuid): void
     {
         $command = new DeleteRole(
             $uuid
         );
 
-        return $this->commandBus->dispatch($command);
+        $this->commandBus->dispatch($command);
     }
 }

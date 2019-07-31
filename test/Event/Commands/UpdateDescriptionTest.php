@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Event\Commands;
 
 use CultuurNet\UDB3\Description;
 use CultuurNet\UDB3\Language;
+use PHPUnit\Framework\TestCase;
 
-class UpdateDescriptionTest extends \PHPUnit_Framework_TestCase
+class UpdateDescriptionTest extends TestCase
 {
     /**
      * @var UpdateDescription

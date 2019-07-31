@@ -3,9 +3,10 @@
 namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Facility;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class PlaceFacilityResolverTest extends \PHPUnit_Framework_TestCase
+class PlaceFacilityResolverTest extends TestCase
 {
     /**
      * @test

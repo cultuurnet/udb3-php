@@ -8,12 +8,14 @@ use CultuurNet\UDB3\Language;
 use League\Flysystem\FilesystemInterface;
 use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Number\Natural;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
+class ImageUploaderServiceTest extends TestCase
 {
     /**
      * @var UUID
@@ -26,12 +28,12 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
     protected $uploader;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|UuidGeneratorInterface
+     * @var MockObject|UuidGeneratorInterface
      */
     protected $uuidGenerator;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|FilesystemInterface
+     * @var MockObject|FilesystemInterface
      */
     protected $filesystem;
 
@@ -41,7 +43,7 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
     protected $directory = '/uploads';
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|CommandBusInterface
+     * @var MockObject|CommandBusInterface
      */
     protected $commandBus;
 
@@ -118,16 +120,13 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
             ->method('writeStream')
             ->with($expectedDestination, $this->anything());
 
-        $jobId = 'b7df66b0-b772-43db-b7c8-eb58f444817c';
         $this->commandBus
             ->expects($this->once())
-            ->method('dispatch')
-            ->willReturn($jobId);
+            ->method('dispatch');
 
-        $uploadImageResult = $this->uploader->upload($file, $description, $copyrightHolder, $language);
+        $imageId = $this->uploader->upload($file, $description, $copyrightHolder, $language);
 
-        $this->assertEquals($generatedUuid, $uploadImageResult->getImageId());
-        $this->assertEquals($jobId, $uploadImageResult->getJobId());
+        $this->assertEquals($generatedUuid, $imageId);
     }
 
     /**
@@ -259,20 +258,17 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
             ->method('writeStream')
             ->with($expectedDestination, $this->anything());
 
-        $jobId = 'b7df66b0-b772-43db-b7c8-eb58f444817c';
         $this->commandBus
             ->expects($this->once())
-            ->method('dispatch')
-            ->willReturn($jobId);
+            ->method('dispatch');
 
-        $uploadImageResult = $uploader->upload($file, $description, $copyrightHolder, $language);
+        $imageId = $uploader->upload($file, $description, $copyrightHolder, $language);
 
-        $this->assertEquals($generatedUuid, $uploadImageResult->getImageId());
-        $this->assertEquals($jobId, $uploadImageResult->getJobId());
+        $this->assertEquals($generatedUuid, $imageId);
     }
 
     /**
-     * @return UploadedFile|\PHPUnit_Framework_MockObject_MockObject
+     * @return UploadedFile|MockObject
      */
     private function getMockFile()
     {
@@ -287,7 +283,7 @@ class ImageUploaderServiceTest extends \PHPUnit_Framework_TestCase
      * @param int $imageSize
      *  Image size in bytes.
      *
-     * @return UploadedFile|\PHPUnit_Framework_MockObject_MockObject
+     * @return UploadedFile|MockObject
      */
     private function getMockImage($imageSize)
     {

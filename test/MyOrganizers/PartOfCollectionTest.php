@@ -2,9 +2,10 @@
 
 namespace CultuurNet\UDB3\MyOrganizers;
 
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Number\Natural;
 
-class PartOfCollectionTest extends \PHPUnit_Framework_TestCase
+class PartOfCollectionTest extends TestCase
 {
     /**
      * @test

@@ -4,10 +4,11 @@ namespace CultuurNet\UDB3\Variations\Command;
 
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class EditDescriptionJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class EditDescriptionJSONDeserializerTest extends TestCase
 {
     /**
      * @var EditDescriptionJSONDeserializer

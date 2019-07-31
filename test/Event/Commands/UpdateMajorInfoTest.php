@@ -8,8 +8,9 @@ use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Theme;
+use PHPUnit\Framework\TestCase;
 
-class UpdateMajorInfoTest extends \PHPUnit_Framework_TestCase
+class UpdateMajorInfoTest extends TestCase
 {
     /**
      * @var UpdateMajorInfo

@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Description;
+use PHPUnit\Framework\TestCase;
 
-class DescriptionUpdatedTest extends \PHPUnit_Framework_TestCase
+class DescriptionUpdatedTest extends TestCase
 {
     public function serializationDataProvider()
     {

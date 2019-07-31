@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Cdb;
 
-class ActorItemFactoryTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ActorItemFactoryTest extends TestCase
 {
     /**
      * @var ActorItemFactory

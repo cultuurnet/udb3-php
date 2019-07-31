@@ -6,9 +6,10 @@
 namespace CultuurNet\UDB3\SavedSearches\ReadModel;
 
 use CultuurNet\UDB3\SavedSearches\Properties\QueryString;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class SavedSearchTest extends \PHPUnit_Framework_TestCase
+class SavedSearchTest extends TestCase
 {
     /**
      * @test

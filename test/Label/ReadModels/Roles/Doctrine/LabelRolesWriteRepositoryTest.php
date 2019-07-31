@@ -4,10 +4,11 @@ namespace CultuurNet\UDB3\Label\ReadModels\Roles\Doctrine;
 
 use CultuurNet\UDB3\DBALTestConnectionTrait;
 use CultuurNet\UDB3\Label\ReadModels\Roles\LabelRolesWriteRepositoryInterface;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class LabelRolesWriteRepositoryTest extends \PHPUnit_Framework_TestCase
+class LabelRolesWriteRepositoryTest extends TestCase
 {
     use DBALTestConnectionTrait;
 

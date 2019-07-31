@@ -4,9 +4,10 @@ namespace CultuurNet\UDB3\Security;
 
 use CultuurNet\UDB3\Offer\Commands\AuthorizableCommandInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class CommandAuthorizationExceptionTest extends \PHPUnit_Framework_TestCase
+class CommandAuthorizationExceptionTest extends TestCase
 {
     /**
      * @var StringLiteral

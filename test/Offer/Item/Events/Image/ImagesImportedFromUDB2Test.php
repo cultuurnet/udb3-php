@@ -8,10 +8,11 @@ use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Web\Url;
 
-class ImagesImportedFromUDB2Test extends \PHPUnit_Framework_TestCase
+class ImagesImportedFromUDB2Test extends TestCase
 {
     /**
      * @test

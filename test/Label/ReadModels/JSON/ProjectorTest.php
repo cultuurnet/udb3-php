@@ -26,10 +26,12 @@ use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelRemoved;
 use CultuurNet\UDB3\Place\Events\LabelAdded as LabelAddedToPlace;
 use CultuurNet\UDB3\Place\Events\LabelRemoved as LabelRemovedFromPlace;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class ProjectorTest extends \PHPUnit_Framework_TestCase
+class ProjectorTest extends TestCase
 {
     /**
      * @var UUID
@@ -52,12 +54,12 @@ class ProjectorTest extends \PHPUnit_Framework_TestCase
     private $unknownLabelName;
 
     /**
-     * @var WriteRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var WriteRepositoryInterface|MockObject
      */
     private $writeRepository;
 
     /**
-     * @var ReadRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ReadRepositoryInterface|MockObject
      */
     private $readRepository;
 

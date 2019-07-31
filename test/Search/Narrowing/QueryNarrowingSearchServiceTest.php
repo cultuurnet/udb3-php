@@ -5,12 +5,14 @@ namespace CultuurNet\UDB3\Search\Narrowing;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Search\Results;
 use CultuurNet\UDB3\Search\SearchServiceInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Number\Integer;
 
-class QueryNarrowingSearchServiceTest extends \PHPUnit_Framework_TestCase
+class QueryNarrowingSearchServiceTest extends TestCase
 {
     /**
-     * @var SearchServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var SearchServiceInterface|MockObject
      */
     private $wrappedSearchService;
 
@@ -20,7 +22,7 @@ class QueryNarrowingSearchServiceTest extends \PHPUnit_Framework_TestCase
     private $searchService;
 
     /**
-     * @var QueryNarrowerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var QueryNarrowerInterface|MockObject
      */
     private $queryNarrower;
 

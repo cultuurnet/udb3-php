@@ -3,16 +3,18 @@
 namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Place\ReadModel\Relations\RepositoryInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-class PlaceOrganizerRelationServiceTest extends \PHPUnit_Framework_TestCase
+class PlaceOrganizerRelationServiceTest extends TestCase
 {
     /**
-     * @var PlaceEditingServiceInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var PlaceEditingServiceInterface|MockObject
      */
     private $editService;
 
     /**
-     * @var RepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var RepositoryInterface|MockObject
      */
     private $relationRepository;
 

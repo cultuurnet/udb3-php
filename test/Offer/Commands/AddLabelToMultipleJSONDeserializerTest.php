@@ -8,13 +8,15 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
+class AddLabelToMultipleJSONDeserializerTest extends TestCase
 {
     /**
-     * @var DeserializerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DeserializerInterface|MockObject
      */
     private $offerIdentifierDeserializer;
 
@@ -89,7 +91,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $json = new StringLiteral('{"offers":[]}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing value "label".'
         );
@@ -104,7 +106,7 @@ class AddLabelToMultipleJSONDeserializerTest extends \PHPUnit_Framework_TestCase
     {
         $json = new StringLiteral('{"label":"foo"}');
 
-        $this->setExpectedException(
+        $this->expectException(
             MissingValueException::class,
             'Missing value "offers".'
         );

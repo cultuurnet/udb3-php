@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3;
 
 use CultureFeed_Cdb_Data_Keyword;
+use PHPUnit\Framework\TestCase;
 
-class LabelCollectionTest extends \PHPUnit_Framework_TestCase
+class LabelCollectionTest extends TestCase
 {
     /**
      * @return array
@@ -27,7 +28,7 @@ class LabelCollectionTest extends \PHPUnit_Framework_TestCase
      */
     public function it_can_only_contain_labels($notALabel)
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         new LabelCollection(
             [

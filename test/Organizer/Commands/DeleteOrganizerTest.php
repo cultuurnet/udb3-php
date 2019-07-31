@@ -3,8 +3,9 @@
 namespace CultuurNet\UDB3\Organizer\Commands;
 
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
+use PHPUnit\Framework\TestCase;
 
-class DeleteOrganizerTest extends \PHPUnit_Framework_TestCase
+class DeleteOrganizerTest extends TestCase
 {
     /**
      * @test

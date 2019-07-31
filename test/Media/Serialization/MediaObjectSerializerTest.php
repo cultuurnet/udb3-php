@@ -9,19 +9,21 @@ use CultuurNet\UDB3\Media\MediaObject;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
 use CultuurNet\UDB3\Media\Properties\MIMEType;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Exception\UnsupportedException;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Web\Url;
 
-class MediaObjectSerializerTest extends \PHPUnit_Framework_TestCase
+class MediaObjectSerializerTest extends TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|MediaObjectSerializer
+     * @var MockObject|MediaObjectSerializer
      */
     protected $serializer;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|IriGeneratorInterface
+     * @var MockObject|IriGeneratorInterface
      */
     protected $iriGenerator;
 

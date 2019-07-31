@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Offer\Events;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Offer\Item\Events\TitleTranslated;
 use CultuurNet\UDB3\Title;
+use PHPUnit\Framework\TestCase;
 
-class AbstractTitleTranslatedTest extends \PHPUnit_Framework_TestCase
+class AbstractTitleTranslatedTest extends TestCase
 {
     /**
      * @var AbstractTitleTranslated

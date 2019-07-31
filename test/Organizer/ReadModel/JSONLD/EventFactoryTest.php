@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Organizer\ReadModel\JSONLD;
 
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
+use PHPUnit\Framework\TestCase;
 
-class EventFactoryTest extends \PHPUnit_Framework_TestCase
+class EventFactoryTest extends TestCase
 {
     /**
      * @var CallableIriGenerator

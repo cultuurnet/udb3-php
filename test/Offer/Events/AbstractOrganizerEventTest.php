@@ -2,7 +2,9 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
-class AbstractOrganizerEventTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AbstractOrganizerEventTest extends TestCase
 {
     /**
      * @var AbstractOrganizerEvent

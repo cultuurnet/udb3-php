@@ -6,9 +6,10 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Offer\OfferType;
+use PHPUnit\Framework\TestCase;
 use ValueObjects\Web\Url;
 
-class AddLabelToMultipleTest extends \PHPUnit_Framework_TestCase
+class AddLabelToMultipleTest extends TestCase
 {
     /**
      * @var AddLabelToMultiple

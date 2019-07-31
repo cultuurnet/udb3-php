@@ -6,7 +6,7 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -34,7 +34,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
     private $theme;
 
     /**
-     * @var Location
+     * @var LocationId
      */
     private $location;
 
@@ -47,7 +47,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
      * @param string $eventId
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param LocationId $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      */
@@ -55,7 +55,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
         $eventId,
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         CalendarInterface $calendar,
         Theme $theme = null
     ) {
@@ -101,7 +101,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
     }
 
     /**
-     * @return Location
+     * @return LocationId
      */
     public function getLocation()
     {
@@ -122,7 +122,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
             'title' => (string)$this->getTitle(),
             'event_type' => $this->getEventType()->serialize(),
             'theme' => $theme,
-            'location' => $this->getLocation()->serialize(),
+            'location' => $this->getLocation()->toNative(),
             'calendar' => $this->getCalendar()->serialize(),
         );
     }
@@ -136,7 +136,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
             $data['item_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
-            Location::deserialize($data['location']),
+            new LocationId($data['location']),
             Calendar::deserialize($data['calendar']),
             empty($data['theme']) ? null : Theme::deserialize($data['theme'])
         );

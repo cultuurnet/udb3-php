@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Event\Commands;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Offer\Commands\AbstractCreateCommand;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
@@ -34,7 +34,7 @@ class CreateEvent extends AbstractCreateCommand
     private $theme;
 
     /**
-     * @var Location
+     * @var LocationId
      */
     private $location;
 
@@ -53,7 +53,7 @@ class CreateEvent extends AbstractCreateCommand
      * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param LocationId $location
      * @param Calendar $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
@@ -63,7 +63,7 @@ class CreateEvent extends AbstractCreateCommand
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         Calendar $calendar,
         Theme $theme = null,
         DateTimeImmutable $publicationDate = null
@@ -120,7 +120,7 @@ class CreateEvent extends AbstractCreateCommand
     }
 
     /**
-     * @return Location
+     * @return LocationId
      */
     public function getLocation()
     {

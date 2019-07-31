@@ -7,7 +7,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
@@ -38,7 +38,7 @@ class EventCreated extends EventEvent
     private $theme = null;
 
     /**
-     * @var Location
+     * @var LocationId
      */
     private $location;
 
@@ -57,7 +57,7 @@ class EventCreated extends EventEvent
      * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param LocationId $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
@@ -67,7 +67,7 @@ class EventCreated extends EventEvent
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         CalendarInterface $calendar,
         Theme $theme = null,
         DateTimeImmutable $publicationDate = null
@@ -124,7 +124,7 @@ class EventCreated extends EventEvent
     }
 
     /**
-     * @return Location
+     * @return LocationId
      */
     public function getLocation()
     {
@@ -157,7 +157,7 @@ class EventCreated extends EventEvent
             'title' => (string)$this->getTitle(),
             'event_type' => $this->getEventType()->serialize(),
             'theme' => $theme,
-            'location' => $this->getLocation()->serialize(),
+            'location' => $this->getLocation()->toNative(),
             'calendar' => $this->getCalendar()->serialize(),
             'publication_date' => $publicationDate,
         );
@@ -184,7 +184,7 @@ class EventCreated extends EventEvent
             new Language($data['main_language']),
             new Title($data['title']),
             EventType::deserialize($data['event_type']),
-            Location::deserialize($data['location']),
+            new LocationId($data['location']),
             Calendar::deserialize($data['calendar']),
             $theme,
             $publicationDate

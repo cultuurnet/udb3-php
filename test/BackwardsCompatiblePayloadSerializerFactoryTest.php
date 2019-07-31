@@ -9,6 +9,7 @@ use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\EventImportedFromUDB2;
 use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Event\Events\LabelRemoved;
+use CultuurNet\UDB3\Event\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Event\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Event\Events\TitleTranslated;
 use CultuurNet\UDB3\Label\Events\AbstractEvent;
@@ -17,6 +18,7 @@ use CultuurNet\UDB3\Label\ReadModels\JSON\Repository\ReadRepositoryInterface;
 use CultuurNet\UDB3\Label\ValueObjects\LabelName;
 use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Offer\Events\AbstractLabelEvent;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreatedWithUniqueWebsite;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
@@ -125,6 +127,34 @@ class BackwardsCompatiblePayloadSerializerFactoryTest extends TestCase
                 new Language('es'),
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function it_transforms_a_serialized_event_created_location_to_an_id()
+    {
+        $serialized = file_get_contents(__DIR__ . '/samples/serialized_event_event_created_class.json');
+        $decoded = json_decode($serialized, true);
+
+        /** @var EventCreated $created */
+        $created = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(new LocationId('54131948-ffb9-4973-b528-800590265be5'), $created->getLocation());
+    }
+
+    /**
+     * @test
+     */
+    public function it_transforms_a_serialized_major_info_updated_location_to_an_id()
+    {
+        $serialized = file_get_contents(__DIR__ . '/samples/serialized_event_major_info_updated_class.json');
+        $decoded = json_decode($serialized, true);
+
+        /** @var MajorInfoUpdated $majorInfoUpdated */
+        $majorInfoUpdated = $this->serializer->deserialize($decoded);
+
+        $this->assertEquals(new LocationId('061C13AC-A15F-F419-D8993D68C9E94548'), $majorInfoUpdated->getLocation());
     }
 
     /**

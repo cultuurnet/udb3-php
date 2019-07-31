@@ -56,8 +56,7 @@ use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Media\ImageCollection;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
@@ -105,7 +104,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      * @param Language $mainLanguage
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param LocationId $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      * @param \DateTimeImmutable|null $publicationDate
@@ -116,7 +115,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         CalendarInterface $calendar,
         Theme $theme = null,
         \DateTimeImmutable $publicationDate = null
@@ -206,7 +205,7 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $this->bookingInfo = new BookingInfo();
         $this->typeId = $eventCreated->getEventType()->getId();
         $this->themeId = $eventCreated->getTheme() ? $eventCreated->getTheme()->getId() : null;
-        $this->locationId = new LocationId($eventCreated->getLocation()->getCdbid());
+        $this->locationId = $eventCreated->getLocation();
         $this->mainLanguage = $eventCreated->getMainLanguage();
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
@@ -285,14 +284,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      *
      * @param Title $title
      * @param EventType $eventType
-     * @param Location $location
+     * @param LocationId $location
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      */
     public function updateMajorInfo(
         Title $title,
         EventType $eventType,
-        Location $location,
+        LocationId $location,
         CalendarInterface $calendar,
         Theme $theme = null
     ) {

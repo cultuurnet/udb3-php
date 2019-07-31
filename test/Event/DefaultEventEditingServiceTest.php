@@ -6,10 +6,6 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\EventHandling\SimpleEventBus;
 use Broadway\EventStore\InMemoryEventStore;
 use Broadway\EventStore\TraceableEventStore;
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Description;
@@ -29,13 +25,11 @@ use CultuurNet\UDB3\Label\LabelServiceInterface;
 use CultuurNet\UDB3\Language;
 use Broadway\UuidGenerator\UuidGeneratorInterface;
 use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Location\Location;
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Offer\Commands\OfferCommandFactoryInterface;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use CultuurNet\UDB3\Title;
@@ -195,12 +189,7 @@ class DefaultEventEditingServiceTest extends TestCase
         $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $street = new Street('Kerkstraat 69');
-        $locality = new Locality('Leuven');
-        $postalCode = new PostalCode('3000');
-        $country = Country::fromNative('BE');
-        $address = new Address($street, $postalCode, $locality, $country);
-        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $location = new LocationId(UUID::generateAsString());
         $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
 
@@ -244,12 +233,7 @@ class DefaultEventEditingServiceTest extends TestCase
         $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $street = new Street('Kerkstraat 69');
-        $locality = new Locality('Leuven');
-        $postalCode = new PostalCode('3000');
-        $country = Country::fromNative('BE');
-        $address = new Address($street, $postalCode, $locality, $country);
-        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $location = new LocationId(UUID::generateAsString());
         $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
 
@@ -303,16 +287,7 @@ class DefaultEventEditingServiceTest extends TestCase
         $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $location = new Location(
-            UUID::generateAsString(),
-            new StringLiteral('Het Depot'),
-            new Address(
-                new Street('Martelarenplein'),
-                new PostalCode('3000'),
-                new Locality('Leuven'),
-                Country::fromNative('BE')
-            )
-        );
+        $location = new LocationId(UUID::generateAsString());
         $theme = null;
 
         $this->eventStore->trace();
@@ -394,12 +369,7 @@ class DefaultEventEditingServiceTest extends TestCase
         $mainLanguage = new Language('nl');
         $title = new Title('Title');
         $eventType = new EventType('0.50.4.0.0', 'concert');
-        $street = new Street('Kerkstraat 69');
-        $locality = new Locality('Leuven');
-        $postalCode = new PostalCode('3000');
-        $country = Country::fromNative('BE');
-        $address = new Address($street, $postalCode, $locality, $country);
-        $location = new Location(UUID::generateAsString(), new StringLiteral('P-P-Partyzone'), $address);
+        $location = new LocationId(UUID::generateAsString());
         $calendar = new Calendar(CalendarType::PERMANENT());
         $theme = null;
         $publicationDate = \DateTimeImmutable::createFromFormat(

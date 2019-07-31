@@ -22,12 +22,11 @@ use CultuurNet\UDB3\Event\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use PHPUnit\Framework\MockObject\MockObject;
 use ValueObjects\Geography\Country;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
 {
@@ -90,11 +89,7 @@ class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
             new Language('en'),
             new Title('Faith no More'),
             new EventType('0.50.4.0.0', 'Concert'),
-            new Location(
-                '7a59de16-6111-4658-aa6e-958ff855d14e',
-                new StringLiteral('Den Hoge Hoed'),
-                $address
-            ),
+            new LocationId('7a59de16-6111-4658-aa6e-958ff855d14e'),
             new Calendar(CalendarType::PERMANENT()),
             new Theme('1.8.1.0.0', 'Rock')
         );
@@ -139,11 +134,7 @@ class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
             new Language('en'),
             new Title('Faith no More'),
             new EventType('0.50.4.0.0', 'Concert'),
-            new Location(
-                '7a59de16-6111-4658-aa6e-958ff855d14e',
-                new StringLiteral('Den Hoge Hoed'),
-                $address
-            ),
+            new LocationId('7a59de16-6111-4658-aa6e-958ff855d14e'),
             new Calendar(CalendarType::PERMANENT()),
             new Theme('1.8.1.0.0', 'Rock')
         );

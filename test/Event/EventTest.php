@@ -3,10 +3,6 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
@@ -35,8 +31,7 @@ use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Media\Properties\CopyrightHolder;
 use CultuurNet\UDB3\Media\Properties\Description;
@@ -49,7 +44,6 @@ use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
 use RuntimeException;
-use ValueObjects\Geography\Country;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\Person\Age;
@@ -83,16 +77,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                UUID::generateAsString(),
-                new StringLiteral('P-P-Partyzone'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new LocationId(UUID::generateAsString()),
             new Calendar(CalendarType::PERMANENT())
         );
     }
@@ -104,16 +89,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                UUID::generateAsString(),
-                new StringLiteral('P-P-Partyzone'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new LocationId(UUID::generateAsString()),
             new Calendar(CalendarType::PERMANENT())
         );
     }
@@ -125,16 +101,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                UUID::generateAsString(),
-                new StringLiteral('P-P-Partyzone'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new LocationId(UUID::generateAsString()),
             new Calendar(CalendarType::PERMANENT()),
             new Theme('1.8.3.1.0', 'Pop en rock')
         );
@@ -153,16 +120,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                UUID::generateAsString(),
-                new StringLiteral('P-P-Partyzone'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new LocationId(UUID::generateAsString()),
             new Calendar(CalendarType::PERMANENT())
         );
     }
@@ -840,7 +798,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
         $createEvent = $this->getCreationEvent();
-        $oldLocationId = new LocationId($createEvent->getLocation()->getCdbid());
+        $oldLocationId = $createEvent->getLocation();
         $newLocationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
 
         $this->scenario
@@ -870,7 +828,7 @@ class EventTest extends AggregateRootScenarioTestCase
     {
         $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
         $createEvent = $this->getCreationEvent();
-        $locationId = new LocationId($createEvent->getLocation()->getCdbid());
+        $locationId = new LocationId($createEvent->getLocation()->toNative());
 
         $xmlData = $this->getSample('EventTest.cdbxml.xml');
         $xmlNamespace = self::NS_CDBXML_3_2;

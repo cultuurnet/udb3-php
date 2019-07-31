@@ -5,10 +5,6 @@ namespace CultuurNet\UDB3\Event\ReadModel\History;
 use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Description;
@@ -25,13 +21,11 @@ use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\InMemoryDocumentRepository;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use PHPUnit\Framework\TestCase;
-use ValueObjects\Geography\Country;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class HistoryProjectorTest extends TestCase
 {
@@ -195,16 +189,7 @@ class HistoryProjectorTest extends TestCase
             new Language('en'),
             new Title('Faith no More'),
             new EventType('0.50.4.0.0', 'Concert'),
-            new Location(
-                '7a59de16-6111-4658-aa6e-958ff855d14e',
-                new StringLiteral('Het Depot'),
-                new Address(
-                    new Street('Martelarenplein'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new LocationId('7a59de16-6111-4658-aa6e-958ff855d14e'),
             new Calendar(CalendarType::PERMANENT()),
             new Theme('1.8.1.0.0', 'Rock')
         );

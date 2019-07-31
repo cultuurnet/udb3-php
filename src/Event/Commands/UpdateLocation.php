@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Commands;
 
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Offer\Commands\AbstractCommand;
 
 class UpdateLocation extends AbstractCommand

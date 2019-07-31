@@ -7,14 +7,9 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
-use CultureFeed_Cdb_Data_File;
 use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;
 use CultuurNet\Geocoding\Coordinate\Longitude;
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
@@ -37,22 +32,16 @@ use CultuurNet\UDB3\Event\Events\Moderation\Published;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
-use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
-use CultuurNet\UDB3\Location\Location;
-use CultuurNet\UDB3\Location\LocationId;
+use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Media\Serialization\MediaObjectSerializer;
-use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
-use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\OfferLDProjectorTestBase;
-use CultuurNet\UDB3\Organizer\OrganizerProjectedToJSONLD;
-use CultuurNet\UDB3\Place\Events\PlaceProjectedToJSONLD;
 use CultuurNet\UDB3\PlaceService;
 use CultuurNet\UDB3\ReadModel\JsonDocument;
 use CultuurNet\UDB3\ReadModel\JsonDocumentLanguageEnricher;
@@ -62,8 +51,6 @@ use CultuurNet\UDB3\Title;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 use Symfony\Component\Serializer\Serializer;
-use ValueObjects\Geography\Country;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class EventLDProjectorTest extends OfferLDProjectorTestBase
 {
@@ -787,16 +774,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $id = 'foo';
         $title = new Title('new title');
         $eventType = new EventType('0.50.4.0.1', 'concertnew');
-        $location = new Location(
-            '395fe7eb-9bac-4647-acae-316b6446a85e',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9620'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
+        $location = new LocationId('395fe7eb-9bac-4647-acae-316b6446a85e');
         $calendar = new Calendar(
             CalendarType::SINGLE(),
             \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
@@ -1009,16 +987,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $title = new Title('new title');
         $eventType = new EventType('0.50.4.0.1', 'concertnew');
-        $location = new Location(
-            '395fe7eb-9bac-4647-acae-316b6446a85e',
-            new StringLiteral('Repeteerkot'),
-            new Address(
-                new Street('Kerkstraat 69'),
-                new PostalCode('9620'),
-                new Locality('Zottegem'),
-                Country::fromNative('BE')
-            )
-        );
+        $location = new LocationId('395fe7eb-9bac-4647-acae-316b6446a85e');
         $calendar = new Calendar(
             CalendarType::SINGLE(),
             \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
@@ -1205,16 +1174,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
-            new Location(
-                '395fe7eb-9bac-4647-acae-316b6446a85e',
-                new StringLiteral('Repeteerkot'),
-                new Address(
-                    new Street('Kerkstraat 69'),
-                    new PostalCode('9620'),
-                    new Locality('Zottegem'),
-                    Country::fromNative('BE')
-                )
-            ),
+            new LocationId('395fe7eb-9bac-4647-acae-316b6446a85e'),
             $calendar,
             $theme
         );

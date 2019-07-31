@@ -1,6 +1,6 @@
 <?php
 
-namespace CultuurNet\UDB3\Location;
+namespace CultuurNet\UDB3\Event\ValueObjects;
 
 use PHPUnit\Framework\TestCase;
 

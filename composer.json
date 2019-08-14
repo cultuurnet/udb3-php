@@ -4,12 +4,8 @@
   "license": "Apache-2.0",
   "authors": [
     {
-      "name": "Kristof Coomans",
-      "email": "kristof@2dotstwice.be"
-    },
-    {
-      "name": "Bram Cordie",
-      "email": "bram@2dotstwice.be"
+      "name": "Publiq vwz",
+      "email": "info@publiq.be"
     }
   ],
   "require": {

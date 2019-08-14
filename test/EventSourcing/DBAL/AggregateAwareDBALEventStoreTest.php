@@ -144,11 +144,8 @@ class AggregateAwareDBALEventStoreTest extends TestCase
             BroadwayDateTime::now()
         );
 
-        // Use of PHPUnit_Framework_Error is intended.
-        $this->expectException(
-            Exception::class,
-            'Object of class CultuurNet\UDB3\EventSourcing\DBAL\NonCompatibleUuid could not be converted to string'
-        );
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Object of class CultuurNet\UDB3\EventSourcing\DBAL\NonCompatibleUuid could not be converted to string');
 
         $this->aggregateAwareDBALEventStore->append(
             $uuid,

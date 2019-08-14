@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine;
 
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ReadModel\Permissions\Doctrine\SchemaConfigurator as PermissionsSchemaConfigurator;
-use CultuurNet\UDB3\Role\ReadModel\Constraints\Doctrine\SchemaConfigurator as ConstraintsSchemaConfigurator;
 use CultuurNet\UDB3\Role\ReadModel\Search\Doctrine\SchemaConfigurator as SearchSchemaConfigurator;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use Doctrine\DBAL\Connection;

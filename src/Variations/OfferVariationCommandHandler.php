@@ -6,7 +6,6 @@ use Broadway\CommandHandling\CommandHandler;
 use CultuurNet\UDB3\Variations\Command\CreateOfferVariation;
 use CultuurNet\UDB3\Variations\Command\DeleteOfferVariation;
 use CultuurNet\UDB3\Variations\Command\EditDescription;
-use CultuurNet\UDB3\Variations\OfferVariationServiceInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 

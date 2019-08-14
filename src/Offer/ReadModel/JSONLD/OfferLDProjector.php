@@ -10,7 +10,6 @@ use CultuurNet\UDB3\EntityServiceInterface;
 use CultuurNet\UDB3\Event\ReadModel\DocumentRepositoryInterface;
 use CultuurNet\UDB3\Event\ReadModel\JSONLD\OrganizerServiceInterface;
 use CultuurNet\UDB3\EventHandling\DelegateEventHandlingToSpecificMethodTrait;
-use CultuurNet\UDB3\EventListener\EventSpecification;
 use CultuurNet\UDB3\Facility;
 use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Label;

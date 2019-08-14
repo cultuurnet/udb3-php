@@ -10,7 +10,6 @@ use Broadway\EventHandling\EventListenerInterface;
 use Predis\ClientInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LogLevel;
 
 /**
  * Cache manager allows you to flag the cache as outdated and warm up the cache

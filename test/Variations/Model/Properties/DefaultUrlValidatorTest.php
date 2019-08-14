@@ -4,8 +4,6 @@ namespace CultuurNet\UDB3\Variations\Model\Properties;
 
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\EntityServiceInterface;
-use CultuurNet\UDB3\Event\EventNotFoundException;
-use CultuurNet\UDB3\Event\EventServiceInterface;
 use CultuurNet\UDB3\Offer\IriOfferIdentifier;
 use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Offer\OfferType;

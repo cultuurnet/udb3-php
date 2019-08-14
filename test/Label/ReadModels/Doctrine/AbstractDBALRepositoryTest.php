@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Label\ReadModels\Doctrine;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Query\QueryBuilder;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
 

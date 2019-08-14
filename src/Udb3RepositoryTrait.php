@@ -7,7 +7,6 @@
 
 namespace CultuurNet\UDB3;
 
-use Assert\Assertion;
 use Broadway\Domain\AggregateRoot;
 use Broadway\Domain\DomainEventStream;
 

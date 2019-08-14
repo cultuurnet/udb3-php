@@ -9,7 +9,6 @@ use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\Variations\Model\Properties\Url;
 use CultuurNet\UDB3\Variations\ReadModel\Search\Criteria;
 use CultuurNet\UDB3\Variations\ReadModel\Search\RepositoryInterface;
-use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 
 class VariationDecoratedEventService implements EventServiceInterface

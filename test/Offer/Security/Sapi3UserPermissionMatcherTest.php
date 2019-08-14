@@ -3,14 +3,11 @@
 namespace CultuurNet\UDB3\Offer\Security;
 
 use CultuurNet\Search\Parameter\Query;
-use CultuurNet\UDB3\Offer\OfferIdentifierCollection;
 use CultuurNet\UDB3\Role\ReadModel\Constraints\UserConstraintsReadRepositoryInterface;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use CultuurNet\UDB3\Search\CountingSearchServiceInterface;
-use CultuurNet\UDB3\Search\Results;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ValueObjects\Number\Integer;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class Sapi3UserPermissionMatcherTest extends TestCase

@@ -5,7 +5,6 @@
 
 namespace CultuurNet\UDB3\Variations\Model\Events;
 
-use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;

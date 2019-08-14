@@ -9,7 +9,6 @@ use Http\Client\HttpClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
-use ValueObjects\Web\Url;
 
 class Sapi3CountingSearchServiceTest extends TestCase
 {

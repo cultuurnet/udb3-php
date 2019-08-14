@@ -8,7 +8,6 @@ use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\Cdb\PriceDescriptionParser;
-use CultuurNet\UDB3\Iri\CallableIriGenerator;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXmlContactInfoImporter;
 use CultuurNet\UDB3\Offer\ReadModel\JSONLD\CdbXMLItemBaseImporter;
 use CultuurNet\UDB3\SluggerInterface;

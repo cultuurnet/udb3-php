@@ -2,14 +2,10 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-use Broadway\Repository\AggregateNotFoundException;
-use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
-use CultuurNet\UDB3\Variations\AggregateDeletedException;
-use Http\Client\Exception\HttpException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

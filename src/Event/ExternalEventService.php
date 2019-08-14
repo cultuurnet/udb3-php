@@ -4,11 +4,9 @@ namespace CultuurNet\UDB3\Event;
 
 use Exception;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use Http\Client\Exception as HttpException;
 use Http\Client\HttpClient;
-use Psr\Http\Message\UriInterface;
 
 class ExternalEventService implements EventServiceInterface
 {

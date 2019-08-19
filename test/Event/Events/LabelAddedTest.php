@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\Event\Events\LabelAdded;
 use CultuurNet\UDB3\Label;
 use PHPUnit\Framework\TestCase;
 

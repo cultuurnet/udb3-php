@@ -2,18 +2,14 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-use Broadway\Repository\AggregateNotFoundException;
-use Broadway\Repository\RepositoryInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
-use CultuurNet\UDB3\Variations\AggregateDeletedException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use ValueObjects\Web\Url;
 
 class BulkLabelCommandHandler extends Udb3CommandHandler implements LoggerAwareInterface
 {

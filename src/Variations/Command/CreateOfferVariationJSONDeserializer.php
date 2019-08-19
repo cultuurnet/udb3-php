@@ -3,8 +3,6 @@
 namespace CultuurNet\UDB3\Variations\Command;
 
 use CultuurNet\Deserializer\JSONDeserializer;
-use CultuurNet\UDB3\Offer\IriOfferIdentifierFactory;
-use CultuurNet\UDB3\Offer\IriOfferIdentifierFactoryInterface;
 use CultuurNet\UDB3\Variations\Model\Properties\Description;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;

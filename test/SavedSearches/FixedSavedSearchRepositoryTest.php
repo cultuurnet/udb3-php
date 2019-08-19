@@ -5,10 +5,8 @@ namespace CultuurNet\UDB3\SavedSearches;
 use CultuurNet\UDB3\SavedSearches\Properties\CreatedByQueryString;
 use CultuurNet\UDB3\SavedSearches\ReadModel\SavedSearch;
 use CultuurNet\UDB3\SavedSearches\ValueObject\CreatedByQueryMode;
-use CultuurNet\UDB3\SavedSearches\ValueObject\UserId;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\StringLiteral\StringLiteral;
-use ValueObjects\Web\EmailAddress;
 
 class FixedSavedSearchRepositoryTest extends TestCase
 {

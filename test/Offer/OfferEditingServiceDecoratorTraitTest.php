@@ -16,7 +16,6 @@ use PHPUnit\Framework\TestCase;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Money\Currency;
 use ValueObjects\Web\Url;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class OfferEditingServiceDecoratorTraitTest extends TestCase
 {

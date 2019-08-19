@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\Label;
 use PHPUnit\Framework\TestCase;
-use ValueObjects\Identity\UUID;
 
 class AbstractLabelEventTest extends TestCase
 {

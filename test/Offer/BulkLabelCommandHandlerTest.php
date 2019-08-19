@@ -2,16 +2,10 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-use Broadway\Repository\AggregateNotFoundException;
-use Broadway\Repository\RepositoryInterface;
-use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToMultiple;
 use CultuurNet\UDB3\Offer\Commands\AddLabelToQuery;
-use CultuurNet\UDB3\Place\Place;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
-use CultuurNet\UDB3\Variations\AggregateDeletedException;
-use Http\Client\Exception\HttpException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -50,16 +44,6 @@ class BulkLabelCommandHandlerTest extends TestCase
     private $offerIdentifiers;
 
     /**
-     * @var Event|MockObject
-     */
-    private $eventMock;
-
-    /**
-     * @var Place|MockObject
-     */
-    private $placeMock;
-
-    /**
      * @var ExternalOfferEditingServiceInterface|MockObject
      */
     private $externalOfferEditingService;
@@ -92,9 +76,6 @@ class BulkLabelCommandHandlerTest extends TestCase
                 OfferType::PLACE()
             ),
         ];
-
-        $this->eventMock = $this->createMock(Event::class);
-        $this->placeMock = $this->createMock(Place::class);
     }
 
     /**

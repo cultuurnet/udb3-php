@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Variations\ReadModel\Search\Doctrine;
 
-use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Variations\Model\Properties\Id;
 use CultuurNet\UDB3\Variations\Model\Properties\OwnerId;
 use CultuurNet\UDB3\Variations\Model\Properties\Purpose;

@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\MyOrganizers\ReadModel;
 
-use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\EventSourcing\DomainMessageBuilder;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;

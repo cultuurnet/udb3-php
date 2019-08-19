@@ -6,6 +6,6 @@ data via web services to interested parties.
 ## What stands the name for?
 
 UDB3 is shorthand for the 3rd generation of the software behind the 
-'[UiTdatabank]', an initiative of CultuurNet Vlaanderen vzw.
+'[UiTdatabank]', an initiative of Publiq vzw.
 
-[UiTdatabank]: http://www.cultuurnet.be/nl/project/uitdatabank
+[UiTdatabank]: https://www.publiq.be/nl/project/uitdatabank

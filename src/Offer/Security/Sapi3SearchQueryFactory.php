@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Offer\Security;
 
-use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\StringLiteral\StringLiteral;
 
 /**

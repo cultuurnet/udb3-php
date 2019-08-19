@@ -613,13 +613,6 @@ class OfferTest extends AggregateRootScenarioTestCase
      */
     public function it_checks_for_presence_when_adding_image()
     {
-        $updateImage = new UpdateImage(
-            'someId',
-            new UUID($this->image->getMediaObjectId()),
-            new Description('my favorite cat'),
-            new CopyrightHolder('Jane Doe')
-        );
-
         $this->scenario
             ->withAggregateId('someId')
             ->given(
@@ -628,7 +621,7 @@ class OfferTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Item $item) use ($updateImage) {
+                function (Item $item) {
                     $item->addImage($this->image);
                     $item->addImage($this->image);
                 }

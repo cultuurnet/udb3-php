@@ -6,9 +6,7 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\Geocoding\GeocodingServiceInterface;
 use CultuurNet\UDB3\Address\AddressFormatterInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
-use CultuurNet\UDB3\Event\Event;
 use CultuurNet\UDB3\Offer\Commands\AbstractUpdateGeoCoordinatesFromAddress;
-use CultuurNet\UDB3\Place\Place;
 
 abstract class AbstractGeoCoordinatesCommandHandler extends Udb3CommandHandler
 {
@@ -69,7 +67,7 @@ abstract class AbstractGeoCoordinatesCommandHandler extends Udb3CommandHandler
             );
         }
 
-        /** @var Place|Event $offer */
+        /** @var Offer $offer */
         $offer = $this->offerRepository->load($updateGeoCoordinates->getItemId());
         $offer->updateGeoCoordinates($coordinates);
         $this->offerRepository->save($offer);

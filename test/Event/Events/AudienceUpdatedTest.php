@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Event\ValueObjects\AudienceType;
-use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use PHPUnit\Framework\TestCase;
 
 class AudienceUpdatedTest extends TestCase

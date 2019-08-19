@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\MyOrganizers\ReadModel\Doctrine;
 
 use CultuurNet\UDB3\AbstractDBALTableTest;
 use CultuurNet\UDB3\Iri\CallableIriGenerator;
-use CultuurNet\UDB3\Iri\IriGeneratorInterface;
 use CultuurNet\UDB3\MyOrganizers\PartOfCollection;
 use ValueObjects\Number\Natural;
 use ValueObjects\StringLiteral\StringLiteral;

@@ -40,6 +40,7 @@ use CultuurNet\UDB3\Place\Events\MainImageSelected;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
@@ -220,6 +221,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyAddressTranslated(AddressTranslated $addressTranslated)
     {
         $this->addresses[$addressTranslated->getLanguage()->getCode()] = $addressTranslated->getAddress();
+    }
+
+    public function markAsDuplicateOf(string $placeIdOfMaster): void
+    {
+        $this->apply(new MarkedAsDuplicate($this->placeId, $placeIdOfMaster));
     }
 
     /**

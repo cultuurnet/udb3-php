@@ -225,6 +225,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
 
     public function markAsDuplicateOf(string $placeIdOfMaster): void
     {
+        if ($this->isDeleted) {
+            throw CannotMarkPlaceAsDuplicate::becauseItIsDeleted($this->placeId);
+        }
         $this->apply(new MarkedAsDuplicate($this->placeId, $placeIdOfMaster));
     }
 

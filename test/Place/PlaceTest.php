@@ -14,6 +14,7 @@ use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\ContactPoint;
 use CultuurNet\UDB3\Place\Events\BookingInfoUpdated;
 use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
+use CultuurNet\UDB3\Place\Events\MarkedAsMaster;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PriceInfoUpdated;
 use CultuurNet\UDB3\Place\Events\TypicalAgeRangeDeleted;
@@ -792,6 +793,25 @@ class PlaceTest extends AggregateRootScenarioTestCase
                     $place->markAsDuplicateOf($otherMasterPlaceId);
                 }
             );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_marked_as_master()
+    {
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
+        $duplicatePlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
+        $this->scenario
+            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
+            ->given([$placeCreated])
+            ->when(
+                function (Place $place) use ($duplicatePlaceId) {
+                    $place->markAsMasterOf($duplicatePlaceId);
+                }
+            )
+            ->then([new MarkedAsMaster($placeId, $duplicatePlaceId)]);
     }
 
     /**

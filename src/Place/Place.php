@@ -41,6 +41,7 @@ use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
+use CultuurNet\UDB3\Place\Events\MarkedAsMaster;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
@@ -239,6 +240,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         }
 
         $this->apply(new MarkedAsDuplicate($this->placeId, $placeIdOfMaster));
+    }
+
+    public function markAsMasterOf(string $placeIdOfDuplicate): void
+    {
+        $this->apply(new MarkedAsMaster($this->placeId, $placeIdOfDuplicate));
     }
 
     /**

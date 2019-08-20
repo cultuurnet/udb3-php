@@ -815,6 +815,30 @@ class PlaceTest extends AggregateRootScenarioTestCase
     }
 
     /**
+     * @test
+     */
+    public function it_will_not_be_marked_as_Master_when_it_is_deleted()
+    {
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $placeId = $placeCreated->getPlaceId();
+        $duplicatePlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
+        $this->expectException(CannotMarkPlaceAsMaster::class);
+        $this->scenario
+            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
+            ->given(
+                [
+                    $placeCreated,
+                    new PlaceDeleted($placeId),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($duplicatePlaceId) {
+                    $place->markAsMasterOf($duplicatePlaceId);
+                }
+            );
+    }
+
+    /**
      * @return PlaceCreated
      */
     private function createPlaceCreatedEvent()

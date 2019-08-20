@@ -71,6 +71,11 @@ class Item extends Offer
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
+    protected function applyItemDeleted(ItemDeleted $event): void
+    {
+        $this->isDeleted = true;
+    }
+
     /**
      * @param Label $label
      * @return LabelAdded

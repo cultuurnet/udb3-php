@@ -352,6 +352,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         unset($this->addresses[$this->mainLanguage->getCode()]);
     }
 
+    protected function applyPlaceDeleted(PlaceDeleted $event): void
+    {
+        $this->isDeleted = true;
+    }
+
     /**
      * @inheritdoc
      */

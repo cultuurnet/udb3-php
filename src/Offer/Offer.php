@@ -149,6 +149,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     protected $bookingInfo;
 
     /**
+     * @var bool
+     */
+    protected $isDeleted = false;
+
+    /**
      * Offer constructor.
      */
     public function __construct()

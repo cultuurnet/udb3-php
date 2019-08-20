@@ -35,6 +35,7 @@ class MarkAsDuplicateCommandHandler extends Udb3CommandHandler
             $this->repository->save($placeToMarkAsMaster);
         } catch (CannotMarkPlaceAsMaster | CannotMarkPlaceAsDuplicate $e) {
             // TODO: rollback transaction
+            throw $e;
         }
 
         // TODO: commit transaction

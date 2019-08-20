@@ -78,6 +78,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     private $addresses;
 
+    /**
+     * @var boolean
+     */
+    private $isDuplicate = false;
+
     public function __construct()
     {
         parent::__construct();
@@ -228,6 +233,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         if ($this->isDeleted) {
             throw CannotMarkPlaceAsDuplicate::becauseItIsDeleted($this->placeId);
         }
+
+        if ($this->isDuplicate) {
+            throw CannotMarkPlaceAsDuplicate::becauseItIsAlreadyADuplicate($this->placeId);
+        }
+
         $this->apply(new MarkedAsDuplicate($this->placeId, $placeIdOfMaster));
     }
 
@@ -358,6 +368,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyPlaceDeleted(PlaceDeleted $event): void
     {
         $this->isDeleted = true;
+    }
+
+    protected function applyMarkedAsDuplicate(MarkedAsDuplicate $event): void
+    {
+        $this->isDuplicate = true;
     }
 
     /**

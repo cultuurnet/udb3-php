@@ -10,4 +10,9 @@ class CannotMarkPlaceAsDuplicate extends Exception
     {
         return new static('Cannot mark place ' . $placeId . ' as duplicate because it is deleted');
     }
+
+    public static function becauseItIsAlreadyADuplicate(string $placeId): self
+    {
+        return new static('Cannot mark place ' . $placeId . ' as duplicate because it is already a duplicate');
+    }
 }

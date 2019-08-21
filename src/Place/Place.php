@@ -93,11 +93,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * Factory method to create a new Place.
-     *
-     * @todo Refactor this method so it can be called create. Currently the
-     * normal behavior for create is taken by the legacy udb2 logic.
-     * The PlaceImportedFromUDB2 could be a superclass of Place.
+     * @todo Rename this method to create() after moving this part of the codebase to udb3-silex
      */
     public static function createPlace(
         string $id,

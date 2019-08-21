@@ -93,25 +93,10 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     }
 
     /**
-     * Factory method to create a new Place.
-     *
-     * @todo Refactor this method so it can be called create. Currently the
-     * normal behavior for create is taken by the legacy udb2 logic.
-     * The PlaceImportedFromUDB2 could be a superclass of Place.
-     *
-     * @param string $id
-     * @param Language $mainLanguage
-     * @param Title $title
-     * @param EventType $eventType
-     * @param Address $address
-     * @param CalendarInterface $calendar
-     * @param Theme|null $theme
-     * @param DateTimeImmutable|null $publicationDate
-     *
-     * @return self
+     * @todo Rename this method to create() after moving this part of the codebase to udb3-silex
      */
     public static function createPlace(
-        $id,
+        string $id,
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
@@ -119,7 +104,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         CalendarInterface $calendar,
         Theme $theme = null,
         DateTimeImmutable $publicationDate = null
-    ) {
+    ): self {
         $place = new self();
         $place->apply(new PlaceCreated(
             $id,
@@ -135,11 +120,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return $place;
     }
 
-    /**
-     * Apply the place created event.
-     * @param PlaceCreated $placeCreated
-     */
-    protected function applyPlaceCreated(PlaceCreated $placeCreated)
+    protected function applyPlaceCreated(PlaceCreated $placeCreated): void
     {
         $this->mainLanguage = $placeCreated->getMainLanguage();
         $this->titles[$this->mainLanguage->getCode()] = $placeCreated->getTitle();
@@ -153,22 +134,13 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->workflowStatus = WorkflowStatus::DRAFT();
     }
 
-    /**
-     * Update the major info.
-     *
-     * @param Title $title
-     * @param EventType $eventType
-     * @param Address $address
-     * @param CalendarInterface $calendar
-     * @param Theme $theme
-     */
     public function updateMajorInfo(
         Title $title,
         EventType $eventType,
         Address $address,
         CalendarInterface $calendar,
         Theme $theme = null
-    ) {
+    ): void {
         $this->apply(
             new MajorInfoUpdated(
                 $this->placeId,
@@ -181,19 +153,12 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
     }
 
-    /**
-     * @param MajorInfoUpdated $majorInfoUpdated
-     */
-    public function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)
+    protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated): void
     {
         $this->addresses[$this->mainLanguage->getCode()] = $majorInfoUpdated->getAddress();
     }
 
-    /**
-     * @param Address $address
-     * @param Language $language
-     */
-    public function updateAddress(Address $address, Language $language)
+    public function updateAddress(Address $address, Language $language): void
     {
         if ($language->getCode() === $this->mainLanguage->getCode()) {
             $event = new AddressUpdated($this->placeId, $address);
@@ -206,28 +171,17 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         }
     }
 
-    /**
-     * @param AddressUpdated $addressUpdated
-     */
-    protected function applyAddressUpdated(AddressUpdated $addressUpdated)
+    protected function applyAddressUpdated(AddressUpdated $addressUpdated): void
     {
         $this->addresses[$this->mainLanguage->getCode()] = $addressUpdated->getAddress();
     }
 
-    /**
-     * @param AddressTranslated $addressTranslated
-     */
-    protected function applyAddressTranslated(AddressTranslated $addressTranslated)
+    protected function applyAddressTranslated(AddressTranslated $addressTranslated): void
     {
         $this->addresses[$addressTranslated->getLanguage()->getCode()] = $addressTranslated->getAddress();
     }
 
-    /**
-     * @param Address $address
-     * @param Language $language
-     * @return bool
-     */
-    private function allowAddressUpdate(Address $address, Language $language)
+    private function allowAddressUpdate(Address $address, Language $language): bool
     {
         // No current address in the provided language so update with new address is allowed.
         if (!isset($this->addresses[$language->getCode()])) {
@@ -242,23 +196,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return false;
     }
 
-    /**
-     * Import from UDB2.
-     *
-     * @param string $actorId
-     *   The actor id.
-     * @param string $cdbXml
-     *   The cdb xml.
-     * @param string $cdbXmlNamespaceUri
-     *   The cdb xml namespace uri.
-     *
-     * @return Place
-     */
     public static function importFromUDB2Actor(
-        $actorId,
-        $cdbXml,
-        $cdbXmlNamespaceUri
-    ) {
+        string $actorId,
+        string $cdbXml,
+        string $cdbXmlNamespaceUri
+    ): self {
         $place = new static();
         $place->apply(
             new PlaceImportedFromUDB2(
@@ -271,12 +213,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return $place;
     }
 
-    /**
-     * @param PlaceImportedFromUDB2 $placeImported
-     */
-    public function applyPlaceImportedFromUDB2(
-        PlaceImportedFromUDB2 $placeImported
-    ) {
+    protected function applyPlaceImportedFromUDB2(PlaceImportedFromUDB2 $placeImported): void
+    {
         $this->placeId = $placeImported->getActorId();
 
         // When importing from UDB2 the default main language is always 'nl'.
@@ -309,12 +247,8 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
 
-    /**
-     * @param PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
-     */
-    public function applyPlaceUpdatedFromUDB2(
-        PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2
-    ) {
+    protected function applyPlaceUpdatedFromUDB2(PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2): void
+    {
         // Note: when updating from UDB2 never change the main language.
 
         $udb2Actor = ActorItemFactory::createActorFromCdbXml(

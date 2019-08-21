@@ -153,7 +153,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         );
     }
 
-    public function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated): void
+    protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated): void
     {
         $this->addresses[$this->mainLanguage->getCode()] = $majorInfoUpdated->getAddress();
     }
@@ -213,7 +213,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         return $place;
     }
 
-    public function applyPlaceImportedFromUDB2(PlaceImportedFromUDB2 $placeImported): void
+    protected function applyPlaceImportedFromUDB2(PlaceImportedFromUDB2 $placeImported): void
     {
         $this->placeId = $placeImported->getActorId();
 
@@ -247,7 +247,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
     }
 
-    public function applyPlaceUpdatedFromUDB2(PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2): void
+    protected function applyPlaceUpdatedFromUDB2(PlaceUpdatedFromUDB2 $placeUpdatedFromUDB2): void
     {
         // Note: when updating from UDB2 never change the main language.
 

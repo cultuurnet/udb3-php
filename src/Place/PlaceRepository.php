@@ -56,6 +56,10 @@ class PlaceRepository extends EventSourcingRepository
 
     public function saveMultiple(AggregateRoot ...$aggregates): void
     {
+        if (empty($aggregates)) {
+            return;
+        }
+
         $firstId = null;
         $domainEvents = [];
         foreach ($aggregates as $aggregate) {

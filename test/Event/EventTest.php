@@ -910,7 +910,7 @@ class EventTest extends AggregateRootScenarioTestCase
             ->then(
                 [
                     new LocationUpdated($eventId, $newLocationId),
-                    new AudienceUpdated($eventId, new Audience(AudienceType::EDUCATION()))
+                    new AudienceUpdated($eventId, new Audience(AudienceType::EDUCATION())),
                 ]
             );
     }

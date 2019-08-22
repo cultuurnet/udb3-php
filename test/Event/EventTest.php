@@ -888,6 +888,35 @@ class EventTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
+     */
+    public function it_sets_the_audience_type_to_education_when_setting_a_dummy_education_location()
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $createEvent = $this->getCreationEvent();
+        $newLocationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
+        LocationId::setDummyPlaceForEducationIds([$newLocationId->toNative()]);
+
+        $this->scenario
+            ->given(
+                [
+                    $createEvent,
+                ]
+            )
+            ->when(
+                function (Event $event) use ($newLocationId) {
+                    $event->updateLocation($newLocationId);
+                }
+            )
+            ->then(
+                [
+                    new LocationUpdated($eventId, $newLocationId),
+                    new AudienceUpdated($eventId, new Audience(AudienceType::EDUCATION()))
+                ]
+            );
+    }
+
+    /**
+     * @test
      * @dataProvider audienceDataProvider
      * @param Audience[] $audiences
      * @param AudienceUpdated[] $audienceUpdatedEvents

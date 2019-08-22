@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event;
 
+use Broadway\Domain\DomainMessage;
 use Broadway\EventSourcing\Testing\AggregateRootScenarioTestCase;
 use CultuurNet\UDB3\BookingInfo;
 use CultuurNet\UDB3\Calendar;
@@ -123,6 +124,38 @@ class EventTest extends AggregateRootScenarioTestCase
             new LocationId(UUID::generateAsString()),
             new Calendar(CalendarType::PERMANENT())
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_audience_type_to_education_when_creating_an_event_with_a_dummy_education_location()
+    {
+        $locationUuid = UUID::generateAsString();
+        LocationId::setDummyPlaceForEducationIds([$locationUuid]);
+
+        $event = Event::create(
+            'd2b41f1d-598c-46af-a3a5-10e373faa6fe',
+            new Language('en'),
+            new Title('some representative title'),
+            new EventType('0.50.4.0.0', 'concert'),
+            new LocationId($locationUuid),
+            new Calendar(CalendarType::PERMANENT())
+        );
+
+        $expectedEvent = new AudienceUpdated(
+            'd2b41f1d-598c-46af-a3a5-10e373faa6fe',
+            new Audience(AudienceType::EDUCATION())
+        );
+
+        $actualEvents = array_map(
+            function (DomainMessage $domainMessage) {
+                return $domainMessage->getPayload();
+            },
+            iterator_to_array($event->getUncommittedEvents()->getIterator())
+        );
+
+        $this->assertEquals($expectedEvent, $actualEvents[1]);
     }
 
     /**

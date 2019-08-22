@@ -135,6 +135,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             )
         );
 
+        if ($location->isDummyPlaceForEducation()) {
+            // Bookable education events should get education as their audience type. We record this explicitly so we
+            // don't have to handle this edge case in every read model projector.
+            $event->apply(
+                new AudienceUpdated($eventId, new Audience(AudienceType::EDUCATION()))
+            );
+        }
+
         return $event;
     }
 

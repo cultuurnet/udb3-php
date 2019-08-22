@@ -934,6 +934,29 @@ class EventTest extends AggregateRootScenarioTestCase
 
     /**
      * @test
+     */
+    public function it_will_not_update_audience_for_events_with_dummy_place(): void
+    {
+        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
+        $dummyLocationId = Uuid::generateAsString();
+        LocationId::setDummyPlaceForEducationIds([$dummyLocationId]);
+        $this->expectException(IncompatibleAudienceType::class);
+        $this->scenario
+            ->given([
+                $this->getCreationEvent(),
+                new AudienceUpdated($eventId, new Audience(AudienceType::EDUCATION())),
+                new LocationUpdated($eventId, new LocationId($dummyLocationId)),
+            ])
+            ->when(
+                function (Event $event) {
+                    $event->updateAudience(new Audience(AudienceType::EVERYONE()));
+                }
+            )
+            ->then([]);
+    }
+
+    /**
+     * @test
      * @group issue-III-1380
      */
     public function it_refuses_to_copy_when_there_are_uncommitted_events()

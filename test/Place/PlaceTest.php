@@ -735,16 +735,16 @@ class PlaceTest extends AggregateRootScenarioTestCase
     {
         $placeCreated = $this->createPlaceCreatedEvent();
         $placeId = $placeCreated->getPlaceId();
-        $masterPlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
+        $canonicalPlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
         $this->scenario
             ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
             ->given([$placeCreated])
             ->when(
-                function (Place $place) use ($masterPlaceId) {
-                    $place->markAsDuplicateOf($masterPlaceId);
+                function (Place $place) use ($canonicalPlaceId) {
+                    $place->markAsDuplicateOf($canonicalPlaceId);
                 }
             )
-            ->then([new MarkedAsDuplicate($placeId, $masterPlaceId)]);
+            ->then([new MarkedAsDuplicate($placeId, $canonicalPlaceId)]);
     }
 
     /**
@@ -754,7 +754,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
     {
         $placeCreated = $this->createPlaceCreatedEvent();
         $placeId = $placeCreated->getPlaceId();
-        $masterPlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
+        $canonicalPlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
         $this->expectException(CannotMarkPlaceAsDuplicate::class);
         $this->scenario
             ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
@@ -765,8 +765,8 @@ class PlaceTest extends AggregateRootScenarioTestCase
                 ]
             )
             ->when(
-                function (Place $place) use ($masterPlaceId) {
-                    $place->markAsDuplicateOf($masterPlaceId);
+                function (Place $place) use ($canonicalPlaceId) {
+                    $place->markAsDuplicateOf($canonicalPlaceId);
                 }
             );
     }
@@ -778,20 +778,20 @@ class PlaceTest extends AggregateRootScenarioTestCase
     {
         $placeCreated = $this->createPlaceCreatedEvent();
         $placeId = $placeCreated->getPlaceId();
-        $masterPlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
-        $otherMasterPlaceId = 'd51440e5-f3bc-4dcb-8af1-a28d23031fbc';
+        $canonicalPlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
+        $otherCanonicalPlaceId = 'd51440e5-f3bc-4dcb-8af1-a28d23031fbc';
         $this->expectException(CannotMarkPlaceAsDuplicate::class);
         $this->scenario
             ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
             ->given(
                 [
                     $placeCreated,
-                    new MarkedAsDuplicate($placeId, $masterPlaceId),
+                    new MarkedAsDuplicate($placeId, $canonicalPlaceId),
                 ]
             )
             ->when(
-                function (Place $place) use ($otherMasterPlaceId) {
-                    $place->markAsDuplicateOf($otherMasterPlaceId);
+                function (Place $place) use ($otherCanonicalPlaceId) {
+                    $place->markAsDuplicateOf($otherCanonicalPlaceId);
                 }
             );
     }

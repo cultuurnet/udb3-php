@@ -11,7 +11,7 @@ final class MarkedAsMasterTest extends TestCase
      */
     public function it_should_be_serializable_and_deserializable()
     {
-        $event = new MarkedAsMaster(
+        $event = new MarkedAsCanonical(
             'a9088117-5ec8-4117-8ce0-5ce27e685055',
             '7ee54099-9e0f-4c55-9a28-b548ef2a41ba'
         );
@@ -24,7 +24,7 @@ final class MarkedAsMasterTest extends TestCase
         $serializedEvent = $event->serialize();
         $this->assertEquals($eventAsArray, $serializedEvent);
 
-        $deserializedEvent = MarkedAsMaster::deserialize($eventAsArray);
+        $deserializedEvent = MarkedAsCanonical::deserialize($eventAsArray);
         $this->assertEquals($event, $deserializedEvent);
     }
 }

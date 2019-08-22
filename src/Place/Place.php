@@ -41,7 +41,7 @@ use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
 use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
-use CultuurNet\UDB3\Place\Events\MarkedAsMaster;
+use CultuurNet\UDB3\Place\Events\MarkedAsCanonical;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
@@ -229,7 +229,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->addresses[$addressTranslated->getLanguage()->getCode()] = $addressTranslated->getAddress();
     }
 
-    public function markAsDuplicateOf(string $placeIdOfMaster): void
+    public function markAsDuplicateOf(string $placeIdOfCanonical): void
     {
         if ($this->isDeleted) {
             throw CannotMarkPlaceAsDuplicate::becauseItIsDeleted($this->placeId);
@@ -239,16 +239,16 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             throw CannotMarkPlaceAsDuplicate::becauseItIsAlreadyADuplicate($this->placeId);
         }
 
-        $this->apply(new MarkedAsDuplicate($this->placeId, $placeIdOfMaster));
+        $this->apply(new MarkedAsDuplicate($this->placeId, $placeIdOfCanonical));
     }
 
-    public function markAsMasterOf(string $placeIdOfDuplicate): void
+    public function markAsCanonicalFor(string $placeIdOfDuplicate): void
     {
         if ($this->isDeleted) {
-            throw CannotMarkPlaceAsMaster::becauseItIsDeleted($this->placeId);
+            throw CannotMarkPlaceAsCanonical::becauseItIsDeleted($this->placeId);
         }
 
-        $this->apply(new MarkedAsMaster($this->placeId, $placeIdOfDuplicate));
+        $this->apply(new MarkedAsCanonical($this->placeId, $placeIdOfDuplicate));
     }
 
     /**

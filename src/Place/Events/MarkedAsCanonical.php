@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Place\Events;
 
 use CultuurNet\UDB3\Place\PlaceEvent;
 
-final class MarkedAsMaster extends PlaceEvent
+final class MarkedAsCanonical extends PlaceEvent
 {
     /**
      * @var string

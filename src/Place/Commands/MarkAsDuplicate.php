@@ -15,12 +15,12 @@ final class MarkAsDuplicate implements AuthorizableCommandInterface
     /**
      * @var string
      */
-    private $masterPlaceId;
+    private $canonicalPlaceId;
 
-    public function __construct(string $duplicatePlaceId, string $masterPlaceId)
+    public function __construct(string $duplicatePlaceId, string $canonicalPlaceId)
     {
         $this->duplicatePlaceId = $duplicatePlaceId;
-        $this->masterPlaceId = $masterPlaceId;
+        $this->canonicalPlaceId = $canonicalPlaceId;
     }
 
     public function getDuplicatePlaceId(): string
@@ -28,9 +28,9 @@ final class MarkAsDuplicate implements AuthorizableCommandInterface
         return $this->duplicatePlaceId;
     }
 
-    public function getMasterPlaceId(): string
+    public function getCanonicalPlaceId(): string
     {
-        return $this->masterPlaceId;
+        return $this->canonicalPlaceId;
     }
 
     /**

@@ -135,6 +135,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
             )
         );
 
+        if ($location->isDummyPlaceForEducation()) {
+            // Bookable education events should get education as their audience type. We record this explicitly so we
+            // don't have to handle this edge case in every read model projector.
+            $event->apply(
+                new AudienceUpdated($eventId, new Audience(AudienceType::EDUCATION()))
+            );
+        }
+
         return $event;
     }
 
@@ -308,8 +316,18 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
      */
     public function updateLocation(LocationId $locationId)
     {
-        if (is_null($this->locationId) || !$this->locationId->sameValueAs($locationId)) {
-            $this->apply(new LocationUpdated($this->eventId, $locationId));
+        if (!is_null($this->locationId) && $this->locationId->sameValueAs($locationId)) {
+            return;
+        }
+
+        $this->apply(new LocationUpdated($this->eventId, $locationId));
+
+        if ($locationId->isDummyPlaceForEducation()) {
+            // Bookable education events should get education as their audience type. We record this explicitly so we
+            // don't have to handle this edge case in every read model projector.
+            $this->apply(
+                new AudienceUpdated($this->eventId, new Audience(AudienceType::EDUCATION()))
+            );
         }
     }
 
@@ -327,6 +345,11 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
     public function updateAudience(
         Audience $audience
     ) {
+        $audienceType = $audience->getAudienceType();
+        if ($this->locationId->isDummyPlaceForEducation() && !$audienceType->sameValueAs(AudienceType::EDUCATION())) {
+            throw IncompatibleAudienceType::forEvent($this->eventId, $audienceType);
+        }
+
         if (is_null($this->audience) || !$this->audience->equals($audience)) {
             $this->apply(new AudienceUpdated(
                 $this->eventId,

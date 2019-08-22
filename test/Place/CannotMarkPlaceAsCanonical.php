@@ -10,4 +10,9 @@ class CannotMarkPlaceAsCanonical extends Exception
     {
         return new static('Cannot mark place ' . $placeId . ' as canonical because it is deleted');
     }
+
+    public static function becauseItIsAlreadyADuplicate(string $placeId): self
+    {
+        return new static('Cannot mark place ' . $placeId . ' as canonical because it is a duplicate');
+    }
 }

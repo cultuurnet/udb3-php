@@ -38,6 +38,7 @@ use CultuurNet\UDB3\PriceInfo\PriceInfo;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use Rhumsaa\Uuid\Uuid;
 use ValueObjects\Geography\Country;
 use ValueObjects\Money\Currency;
 use ValueObjects\Person\Age;
@@ -798,7 +799,7 @@ class PlaceTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_can_be_marked_as_master()
+    public function it_can_be_marked_as_canonical()
     {
         $placeCreated = $this->createPlaceCreatedEvent();
         $placeId = $placeCreated->getPlaceId();
@@ -817,7 +818,30 @@ class PlaceTest extends AggregateRootScenarioTestCase
     /**
      * @test
      */
-    public function it_will_not_be_marked_as_Master_when_it_is_deleted()
+    public function it_will_not_be_marked_as_canonical_when_it_is_deleted()
+    {
+        $placeCreated = $this->createPlaceCreatedEvent();
+        $canonicalPlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
+        $this->expectException(CannotMarkPlaceAsCanonical::class);
+        $this->scenario
+            ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
+            ->given(
+                [
+                    $placeCreated,
+                    new MarkedAsDuplicate($canonicalPlaceId, Uuid::uuid4()->toString()),
+                ]
+            )
+            ->when(
+                function (Place $place) use ($canonicalPlaceId) {
+                    $place->markAsCanonicalFor($canonicalPlaceId);
+                }
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_not_be_marked_as_canonical_when_it_is_already_a_duplicate()
     {
         $placeCreated = $this->createPlaceCreatedEvent();
         $placeId = $placeCreated->getPlaceId();

@@ -248,6 +248,10 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             throw CannotMarkPlaceAsCanonical::becauseItIsDeleted($this->placeId);
         }
 
+        if ($this->isDuplicate) {
+            throw CannotMarkPlaceAsCanonical::becauseItIsAlreadyADuplicate($this->placeId);
+        }
+
         $this->apply(new MarkedAsCanonical($this->placeId, $placeIdOfDuplicate));
     }
 

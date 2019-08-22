@@ -131,11 +131,12 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_sets_the_audience_type_to_education_when_creating_an_event_with_a_dummy_education_location()
     {
+        $eventUuid = UUID::generateAsString();
         $locationUuid = UUID::generateAsString();
         LocationId::setDummyPlaceForEducationIds([$locationUuid]);
 
         $event = Event::create(
-            'd2b41f1d-598c-46af-a3a5-10e373faa6fe',
+            $eventUuid,
             new Language('en'),
             new Title('some representative title'),
             new EventType('0.50.4.0.0', 'concert'),
@@ -143,10 +144,7 @@ class EventTest extends AggregateRootScenarioTestCase
             new Calendar(CalendarType::PERMANENT())
         );
 
-        $expectedEvent = new AudienceUpdated(
-            'd2b41f1d-598c-46af-a3a5-10e373faa6fe',
-            new Audience(AudienceType::EDUCATION())
-        );
+        $expectedEvent = new AudienceUpdated($eventUuid, new Audience(AudienceType::EDUCATION()));
 
         $actualEvents = array_map(
             function (DomainMessage $domainMessage) {
@@ -891,9 +889,9 @@ class EventTest extends AggregateRootScenarioTestCase
      */
     public function it_sets_the_audience_type_to_education_when_setting_a_dummy_education_location()
     {
-        $eventId = 'd2b41f1d-598c-46af-a3a5-10e373faa6fe';
         $createEvent = $this->getCreationEvent();
-        $newLocationId = new LocationId('57738178-28a5-4afb-90c0-fd0beba172a8');
+        $eventId = $createEvent->getEventId();
+        $newLocationId = new LocationId(UUID::generateAsString());
         LocationId::setDummyPlaceForEducationIds([$newLocationId->toNative()]);
 
         $this->scenario

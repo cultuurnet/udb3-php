@@ -19,25 +19,15 @@ class MarkAsDuplicateCommandHandler extends Udb3CommandHandler
 
     public function handleMarkAsDuplicate(MarkAsDuplicate $command): void
     {
-        /** @var Place $placeToMarkAsDuplicate */
+        /* @var Place $placeToMarkAsDuplicate */
         $placeToMarkAsDuplicate = $this->repository->load($command->getDuplicatePlaceId());
 
-        /** @var Place $placeToMarkAsMaster */
+        /* @var Place $placeToMarkAsMaster */
         $placeToMarkAsMaster = $this->repository->load($command->getCanonicalPlaceId());
 
-        // TODO: start transaction
+        $placeToMarkAsDuplicate->markAsDuplicateOf($command->getCanonicalPlaceId());
+        $placeToMarkAsMaster->markAsCanonicalFor($command->getDuplicatePlaceId());
 
-        try {
-            $placeToMarkAsDuplicate->markAsDuplicateOf($command->getCanonicalPlaceId());
-            $this->repository->save($placeToMarkAsDuplicate);
-
-            $placeToMarkAsMaster->markAsCanonicalFor($command->getDuplicatePlaceId());
-            $this->repository->save($placeToMarkAsMaster);
-        } catch (CannotMarkPlaceAsCanonical | CannotMarkPlaceAsDuplicate $e) {
-            // TODO: rollback transaction
-            throw $e;
-        }
-
-        // TODO: commit transaction
+        $this->repository->saveMultiple($placeToMarkAsDuplicate, $placeToMarkAsMaster);
     }
 }

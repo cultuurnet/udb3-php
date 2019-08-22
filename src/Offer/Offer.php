@@ -397,9 +397,9 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
     }
 
     /**
-     * @param string $typicalAgeRange
+     * @param AgeRange $typicalAgeRange
      */
-    public function updateTypicalAgeRange($typicalAgeRange)
+    public function updateTypicalAgeRange(AgeRange $typicalAgeRange)
     {
         $typicalAgeRangeUpdatedEvent = $this->createTypicalAgeRangeUpdatedEvent($typicalAgeRange);
 

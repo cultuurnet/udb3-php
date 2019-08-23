@@ -383,7 +383,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $document = $this->loadPlaceDocumentFromRepositoryById($markedAsDuplicate->getPlaceId());
 
         return $document->apply(function ($placeLd) use ($markedAsDuplicate) {
-            $placeLd->duplicateOf = $markedAsDuplicate->getDuplicateOf();
+            $placeLd->duplicateOf = $this->iriGenerator->iri($markedAsDuplicate->getDuplicateOf());
             return $placeLd;
         });
     }
@@ -393,7 +393,7 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         $document = $this->loadPlaceDocumentFromRepositoryById($markedAsCanonical->getPlaceId());
 
         return $document->apply(function ($placeLd) use ($markedAsCanonical) {
-            $placeLd->duplicatedBy[] = $markedAsCanonical->getDuplicatedBy();
+            $placeLd->duplicatedBy[] = $this->iriGenerator->iri($markedAsCanonical->getDuplicatedBy());
             return $placeLd;
         });
     }

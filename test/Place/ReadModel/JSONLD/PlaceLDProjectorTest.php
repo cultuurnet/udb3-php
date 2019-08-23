@@ -1058,7 +1058,7 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($markedAsDuplicate, $duplicateId);
 
         $this->assertArrayHasKey('duplicateOf', (array) $body);
-        $this->assertEquals($canonicalId, $body->duplicateOf);
+        $this->assertEquals('http://example.com/entity/' . $canonicalId, $body->duplicateOf);
     }
 
     /**
@@ -1094,7 +1094,12 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($markedAsCanonical, $canonicalId);
 
         $this->assertArrayHasKey('duplicatedBy', (array) $body);
-        $this->assertEquals([$duplicateId], $body->duplicatedBy);
+        $this->assertEquals(
+            [
+                'http://example.com/entity/' . $duplicateId,
+            ],
+            $body->duplicatedBy
+        );
     }
 
     /**
@@ -1120,8 +1125,8 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
                     'languages' => ['nl'],
                     'completedLanguages' => ['nl'],
                     'duplicatedBy' => [
-                        'fb674ae3-c024-43a7-8956-643b10667443',
-                        '653d4650-10eb-4862-806f-baf699034064',
+                        'http://example.com/entity/fb674ae3-c024-43a7-8956-643b10667443',
+                        'http://example.com/entity/653d4650-10eb-4862-806f-baf699034064',
                     ],
                 ]
             )
@@ -1136,9 +1141,9 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $this->assertArrayHasKey('duplicatedBy', (array) $body);
         $this->assertEquals(
             [
-                'fb674ae3-c024-43a7-8956-643b10667443',
-                '653d4650-10eb-4862-806f-baf699034064',
-                $duplicateId,
+                'http://example.com/entity/fb674ae3-c024-43a7-8956-643b10667443',
+                'http://example.com/entity/653d4650-10eb-4862-806f-baf699034064',
+                'http://example.com/entity/' . $duplicateId,
             ],
             $body->duplicatedBy
         );

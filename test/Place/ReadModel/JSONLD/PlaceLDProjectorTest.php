@@ -35,6 +35,8 @@ use CultuurNet\UDB3\Place\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Place\Events\MarkedAsCanonical;
+use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
 use CultuurNet\UDB3\Place\Events\PlaceDeleted;
 use CultuurNet\UDB3\Place\Events\PlaceImportedFromUDB2;
@@ -1021,6 +1023,125 @@ class PlaceLDProjectorTest extends OfferLDProjectorTestBase
         $body = $this->project($placeUpdatedFromUdb2, '318F2ACB-F612-6F75-0037C9C29F44087A');
 
         $this->assertArrayNotHasKey('geo', (array) $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_the_canonical_id_to_a_place_that_is_marked_as_a_duplicate()
+    {
+        $duplicateId = 'cb0f0523-ccd9-4a8e-b985-820e40ca5d40';
+        $canonicalId = '6caefd7d-9e2f-4b61-a7fa-54d8b25fb8d9';
+
+        $initialDocument = new JsonDocument(
+            $duplicateId,
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Old title',
+                    ],
+                    'geo' => [
+                        'latitude' => 1.5678,
+                        'longitude' => -0.9524,
+                    ],
+                    'terms' => [],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $markedAsDuplicate = new MarkedAsDuplicate($duplicateId, $canonicalId);
+
+        $body = $this->project($markedAsDuplicate, $duplicateId);
+
+        $this->assertArrayHasKey('duplicateOf', (array) $body);
+        $this->assertEquals($canonicalId, $body->duplicateOf);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_the_duplicate_id_to_a_place_that_is_marked_as_canonical()
+    {
+        $duplicateId = 'cb0f0523-ccd9-4a8e-b985-820e40ca5d40';
+        $canonicalId = '6caefd7d-9e2f-4b61-a7fa-54d8b25fb8d9';
+
+        $initialDocument = new JsonDocument(
+            $canonicalId,
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Old title',
+                    ],
+                    'geo' => [
+                        'latitude' => 1.5678,
+                        'longitude' => -0.9524,
+                    ],
+                    'terms' => [],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $markedAsCanonical = new MarkedAsCanonical($canonicalId, $duplicateId);
+
+        $body = $this->project($markedAsCanonical, $canonicalId);
+
+        $this->assertArrayHasKey('duplicatedBy', (array) $body);
+        $this->assertEquals([$duplicateId], $body->duplicatedBy);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_the_duplicate_id_to_a_place_that_is_marked_as_canonical_and_already_had_duplicates()
+    {
+        $duplicateId = 'cb0f0523-ccd9-4a8e-b985-820e40ca5d40';
+        $canonicalId = '6caefd7d-9e2f-4b61-a7fa-54d8b25fb8d9';
+
+        $initialDocument = new JsonDocument(
+            $canonicalId,
+            json_encode(
+                [
+                    'name' => [
+                        'nl' => 'Old title',
+                    ],
+                    'geo' => [
+                        'latitude' => 1.5678,
+                        'longitude' => -0.9524,
+                    ],
+                    'terms' => [],
+                    'languages' => ['nl'],
+                    'completedLanguages' => ['nl'],
+                    'duplicatedBy' => [
+                        'fb674ae3-c024-43a7-8956-643b10667443',
+                        '653d4650-10eb-4862-806f-baf699034064',
+                    ],
+                ]
+            )
+        );
+
+        $this->documentRepository->save($initialDocument);
+
+        $markedAsCanonical = new MarkedAsCanonical($canonicalId, $duplicateId);
+
+        $body = $this->project($markedAsCanonical, $canonicalId);
+
+        $this->assertArrayHasKey('duplicatedBy', (array) $body);
+        $this->assertEquals(
+            [
+                'fb674ae3-c024-43a7-8956-643b10667443',
+                '653d4650-10eb-4862-806f-baf699034064',
+                $duplicateId,
+            ],
+            $body->duplicatedBy
+        );
     }
 
     /**

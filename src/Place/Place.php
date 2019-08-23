@@ -40,6 +40,8 @@ use CultuurNet\UDB3\Place\Events\MainImageSelected;
 use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
+use CultuurNet\UDB3\Place\Events\MarkedAsCanonical;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
@@ -76,6 +78,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      * @var Address[]
      */
     private $addresses;
+
+    /**
+     * @var boolean
+     */
+    private $isDuplicate = false;
 
     public function __construct()
     {
@@ -181,6 +188,32 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->addresses[$addressTranslated->getLanguage()->getCode()] = $addressTranslated->getAddress();
     }
 
+    public function markAsDuplicateOf(string $placeIdOfCanonical): void
+    {
+        if ($this->isDeleted) {
+            throw CannotMarkPlaceAsDuplicate::becauseItIsDeleted($this->placeId);
+        }
+
+        if ($this->isDuplicate) {
+            throw CannotMarkPlaceAsDuplicate::becauseItIsAlreadyADuplicate($this->placeId);
+        }
+
+        $this->apply(new MarkedAsDuplicate($this->placeId, $placeIdOfCanonical));
+    }
+
+    public function markAsCanonicalFor(string $placeIdOfDuplicate): void
+    {
+        if ($this->isDeleted) {
+            throw CannotMarkPlaceAsCanonical::becauseItIsDeleted($this->placeId);
+        }
+
+        if ($this->isDuplicate) {
+            throw CannotMarkPlaceAsCanonical::becauseItIsAlreadyADuplicate($this->placeId);
+        }
+
+        $this->apply(new MarkedAsCanonical($this->placeId, $placeIdOfDuplicate));
+    }
+
     private function allowAddressUpdate(Address $address, Language $language): bool
     {
         // No current address in the provided language so update with new address is allowed.
@@ -278,6 +311,16 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->labels = LabelCollection::fromKeywords($udb2Actor->getKeywords(true));
 
         unset($this->addresses[$this->mainLanguage->getCode()]);
+    }
+
+    protected function applyPlaceDeleted(PlaceDeleted $event): void
+    {
+        $this->isDeleted = true;
+    }
+
+    protected function applyMarkedAsDuplicate(MarkedAsDuplicate $event): void
+    {
+        $this->isDuplicate = true;
     }
 
     /**

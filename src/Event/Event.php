@@ -247,6 +247,11 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $this->setUDB2Data($eventUpdated);
     }
 
+    protected function applyEventDeleted(EventDeleted $event): void
+    {
+        $this->isDeleted = true;
+    }
+
     /**
      * @param EventCdbXMLInterface $eventCdbXML
      */

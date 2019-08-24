@@ -36,6 +36,8 @@ use CultuurNet\UDB3\Place\Events\LabelAdded;
 use CultuurNet\UDB3\Place\Events\LabelRemoved;
 use CultuurNet\UDB3\Place\Events\MainImageSelected;
 use CultuurNet\UDB3\Place\Events\MajorInfoUpdated;
+use CultuurNet\UDB3\Place\Events\MarkedAsCanonical;
+use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\Approved;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsDuplicate;
 use CultuurNet\UDB3\Place\Events\Moderation\FlaggedAsInappropriate;
@@ -374,6 +376,26 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
         ];
 
         return $document->withBody($placeLd);
+    }
+
+    protected function applyMarkedAsDuplicate(MarkedAsDuplicate $markedAsDuplicate): JsonDocument
+    {
+        $document = $this->loadPlaceDocumentFromRepositoryById($markedAsDuplicate->getPlaceId());
+
+        return $document->apply(function ($placeLd) use ($markedAsDuplicate) {
+            $placeLd->duplicateOf = $this->iriGenerator->iri($markedAsDuplicate->getDuplicateOf());
+            return $placeLd;
+        });
+    }
+
+    protected function applyMarkedAsCanonical(MarkedAsCanonical $markedAsCanonical): JsonDocument
+    {
+        $document = $this->loadPlaceDocumentFromRepositoryById($markedAsCanonical->getPlaceId());
+
+        return $document->apply(function ($placeLd) use ($markedAsCanonical) {
+            $placeLd->duplicatedBy[] = $this->iriGenerator->iri($markedAsCanonical->getDuplicatedBy());
+            return $placeLd;
+        });
     }
 
     /**

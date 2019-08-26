@@ -206,7 +206,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->apply(new MarkedAsDuplicate($this->placeId, $placeIdOfCanonical));
     }
 
-    public function markAsCanonicalFor(string $placeIdOfDuplicate): void
+    public function markAsCanonicalFor(string $placeIdOfDuplicate, array $duplicatesOfDuplicate = []): void
     {
         if ($this->isDeleted) {
             throw CannotMarkPlaceAsCanonical::becauseItIsDeleted($this->placeId);
@@ -216,7 +216,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             throw CannotMarkPlaceAsCanonical::becauseItIsAlreadyADuplicate($this->placeId);
         }
 
-        $this->apply(new MarkedAsCanonical($this->placeId, $placeIdOfDuplicate));
+        $this->apply(new MarkedAsCanonical($this->placeId, $placeIdOfDuplicate, $duplicatesOfDuplicate));
     }
 
     /**

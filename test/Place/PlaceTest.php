@@ -804,15 +804,22 @@ class PlaceTest extends AggregateRootScenarioTestCase
         $placeCreated = $this->createPlaceCreatedEvent();
         $placeId = $placeCreated->getPlaceId();
         $duplicatePlaceId = 'ef694e51-9ac6-4f45-be25-5207ba6ec9dc';
+        $duplicateOfDuplicate1 = \ValueObjects\Identity\UUID::generateAsString();
+        $duplicateOfDuplicate2 = \ValueObjects\Identity\UUID::generateAsString();
+        $duplicatesOfDuplicate = [$duplicateOfDuplicate1, $duplicateOfDuplicate2];
         $this->scenario
             ->withAggregateId('c5c1b435-0f3c-4b75-9f28-94d93be7078b')
             ->given([$placeCreated])
             ->when(
-                function (Place $place) use ($duplicatePlaceId) {
-                    $place->markAsCanonicalFor($duplicatePlaceId);
+                function (Place $place) use ($duplicatePlaceId, $duplicatesOfDuplicate) {
+                    $place->markAsCanonicalFor($duplicatePlaceId, $duplicatesOfDuplicate);
                 }
             )
-            ->then([new MarkedAsCanonical($placeId, $duplicatePlaceId)]);
+            ->then(
+                [
+                    new MarkedAsCanonical($placeId, $duplicatePlaceId, $duplicatesOfDuplicate),
+                ]
+            );
     }
 
     /**

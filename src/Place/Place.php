@@ -219,6 +219,14 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->apply(new MarkedAsCanonical($this->placeId, $placeIdOfDuplicate));
     }
 
+    /**
+     * @return string[]
+     */
+    public function getDuplicates(): array
+    {
+        return $this->duplicates;
+    }
+
     private function allowAddressUpdate(Address $address, Language $language): bool
     {
         // No current address in the provided language so update with new address is allowed.

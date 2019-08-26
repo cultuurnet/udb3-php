@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Place\Events;
 
 use PHPUnit\Framework\TestCase;
 
-final class MarkedAsMasterTest extends TestCase
+final class MarkedAsCanonicalTest extends TestCase
 {
     /**
      * @test

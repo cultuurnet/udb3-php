@@ -339,6 +339,9 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyMarkedAsCanonical(MarkedAsCanonical $event): void
     {
         $this->duplicates[] = $event->getDuplicatedBy();
+        foreach ($event->getDuplicatesOfDuplicate() as $duplicateOfDuplicate) {
+            $this->duplicates[] = $duplicateOfDuplicate;
+        }
     }
 
     /**

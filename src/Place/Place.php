@@ -84,6 +84,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     private $isDuplicate = false;
 
+    /**
+     * @var string[]
+     */
+    private $duplicates = [];
+
     public function __construct()
     {
         parent::__construct();
@@ -321,6 +326,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyMarkedAsDuplicate(MarkedAsDuplicate $event): void
     {
         $this->isDuplicate = true;
+    }
+
+    protected function applyMarkedAsCanonical(MarkedAsCanonical $event): void
+    {
+        $this->duplicates[] = $event->getDuplicatedBy();
     }
 
     /**

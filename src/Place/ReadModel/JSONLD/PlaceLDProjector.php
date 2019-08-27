@@ -394,6 +394,9 @@ class PlaceLDProjector extends OfferLDProjector implements EventListenerInterfac
 
         return $document->apply(function ($placeLd) use ($markedAsCanonical) {
             $placeLd->duplicatedBy[] = $this->iriGenerator->iri($markedAsCanonical->getDuplicatedBy());
+            foreach ($markedAsCanonical->getDuplicatesOfDuplicate() as $duplicateOfDuplicate) {
+                $placeLd->duplicatedBy[] = $this->iriGenerator->iri($duplicateOfDuplicate);
+            }
             return $placeLd;
         });
     }

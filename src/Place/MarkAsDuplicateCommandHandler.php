@@ -26,7 +26,7 @@ class MarkAsDuplicateCommandHandler extends Udb3CommandHandler
         $placeToMarkAsMaster = $this->repository->load($command->getCanonicalPlaceId());
 
         $placeToMarkAsDuplicate->markAsDuplicateOf($command->getCanonicalPlaceId());
-        $placeToMarkAsMaster->markAsCanonicalFor($command->getDuplicatePlaceId());
+        $placeToMarkAsMaster->markAsCanonicalFor($command->getDuplicatePlaceId(), $placeToMarkAsDuplicate->getDuplicates());
 
         $this->repository->saveMultiple($placeToMarkAsDuplicate, $placeToMarkAsMaster);
     }

@@ -11,10 +11,16 @@ final class MarkedAsCanonical extends PlaceEvent
      */
     private $duplicatedBy;
 
-    public function __construct(string $placeId, string $duplicatedBy)
+    /**
+     * @var string[]
+     */
+    private $duplicatesOfDuplicate = [];
+
+    public function __construct(string $placeId, string $duplicatedBy, array $duplicatesOfDuplicate = [])
     {
         parent::__construct($placeId);
         $this->duplicatedBy = $duplicatedBy;
+        $this->duplicatesOfDuplicate = $duplicatesOfDuplicate;
     }
 
     public function getDuplicatedBy(): string
@@ -22,15 +28,24 @@ final class MarkedAsCanonical extends PlaceEvent
         return $this->duplicatedBy;
     }
 
+    /**
+     * @return string[]
+     */
+    public function getDuplicatesOfDuplicate(): array
+    {
+        return $this->duplicatesOfDuplicate;
+    }
+
     public function serialize()
     {
         return parent::serialize() + [
-                'duplicated_by' => $this->duplicatedBy,
-            ];
+            'duplicated_by' => $this->duplicatedBy,
+            'duplicates_of_duplicate' => $this->duplicatesOfDuplicate,
+        ];
     }
 
     public static function deserialize(array $data)
     {
-        return new static($data['place_id'], ($data['duplicated_by']));
+        return new static($data['place_id'], $data['duplicated_by'], $data['duplicates_of_duplicate']);
     }
 }

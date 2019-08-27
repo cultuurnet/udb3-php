@@ -102,7 +102,7 @@ class RelocateEventToCanonicalPlaceTest extends TestCase
         );
         $this->assertEquals(
             [
-                new UpdateLocation($eventId, new LocationId($canonicalPlaceId))
+                new UpdateLocation($eventId, new LocationId($canonicalPlaceId)),
             ],
             $this->commandBus->getRecordedCommands()
         );
@@ -125,7 +125,7 @@ class RelocateEventToCanonicalPlaceTest extends TestCase
         $this->broadcastNow(new LocationUpdated($eventId, $locationId));
         $this->assertEquals(
             [
-                new UpdateLocation($eventId, new LocationId($canonicalPlaceId))
+                new UpdateLocation($eventId, new LocationId($canonicalPlaceId)),
             ],
             $this->commandBus->getRecordedCommands()
         );

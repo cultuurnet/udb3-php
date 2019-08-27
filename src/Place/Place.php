@@ -84,6 +84,11 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
      */
     private $isDuplicate = false;
 
+    /**
+     * @var string[]
+     */
+    private $duplicates = [];
+
     public function __construct()
     {
         parent::__construct();
@@ -201,7 +206,7 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
         $this->apply(new MarkedAsDuplicate($this->placeId, $placeIdOfCanonical));
     }
 
-    public function markAsCanonicalFor(string $placeIdOfDuplicate): void
+    public function markAsCanonicalFor(string $placeIdOfDuplicate, array $duplicatesOfDuplicate = []): void
     {
         if ($this->isDeleted) {
             throw CannotMarkPlaceAsCanonical::becauseItIsDeleted($this->placeId);
@@ -211,7 +216,15 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
             throw CannotMarkPlaceAsCanonical::becauseItIsAlreadyADuplicate($this->placeId);
         }
 
-        $this->apply(new MarkedAsCanonical($this->placeId, $placeIdOfDuplicate));
+        $this->apply(new MarkedAsCanonical($this->placeId, $placeIdOfDuplicate, $duplicatesOfDuplicate));
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDuplicates(): array
+    {
+        return $this->duplicates;
     }
 
     private function allowAddressUpdate(Address $address, Language $language): bool
@@ -321,6 +334,14 @@ class Place extends Offer implements UpdateableWithCdbXmlInterface
     protected function applyMarkedAsDuplicate(MarkedAsDuplicate $event): void
     {
         $this->isDuplicate = true;
+    }
+
+    protected function applyMarkedAsCanonical(MarkedAsCanonical $event): void
+    {
+        $this->duplicates[] = $event->getDuplicatedBy();
+        foreach ($event->getDuplicatesOfDuplicate() as $duplicateOfDuplicate) {
+            $this->duplicates[] = $duplicateOfDuplicate;
+        }
     }
 
     /**

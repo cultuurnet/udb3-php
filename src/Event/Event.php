@@ -339,14 +339,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         $this->locationId = $locationUpdated->getLocationId();
     }
 
-    /**
-     * @param Audience $audience
-     */
     public function updateAudience(
         Audience $audience
-    ) {
+    ): void {
         $audienceType = $audience->getAudienceType();
-        if ($this->locationId->isDummyPlaceForEducation() && !$audienceType->sameValueAs(AudienceType::EDUCATION())) {
+        if ($this->locationId &&
+            $this->locationId->isDummyPlaceForEducation() &&
+            !$audienceType->sameValueAs(AudienceType::EDUCATION())
+        ) {
             throw IncompatibleAudienceType::forEvent($this->eventId, $audienceType);
         }
 

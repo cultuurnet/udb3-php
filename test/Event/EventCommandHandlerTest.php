@@ -357,6 +357,35 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_updates_the_audience_type_when_setting_the_location_to_a_dummy_location_via_major_info()
+    {
+        LocationId::setDummyPlaceForEducationIds(['6f87ce4c-bd39-4c5e-92b5-a9f8bdf4aa31']);
+
+        $id = '1';
+        $title = new Title('foo');
+        $eventType = new EventType('0.50.4.0.0', 'concert');
+        $location = new LocationId('6f87ce4c-bd39-4c5e-92b5-a9f8bdf4aa31');
+        $calendar = new Calendar(CalendarType::PERMANENT());
+
+        $this->scenario
+            ->withAggregateId($id)
+            ->given(
+                [$this->factorOfferCreated($id)]
+            )
+            ->when(
+                new UpdateMajorInfo($id, $title, $eventType, $location, $calendar)
+            )
+            ->then(
+                [
+                    new MajorInfoUpdated($id, $title, $eventType, $location, $calendar),
+                    new AudienceUpdated($id, new Audience(AudienceType::EDUCATION())),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
     public function it_can_update_the_calendar_of_an_event()
     {
         $eventId = '0f4ea9ad-3681-4f3b-adc2-4b8b00dd845a';

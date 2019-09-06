@@ -309,6 +309,14 @@ class Event extends Offer implements UpdateableWithCdbXmlInterface
         Theme $theme = null
     ) {
         $this->apply(new MajorInfoUpdated($this->eventId, $title, $eventType, $location, $calendar, $theme));
+
+        if ($location->isDummyPlaceForEducation()) {
+            // Bookable education events should get education as their audience type. We record this explicitly so we
+            // don't have to handle this edge case in every read model projector.
+            $this->apply(
+                new AudienceUpdated($this->eventId, new Audience(AudienceType::EDUCATION()))
+            );
+        }
     }
 
     protected function applyMajorInfoUpdated(MajorInfoUpdated $majorInfoUpdated)

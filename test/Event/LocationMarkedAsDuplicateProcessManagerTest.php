@@ -6,18 +6,21 @@ use Broadway\CommandHandling\Testing\TraceableCommandBus;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use CultuurNet\UDB3\Event\Commands\UpdateLocation;
-use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\LocationId;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Place\Events\MarkedAsCanonical;
 use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
+use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use ValueObjects\Web\Url;
 
 class LocationMarkedAsDuplicateProcessManagerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var RepositoryInterface|MockObject
+     * @var ResultsGeneratorInterface|MockObject
      */
-    private $relationsRepository;
+    private $searchResultsGenerator;
 
     /**
      * @var TraceableCommandBus
@@ -31,11 +34,11 @@ class LocationMarkedAsDuplicateProcessManagerTest extends \PHPUnit_Framework_Tes
 
     protected function setUp()
     {
-        $this->relationsRepository = $this->createMock(RepositoryInterface::class);
+        $this->searchResultsGenerator = $this->createMock(ResultsGeneratorInterface::class);
         $this->commandBus = new TraceableCommandBus();
 
         $this->processManager = new LocationMarkedAsDuplicateProcessManager(
-            $this->relationsRepository,
+            $this->searchResultsGenerator,
             $this->commandBus
         );
     }
@@ -45,8 +48,8 @@ class LocationMarkedAsDuplicateProcessManagerTest extends \PHPUnit_Framework_Tes
      */
     public function it_should_only_handle_place_marked_as_duplicate_events()
     {
-        $this->relationsRepository->expects($this->never())
-            ->method('getEventsLocatedAtPlace');
+        $this->searchResultsGenerator->expects($this->never())
+            ->method('search');
 
         $this->commandBus->record();
 
@@ -70,13 +73,25 @@ class LocationMarkedAsDuplicateProcessManagerTest extends \PHPUnit_Framework_Tes
      */
     public function it_updates_every_event_with_a_location_that_is_marked_as_duplicate_to_the_canonical_location()
     {
-        $this->relationsRepository->expects($this->once())
-            ->method('getEventsLocatedAtPlace')
-            ->with('110ecece-f6b0-4360-b5c5-c95babcfe045')
+        $this->searchResultsGenerator->expects($this->once())
+            ->method('search')
+            ->with('location.id:110ecece-f6b0-4360-b5c5-c95babcfe045')
             ->willReturn([
-                'c393e98b-b33e-4948-b97a-3c48e3748398',
-                'd8835de7-c84d-417b-a173-079401f29fde',
-                '13ca4b6b-92b0-407d-b472-634dd0e654d0',
+                new IriOfferIdentifier(
+                    Url::fromNative('http://www.uitdatabank.be/events/c393e98b-b33e-4948-b97a-3c48e3748398'),
+                    'c393e98b-b33e-4948-b97a-3c48e3748398',
+                    OfferType::EVENT()
+                ),
+                new IriOfferIdentifier(
+                    Url::fromNative('http://www.uitdatabank.be/events/d8835de7-c84d-417b-a173-079401f29fde'),
+                    'd8835de7-c84d-417b-a173-079401f29fde',
+                    OfferType::EVENT()
+                ),
+                new IriOfferIdentifier(
+                    Url::fromNative('http://www.uitdatabank.be/events/13ca4b6b-92b0-407d-b472-634dd0e654d0'),
+                    '13ca4b6b-92b0-407d-b472-634dd0e654d0',
+                    OfferType::EVENT()
+                ),
             ]);
 
         $this->commandBus->record();

@@ -8,16 +8,18 @@ use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use CultuurNet\UDB3\Event\Commands\UpdateLocation;
-use CultuurNet\UDB3\Event\ReadModel\Relations\RepositoryInterface;
 use CultuurNet\UDB3\Event\ValueObjects\LocationId;
+use CultuurNet\UDB3\Offer\IriOfferIdentifier;
+use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
+use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 
 final class LocationMarkedAsDuplicateProcessManager implements EventListenerInterface
 {
     /**
-     * @var RepositoryInterface
+     * @var ResultsGeneratorInterface
      */
-    private $relationsRepository;
+    private $searchResultsGenerator;
 
     /**
      * @var CommandBusInterface
@@ -25,10 +27,10 @@ final class LocationMarkedAsDuplicateProcessManager implements EventListenerInte
     private $commandBus;
 
     public function __construct(
-        RepositoryInterface $relationsRepository,
+        ResultsGeneratorInterface $searchResultsGenerator,
         CommandBusInterface $commandBus
     ) {
-        $this->relationsRepository = $relationsRepository;
+        $this->searchResultsGenerator = $searchResultsGenerator;
         $this->commandBus = $commandBus;
     }
 
@@ -44,11 +46,17 @@ final class LocationMarkedAsDuplicateProcessManager implements EventListenerInte
         $duplicatePlaceId = $domainEvent->getPlaceId();
         $canonicalPlaceId = $domainEvent->getDuplicateOf();
 
-        $eventIds = $this->relationsRepository->getEventsLocatedAtPlace($duplicatePlaceId);
+        $query = "location.id:{$duplicatePlaceId}";
+        $results = $this->searchResultsGenerator->search($query);
 
-        foreach ($eventIds as $eventId) {
+        /* @var IriOfferIdentifier $result */
+        foreach ($results as $result) {
+            if (!$result->getType()->sameValueAs(OfferType::EVENT())) {
+                continue;
+            }
+
             $this->commandBus->dispatch(
-                new UpdateLocation($eventId, new LocationId($canonicalPlaceId))
+                new UpdateLocation($result->getId(), new LocationId($canonicalPlaceId))
             );
         }
     }

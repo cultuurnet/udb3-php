@@ -33,6 +33,7 @@ class PlaceTypeResolver implements TypeResolverInterface
             "ekdc4ATGoUitCa0e6me6xA" => new EventType("ekdc4ATGoUitCa0e6me6xA", "Horeca"),
             "OyaPaf64AEmEAYXHeLMAtA" => new EventType("OyaPaf64AEmEAYXHeLMAtA", "Zaal of expohal"),
             "0.8.0.0.0" => new EventType("0.8.0.0.0", "Openbare ruimte"),
+            "8.70.0.0.0" => new EventType("8.70.0.0.0", "Theater"),
         ];
     }
 

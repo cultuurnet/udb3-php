@@ -37,10 +37,7 @@ class PlaceTypeResolver implements TypeResolverInterface
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function byId(StringLiteral $typeId)
+    public function byId(StringLiteral $typeId): EventType
     {
         if (!array_key_exists((string) $typeId, $this->types)) {
             throw new \Exception("Unknown place type id: " . $typeId);

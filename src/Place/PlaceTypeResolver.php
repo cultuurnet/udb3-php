@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Place;
 
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Offer\TypeResolverInterface;
+use Exception;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class PlaceTypeResolver implements TypeResolverInterface
@@ -33,16 +34,14 @@ class PlaceTypeResolver implements TypeResolverInterface
             "ekdc4ATGoUitCa0e6me6xA" => new EventType("ekdc4ATGoUitCa0e6me6xA", "Horeca"),
             "OyaPaf64AEmEAYXHeLMAtA" => new EventType("OyaPaf64AEmEAYXHeLMAtA", "Zaal of expohal"),
             "0.8.0.0.0" => new EventType("0.8.0.0.0", "Openbare ruimte"),
+            "8.70.0.0.0" => new EventType("8.70.0.0.0", "Theater"),
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function byId(StringLiteral $typeId)
+    public function byId(StringLiteral $typeId): EventType
     {
         if (!array_key_exists((string) $typeId, $this->types)) {
-            throw new \Exception("Unknown place type id: " . $typeId);
+            throw new Exception("Unknown place type id: " . $typeId);
         }
         return $this->types[(string) $typeId];
     }

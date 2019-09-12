@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Offer\TypeResolverInterface;
+use Exception;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class EventTypeResolver implements TypeResolverInterface
@@ -39,13 +40,10 @@ class EventTypeResolver implements TypeResolverInterface
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function byId(StringLiteral $typeId)
+    public function byId(StringLiteral $typeId): EventType
     {
         if (!array_key_exists((string) $typeId, $this->types)) {
-            throw new \Exception("Unknown event type id: " . $typeId);
+            throw new Exception("Unknown event type id: " . $typeId);
         }
         return $this->types[(string) $typeId];
     }

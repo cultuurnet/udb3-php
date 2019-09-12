@@ -7,9 +7,5 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 interface TypeResolverInterface
 {
-    /**
-     * @param StringLiteral $typeId
-     * @return EventType
-     */
-    public function byId(StringLiteral $typeId);
+    public function byId(StringLiteral $typeId): EventType;
 }

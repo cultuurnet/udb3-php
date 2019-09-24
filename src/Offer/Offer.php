@@ -268,7 +268,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
      * @param Labels $labels
      * @param Labels $labelsToKeepIfAlreadyOnOffer
      */
-    public function importLabels(Labels $labels, Labels $labelsToKeepIfAlreadyOnOffer)
+    public function importLabels(Labels $labels, Labels $labelsToKeepIfAlreadyOnOffer, Labels $labelsToRemoveWhenOnOffer)
     {
         $convertLabelClass = function (\CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label $label) {
             return new Label(
@@ -285,6 +285,11 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         // Convert the labels to keep if already applied.
         $keepLabelsCollection = new LabelCollection(
             array_map($convertLabelClass, $labelsToKeepIfAlreadyOnOffer->toArray())
+        );
+
+        // Convert the labels to remove when on offer.
+        $removeLabelsCollection = new LabelCollection(
+            array_map($convertLabelClass, $labelsToRemoveWhenOnOffer->toArray())
         );
 
         // What are the added labels?
@@ -319,7 +324,7 @@ abstract class Offer extends EventSourcedAggregateRoot implements LabelAwareAggr
         // Labels which are inside the internal state but not inside imported labels or labels to keep.
         // For each deleted label fire a LabelDeleted event.
         foreach ($this->labels->asArray() as $label) {
-            if (!$importLabelsCollection->contains($label) && !$keepLabelsCollection->contains($label)) {
+            if (!$importLabelsCollection->contains($label) && !$keepLabelsCollection->contains($label) && $removeLabelsCollection->contains($label)) {
                 $this->apply($this->createLabelRemovedEvent($label));
             }
         }

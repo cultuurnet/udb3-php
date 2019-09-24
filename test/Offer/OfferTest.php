@@ -386,6 +386,13 @@ class OfferTest extends AggregateRootScenarioTestCase
             )
         );
 
+        $labelsToRemoveWhenOnOffer = new Labels(
+            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                new LabelName('existing_label_2'),
+                true
+            )
+        );
+
         $this->scenario
             ->given([
                 new ItemCreated($itemId),
@@ -394,9 +401,9 @@ class OfferTest extends AggregateRootScenarioTestCase
                 new LabelAdded($itemId, new Label('existing_label_3')),
             ])
             ->when(
-                function (Item $item) use ($labels, $labelsToKeepIfApplied) {
-                    $item->importLabels($labels, $labelsToKeepIfApplied);
-                    $item->importLabels($labels, $labelsToKeepIfApplied);
+                function (Item $item) use ($labels, $labelsToKeepIfApplied, $labelsToRemoveWhenOnOffer) {
+                    $item->importLabels($labels, $labelsToKeepIfApplied, $labelsToRemoveWhenOnOffer);
+                    $item->importLabels($labels, $labelsToKeepIfApplied, $labelsToRemoveWhenOnOffer);
                 }
             )
             ->then([

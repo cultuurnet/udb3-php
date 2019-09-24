@@ -315,13 +315,13 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                         )
                     )
                 )->withLabelsToRemoveWhenOnOffer(
-                        new Labels(
-                            new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
-                                new LabelName('existing_to_be_removed'),
-                                true
-                            )
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('existing_to_be_removed'),
+                            true
                         )
                     )
+                )
             )
             ->then(
                 [

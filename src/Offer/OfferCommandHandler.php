@@ -328,7 +328,11 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($importLabels->getItemId());
 
-        $offer->importLabels($importLabels->getLabelsToImport(), $importLabels->getLabelsToKeepIfAlreadyOnOffer());
+        $offer->importLabels(
+            $importLabels->getLabelsToImport(),
+            $importLabels->getLabelsToKeepIfAlreadyOnOffer(),
+            $importLabels->getLabelsToRemoveWhenOnOffer()
+        );
 
         $this->offerRepository->save($offer);
     }

@@ -314,6 +314,13 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                             true
                         )
                     )
+                )->withLabelsToRemoveWhenOnOffer(
+                    new Labels(
+                        new \CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label(
+                            new LabelName('existing_to_be_removed'),
+                            true
+                        )
+                    )
                 )
             )
             ->then(
@@ -321,6 +328,31 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
                     new LabelRemoved($this->id, new Label('existing_to_be_removed')),
                 ]
             );
+    }
+
+    /**
+     * @test
+     */
+    public function it_will_not_remove_labels_that_were_added_after_import()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                    new LabelAdded($this->id, new Label('existing_added_async_after_import')),
+                    new LabelAdded($this->id, new Label('existing_private')),
+                ]
+            )
+            ->when(
+                (
+                new ImportLabels(
+                    $this->id,
+                    new Labels()
+                )
+                )
+            )
+            ->then([]);
     }
 
     /**

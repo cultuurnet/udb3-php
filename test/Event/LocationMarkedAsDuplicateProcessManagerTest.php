@@ -75,7 +75,7 @@ class LocationMarkedAsDuplicateProcessManagerTest extends \PHPUnit_Framework_Tes
     {
         $this->searchResultsGenerator->expects($this->once())
             ->method('search')
-            ->with('location.id:110ecece-f6b0-4360-b5c5-c95babcfe045')
+            ->with('location.mainId:110ecece-f6b0-4360-b5c5-c95babcfe045')
             ->willReturn([
                 new IriOfferIdentifier(
                     Url::fromNative('http://www.uitdatabank.be/events/c393e98b-b33e-4948-b97a-3c48e3748398'),

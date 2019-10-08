@@ -52,7 +52,7 @@ final class LocationMarkedAsDuplicateProcessManager implements EventListenerInte
         $duplicatePlaceId = $domainEvent->getPlaceId();
         $canonicalPlaceId = $domainEvent->getDuplicateOf();
 
-        $query = "location.id:{$duplicatePlaceId}";
+        $query = "location.mainId:{$duplicatePlaceId}";
         $results = $this->searchResultsGenerator->search($query);
 
         $updated = 0;

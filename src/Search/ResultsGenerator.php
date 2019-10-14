@@ -108,6 +108,8 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
 
             $total = $results->getTotalItems()->toNative();
 
+            $this->logger->info('Search API reported ' . $total . ' results');
+
             foreach ($results->getItems() as $item) {
                 $id = $item->getId();
 

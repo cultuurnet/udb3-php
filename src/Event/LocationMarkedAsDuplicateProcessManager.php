@@ -14,12 +14,15 @@ use CultuurNet\UDB3\Offer\OfferType;
 use CultuurNet\UDB3\Place\Events\MarkedAsDuplicate;
 use CultuurNet\UDB3\Search\ResultsGeneratorInterface;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 final class LocationMarkedAsDuplicateProcessManager implements EventListenerInterface, LoggerAwareInterface
 {
-    use LoggerAwareTrait;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @var ResultsGeneratorInterface
@@ -40,7 +43,16 @@ final class LocationMarkedAsDuplicateProcessManager implements EventListenerInte
         $this->logger = new NullLogger();
     }
 
-    public function handle(DomainMessage $domainMessage)
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+
+        if ($this->searchResultsGenerator instanceof LoggerAwareInterface) {
+            $this->searchResultsGenerator->setLogger($logger);
+        }
+    }
+
+    public function handle(DomainMessage $domainMessage): void
     {
         $domainEvent = $domainMessage->getPayload();
 

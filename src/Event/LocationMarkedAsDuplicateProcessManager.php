@@ -71,14 +71,14 @@ final class LocationMarkedAsDuplicateProcessManager implements EventListenerInte
             // Keep all updates in-memory and dispatch them only after looping through all search results, as the
             // pagination of results gets influenced by updating events in the loop.
             $commands[] = new UpdateLocation($result->getId(), new LocationId($canonicalPlaceId));
-
-            $this->logger->info(
-                'Dispatched UpdateLocation for result with id ' . $result->getId()
-            );
         }
 
         foreach ($commands as $command) {
             $this->commandBus->dispatch($command);
+
+            $this->logger->info(
+                'Dispatched UpdateLocation for result with id ' . $command->getItemId()
+            );
         }
 
         $updated = count($commands);

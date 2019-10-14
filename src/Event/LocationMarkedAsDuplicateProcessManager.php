@@ -67,7 +67,7 @@ final class LocationMarkedAsDuplicateProcessManager implements EventListenerInte
         $query = "location.mainId:{$duplicatePlaceId}";
         $results = $this->searchResultsGenerator->search($query);
 
-        $updated = 0;
+        $commands = [];
         $skipped = [];
 
         /* @var IriOfferIdentifier $result */
@@ -80,18 +80,23 @@ final class LocationMarkedAsDuplicateProcessManager implements EventListenerInte
                 continue;
             }
 
-            $this->commandBus->dispatch(
-                new UpdateLocation($result->getId(), new LocationId($canonicalPlaceId))
-            );
+            // Keep all updates in-memory and dispatch them only after looping through all search results, as the
+            // pagination of results gets influenced by updating events in the loop.
+            $commands[] = new UpdateLocation($result->getId(), new LocationId($canonicalPlaceId));
+        }
 
-            $updated++;
+        foreach ($commands as $command) {
+            $this->commandBus->dispatch($command);
 
             $this->logger->info(
-                'Dispatched UpdateLocation for result with id ' . $result->getId()
+                'Dispatched UpdateLocation for result with id ' . $command->getItemId()
             );
         }
 
-        $this->logger->info('Received ' . ($updated + count($skipped)) . ' results from the search api.');
+        $updated = count($commands);
+        $total = $updated + count($skipped);
+
+        $this->logger->info('Received ' . $total . ' results from the search api.');
         $this->logger->info('Updated ' . $updated . ' events to the canonical location.');
         $this->logger->info(
             'Skipped ' . count($skipped) . ' events:' . PHP_EOL . implode(PHP_EOL, $skipped)

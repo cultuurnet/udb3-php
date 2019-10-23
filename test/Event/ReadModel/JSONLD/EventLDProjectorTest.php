@@ -532,7 +532,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         // add the event json to memory
         $this->documentRepository->save(new JsonDocument(
-            'someId',
+            CdbXMLEventFactory::AN_EVENT_ID,
             file_get_contents(
                 __DIR__ . '/../../samples/event_with_udb3_place.json'
             )
@@ -568,7 +568,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             'samples/event_with_empty_keyword.cdbxml.xml'
         );
         $this->project($eventUpdatedFromUdb2, $eventUpdatedFromUdb2->getEventId());
-        
+
         $this->expectNotToPerformAssertions();
     }
 
@@ -1098,14 +1098,14 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->assertEquals(
             $expectedMediaObjects,
-            $this->documentRepository->get('someId')->getBody()->mediaObject
+            $this->documentRepository->get(CdbXMLEventFactory::AN_EVENT_ID)->getBody()->mediaObject
         );
     }
 
     public function eventUpdateDataProvider()
     {
         $documentWithUDB3Media = new JsonDocument(
-            'someId',
+            CdbXMLEventFactory::AN_EVENT_ID,
             json_encode([
                 'mediaObject' => [
                     [

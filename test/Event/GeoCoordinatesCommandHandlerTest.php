@@ -166,4 +166,42 @@ class GeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestCase
             ->when($command)
             ->then([$expectedEvent]);
     }
+
+
+    /**
+     * @test
+     */
+    public function it_skips_update_if_the_geo_coordinates_can_not_be_resolved()
+    {
+        $eventId = 'b9ec8a0a-ec9d-4dd3-9aaa-6d5b41b69d7c';
+
+        $address = new Address(
+            new Street('Wetstraat 1'),
+            new PostalCode('1000'),
+            new Locality('Bxl'),
+            Country::fromNative('BE')
+        );
+
+        $eventCreated = new EventCreated(
+            $eventId,
+            new Language('en'),
+            new Title('Faith no More'),
+            new EventType('0.50.4.0.0', 'Concert'),
+            new LocationId('7a59de16-6111-4658-aa6e-958ff855d14e'),
+            new Calendar(CalendarType::PERMANENT()),
+            new Theme('1.8.1.0.0', 'Rock')
+        );
+
+        $command = new UpdateGeoCoordinatesFromAddress($eventId, $address);
+
+        $this->geocodingService->expects($this->any())
+            ->method('getCoordinates')
+            ->willReturn(null);
+
+        $this->scenario
+            ->withAggregateId($eventId)
+            ->given([$eventCreated])
+            ->when($command)
+            ->then([]);
+    }
 }

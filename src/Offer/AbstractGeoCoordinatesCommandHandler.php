@@ -67,6 +67,10 @@ abstract class AbstractGeoCoordinatesCommandHandler extends Udb3CommandHandler
             );
         }
 
+        if ($coordinates === null) {
+            return;
+        }
+
         /** @var Offer $offer */
         $offer = $this->offerRepository->load($updateGeoCoordinates->getItemId());
         $offer->updateGeoCoordinates($coordinates);

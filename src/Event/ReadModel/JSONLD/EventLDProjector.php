@@ -186,14 +186,12 @@ class EventLDProjector extends OfferLDProjector implements
         $cdbXml
     ) {
         $document = $this->newDocument($eventId);
-
         $eventLd = $this->projectEventCdbXmlToObject(
             $document->getBody(),
             $eventId,
             $cdbXmlNamespaceUri,
             $cdbXml
         );
-
         return $document->withBody($eventLd);
     }
 
@@ -247,13 +245,6 @@ class EventLDProjector extends OfferLDProjector implements
             $this->setMainLanguage($jsonLd, new Language('nl'));
         }
 
-        // Because UDB2 cannot keep track of UDB3 places as a location
-        // ignore it and give priority to content added through UDB3.
-        $location = $this->UDB3Location($document);
-        if (!empty($location)) {
-            $jsonLd->location = $location;
-        }
-
         return $jsonLd;
     }
 
@@ -277,26 +268,6 @@ class EventLDProjector extends OfferLDProjector implements
         }
 
         return $media;
-    }
-
-    /**
-     * Return the location of an event if it already exists.
-     *
-     * @param JsonDocument $document The JsonDocument.
-     *
-     * @return array|null
-     *  The location
-     */
-    private function UDB3Location($document)
-    {
-        $location = null;
-
-        if ($document) {
-            $item = $document->getBody();
-            $location = isset($item->location) ? $item->location : null;
-        }
-
-        return $location;
     }
 
     /**

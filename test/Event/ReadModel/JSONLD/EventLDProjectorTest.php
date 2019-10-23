@@ -524,7 +524,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_doesnt_remove_existing_location_when_updating_from_udb2()
+    public function it_does_remove_existing_location_when_updating_from_udb2_without_location_id()
     {
         $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
             'samples/event_with_udb3_place.cdbxml.xml'
@@ -539,12 +539,19 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         ));
 
         $body = $this->project($event, $event->getEventId());
-
         // asset the location is still a place object
         $this->assertEquals("Place", $body->location->{'@type'});
-        $this->assertEquals(
-            "http://culudb-silex.dev:8080/place/f31033c4-96b1-4012-99ac-4439c614f701",
-            $body->location->{'@id'}
+        $this->assertArrayNotHasKey(
+            "@id",
+            (array) $body->location
+        );
+        $this->assertArrayHasKey(
+            "name",
+            (array) $body->location
+        );
+        $this->assertArrayHasKey(
+            "address",
+            (array) $body->location
         );
     }
 

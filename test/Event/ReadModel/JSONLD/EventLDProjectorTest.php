@@ -524,7 +524,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
     /**
      * @test
      */
-    public function it_doesnt_remove_existing_location_when_updating_from_udb2()
+    public function it_does_remove_existing_location_when_updating_from_udb2_without_location_id()
     {
         $event = $this->cdbXMLEventFactory->eventUpdatedFromUDB2(
             'samples/event_with_udb3_place.cdbxml.xml'
@@ -532,19 +532,26 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         // add the event json to memory
         $this->documentRepository->save(new JsonDocument(
-            'someId',
+            CdbXMLEventFactory::AN_EVENT_ID,
             file_get_contents(
                 __DIR__ . '/../../samples/event_with_udb3_place.json'
             )
         ));
 
         $body = $this->project($event, $event->getEventId());
-
         // asset the location is still a place object
         $this->assertEquals("Place", $body->location->{'@type'});
-        $this->assertEquals(
-            "http://culudb-silex.dev:8080/place/f31033c4-96b1-4012-99ac-4439c614f701",
-            $body->location->{'@id'}
+        $this->assertArrayNotHasKey(
+            "@id",
+            (array) $body->location
+        );
+        $this->assertArrayHasKey(
+            "name",
+            (array) $body->location
+        );
+        $this->assertArrayHasKey(
+            "address",
+            (array) $body->location
         );
     }
 
@@ -568,7 +575,7 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
             'samples/event_with_empty_keyword.cdbxml.xml'
         );
         $this->project($eventUpdatedFromUdb2, $eventUpdatedFromUdb2->getEventId());
-        
+
         $this->expectNotToPerformAssertions();
     }
 
@@ -1098,14 +1105,14 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
 
         $this->assertEquals(
             $expectedMediaObjects,
-            $this->documentRepository->get('someId')->getBody()->mediaObject
+            $this->documentRepository->get(CdbXMLEventFactory::AN_EVENT_ID)->getBody()->mediaObject
         );
     }
 
     public function eventUpdateDataProvider()
     {
         $documentWithUDB3Media = new JsonDocument(
-            'someId',
+            CdbXMLEventFactory::AN_EVENT_ID,
             json_encode([
                 'mediaObject' => [
                     [

@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Organizer;
 
 use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Cdb\ActorItemFactory;
 use CultuurNet\UDB3\Cdb\UpdateableWithCdbXmlInterface;
@@ -16,6 +17,7 @@ use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Organizer\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\LabelsImported;
@@ -232,6 +234,16 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
                 new ContactPointUpdated($this->actorId, $contactPoint)
             );
         }
+    }
+
+    public function updateGeoCoordinates(Coordinates $coordinate)
+    {
+        $this->apply(
+            new GeoCoordinatesUpdated(
+                $this->actorId,
+                $coordinate
+            )
+        );
     }
 
     /**

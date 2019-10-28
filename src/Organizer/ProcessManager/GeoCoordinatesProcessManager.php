@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CultuurNet\UDB3\Organizer\Manager;
+namespace CultuurNet\UDB3\Organizer\ProcessManager;
 
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;

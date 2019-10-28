@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CultuurNet\UDB3\Organizer\Manager;
+namespace CultuurNet\UDB3\Organizer\ProcessManager;
 
 use Broadway\CommandHandling\CommandBusInterface;
 use Broadway\Domain\DomainMessage;
@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Event\GeoCoordinatesProcessManager as GeoCoordinatesProcessManagerAlias;
 use CultuurNet\UDB3\Organizer\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
+use CultuurNet\UDB3\Organizer\ProcessManager\GeoCoordinatesProcessManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Geography\Country;

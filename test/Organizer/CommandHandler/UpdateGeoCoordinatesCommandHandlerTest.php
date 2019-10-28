@@ -16,7 +16,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\LocalityAddressFormatter;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
-use CultuurNet\UDB3\Organizer\Commands\UpdateGeoCoordinates;
+use CultuurNet\UDB3\Organizer\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Organizer\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
 use CultuurNet\UDB3\Organizer\OrganizerRepository;
@@ -61,7 +61,7 @@ class UpdateGeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestC
 
         $this->geocodingService = $this->createMock(GeocodingServiceInterface::class);
 
-        return new UpdateGeoCoordinatesCommandHandler(
+        return new UpdateGeoCoordinatesFromAddressCommandHandler(
             $organizerRepository,
             $this->defaultAddressFormatter,
             $this->localityAddressFormatter,
@@ -86,7 +86,7 @@ class UpdateGeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestC
             ['http://www.google.be']
         );
 
-        $command = new UpdateGeoCoordinates($organizerId, $address);
+        $command = new UpdateGeoCoordinatesFromAddress($organizerId, $address);
 
         $coordinates = $this->someCoordinates();
 
@@ -121,7 +121,7 @@ class UpdateGeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestC
             ['http://www.google.be']
         );
 
-        $command = new UpdateGeoCoordinates($organizerId, $address);
+        $command = new UpdateGeoCoordinatesFromAddress($organizerId, $address);
 
         $coordinates = $this->someCoordinates();
 
@@ -164,7 +164,7 @@ class UpdateGeoCoordinatesCommandHandlerTest extends CommandHandlerScenarioTestC
             ['http://www.google.be']
         );
 
-        $command = new UpdateGeoCoordinates($organizerId, $address);
+        $command = new UpdateGeoCoordinatesFromAddress($organizerId, $address);
 
         $this->geocodingService->expects($this->any())
             ->method('getCoordinates')

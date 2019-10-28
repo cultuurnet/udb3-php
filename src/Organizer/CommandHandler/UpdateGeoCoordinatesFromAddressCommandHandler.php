@@ -6,11 +6,11 @@ use Broadway\Repository\RepositoryInterface;
 use CultuurNet\Geocoding\GeocodingServiceInterface;
 use CultuurNet\UDB3\Address\AddressFormatterInterface;
 use CultuurNet\UDB3\CommandHandling\Udb3CommandHandler;
-use CultuurNet\UDB3\Organizer\Commands\UpdateGeoCoordinates;
+use CultuurNet\UDB3\Organizer\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Organizer\Organizer;
 use CultuurNet\UDB3\Organizer\OrganizerRepository;
 
-class UpdateGeoCoordinatesCommandHandler extends Udb3CommandHandler
+class UpdateGeoCoordinatesFromAddressCommandHandler extends Udb3CommandHandler
 {
     /**
      * @var OrganizerRepository
@@ -46,7 +46,7 @@ class UpdateGeoCoordinatesCommandHandler extends Udb3CommandHandler
     }
 
 
-    protected function handleUpdateGeoCoordinates(UpdateGeoCoordinates $updateGeoCoordinates)
+    protected function handleUpdateGeoCoordinatesFromAddress(UpdateGeoCoordinatesFromAddress $updateGeoCoordinates)
     {
         $coordinates = $this->geocodingService->getCoordinates(
             $this->defaultAddressFormatter->format(

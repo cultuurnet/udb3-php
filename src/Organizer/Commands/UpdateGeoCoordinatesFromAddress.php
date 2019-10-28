@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Organizer\Commands;
 
 use CultuurNet\UDB3\Address\Address;
 
-class UpdateGeoCoordinates
+class UpdateGeoCoordinatesFromAddress
 {
     /**
      * @var string

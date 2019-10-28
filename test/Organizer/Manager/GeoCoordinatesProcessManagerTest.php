@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Event\GeoCoordinatesProcessManager as GeoCoordinatesProcessManagerAlias;
-use CultuurNet\UDB3\Organizer\Commands\UpdateGeoCoordinates;
+use CultuurNet\UDB3\Organizer\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -54,7 +54,7 @@ class GeoCoordinatesProcessManagerTest extends TestCase
             $addressUpdatedEvent
         );
 
-        $expectedCommand = new UpdateGeoCoordinates(
+        $expectedCommand = new UpdateGeoCoordinatesFromAddress(
             $organizerId,
             $address
         );

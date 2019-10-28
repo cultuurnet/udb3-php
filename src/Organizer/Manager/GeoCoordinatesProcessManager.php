@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Organizer\Manager;
 use Broadway\Domain\DomainMessage;
 use Broadway\EventHandling\EventListenerInterface;
 use Broadway\CommandHandling\CommandBusInterface;
-use CultuurNet\UDB3\Organizer\Commands\UpdateGeoCoordinates;
+use CultuurNet\UDB3\Organizer\Commands\UpdateGeoCoordinatesFromAddress;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 
 class GeoCoordinatesProcessManager implements EventListenerInterface
@@ -32,7 +32,7 @@ class GeoCoordinatesProcessManager implements EventListenerInterface
     public function dispatchUpdateGeoCoordinatesCommand(AddressUpdated $event): void
     {
         $this->commandBus->dispatch(
-            new UpdateGeoCoordinates(
+            new UpdateGeoCoordinatesFromAddress(
                 $event->getOrganizerId(),
                 $event->getAddress()
             )

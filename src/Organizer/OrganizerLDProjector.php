@@ -17,6 +17,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
+use CultuurNet\UDB3\Organizer\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -510,6 +511,18 @@ class OrganizerLDProjector implements EventListenerInterface
         }
 
         $jsonLD->address->{$language->getCode()} = $addressUpdated->getAddress()->toJsonLd();
+
+        return $document->withBody($jsonLD);
+    }
+
+    public function applyGeoCoordinatesUpdated(GeoCoordinatesUpdated $geoCoordinatesUpdated)
+    {
+
+        $document = $this->repository->get($geoCoordinatesUpdated->getOrganizerId());
+
+        $jsonLD = $document->getBody();
+
+        $jsonLD->geo = $geoCoordinatesUpdated->toJsonLd();
 
         return $document->withBody($jsonLD);
     }

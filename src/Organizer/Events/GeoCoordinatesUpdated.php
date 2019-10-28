@@ -5,8 +5,9 @@ namespace CultuurNet\UDB3\Organizer\Events;
 use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;
 use CultuurNet\Geocoding\Coordinate\Longitude;
+use CultuurNet\UDB3\JsonLdSerializableInterface;
 
-class GeoCoordinatesUpdated extends OrganizerEvent
+class GeoCoordinatesUpdated extends OrganizerEvent implements JsonLdSerializableInterface
 {
     /**
      * @var Coordinates
@@ -53,5 +54,16 @@ class GeoCoordinatesUpdated extends OrganizerEvent
                 new Longitude($data['coordinates']['long'])
             )
         );
+    }
+
+    /**
+     * Convert the object to json ld.
+     */
+    public function toJsonLd()
+    {
+        return [
+            'latitude' => $this->coordinates->getLatitude()->toDouble(),
+            'longitude' => $this->coordinates->getLongitude()->toDouble(),
+        ];
     }
 }

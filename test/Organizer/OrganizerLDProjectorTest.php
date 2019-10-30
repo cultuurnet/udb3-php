@@ -7,6 +7,9 @@ use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventBusInterface;
 use Broadway\UuidGenerator\Rfc4122\Version4Generator;
+use CultuurNet\Geocoding\Coordinate\Coordinates;
+use CultuurNet\Geocoding\Coordinate\Latitude;
+use CultuurNet\Geocoding\Coordinate\Longitude;
 use CultuurNet\UDB3\Actor\ActorEvent;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Address\Locality;
@@ -20,6 +23,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
+use CultuurNet\UDB3\Organizer\Events\GeoCoordinatesUpdated;
 use CultuurNet\UDB3\Organizer\Events\LabelAdded;
 use CultuurNet\UDB3\Organizer\Events\LabelRemoved;
 use CultuurNet\UDB3\Organizer\Events\OrganizerCreated;
@@ -735,6 +739,30 @@ class OrganizerLDProjectorTest extends TestCase
         $domainMessage = $this->createDomainMessage($labelRemoved);
 
         $this->expectSave($organizerId, 'organizer_with_modified.json');
+
+        $this->projector->handle($domainMessage);
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_geo_coordinates_updated()
+    {
+        $organizerId = '586f596d-7e43-4ab9-b062-04db9436fca4';
+
+        $this->mockGet($organizerId, 'organizer.json');
+
+        $coordinates = new Coordinates(
+            new Latitude(50.8795943),
+            new Longitude(4.7150515)
+        );
+        $geoCoordinatesUpdated = new GeoCoordinatesUpdated(
+            $organizerId,
+            $coordinates
+        );
+        $domainMessage = $this->createDomainMessage($geoCoordinatesUpdated);
+
+        $this->expectSave($organizerId, 'organizer_with_geo_coordinates.json');
 
         $this->projector->handle($domainMessage);
     }

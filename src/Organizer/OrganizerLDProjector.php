@@ -423,7 +423,7 @@ class OrganizerLDProjector implements EventListenerInterface
     private function applyOrganizerDeleted(
         OrganizerDeleted $organizerDeleted
     ) {
-        $document =  $this->repository->get($organizerDeleted->getOrganizerId());
+        $document = $this->repository->get($organizerDeleted->getOrganizerId());
 
         $jsonLD = $document->getBody();
 
@@ -522,7 +522,10 @@ class OrganizerLDProjector implements EventListenerInterface
 
         $jsonLD = $document->getBody();
 
-        $jsonLD->geo = $geoCoordinatesUpdated->toJsonLd();
+        $jsonLD->geo = [
+            'latitude' => $geoCoordinatesUpdated->coordinates()->getLatitude()->toDouble(),
+            'longitude' => $geoCoordinatesUpdated->coordinates()->getLongitude()->toDouble(),
+        ];
 
         return $document->withBody($jsonLD);
     }

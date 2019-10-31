@@ -547,6 +547,13 @@ class BackwardsCompatiblePayloadSerializerFactory
             $serializedObject['payload']['location'] = $locationId;
         }
 
+        // Some MajorInfoUpdated events in the production event store contain an empty string as location id due to a
+        // bug. Even when the bug is fixed, this data will still be corrupt. To fix any "location id can't have empty
+        // value" issues in the core app or downstream, we use a nil uuid as a placeholder for the missing data.
+        if ($serializedObject['payload']['location'] === '') {
+            $serializedObject['payload']['location'] = '00000000-0000-0000-0000-000000000000';
+        }
+
         return $serializedObject;
     }
 

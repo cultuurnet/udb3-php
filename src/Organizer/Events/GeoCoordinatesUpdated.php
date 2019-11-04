@@ -47,7 +47,7 @@ class GeoCoordinatesUpdated extends OrganizerEvent
     public static function deserialize(array $data)
     {
         return new static(
-            $data['item_id'],
+            $data['organizer_id'],
             new Coordinates(
                 new Latitude($data['coordinates']['lat']),
                 new Longitude($data['coordinates']['long'])

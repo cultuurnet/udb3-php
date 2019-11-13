@@ -24,14 +24,21 @@ class Log implements \JsonSerializable
      */
     private $description;
 
+    /**
+     * @var string
+     */
+    private $apiKey;
+
     public function __construct(
         \DateTime $date,
         StringLiteral $description,
-        StringLiteral $author = null
+        StringLiteral $author = null,
+        string $apiKey = null
     ) {
         $this->date = clone $date;
         $this->description = $description;
         $this->author = $author;
+        $this->apiKey = $apiKey;
     }
 
     /**
@@ -46,6 +53,10 @@ class Log implements \JsonSerializable
 
         if ($this->author) {
             $log['author'] = $this->author->toNative();
+        }
+
+        if ($this->apiKey) {
+            $log['apiKey'] = $this->apiKey;
         }
 
         return $log;

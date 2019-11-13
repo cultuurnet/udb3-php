@@ -88,11 +88,11 @@ class HistoryProjectorTest extends TestCase
         $this->assertHistoryOfEvent(
             self::EVENT_ID_1,
             [
-                (object)[
+                (object) [
                     'date' => '2015-03-04T10:17:19+02:00',
                     'description' => 'Geïmporteerd vanuit UDB2',
                 ],
-                (object)[
+                (object) [
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
@@ -121,11 +121,11 @@ class HistoryProjectorTest extends TestCase
         $this->assertHistoryOfEvent(
             self::EVENT_ID_2,
             [
-                (object)[
+                (object) [
                     'date' => '2015-03-01T10:17:19+02:00',
                     'description' => 'Geïmporteerd vanuit UDB2',
                 ],
-                (object)[
+                (object) [
                     'date' => '2014-09-08T09:10:16+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'info@traeghe.be',
@@ -160,15 +160,15 @@ class HistoryProjectorTest extends TestCase
         $this->assertHistoryOfEvent(
             self::EVENT_ID_1,
             [
-                (object)[
+                (object) [
                     'description' => 'Geüpdatet vanuit UDB2',
                     'date' => '2015-03-25T10:17:19+02:00',
                 ],
-                (object)[
+                (object) [
                     'date' => '2015-03-04T10:17:19+02:00',
                     'description' => 'Geïmporteerd vanuit UDB2',
                 ],
-                (object)[
+                (object) [
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
@@ -199,7 +199,12 @@ class HistoryProjectorTest extends TestCase
         $domainMessage = new DomainMessage(
             $eventId,
             4,
-            new Metadata(['user_nick' => 'Jan Janssen']),
+            new Metadata(
+                [
+                    'user_nick' => 'Jan Janssen',
+                    'auth_api_key' => 'my-super-duper-key',
+                ]
+            ),
             $eventCreated,
             DateTime::fromString($now->format(\DateTime::ATOM))
         );
@@ -209,10 +214,11 @@ class HistoryProjectorTest extends TestCase
         $this->assertHistoryOfEvent(
             $eventId,
             [
-                (object)[
+                (object) [
                     'date' => $now->format('c'),
                     'author' => 'Jan Janssen',
                     'description' => 'Aangemaakt in UiTdatabank',
+                    'apiKey' => 'my-super-duper-key',
                 ],
             ]
         );
@@ -247,7 +253,7 @@ class HistoryProjectorTest extends TestCase
         $this->assertHistoryOfEvent(
             $eventId,
             [
-                (object)[
+                (object) [
                     'date' => $now->format('c'),
                     'author' => 'Jan Janssen',
                     'description' => 'Event gekopieerd van ' . $originalEventId,
@@ -282,16 +288,16 @@ class HistoryProjectorTest extends TestCase
         $this->assertHistoryOfEvent(
             self::EVENT_ID_1,
             [
-                (object)[
+                (object) [
                     'date' => '2015-03-26T10:17:19+02:00',
                     'author' => 'JohnDoe',
                     'description' => 'Titel vertaald (fr)',
                 ],
-                (object)[
+                (object) [
                     'date' => '2015-03-04T10:17:19+02:00',
                     'description' => 'Geïmporteerd vanuit UDB2',
                 ],
-                (object)[
+                (object) [
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
@@ -326,16 +332,16 @@ class HistoryProjectorTest extends TestCase
         $this->assertHistoryOfEvent(
             self::EVENT_ID_1,
             [
-                (object)[
+                (object) [
                     'date' => '2015-03-27T10:17:19+02:00',
                     'author' => 'JaneDoe',
                     'description' => 'Beschrijving vertaald (fr)',
                 ],
-                (object)[
+                (object) [
                     'date' => '2015-03-04T10:17:19+02:00',
                     'description' => 'Geïmporteerd vanuit UDB2',
                 ],
-                (object)[
+                (object) [
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
@@ -369,16 +375,16 @@ class HistoryProjectorTest extends TestCase
         $this->assertHistoryOfEvent(
             self::EVENT_ID_1,
             [
-                (object)[
+                (object) [
                     'date' => '2015-03-27T10:17:19+02:00',
                     'author' => 'Jan Janssen',
                     'description' => "Label 'foo' toegepast",
                 ],
-                (object)[
+                (object) [
                     'date' => '2015-03-04T10:17:19+02:00',
                     'description' => 'Geïmporteerd vanuit UDB2',
                 ],
-                (object)[
+                (object) [
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',
@@ -412,16 +418,16 @@ class HistoryProjectorTest extends TestCase
         $this->assertHistoryOfEvent(
             self::EVENT_ID_1,
             [
-                (object)[
+                (object) [
                     'date' => '2015-03-27T10:17:19+02:00',
                     'author' => 'Jan Janssen',
                     'description' => "Label 'foo' verwijderd",
                 ],
-                (object)[
+                (object) [
                     'date' => '2015-03-04T10:17:19+02:00',
                     'description' => 'Geïmporteerd vanuit UDB2',
                 ],
-                (object)[
+                (object) [
                     'date' => '2014-04-28T11:30:28+02:00',
                     'description' => 'Aangemaakt in UDB2',
                     'author' => 'kris.classen@overpelt.be',

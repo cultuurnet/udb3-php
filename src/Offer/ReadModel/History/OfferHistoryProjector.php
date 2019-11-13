@@ -107,7 +107,8 @@ abstract class OfferHistoryProjector
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new StringLiteral("Label '{$labelAdded->getLabel()}' toegepast"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+                $this->getAuthorFromMetadata($domainMessage->getMetadata()),
+                $this->getApiKeyFromMetadata($domainMessage->getMetadata())
             )
         );
     }
@@ -125,7 +126,8 @@ abstract class OfferHistoryProjector
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new StringLiteral("Label '{$labelRemoved->getLabel()}' verwijderd"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+                $this->getAuthorFromMetadata($domainMessage->getMetadata()),
+                $this->getApiKeyFromMetadata($domainMessage->getMetadata())
             )
         );
     }
@@ -139,7 +141,8 @@ abstract class OfferHistoryProjector
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new StringLiteral("Titel vertaald ({$titleTranslated->getLanguage()})"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+                $this->getAuthorFromMetadata($domainMessage->getMetadata()),
+                $this->getApiKeyFromMetadata($domainMessage->getMetadata())
             )
         );
     }
@@ -153,7 +156,8 @@ abstract class OfferHistoryProjector
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
                 new StringLiteral("Beschrijving vertaald ({$descriptionTranslated->getLanguage()})"),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+                $this->getAuthorFromMetadata($domainMessage->getMetadata()),
+                $this->getApiKeyFromMetadata($domainMessage->getMetadata())
             )
         );
     }
@@ -247,5 +251,16 @@ abstract class OfferHistoryProjector
         $this->documentRepository->save(
             $historyDocument->withBody($history)
         );
+    }
+
+    protected function getApiKeyFromMetadata(Metadata $metadata): ?string
+    {
+        $properties = $metadata->serialize();
+
+        if (isset($properties['auth_api_key'])) {
+            return $properties['auth_api_key'];
+        }
+
+        return null;
     }
 }

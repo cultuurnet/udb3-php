@@ -203,6 +203,7 @@ class HistoryProjectorTest extends TestCase
                 [
                     'user_nick' => 'Jan Janssen',
                     'auth_api_key' => 'my-super-duper-key',
+                    'api' => 'json-api',
                 ]
             ),
             $eventCreated,
@@ -219,6 +220,7 @@ class HistoryProjectorTest extends TestCase
                     'author' => 'Jan Janssen',
                     'description' => 'Aangemaakt in UiTdatabank',
                     'apiKey' => 'my-super-duper-key',
+                    'api' => 'json-api',
                 ],
             ]
         );

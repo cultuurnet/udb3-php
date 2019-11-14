@@ -45,7 +45,9 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
                 $this->domainMessageDateToNativeDate(
                     $domainMessage->getRecordedOn()
                 ),
-                new StringLiteral('Geïmporteerd vanuit UDB2')
+                new StringLiteral('Geïmporteerd vanuit UDB2'),
+                null,
+                $this->getApiKeyFromMetadata($domainMessage->getMetadata())
             )
         );
     }
@@ -58,7 +60,9 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
             $eventUpdatedFromUDB2->getEventId(),
             new Log(
                 $this->domainMessageDateToNativeDate($domainMessage->getRecordedOn()),
-                new StringLiteral('Geüpdatet vanuit UDB2')
+                new StringLiteral('Geüpdatet vanuit UDB2'),
+                null,
+                $this->getApiKeyFromMetadata($domainMessage->getMetadata())
             )
         );
     }
@@ -78,7 +82,8 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
                     $domainMessage->getRecordedOn()
                 ),
                 new StringLiteral('Aangemaakt in UiTdatabank'),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+                $this->getAuthorFromMetadata($domainMessage->getMetadata()),
+                $this->getApiKeyFromMetadata($domainMessage->getMetadata())
             )
         );
     }
@@ -98,7 +103,8 @@ class HistoryProjector extends OfferHistoryProjector implements EventListenerInt
                     $domainMessage->getRecordedOn()
                 ),
                 new StringLiteral('Event gekopieerd van ' . $eventCopied->getOriginalEventId()),
-                $this->getAuthorFromMetadata($domainMessage->getMetadata())
+                $this->getAuthorFromMetadata($domainMessage->getMetadata()),
+                $this->getApiKeyFromMetadata($domainMessage->getMetadata())
             )
         );
     }

@@ -351,21 +351,6 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     }
 
     /**
-     * @param AbstractLabelCommand $labelCommand
-     * @return Label
-     */
-    private function createLabel(AbstractLabelCommand $labelCommand)
-    {
-        $labelName = new StringLiteral((string) $labelCommand->getLabel());
-        $label = $this->labelRepository->getByName($labelName);
-
-        return new Label(
-            $labelName->toNative(),
-            $label->getVisibility() === Visibility::VISIBLE()
-        );
-    }
-
-    /**
      * @param AbstractUpdateTitle $translateTitle
      */
     private function handleUpdateTitle(AbstractUpdateTitle $translateTitle)

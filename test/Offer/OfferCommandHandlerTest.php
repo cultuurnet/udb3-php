@@ -138,14 +138,22 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
         $this->organizerRepository = $this->createMock(RepositoryInterface::class);
 
         $this->labelRepository = $this->createMock(ReadRepositoryInterface::class);
-        $this->labelRepository->method('getByName')
-            ->with(new StringLiteral('foo'))
-            ->willReturn(new Entity(
-                new UUID(),
-                new StringLiteral('foo'),
-                Visibility::VISIBLE(),
-                Privacy::PRIVACY_PUBLIC()
-            ));
+        $this->labelRepository
+            ->method('getByName')
+            ->willReturnCallback(
+                function (StringLiteral $name) {
+                    if ($name->sameValueAs(new StringLiteral('foo'))) {
+                        return new Entity(
+                            new UUID(),
+                            new StringLiteral('foo'),
+                            Visibility::VISIBLE(),
+                            Privacy::PRIVACY_PUBLIC()
+                        );
+                    }
+
+                    return null;
+                }
+            );
 
         $this->mediaManager = $this->createMock(MediaManager::class);
 
@@ -182,6 +190,36 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
     /**
      * @test
      */
+    public function it_can_add_labels_that_do_not_exist_and_uses_the_labels_visibility_from_the_command_in_that_case()
+    {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                ]
+            )
+            ->when(
+                new AddLabel($this->id, new Label('does_not_exist', true))
+            )
+            ->then(
+                [
+                    new LabelAdded($this->id, new Label('does_not_exist', true)),
+                ]
+            )
+            ->when(
+                new AddLabel($this->id, new Label('does_not_exist_hidden', false))
+            )
+            ->then(
+                [
+                    new LabelAdded($this->id, new Label('does_not_exist_hidden', false)),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
     public function it_ignores_add_label_commands_from_incorrect_namespaces()
     {
         $this->scenario
@@ -202,6 +240,32 @@ class OfferCommandHandlerTest extends CommandHandlerScenarioTestCase
      */
     public function it_handles_remove_label_commands_from_the_correct_namespace()
     {
+        $this->scenario
+            ->withAggregateId($this->id)
+            ->given(
+                [
+                    $this->itemCreated,
+                    new LabelAdded($this->id, $this->label),
+                ]
+            )
+            ->when(
+                new RemoveLabel($this->id, $this->label)
+            )
+            ->then(
+                [
+                    new LabelRemoved($this->id, $this->label),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_check_if_a_label_exists_when_removing_it(): void
+    {
+        $this->labelRepository->expects($this->never())
+            ->method('getByName');
+
         $this->scenario
             ->withAggregateId($this->id)
             ->given(

@@ -304,7 +304,18 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($addLabel->getItemId());
 
-        $offer->addLabel($this->createLabel($addLabel));
+        $labelName = (string) $addLabel->getLabel();
+        $labelVisibility = $addLabel->getLabel()->isVisible();
+
+        // Load the label read model so we can determine the correct visibility.
+        $labelEntity = $this->labelRepository->getByName(new StringLiteral($labelName));
+        if ($labelEntity instanceof Label\ReadModels\JSON\Repository\Entity) {
+            $labelVisibility = $labelEntity->getVisibility() === Visibility::VISIBLE();
+        }
+
+        $offer->addLabel(
+            new Label($labelName, $labelVisibility)
+        );
 
         $this->offerRepository->save($offer);
     }
@@ -316,7 +327,9 @@ abstract class OfferCommandHandler extends Udb3CommandHandler
     {
         $offer = $this->load($removeLabel->getItemId());
 
-        $offer->removeLabel($this->createLabel($removeLabel));
+        // Label visibility does not matter when removing, both the aggregate and the projectors remove the label from
+        // both the visible and hidden label lists.
+        $offer->removeLabel($removeLabel->getLabel());
 
         $this->offerRepository->save($offer);
     }

@@ -245,7 +245,7 @@ class EventCommandHandlerTest extends CommandHandlerScenarioTestCase
                     new LabelAdded($id, new Label('bar', false)),
                 ]
             )
-            ->when(new RemoveLabel($id, new Label('bar')))
+            ->when(new RemoveLabel($id, new Label('bar', false)))
             ->then([new LabelRemoved($id, new Label('bar', false))]);
     }
 

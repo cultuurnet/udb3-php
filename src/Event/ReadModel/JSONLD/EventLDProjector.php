@@ -365,17 +365,18 @@ class EventLDProjector extends OfferLDProjector implements
 
         // Set the new calendar.
         $calendarJsonLD = $eventCopied->getCalendar()->toJsonLd();
-        // workaround - if user removes week scheme values, we need to explicitly
-        // set the field to [] here so the original value
-        // will get overridden in the merge step
-        if ($this->isPeriodicCalendarWithoutWeekScheme($eventCopied->getCalendar())) {
-            $calendarJsonLD['openingHours'] = [];
-        }
 
         $eventJsonLD = (object) array_merge(
             (array) $eventJsonLD,
             $calendarJsonLD
         );
+
+        // workaround - if user removes week scheme values, we need to explicitly
+        // set the field to [] here so the original value
+        // will get overridden in the merge step
+        if ($this->isPeriodicCalendarWithoutWeekScheme($eventCopied->getCalendar())) {
+            unset($eventJsonLD->openingHours);
+        }
 
         // Set workflow status.
         $eventJsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();

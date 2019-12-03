@@ -372,8 +372,7 @@ class EventLDProjector extends OfferLDProjector implements
         );
 
         // workaround - if user removes week scheme values, we need to explicitly
-        // set the field to [] here so the original value
-        // will get overridden in the merge step
+        // unset the field, because it holds the "old"(original) week scheme values
         if ($this->isPeriodicCalendarWithoutWeekScheme($eventCopied->getCalendar())) {
             unset($eventJsonLD->openingHours);
         }

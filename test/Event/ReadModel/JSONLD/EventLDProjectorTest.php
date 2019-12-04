@@ -11,6 +11,10 @@ use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;
 use CultuurNet\Geocoding\Coordinate\Longitude;
 use CultuurNet\UDB3\Calendar;
+use CultuurNet\UDB3\Calendar\DayOfWeek;
+use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
+use CultuurNet\UDB3\Calendar\OpeningHour;
+use CultuurNet\UDB3\Calendar\OpeningTime;
 use CultuurNet\UDB3\CalendarFactory;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\CdbId\EventCdbIdExtractor;
@@ -51,6 +55,8 @@ use CultuurNet\UDB3\Title;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 use Symfony\Component\Serializer\Serializer;
+use ValueObjects\DateTime\Hour;
+use ValueObjects\DateTime\Minute;
 
 class EventLDProjectorTest extends OfferLDProjectorTestBase
 {
@@ -380,6 +386,42 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
         $expectedJsonLD->created = $recordedOn;
         $expectedJsonLD->modified = $recordedOn;
         $expectedJsonLD->creator = '20a72430-7e3e-4b75-ab59-043156b3169c';
+
+        $this->assertEquals($expectedJsonLD, $body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_projects_copied_event_with_work_hours_removed()
+    {
+        $eventCreated = $this->createEventCreated('1', $this->aPeriodicCalendarWithWorkScheme(), null);
+
+        $this->project($eventCreated, $eventCreated->getEventId());
+        $this->project($this->aPublishedEvent($eventCreated), $eventCreated->getEventId());
+
+        $calendar = new Calendar(
+            CalendarType::PERIODIC(),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-26T13:25:21+01:00'),
+            \DateTime::createFromFormat(\DateTime::ATOM, '2015-01-29T13:25:21+01:00')
+        );
+
+        $eventCopied = new EventCopied('2', $eventCreated->getEventId(), $calendar);
+
+        $recordedOn = '2018-01-01T11:55:55+01:00';
+        $userId = '20a72430-7e3e-4b75-ab59-043156b3169c';
+
+        $body = $this->project(
+            $eventCopied,
+            $eventCopied->getItemId(),
+            new Metadata(['user_id' => '' . $userId . '']),
+            DateTime::fromString($recordedOn)
+        );
+
+        $expectedJsonLD = json_decode(file_get_contents(__DIR__ . '/copied_event_without_working_hours.json'));
+        $expectedJsonLD->created = $recordedOn;
+        $expectedJsonLD->modified = $recordedOn;
+        $expectedJsonLD->creator = $userId;
 
         $this->assertEquals($expectedJsonLD, $body);
     }
@@ -1237,5 +1279,40 @@ class EventLDProjectorTest extends OfferLDProjectorTestBase
                     return 'http://example.com/entity/' . $argument;
                 }
             );
+    }
+
+    /**
+     * @return Calendar
+     */
+    protected function aPeriodicCalendarWithWorkScheme(): Calendar
+    {
+        return new Calendar(
+            CalendarType::PERIODIC(),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00'),
+            [],
+            [
+                new OpeningHour(
+                    new OpeningTime(new Hour(8), new Minute(0)),
+                    new OpeningTime(new Hour(12), new Minute(59)),
+                    new DayOfWeekCollection(
+                        DayOfWeek::MONDAY(),
+                        DayOfWeek::TUESDAY()
+                    )
+                ),
+                new OpeningHour(
+                    new OpeningTime(new Hour(10), new Minute(0)),
+                    new OpeningTime(new Hour(14), new Minute(0)),
+                    new DayOfWeekCollection(
+                        DayOfWeek::SATURDAY()
+                    )
+                ),
+            ]
+        );
+    }
+
+    protected function aPublishedEvent(EventCreated $eventCreated): Published
+    {
+        return new Published($eventCreated->getEventId(), new \DateTime());
     }
 }

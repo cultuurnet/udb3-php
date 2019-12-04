@@ -5,6 +5,8 @@ namespace CultuurNet\UDB3\Event\ReadModel\JSONLD;
 use Broadway\Domain\DomainMessage;
 use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
+use CultuurNet\UDB3\CalendarInterface;
+use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\Cdb\EventItemFactory;
 use CultuurNet\UDB3\EntityNotFoundException;
 use CultuurNet\UDB3\Event\Events\AudienceUpdated;
@@ -362,10 +364,18 @@ class EventLDProjector extends OfferLDProjector implements
         $eventJsonLD->{'@id'} = $this->iriGenerator->iri($eventCopied->getItemId());
 
         // Set the new calendar.
+        $calendarJsonLD = $eventCopied->getCalendar()->toJsonLd();
+
         $eventJsonLD = (object) array_merge(
             (array) $eventJsonLD,
-            $eventCopied->getCalendar()->toJsonLd()
+            $calendarJsonLD
         );
+
+        // workaround - if user removes week scheme values, we need to explicitly
+        // unset the field, because it holds the "old"(original) week scheme values
+        if ($this->isPeriodicCalendarWithoutWeekScheme($eventCopied->getCalendar())) {
+            unset($eventJsonLD->openingHours);
+        }
 
         // Set workflow status.
         $eventJsonLD->workflowStatus = WorkflowStatus::DRAFT()->getName();
@@ -707,5 +717,11 @@ class EventLDProjector extends OfferLDProjector implements
     protected function getFacilitiesUpdatedClassName()
     {
         return FacilitiesUpdated::class;
+    }
+
+    protected function isPeriodicCalendarWithoutWeekScheme(CalendarInterface $calendar): bool
+    {
+        return $calendar->getType() === CalendarType::PERIODIC()
+            && $calendar->getOpeningHours() === [];
     }
 }

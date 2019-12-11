@@ -45,7 +45,7 @@ class QueryNarrowingSearchServiceTest extends TestCase
 
         $limit = 20;
         $start = 40;
-        $sort = 'title ASC';
+        $sort = ['modified' => 'desc'];
 
         $results = new Results(new OfferIdentifierCollection(), new Integer(0));
 

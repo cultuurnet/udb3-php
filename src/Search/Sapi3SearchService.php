@@ -51,16 +51,20 @@ class Sapi3SearchService implements SearchServiceInterface
         $this->apiKey = $apiKey;
     }
 
-    public function search(string $query, $limit = 30, $start = 0, $sort = null)
+    public function search(string $query, $limit = 30, $start = 0, array $sort = null)
     {
-        $queryParameters = http_build_query(
-            [
-                'q' => $query,
-                'start' => $start,
-                'limit' => $limit,
-                'disableDefaultFilters' => 'true',
-            ]
-        );
+        $queryParameters = [
+            'q' => $query,
+            'start' => $start,
+            'limit' => $limit,
+            'disableDefaultFilters' => 'true',
+        ];
+
+        if (is_array($sort)) {
+            $queryParameters['sort'] = $sort;
+        }
+
+        $queryParameters = http_build_query($queryParameters);
 
         $headers = [];
 

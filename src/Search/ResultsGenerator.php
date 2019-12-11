@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Search;
 
+use Generator;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -14,7 +15,7 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
      * Default sorting method because it's ideal for getting consistent paging
      * results.
      */
-    const SORT_CREATION_DATE_ASC = 'creationdate asc';
+    private const SORT_CREATED_ASC = ['created' => 'asc'];
 
     /**
      * @var SearchServiceInterface
@@ -31,16 +32,15 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
      */
     private $pageSize;
 
-    /**
-     * @param SearchServiceInterface $searchService
-     * @param string $sorting
-     * @param int $pageSize
-     */
     public function __construct(
         SearchServiceInterface $searchService,
-        $sorting = self::SORT_CREATION_DATE_ASC,
-        $pageSize = 10
+        array $sorting = null,
+        int $pageSize = 10
     ) {
+        if ($sorting === null) {
+            $sorting = self::SORT_CREATED_ASC;
+        }
+
         $this->searchService = $searchService;
         $this->sorting = $sorting;
         $this->pageSize = $pageSize;
@@ -51,49 +51,31 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
         $this->setLogger(new NullLogger());
     }
 
-    /**
-     * @param string $sorting
-     * @return ResultsGenerator
-     */
-    public function withSorting($sorting)
+    public function withSorting(array $sorting): ResultsGenerator
     {
         $c = clone $this;
         $c->sorting = $sorting;
         return $c;
     }
 
-    /**
-     * @return string
-     */
-    public function getSorting()
+    public function getSorting(): array
     {
         return $this->sorting;
     }
 
-    /**
-     * @param string $pageSize
-     * @return ResultsGenerator
-     */
-    public function withPageSize($pageSize)
+    public function withPageSize(int $pageSize): ResultsGenerator
     {
         $c = clone $this;
         $c->pageSize = $pageSize;
         return $c;
     }
 
-    /**
-     * @return int
-     */
-    public function getPageSize()
+    public function getPageSize(): int
     {
         return $this->pageSize;
     }
 
-    /**
-     * @param string $query
-     * @return \Iterator
-     */
-    public function search(string $query)
+    public function search(string $query): Generator
     {
         $currentPage = 0;
         $ids = [];

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Security;
 use ValueObjects\StringLiteral\StringLiteral;
 
 /**
- * Implementation of the search query factory for SAPI2.
+ * Implementation of the search query factory for SAPI3.
  */
 class SearchQueryFactory extends SearchQueryFactoryBase
 {

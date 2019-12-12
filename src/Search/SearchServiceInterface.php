@@ -19,10 +19,10 @@ interface SearchServiceInterface
      *   How many items to retrieve.
      * @param int $start
      *   Offset to start from.
-     * @param string $sort
-     *   Sort by field.
+     * @param array $sort
+     *   Sort by fields. Eg. ['created' => 'asc']
      *
      * @return Results
      */
-    public function search(string $query, $limit = 30, $start = 0, $sort = null);
+    public function search(string $query, $limit = 30, $start = 0, array $sort = null);
 }

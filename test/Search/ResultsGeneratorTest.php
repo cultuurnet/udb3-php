@@ -47,7 +47,7 @@ class ResultsGeneratorTest extends TestCase
     {
         $this->searchService = $this->createMock(SearchServiceInterface::class);
 
-        $this->sorting = ResultsGenerator::SORT_CREATION_DATE_ASC;
+        $this->sorting = ['created' => 'asc'];
         $this->pageSize = 2;
 
         $this->generator = new ResultsGenerator(
@@ -70,14 +70,14 @@ class ResultsGeneratorTest extends TestCase
     {
         $generator = new ResultsGenerator($this->searchService);
 
-        $this->assertEquals(ResultsGenerator::SORT_CREATION_DATE_ASC, $generator->getSorting());
+        $this->assertEquals(['created' => 'asc'], $generator->getSorting());
         $this->assertEquals(10, $generator->getPageSize());
 
         /* @var ResultsGenerator $generator */
-        $generator = $generator->withSorting('creationdate desc')
+        $generator = $generator->withSorting(['created' => 'desc'])
             ->withPageSize(5);
 
-        $this->assertEquals('creationdate desc', $generator->getSorting());
+        $this->assertEquals(['created' => 'desc'], $generator->getSorting());
         $this->assertEquals(5, $generator->getPageSize());
     }
 

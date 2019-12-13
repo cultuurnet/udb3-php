@@ -470,6 +470,16 @@ class EventThemeResolver implements ThemeResolverInterface
                 "label" => "Kamp of vakantie",
                 "id" => "0.57.0.0.0",
                 "primary" => false,
+                "themes" => [
+                    [
+                        "id" => "1.11.2.0.0",
+                        "label" => "Themakamp",
+                    ],
+                    [
+                        "id" => "1.11.1.0.0",
+                        "label" => "Taal en communicatie",
+                    ],
+                ],
             ],
             [
                 "label" => "Kermis of feestelijkheid",

@@ -8,11 +8,15 @@ use GuzzleHttp\Psr7\Request;
 use Http\Client\HttpClient;
 use function http_build_query;
 use Psr\Http\Message\UriInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
 
-class Sapi3SearchService implements SearchServiceInterface
+class Sapi3SearchService implements SearchServiceInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var UriInterface
      */
@@ -80,10 +84,15 @@ class Sapi3SearchService implements SearchServiceInterface
             $headers
         );
 
-        $searchResponseData = json_decode($this->httpClient
+        $searchResponseData = $this->httpClient
             ->sendRequest($offerRequest)
             ->getBody()
-            ->getContents());
+            ->getContents();
+
+        $this->logger->debug('Send SAPI3 request with the following parameters: ' . json_encode($queryParameters));
+        $this->logger->debug('Response data: ' . $searchResponseData);
+
+        $searchResponseData = json_decode($searchResponseData);
 
         $offerIds = array_reduce(
             $searchResponseData->{'member'},

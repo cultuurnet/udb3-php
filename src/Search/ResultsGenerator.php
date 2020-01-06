@@ -80,6 +80,10 @@ class ResultsGenerator implements LoggerAwareInterface, ResultsGeneratorInterfac
         $currentPage = 0;
         $ids = [];
 
+        if ($this->searchService instanceof LoggerAwareInterface) {
+            $this->searchService->setLogger($this->logger);
+        }
+
         do {
             $results = $this->searchService->search(
                 $query,

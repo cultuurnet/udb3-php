@@ -10,6 +10,7 @@ use function http_build_query;
 use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 use ValueObjects\Number\Integer;
 use ValueObjects\Web\Url;
 
@@ -53,6 +54,7 @@ class Sapi3SearchService implements SearchServiceInterface, LoggerAwareInterface
         $this->httpClient = $httpClient;
         $this->offerIdentifier = $offerIdentifier;
         $this->apiKey = $apiKey;
+        $this->logger = new NullLogger();
     }
 
     public function search(string $query, $limit = 30, $start = 0, array $sort = null)

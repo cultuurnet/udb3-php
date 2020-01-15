@@ -12,14 +12,9 @@ class JwtPsr7RequestAuthorizerTest extends TestCase
     /**
      * @test
      */
-    public function it_can_authorize_a_request_with_jwt_token()
+    public function it_can_authorize_a_request_with_jwt_token(): void
     {
-        $jwt = new Jwt(
-            ['alg' => 'mock'],
-            ['foo' => 'bar'],
-            new Signature('example'),
-            ['jwt', 'mock', 'example']
-        );
+        $jwt = 'jwt.mock.example';
 
         $authorizer = new JwtPsr7RequestAuthorizer($jwt);
 

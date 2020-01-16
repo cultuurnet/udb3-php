@@ -6,8 +6,6 @@ use CultuurNet\UDB3\Http\GuzzlePsr7Factory;
 use CultuurNet\UDB3\Http\JwtPsr7RequestAuthorizer;
 use CultuurNet\UDB3\Label;
 use Http\Client\HttpClient;
-use Lcobucci\JWT\Signature;
-use Lcobucci\JWT\Token as Jwt;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -21,7 +19,7 @@ class DefaultExternalOfferEditingServiceTest extends TestCase
     private $httpClient;
 
     /**
-     * @var Jwt
+     * @var string
      */
     private $jwt;
 
@@ -46,12 +44,7 @@ class DefaultExternalOfferEditingServiceTest extends TestCase
 
         $this->psr7Factory = new GuzzlePsr7Factory();
 
-        $this->jwt = new Jwt(
-            ['alg' => 'mock'],
-            ['foo' => 'bar'],
-            new Signature('token'),
-            ['json', 'web', 'token']
-        );
+        $this->jwt = 'json.web.token';
 
         $this->psr7RequestAuthorizer = new JwtPsr7RequestAuthorizer($this->jwt);
 
@@ -65,7 +58,7 @@ class DefaultExternalOfferEditingServiceTest extends TestCase
     /**
      * @test
      */
-    public function it_can_add_a_label_using_the_jsonld_api()
+    public function it_can_add_a_label_using_the_jsonld_api(): void
     {
         $iriOfferIdentifier = new IriOfferIdentifier(
             Url::fromNative('http://uitdatabank.be/event/123456'),

@@ -69,27 +69,6 @@ class CultureFeedUserIdentityResolver implements UserIdentityResolverInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function getUserByNick(StringLiteral $nick)
-    {
-        $query = new \CultureFeed_SearchUsersQuery();
-        $query->nick = $nick->toNative();
-
-        $user = $this->searchSingleUser($query);
-
-        // Given nick could contain a wildcard (eg. *somepartofnick*), so we
-        // should make sure the nicks are exactly the same, otherwise we're
-        // just returning the first user that matches the wildcard which is not
-        // intended.
-        if ($user && strcasecmp($user->getUserName()->toNative(), $nick->toNative()) === 0) {
-            return $user;
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * @param \CultureFeed_SearchUsersQuery $query
      * @return UserIdentityDetails|null
      */

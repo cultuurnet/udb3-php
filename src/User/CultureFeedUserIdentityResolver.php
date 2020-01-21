@@ -2,13 +2,14 @@
 
 namespace CultuurNet\UDB3\User;
 
+use ICultureFeed;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\EmailAddress;
 
 class CultureFeedUserIdentityResolver implements UserIdentityResolverInterface
 {
     /**
-     * @var \ICultureFeed
+     * @var ICultureFeed
      */
     private $cultureFeed;
 
@@ -17,22 +18,15 @@ class CultureFeedUserIdentityResolver implements UserIdentityResolverInterface
      */
     private $userIdentityDetailsFactory;
 
-    /**
-     * @param \ICultureFeed $cultureFeed
-     * @param CultureFeedUserIdentityDetailsFactoryInterface $userIdentityDetailsFactory
-     */
     public function __construct(
-        \ICultureFeed $cultureFeed,
+        ICultureFeed $cultureFeed,
         CultureFeedUserIdentityDetailsFactoryInterface $userIdentityDetailsFactory
     ) {
         $this->cultureFeed = $cultureFeed;
         $this->userIdentityDetailsFactory = $userIdentityDetailsFactory;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getUserById(StringLiteral $userId)
+    public function getUserById(StringLiteral $userId): ?UserIdentityDetails
     {
         $query = new \CultureFeed_SearchUsersQuery();
         $query->userId = $userId->toNative();
@@ -46,10 +40,7 @@ class CultureFeedUserIdentityResolver implements UserIdentityResolverInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getUserByEmail(EmailAddress $email)
+    public function getUserByEmail(EmailAddress $email): ?UserIdentityDetails
     {
         $query = new \CultureFeed_SearchUsersQuery();
         $query->mbox = $email->toNative();
@@ -68,10 +59,7 @@ class CultureFeedUserIdentityResolver implements UserIdentityResolverInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getUserByNick(StringLiteral $nick)
+    public function getUserByNick(StringLiteral $nick): ?UserIdentityDetails
     {
         $query = new \CultureFeed_SearchUsersQuery();
         $query->nick = $nick->toNative();
@@ -93,7 +81,7 @@ class CultureFeedUserIdentityResolver implements UserIdentityResolverInterface
      * @param \CultureFeed_SearchUsersQuery $query
      * @return UserIdentityDetails|null
      */
-    private function searchSingleUser(\CultureFeed_SearchUsersQuery $query)
+    private function searchSingleUser(\CultureFeed_SearchUsersQuery $query): ?UserIdentityDetails
     {
         /** @var \CultureFeed_ResultSet $results */
         $results = $this->cultureFeed->searchUsers($query);

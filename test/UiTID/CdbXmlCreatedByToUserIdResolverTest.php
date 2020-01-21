@@ -78,6 +78,31 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
     /**
      * @test
      */
+    public function it_then_tries_to_resolve_createdby_as_a_non_uuid_id(): void
+    {
+        $createdBy = new StringLiteral('auth0|c4ff15aa-a8d2-4952-b9eb-329d625b0d02');
+        $userId = new StringLiteral('auth0|c4ff15aa-a8d2-4952-b9eb-329d625b0d02');
+
+        $user = new UserIdentityDetails(
+            $userId,
+            new StringLiteral('johndoe'),
+            new EmailAddress('johndoe@example.com')
+        );
+
+        $this->users->expects($this->once())
+            ->method('getUserById')
+            ->with($createdBy)
+            ->willReturn($user);
+
+
+        $actualUserId = $this->resolver->resolveCreatedByToUserId($createdBy);
+
+        $this->assertEquals($userId, $actualUserId);
+    }
+
+    /**
+     * @test
+     */
     public function it_then_tries_to_resolve_createdby_as_an_email_address(): void
     {
         $createdBy = new StringLiteral('johndoe@example.com');
@@ -89,6 +114,11 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
             new StringLiteral('johndoe'),
             new EmailAddress('johndoe@example.com')
         );
+
+        $this->users->expects($this->once())
+            ->method('getUserById')
+            ->with($createdBy)
+            ->willReturn(null);
 
         $this->users->expects($this->once())
             ->method('getUserByEmail')
@@ -104,7 +134,7 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
     /**
      * @test
      */
-    public function it_falls_back_to_resolving_createdby_as_a_nick_name(): void
+    public function it_falls_back_to_resolving_createdby_as_a_nick_name_if_createdby_is_not_an_email_address(): void
     {
         $createdBy = new StringLiteral('johndoe');
 
@@ -115,6 +145,11 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
             new StringLiteral('johndoe'),
             new EmailAddress('johndoe@example.com')
         );
+
+        $this->users->expects($this->once())
+            ->method('getUserById')
+            ->with($createdBy)
+            ->willReturn(null);
 
         $this->users->expects($this->never())
             ->method('getUserByEmail');
@@ -135,6 +170,11 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
     public function it_returns_null_when_user_id_not_resolved(): void
     {
         $createdBy = new StringLiteral('johndoe');
+
+        $this->users->expects($this->once())
+            ->method('getUserById')
+            ->with($createdBy)
+            ->willReturn(null);
 
         $this->users->expects($this->once())
             ->method('getUserByNick')

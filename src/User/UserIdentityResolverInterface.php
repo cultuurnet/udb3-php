@@ -18,4 +18,10 @@ interface UserIdentityResolverInterface
      * @return UserIdentityDetails
      */
     public function getUserByEmail(EmailAddress $email);
+
+    /**
+     * @param StringLiteral $nick
+     * @return UserIdentityDetails
+     */
+    public function getUserByNick(StringLiteral $nick);
 }

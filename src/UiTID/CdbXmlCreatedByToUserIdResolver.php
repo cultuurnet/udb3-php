@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\UiTID;
 
 use CultuurNet\UDB3\Cdb\CreatedByToUserIdResolverInterface;
+use CultuurNet\UDB3\User\UserIdentityResolverInterface;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -17,14 +18,11 @@ class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedBy
     use LoggerAwareTrait;
 
     /**
-     * @var UsersInterface
+     * @var UserIdentityResolverInterface
      */
     private $users;
 
-    /**
-     * @param UsersInterface $users
-     */
-    public function __construct(UsersInterface $users)
+    public function __construct(UserIdentityResolverInterface $users)
     {
         $this->users = $users;
         $this->logger = new NullLogger();
@@ -80,11 +78,15 @@ class CdbXmlCreatedByToUserIdResolver implements LoggerAwareInterface, CreatedBy
     {
         try {
             $email = new EmailAddress($createdByIdentifier->toNative());
-            $userId = $this->users->byEmail($email);
+            $user = $this->users->getUserByEmail($email);
         } catch (InvalidNativeArgumentException $e) {
-            $userId = $this->users->byNick($createdByIdentifier);
+            $user = $this->users->getUserByNick($createdByIdentifier);
         }
 
-        return $userId;
+        if (!$user) {
+            return null;
+        }
+
+        return $user->getUserId();
     }
 }

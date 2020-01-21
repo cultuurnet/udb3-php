@@ -2,6 +2,8 @@
 
 namespace CultuurNet\UDB3\UiTID;
 
+use CultuurNet\UDB3\User\UserIdentityDetails;
+use CultuurNet\UDB3\User\UserIdentityResolverInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -12,7 +14,7 @@ use ValueObjects\Web\EmailAddress;
 class CdbXmlCreatedByToUserIdResolverTest extends TestCase
 {
     /**
-     * @var UsersInterface|MockObject
+     * @var UserIdentityResolverInterface|MockObject
      */
     private $users;
 
@@ -28,7 +30,7 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
 
     public function setUp()
     {
-        $this->users = $this->createMock(UsersInterface::class);
+        $this->users = $this->createMock(UserIdentityResolverInterface::class);
         $this->resolver = new CdbXmlCreatedByToUserIdResolver($this->users);
 
         $this->logger = $this->createMock(LoggerInterface::class);
@@ -38,7 +40,7 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
     /**
      * @test
      */
-    public function it_first_tries_to_resolve_created_by_as_a_uuid()
+    public function it_first_tries_to_resolve_created_by_as_a_uuid(): void
     {
         $createdBy = new StringLiteral('4eaf3516-342f-4c28-a2ce-80a0c6332f11');
 
@@ -50,7 +52,7 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
     /**
      * @test
      */
-    public function it_logs_when_created_by_is_not_a_uuid()
+    public function it_logs_when_created_by_is_not_a_uuid(): void
     {
         $createdBy = new StringLiteral('acf1c0f-30d-3ef-e7b-cd4b7676206');
 
@@ -76,15 +78,23 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
     /**
      * @test
      */
-    public function it_then_tries_to_resolve_createdby_as_an_email_address()
+    public function it_then_tries_to_resolve_createdby_as_an_email_address(): void
     {
         $createdBy = new StringLiteral('johndoe@example.com');
+
         $userId = new StringLiteral('abc');
 
+        $user = new UserIdentityDetails(
+            $userId,
+            new StringLiteral('johndoe'),
+            new EmailAddress('johndoe@example.com')
+        );
+
         $this->users->expects($this->once())
-            ->method('byEmail')
+            ->method('getUserByEmail')
             ->with(new EmailAddress('johndoe@example.com'))
-            ->willReturn($userId);
+            ->willReturn($user);
+
 
         $actualUserId = $this->resolver->resolveCreatedByToUserId($createdBy);
 
@@ -94,18 +104,25 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
     /**
      * @test
      */
-    public function it_falls_back_to_resolving_createdby_as_a_nick_name()
+    public function it_falls_back_to_resolving_createdby_as_a_nick_name(): void
     {
         $createdBy = new StringLiteral('johndoe');
+
         $userId = new StringLiteral('abc');
+
+        $user = new UserIdentityDetails(
+            $userId,
+            new StringLiteral('johndoe'),
+            new EmailAddress('johndoe@example.com')
+        );
 
         $this->users->expects($this->never())
-            ->method('byEmail');
+            ->method('getUserByEmail');
 
         $this->users->expects($this->once())
-            ->method('byNick')
+            ->method('getUserByNick')
             ->with($createdBy)
-            ->willReturn($userId);
+            ->willReturn($user);
 
         $actualUserId = $this->resolver->resolveCreatedByToUserId($createdBy);
 
@@ -115,12 +132,12 @@ class CdbXmlCreatedByToUserIdResolverTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_null_when_user_id_not_resolved()
+    public function it_returns_null_when_user_id_not_resolved(): void
     {
         $createdBy = new StringLiteral('johndoe');
 
         $this->users->expects($this->once())
-            ->method('byNick')
+            ->method('getUserByNick')
             ->willReturn(null);
 
         $userId = $this->resolver->resolveCreatedByToUserId($createdBy);

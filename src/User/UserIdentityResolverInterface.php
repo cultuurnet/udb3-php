@@ -7,21 +7,9 @@ use ValueObjects\Web\EmailAddress;
 
 interface UserIdentityResolverInterface
 {
-    /**
-     * @param StringLiteral $userId
-     * @return UserIdentityDetails
-     */
-    public function getUserById(StringLiteral $userId);
+    public function getUserById(StringLiteral $userId): ?UserIdentityDetails;
 
-    /**
-     * @param EmailAddress $email
-     * @return UserIdentityDetails
-     */
-    public function getUserByEmail(EmailAddress $email);
+    public function getUserByEmail(EmailAddress $email): ?UserIdentityDetails;
 
-    /**
-     * @param StringLiteral $nick
-     * @return UserIdentityDetails
-     */
-    public function getUserByNick(StringLiteral $nick);
+    public function getUserByNick(StringLiteral $nick): ?UserIdentityDetails;
 }

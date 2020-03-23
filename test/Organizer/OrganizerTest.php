@@ -12,6 +12,7 @@ use CultuurNet\UDB3\Label;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
+use CultuurNet\UDB3\Organizer\Events\AddressRemoved;
 use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
@@ -281,6 +282,40 @@ class OrganizerTest extends AggregateRootScenarioTestCase
                 [
                     new AddressUpdated($this->id, $initialAddress),
                     new AddressUpdated($this->id, $updatedAddress),
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_set_an_initial_address_and_remove_it_later()
+    {
+        $initialAddress = new Address(
+            new Street('Wetstraat 1'),
+            new PostalCode('1000'),
+            new Locality('Brussel'),
+            Country::fromNative('BE')
+        );
+
+        $language = $this->organizerCreatedWithUniqueWebsite->getMainLanguage();
+
+        $this->scenario
+            ->given([$this->organizerCreatedWithUniqueWebsite])
+            ->when(
+                function (Organizer $organizer) use ($initialAddress, $language) {
+                    $organizer->updateAddress($initialAddress, $language);
+
+                    // Remove the address twice with the same value so we can
+                    // test it doesn't get recorded the second time.
+                    $organizer->removeAddress();
+                    $organizer->removeAddress();
+                }
+            )
+            ->then(
+                [
+                    new AddressUpdated($this->id, $initialAddress),
+                    new AddressRemoved($this->id),
                 ]
             );
     }

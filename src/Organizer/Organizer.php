@@ -14,6 +14,7 @@ use CultuurNet\UDB3\LabelCollection;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
+use CultuurNet\UDB3\Organizer\Events\AddressRemoved;
 use CultuurNet\UDB3\Organizer\Events\AddressTranslated;
 use CultuurNet\UDB3\Organizer\Events\AddressUpdated;
 use CultuurNet\UDB3\Organizer\Events\ContactPointUpdated;
@@ -224,6 +225,17 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         }
     }
 
+    public function removeAddress()
+    {
+        if ($this->hasAddress()) {
+            return;
+        }
+
+        $this->apply(
+            new AddressRemoved($this->actorId)
+        );
+    }
+
     /**
      * @param ContactPoint $contactPoint
      */
@@ -336,6 +348,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
         );
     }
 
+
     /**
      * Apply the organizer created event.
      * @param OrganizerCreated $organizerCreated
@@ -438,6 +451,14 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     }
 
     /**
+     * @param AddressRemoved $addressRemoved
+     */
+    protected function applyAddressRemoved(AddressRemoved $addressRemoved)
+    {
+        $this->addresses = null;
+    }
+
+    /**
      * @param AddressTranslated $addressTranslated
      */
     protected function applyAddressTranslated(AddressTranslated $addressTranslated)
@@ -526,5 +547,10 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
     {
         return !isset($this->addresses[$language->getCode()]) ||
             !$address->sameAs($this->addresses[$language->getCode()]);
+    }
+
+    private function hasAddress(): bool
+    {
+        return $this->addresses === null;
     }
 }

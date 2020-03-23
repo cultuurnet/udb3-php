@@ -298,14 +298,10 @@ class OrganizerTest extends AggregateRootScenarioTestCase
             Country::fromNative('BE')
         );
 
-        $language = $this->organizerCreatedWithUniqueWebsite->getMainLanguage();
-
         $this->scenario
-            ->given([$this->organizerCreatedWithUniqueWebsite])
+            ->given([$this->organizerCreatedWithUniqueWebsite, new AddressUpdated($this->id, $initialAddress)])
             ->when(
-                function (Organizer $organizer) use ($initialAddress, $language) {
-                    $organizer->updateAddress($initialAddress, $language);
-
+                function (Organizer $organizer) {
                     // Remove the address twice with the same value so we can
                     // test it doesn't get recorded the second time.
                     $organizer->removeAddress();
@@ -314,7 +310,6 @@ class OrganizerTest extends AggregateRootScenarioTestCase
             )
             ->then(
                 [
-                    new AddressUpdated($this->id, $initialAddress),
                     new AddressRemoved($this->id),
                 ]
             );

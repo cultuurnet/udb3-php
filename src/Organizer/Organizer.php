@@ -227,7 +227,7 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     public function removeAddress()
     {
-        if ($this->hasAddress()) {
+        if (!$this->hasAddress()) {
             return;
         }
 
@@ -347,7 +347,6 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
             new OrganizerDeleted($this->getAggregateRootId())
         );
     }
-
 
     /**
      * Apply the organizer created event.
@@ -551,6 +550,6 @@ class Organizer extends EventSourcedAggregateRoot implements UpdateableWithCdbXm
 
     private function hasAddress(): bool
     {
-        return $this->addresses === null;
+        return $this->addresses !== null;
     }
 }

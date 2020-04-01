@@ -317,14 +317,14 @@ class CalendarFactoryTest extends TestCase
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
-                            "2017-05-21",
+                            "2017-07-21",
                             "00:00:00",
                             "23:59:00"
                         )
                     );
                     $cdbCalendar->add(
                         new CultureFeed_Cdb_Data_Calendar_Timestamp(
-                            "2017-07-21",
+                            "2017-05-21",
                             "00:00:00",
                             "23:59:00"
                         )
@@ -351,21 +351,21 @@ class CalendarFactoryTest extends TestCase
                     [
                         new Timestamp(
                             new DateTimeImmutable(
-                                '2017-05-21 00:00:00',
-                                $timeZone
-                            ),
-                            new DateTimeImmutable(
-                                '2017-05-21 23:59:00',
-                                $timeZone
-                            )
-                        ),
-                        new Timestamp(
-                            new DateTimeImmutable(
                                 '2017-07-21 00:00:00',
                                 $timeZone
                             ),
                             new DateTimeImmutable(
                                 '2017-07-21 23:59:00',
+                                $timeZone
+                            )
+                        ),
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-05-21 00:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-05-21 23:59:00',
                                 $timeZone
                             )
                         ),

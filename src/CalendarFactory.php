@@ -294,6 +294,7 @@ class CalendarFactory implements CalendarFactoryInterface
 
     /**
      * @param CultureFeed_Cdb_Data_Calendar_Timestamp[] $timestampList
+     * @param CultureFeed_Cdb_Data_Calendar_Timestamp $default
      * @return CultureFeed_Cdb_Data_Calendar_Timestamp
      */
     private function getLastTimestamp(array $timestampList, CultureFeed_Cdb_Data_Calendar_Timestamp $default)

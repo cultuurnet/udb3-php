@@ -28,8 +28,9 @@ class CalendarFactory implements CalendarFactoryInterface
             $period = $cdbCalendar->current();
             $startDateString = $period->getDateFrom() . 'T00:00:00';
         } elseif ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
-            $timestamp = $cdbCalendar->current();
+            $firstTimestamp = $cdbCalendar->current();
+            $cdbCalendarAsArray = iterator_to_array($cdbCalendar);
+            $timestamp = $this->getFirstTimestamp($cdbCalendarAsArray, $firstTimestamp);
             if ($timestamp->getStartTime()) {
                 $startDateString = $timestamp->getDate() . 'T' . substr($timestamp->getStartTime(), 0, 5) . ':00';
             } else {
@@ -303,11 +304,30 @@ class CalendarFactory implements CalendarFactoryInterface
         foreach ($timestampList as $timestamp) {
             $currentEndDate = Chronos::parse($lastTimestamp->getEndDate());
             $endDate = Chronos::parse($timestamp->getEndDate());
-            if ($currentEndDate < $endDate) {
+            if ($currentEndDate->lt($endDate)) {
                 $lastTimestamp = $timestamp;
             }
         }
 
         return $lastTimestamp;
+    }
+
+    /**
+     * @param CultureFeed_Cdb_Data_Calendar_Timestamp[] $timestampList
+     * @param CultureFeed_Cdb_Data_Calendar_Timestamp $default
+     * @return CultureFeed_Cdb_Data_Calendar_Timestamp
+     */
+    private function getFirstTimestamp(array $timestampList, CultureFeed_Cdb_Data_Calendar_Timestamp $default)
+    {
+        $firstTimestamp = $default;
+        foreach ($timestampList as $timestamp) {
+            $currentStartTime = Chronos::parse($firstTimestamp->getDate());
+            $startTime = Chronos::parse($timestamp->getDate());
+            if ($currentStartTime->gt($startTime)) {
+                $firstTimestamp = $timestamp;
+            }
+        }
+
+        return $firstTimestamp;
     }
 }

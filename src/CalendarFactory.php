@@ -299,11 +299,10 @@ class CalendarFactory implements CalendarFactoryInterface
     private function getLastTimestamp(array $timestampList, CultureFeed_Cdb_Data_Calendar_Timestamp $default)
     {
         $lastTimestamp = $default;
-        $lastDate = null;
         foreach ($timestampList as $timestamp) {
+            $currentEndDate = Chronos::parse($lastTimestamp->getEndDate());
             $endDate = Chronos::parse($timestamp->getEndDate());
-            if (!$lastDate || $lastDate < $endDate) {
-                $lastDate = $endDate;
+            if ($currentEndDate < $endDate) {
                 $lastTimestamp = $timestamp;
             }
         }

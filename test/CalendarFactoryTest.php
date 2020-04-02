@@ -312,6 +312,76 @@ class CalendarFactoryTest extends TestCase
                     ]
                 ),
             ],
+            'import event with multiple timestamps in non-chronological order: dates, no timestart or timeend' => [
+                'cdbCalendar' => call_user_func(function () {
+                    $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-07-21",
+                            "00:00:00",
+                            "23:59:00"
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-05-21",
+                            "00:00:00",
+                            "23:59:00"
+                        )
+                    );
+                    $cdbCalendar->add(
+                        new CultureFeed_Cdb_Data_Calendar_Timestamp(
+                            "2017-06-21",
+                            "00:00:00",
+                            "23:59:00"
+                        )
+                    );
+                    return $cdbCalendar;
+                }),
+                'expectedCalendar' => new Calendar(
+                    CalendarType::MULTIPLE(),
+                    new DateTimeImmutable(
+                        '2017-05-21 00:00:00',
+                        $timeZone
+                    ),
+                    new DateTimeImmutable(
+                        '2017-07-21 23:59:00',
+                        $timeZone
+                    ),
+                    [
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-07-21 00:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-07-21 23:59:00',
+                                $timeZone
+                            )
+                        ),
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-05-21 00:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-05-21 23:59:00',
+                                $timeZone
+                            )
+                        ),
+                        new Timestamp(
+                            new DateTimeImmutable(
+                                '2017-06-21 00:00:00',
+                                $timeZone
+                            ),
+                            new DateTimeImmutable(
+                                '2017-06-21 23:59:00',
+                                $timeZone
+                            )
+                        ),
+                    ]
+                ),
+            ],
             'import event with multiple timestamps: dates + timestart, no timeend' => [
                 'cdbCalendar' => call_user_func(function () {
                     $cdbCalendar = new CultureFeed_Cdb_Data_Calendar_TimestampList();

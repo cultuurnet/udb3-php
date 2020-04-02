@@ -181,7 +181,18 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public function getStartDate()
     {
-        return $this->startDate;
+        if (empty($this->getTimestamps())) {
+            return $this->startDate;
+        }
+
+        $firstStartDate = $this->startDate;
+        foreach ($this->getTimestamps() as $timestamp) {
+            if ($timestamp->getStartDate() < $firstStartDate) {
+                $firstStartDate = $timestamp->getStartDate();
+            }
+        }
+
+        return $firstStartDate;
     }
 
     /**
@@ -189,7 +200,18 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public function getEndDate()
     {
-        return $this->endDate;
+        if (empty($this->getTimestamps())) {
+            return $this->endDate;
+        }
+
+        $lastEndDate = $this->endDate;
+        foreach ($this->getTimestamps() as $timestamp) {
+            if ($timestamp->getEndDate() > $lastEndDate) {
+                $lastEndDate = $timestamp->getEndDate();
+            }
+        }
+
+        return $lastEndDate;
     }
 
     /**
@@ -250,7 +272,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
 
         return $jsonLd;
     }
-    
+
     /**
      * @param Calendar $otherCalendar
      * @return bool

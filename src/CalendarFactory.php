@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use Cake\Chronos\Chronos;
+use CultureFeed_Cdb_Data_Calendar_Timestamp;
 use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
@@ -27,8 +28,9 @@ class CalendarFactory implements CalendarFactoryInterface
             $period = $cdbCalendar->current();
             $startDateString = $period->getDateFrom() . 'T00:00:00';
         } elseif ($cdbCalendar instanceof \CultureFeed_Cdb_Data_Calendar_TimestampList) {
-            /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
-            $timestamp = $cdbCalendar->current();
+            $firstTimestamp = $cdbCalendar->current();
+            $cdbCalendarAsArray = iterator_to_array($cdbCalendar);
+            $timestamp = $this->getFirstTimestamp($cdbCalendarAsArray, $firstTimestamp);
             if ($timestamp->getStartTime()) {
                 $startDateString = $timestamp->getDate() . 'T' . substr($timestamp->getStartTime(), 0, 5) . ':00';
             } else {
@@ -50,7 +52,7 @@ class CalendarFactory implements CalendarFactoryInterface
             $firstTimestamp = $cdbCalendar->current();
             /** @var \CultureFeed_Cdb_Data_Calendar_Timestamp $timestamp */
             $cdbCalendarAsArray = iterator_to_array($cdbCalendar);
-            $timestamp = iterator_count($cdbCalendar) > 1 ? end($cdbCalendarAsArray) : $firstTimestamp;
+            $timestamp = $this->getLastTimestamp($cdbCalendarAsArray, $firstTimestamp);
             if ($timestamp->getEndTime()) {
                 $endDateString = $timestamp->getDate() . 'T' . $timestamp->getEndTime();
             } else {
@@ -289,5 +291,43 @@ class CalendarFactory implements CalendarFactoryInterface
         }
 
         return new Timestamp($startDate, $endDate);
+    }
+
+    /**
+     * @param CultureFeed_Cdb_Data_Calendar_Timestamp[] $timestampList
+     * @param CultureFeed_Cdb_Data_Calendar_Timestamp $default
+     * @return CultureFeed_Cdb_Data_Calendar_Timestamp
+     */
+    private function getLastTimestamp(array $timestampList, CultureFeed_Cdb_Data_Calendar_Timestamp $default)
+    {
+        $lastTimestamp = $default;
+        foreach ($timestampList as $timestamp) {
+            $currentEndDate = Chronos::parse($lastTimestamp->getEndDate());
+            $endDate = Chronos::parse($timestamp->getEndDate());
+            if ($currentEndDate->lt($endDate)) {
+                $lastTimestamp = $timestamp;
+            }
+        }
+
+        return $lastTimestamp;
+    }
+
+    /**
+     * @param CultureFeed_Cdb_Data_Calendar_Timestamp[] $timestampList
+     * @param CultureFeed_Cdb_Data_Calendar_Timestamp $default
+     * @return CultureFeed_Cdb_Data_Calendar_Timestamp
+     */
+    private function getFirstTimestamp(array $timestampList, CultureFeed_Cdb_Data_Calendar_Timestamp $default)
+    {
+        $firstTimestamp = $default;
+        foreach ($timestampList as $timestamp) {
+            $currentStartTime = Chronos::parse($firstTimestamp->getDate());
+            $startTime = Chronos::parse($timestamp->getDate());
+            if ($currentStartTime->gt($startTime)) {
+                $firstTimestamp = $timestamp;
+            }
+        }
+
+        return $firstTimestamp;
     }
 }

@@ -34,6 +34,7 @@ class ContentTypes
             LabelAdded::class => 'application/vnd.cultuurnet.udb3-events.organizer-label-added+json',
             LabelRemoved::class => 'application/vnd.cultuurnet.udb3-events.organizer-label-removed+json',
             AddressUpdated::class => 'application/vnd.cultuurnet.udb3-events.organizer-address-updated+json',
+            AddressRemoved::class => 'application/vnd.cultuurnet.udb3-events.organizer-address-removed+json',
             AddressTranslated::class => 'application/vnd.cultuurnet.udb3-events.organizer-address-translated+json',
             ContactPointUpdated::class => 'application/vnd.cultuurnet.udb3-events.organizer-contact-point-updated+json',
         ];

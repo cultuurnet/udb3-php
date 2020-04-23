@@ -86,7 +86,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         $this->endDate = $endDate;
         $this->openingHours = $openingHours;
 
-        usort($timestamps, function(Timestamp $timestamp, Timestamp $otherTimestamp) {
+        usort($timestamps, function (Timestamp $timestamp, Timestamp $otherTimestamp) {
             return $timestamp->getStartDate() <=> $otherTimestamp->getStartDate();
         });
 

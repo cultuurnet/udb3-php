@@ -628,4 +628,58 @@ class CalendarTest extends TestCase
         $this->assertTrue($calendar->sameAs($sameCalendar));
         $this->assertFalse($calendar->sameAs($otherCalendar));
     }
+
+    /**
+     * @test
+     */
+    public function it_should_return_timestamps_in_chronological_order(): void
+    {
+        $calendar = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-30T12:12:12+01:00'),
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-05T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-10T12:12:12+01:00')
+                ),
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-07T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-09T12:12:12+01:00')
+                ),
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-15T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-25T12:12:12+01:00')
+                ),
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-20T12:12:12+01:00')
+                ),
+            ]
+        );
+
+        $expected = [
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-20T12:12:12+01:00')
+            ),
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-05T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-10T12:12:12+01:00')
+            ),
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-07T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-09T12:12:12+01:00')
+            ),
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-15T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-25T12:12:12+01:00')
+            ),
+        ];
+
+        $this->assertEquals(
+            $expected,
+            $calendar->getTimestamps()
+        );
+    }
 }

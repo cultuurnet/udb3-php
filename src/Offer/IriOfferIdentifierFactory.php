@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-use CultuurNet\UDB3\Variations\Command\ValidationException;
+use RuntimeException;
 use ValueObjects\Web\Url;
 
 class IriOfferIdentifierFactory implements IriOfferIdentifierFactoryInterface
@@ -46,10 +46,8 @@ class IriOfferIdentifierFactory implements IriOfferIdentifierFactoryInterface
         );
 
         if (0 === $match) {
-            throw new ValidationException(
-                [
-                    'The given URL can not be used. It might not be a cultural event, or no integration is provided with the system the cultural event is located at.',
-                ]
+            throw new RuntimeException(
+                'The given URL can not be used. It might not be a cultural event, or no integration is provided with the system the cultural event is located at.'
             );
         }
 

@@ -2,8 +2,8 @@
 
 namespace CultuurNet\UDB3\Offer;
 
-use CultuurNet\UDB3\Variations\Command\ValidationException;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use ValueObjects\Web\Url;
 
 class IriOfferIdentifierFactoryTest extends TestCase
@@ -31,10 +31,7 @@ class IriOfferIdentifierFactoryTest extends TestCase
      */
     public function it_throws_an_error_when_using_a_malformed_url()
     {
-        $this->expectException(
-            ValidationException::class,
-            'Invalid data'
-        );
+        $this->expectException(RuntimeException::class);
 
         $this->iriOfferIdentifierFactory->fromIri(
             Url::fromNative('https://du.de/sweet')
@@ -46,10 +43,7 @@ class IriOfferIdentifierFactoryTest extends TestCase
      */
     public function it_throws_an_error_when_using_an_unsupported_offer_type()
     {
-        $this->expectException(
-            ValidationException::class,
-            'Invalid data'
-        );
+        $this->expectException(RuntimeException::class);
 
         $this->iriOfferIdentifierFactory->fromIri(
             Url::fromNative('https://culudb-silex.dev:8080/kwiet/foo-bar')

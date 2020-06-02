@@ -16,6 +16,7 @@ use ValueObjects\Enum\Enum;
  * @method static Permission LABELS_BEHEREN()
  * @method static Permission MEDIA_UPLOADEN()
  * @method static Permission VOORZIENINGEN_BEWERKEN()
+ * @method static Permission PRODUCTIES_AANMAKEN()
  */
 class Permission extends Enum
 {
@@ -28,4 +29,5 @@ class Permission extends Enum
     const LABELS_BEHEREN = 'Labels beheren';
     const MEDIA_UPLOADEN = 'Media uploaden';
     const VOORZIENINGEN_BEWERKEN = 'Voorzieningen bewerken';
+    const PRODUCTIES_AANMAKEN = 'Producties aanmaken';
 }

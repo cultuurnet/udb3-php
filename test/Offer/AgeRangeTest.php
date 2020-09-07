@@ -27,14 +27,16 @@ class AgeRangeTest extends TestCase
      * @dataProvider ageRangeStringProvider
      * @param string $ageRangeString
      * @param AgeRange $expectedRange
+     * @param string $expectedAgeRangeString
      */
     public function it_should_return_a_string_representation_when_casted_to_string(
-        $ageRangeString,
-        AgeRange $expectedRange
+        string $ageRangeString,
+        AgeRange $expectedRange,
+        string $expectedAgeRangeString
     ) {
         $actualAgeRangeString = (string) $expectedRange;
 
-        $this->assertEquals($ageRangeString, $actualAgeRangeString);
+        $this->assertEquals($expectedAgeRangeString, $actualAgeRangeString);
     }
 
     /**
@@ -47,46 +49,55 @@ class AgeRangeTest extends TestCase
             [
                 'ageRangeString' => '-',
                 'expectedRange' => new AgeRange(),
+                'expectedRangeString' => '0-',
             ],
             'TODDLERS' =>
             [
                 'ageRangeString' => '0-2',
                 'expectedRange' => new AgeRange(new Age(0), new Age(2)),
+                'expectedRangeString' => '0-2',
             ],
             'PRESCHOOLERS' =>
             [
                 'ageRangeString' => '3-5',
                 'expectedRange' => new AgeRange(new Age(3), new Age(5)),
+                'expectedRangeString' => '3-5',
             ],
             'KIDS' =>
             [
                 'ageRangeString' => '6-11',
                 'expectedRange' => new AgeRange(new Age(6), new Age(11)),
+                'expectedRangeString' => '6-11',
             ],
             'YOUNGSTERS' =>
             [
                 'ageRangeString' => '12-17',
                 'expectedRange' => new AgeRange(new Age(12), new Age(17)),
+                'expectedRangeString' => '12-17',
             ],
             'ADULTS' =>
             [
                 'ageRangeString' => '18-',
                 'expectedRange' => new AgeRange(new Age(18)),
+                'expectedRangeString' => '18-',
             ],
             'SENIORS' =>
             [
                 'ageRangeString' => '65-',
                 'expectedRange' => new AgeRange(new Age(65)),
+                'expectedRangeString' => '65-',
             ],
             'CUSTOM' =>
             [
                 'ageRangeString' => '5-55',
                 'expectedRange' => new AgeRange(new Age(5), new Age(55)),
+                'expectedRangeString' => '5-55',
             ],
             'EIGHTEEN' =>
             [
                 'ageRangeString' => '18-18',
                 'expectedRange' => new AgeRange(new Age(18), new Age(18)),
+                'expectedRangeString' => '18-18',
             ],
         ];
     }
@@ -182,6 +193,17 @@ class AgeRangeTest extends TestCase
     public function it_should_provide_access_to_from_and_to_age()
     {
         $ageRange = new AgeRange(new Age(0), new Age(18));
+
+        $this->assertEquals(new Age(0), $ageRange->getFrom());
+        $this->assertEquals(new Age(18), $ageRange->getTo());
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_default_from_to_zero(): void
+    {
+        $ageRange = new AgeRange(null, new Age(18));
 
         $this->assertEquals(new Age(0), $ageRange->getFrom());
         $this->assertEquals(new Age(18), $ageRange->getTo());

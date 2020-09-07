@@ -138,8 +138,20 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public static function deserialize(array $data)
     {
+        $calendarType = CalendarType::fromNative($data['type']);
+
+        // Backwards compatibility for serialized single or multiple calendar types that are missing timestamps but do
+        // have a start and end date.
+        $defaultTimeStamps = [];
+        if ($calendarType->sameValueAs(CalendarType::SINGLE()) || $calendarType->sameValueAs(CalendarType::MULTIPLE())) {
+            $defaultTimeStampStartDate = !empty($data['startDate']) ? self::deserializeDateTime($data['startDate']) : null;
+            $defaultTimeStampEndDate = !empty($data['endDate']) ? self::deserializeDateTime($data['endDate']) : null;
+            $defaultTimeStamp = $defaultTimeStampStartDate && $defaultTimeStampEndDate ? new Timestamp($defaultTimeStampStartDate, $defaultTimeStampEndDate) : null;
+            $defaultTimeStamps = $defaultTimeStamp ? [$defaultTimeStamp] : [];
+        }
+
         return new static(
-            CalendarType::fromNative($data['type']),
+            $calendarType,
             !empty($data['startDate']) ? self::deserializeDateTime($data['startDate']) : null,
             !empty($data['endDate']) ? self::deserializeDateTime($data['endDate']) : null,
             !empty($data['timestamps']) ? array_map(
@@ -147,7 +159,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
                     return Timestamp::deserialize($timestamp);
                 },
                 $data['timestamps']
-            ) : [],
+            ) : $defaultTimeStamps,
             !empty($data['openingHours']) ? array_map(
                 function ($openingHour) {
                     return OpeningHour::deserialize($openingHour);

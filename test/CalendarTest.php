@@ -341,6 +341,35 @@ class CalendarTest extends TestCase
     /**
      * @test
      */
+    public function it_adds_a_timestamp_based_on_start_date_if_one_is_missing_for_single_calendars()
+    {
+        $invalidCalendarData = [
+            'type' => 'single',
+            'startDate' => '2016-03-06T10:00:00',
+            'endDate' => null,
+            'timestamps' => [],
+        ];
+
+        $expected = new Calendar(
+            CalendarType::SINGLE(),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+            null,
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00')
+                ),
+            ]
+        );
+
+        $actual = Calendar::deserialize($invalidCalendarData);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
     public function it_adds_a_timestamp_based_on_start_and_end_date_if_one_is_missing_for_multiple_calendars()
     {
         $invalidCalendarData = [
@@ -358,6 +387,35 @@ class CalendarTest extends TestCase
                 new Timestamp(
                     DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                     DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00')
+                ),
+            ]
+        );
+
+        $actual = Calendar::deserialize($invalidCalendarData);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_timestamp_based_on_start_date_if_one_is_missing_for_multiple_calendars()
+    {
+        $invalidCalendarData = [
+            'type' => 'multiple',
+            'startDate' => '2016-03-06T10:00:00',
+            'endDate' => null,
+            'timestamps' => [],
+        ];
+
+        $expected = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+            null,
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00')
                 ),
             ]
         );

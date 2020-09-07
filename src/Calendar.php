@@ -145,7 +145,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         $defaultTimeStamps = [];
         if ($calendarType->sameValueAs(CalendarType::SINGLE()) || $calendarType->sameValueAs(CalendarType::MULTIPLE())) {
             $defaultTimeStampStartDate = !empty($data['startDate']) ? self::deserializeDateTime($data['startDate']) : null;
-            $defaultTimeStampEndDate = !empty($data['endDate']) ? self::deserializeDateTime($data['endDate']) : null;
+            $defaultTimeStampEndDate = !empty($data['endDate']) ? self::deserializeDateTime($data['endDate']) : $defaultTimeStampStartDate;
             $defaultTimeStamp = $defaultTimeStampStartDate && $defaultTimeStampEndDate ? new Timestamp($defaultTimeStampStartDate, $defaultTimeStampEndDate) : null;
             $defaultTimeStamps = $defaultTimeStamp ? [$defaultTimeStamp] : [];
         }

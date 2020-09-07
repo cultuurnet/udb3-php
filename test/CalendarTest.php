@@ -102,47 +102,6 @@ class CalendarTest extends TestCase
 
     /**
      * @test
-     * @dataProvider calendarTypesWithStartAndEndDateProvider
-     * @param CalendarType $calendarType
-     * @param string $expectedMessage
-     * @param DateTimeInterface|null $startDate
-     * @param DateTimeInterface|null $endDate
-     */
-    public function it_should_expect_a_start_date_for_some_calendar_types(
-        CalendarType $calendarType,
-        $expectedMessage,
-        DateTimeInterface $startDate = null,
-        DateTimeInterface $endDate = null
-    ) {
-        $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage($expectedMessage);
-
-        new Calendar($calendarType, $startDate, $endDate);
-    }
-
-    /**
-     * @return array
-     */
-    public function calendarTypesWithStartAndEndDateProvider(): array
-    {
-        return [
-            'for PERIODIC calendar type without start date' => [
-                'calendarType' => CalendarType::PERIODIC(),
-                'expectedMessage' => 'A period should have a start- and end-date.',
-                'startDate' => null,
-                'endDate' => \DateTimeImmutable::createFromFormat(DATE_ATOM, '2020-01-01T00:00:00+02:00'),
-            ],
-            'for PERIODIC calendar type without end date' => [
-                'calendarType' => CalendarType::PERIODIC(),
-                'expectedMessage' => 'A period should have a start- and end-date.',
-                'startDate' => \DateTimeImmutable::createFromFormat(DATE_ATOM, '2020-01-01T00:00:00+02:00'),
-                'endDate' => null,
-            ],
-        ];
-    }
-
-    /**
-     * @test
      */
     public function time_stamps_need_to_have_type_time_stamp()
     {

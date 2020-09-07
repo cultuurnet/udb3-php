@@ -61,10 +61,6 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         array $timestamps = array(),
         array $openingHours = array()
     ) {
-        if (($type->is(CalendarType::MULTIPLE()) || $type->is(CalendarType::SINGLE())) && empty($startDate)) {
-            throw new \UnexpectedValueException('Start date can not be empty for calendar type: ' . $type . '.');
-        }
-
         if ($type->is(CalendarType::PERIODIC()) && (empty($startDate) || empty($endDate))) {
             throw new \UnexpectedValueException('A period should have a start- and end-date.');
         }

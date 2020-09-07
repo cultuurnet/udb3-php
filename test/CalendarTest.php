@@ -102,37 +102,41 @@ class CalendarTest extends TestCase
 
     /**
      * @test
-     * @dataProvider calendarTypesWithStartDateProvider
+     * @dataProvider calendarTypesWithStartAndEndDateProvider
      * @param CalendarType $calendarType
      * @param string $expectedMessage
      * @param DateTimeInterface|null $startDate
+     * @param DateTimeInterface|null $endDate
      */
     public function it_should_expect_a_start_date_for_some_calendar_types(
         CalendarType $calendarType,
         $expectedMessage,
-        DateTimeInterface $startDate = null
+        DateTimeInterface $startDate = null,
+        DateTimeInterface $endDate = null
     ) {
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage($expectedMessage);
 
-        new Calendar($calendarType, $startDate);
+        new Calendar($calendarType, $startDate, $endDate);
     }
 
     /**
      * @return array
      */
-    public function calendarTypesWithStartDateProvider()
+    public function calendarTypesWithStartAndEndDateProvider(): array
     {
         return [
-            'for MULTIPLE calendar type' => [
-                'calendarType' => CalendarType::MULTIPLE(),
-                'expectedMessage' => 'Start date can not be empty for calendar type: multiple.',
+            'for PERIODIC calendar type without start date' => [
+                'calendarType' => CalendarType::PERIODIC(),
+                'expectedMessage' => 'A period should have a start- and end-date.',
                 'startDate' => null,
+                'endDate' => \DateTimeImmutable::createFromFormat(DATE_ATOM, '2020-01-01T00:00:00+02:00'),
             ],
-            'for SINGLE calendar type' => [
-                'calendarType' => CalendarType::SINGLE(),
-                'expectedMessage' => 'Start date can not be empty for calendar type: single.',
-                'startDate' => null,
+            'for PERIODIC calendar type without end date' => [
+                'calendarType' => CalendarType::PERIODIC(),
+                'expectedMessage' => 'A period should have a start- and end-date.',
+                'startDate' => \DateTimeImmutable::createFromFormat(DATE_ATOM, '2020-01-01T00:00:00+02:00'),
+                'endDate' => null,
             ],
         ];
     }

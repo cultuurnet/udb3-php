@@ -24,6 +24,8 @@ class AgeRange
      */
     public function __construct(Age $from = null, Age $to = null)
     {
+        $from = $from ?: new Age(0);
+
         $this->guardValidAgeRange($from, $to);
 
         $this->from = $from;
@@ -31,12 +33,12 @@ class AgeRange
     }
 
     /**
-     * @param null|Age $from
+     * @param Age $from
      * @param null|Age $to
      *
      * @throws InvalidAgeRangeException
      */
-    private function guardValidAgeRange(Age $from = null, Age $to = null)
+    private function guardValidAgeRange(Age $from, Age $to = null)
     {
         if ($from && $to && $from > $to) {
             throw new InvalidAgeRangeException('"from" age should not exceed "to" age');
@@ -44,7 +46,7 @@ class AgeRange
     }
 
     /**
-     * @return null|Age
+     * @return Age
      */
     public function getFrom()
     {

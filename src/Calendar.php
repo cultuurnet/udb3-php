@@ -118,7 +118,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         );
 
         $calendar = [
-          'type' => $this->type,
+            'type' => $this->type,
         ];
 
         empty($this->startDate) ?: $calendar['startDate'] = $this->startDate->format(DateTime::ATOM);
@@ -183,18 +183,20 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public function getStartDate()
     {
-        if (empty($this->getTimestamps())) {
+        $timestamps = $this->getTimestamps();
+
+        if (empty($timestamps)) {
             return $this->startDate;
         }
 
-        $firstStartDate = $this->startDate;
-        foreach ($this->getTimestamps() as $timestamp) {
-            if ($timestamp->getStartDate() < $firstStartDate) {
-                $firstStartDate = $timestamp->getStartDate();
+        $startDate = null;
+        foreach ($timestamps as $timestamp) {
+            if ($startDate === null || $timestamp->getStartDate() < $startDate) {
+                $startDate = $timestamp->getStartDate();
             }
         }
 
-        return $firstStartDate;
+        return $startDate;
     }
 
     /**
@@ -202,18 +204,20 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
      */
     public function getEndDate()
     {
-        if (empty($this->getTimestamps())) {
+        $timestamps = $this->getTimestamps();
+
+        if (empty($timestamps)) {
             return $this->endDate;
         }
 
-        $lastEndDate = $this->endDate;
+        $endDate = null;
         foreach ($this->getTimestamps() as $timestamp) {
-            if ($timestamp->getEndDate() > $lastEndDate) {
-                $lastEndDate = $timestamp->getEndDate();
+            if ($endDate === null || $timestamp->getEndDate() > $endDate) {
+                $endDate = $timestamp->getEndDate();
             }
         }
 
-        return $lastEndDate;
+        return $endDate;
     }
 
     /**
@@ -240,30 +244,28 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
         $jsonLd = [];
 
         $jsonLd['calendarType'] = $this->getType()->toNative();
-        // All calendar types allow startDate (and endDate).
-        // One timestamp - full day.
-        // One timestamp - start hour.
-        // One timestamp - start and end hour.
-        empty($this->startDate) ?: $jsonLd['startDate'] = $this->getStartDate()->format(DateTime::ATOM);
-        empty($this->endDate) ?: $jsonLd['endDate'] = $this->getEndDate()->format(DateTime::ATOM);
 
+        $startDate = $this->getStartDate();
+        $endDate = $this->getEndDate();
+        if ($startDate !== null) {
+            $jsonLd['startDate'] = $startDate->format(DateTime::ATOM);
+        }
+        if ($endDate !== null) {
+            $jsonLd['endDate'] = $endDate->format(DateTime::ATOM);
+        }
 
         $timestamps = $this->getTimestamps();
         if (!empty($timestamps)) {
             $jsonLd['subEvent'] = array();
             foreach ($timestamps as $timestamp) {
                 $jsonLd['subEvent'][] = array(
-                  '@type' => 'Event',
-                  'startDate' => $timestamp->getStartDate()->format(DateTime::ATOM),
-                  'endDate' => $timestamp->getEndDate()->format(DateTime::ATOM),
+                    '@type' => 'Event',
+                    'startDate' => $timestamp->getStartDate()->format(DateTime::ATOM),
+                    'endDate' => $timestamp->getEndDate()->format(DateTime::ATOM),
                 );
             }
         }
 
-        // Period.
-        // Period with openingtimes.
-        // Permanent - "altijd open".
-        // Permanent - with openingtimes
         $openingHours = $this->getOpeningHours();
         if (!empty($openingHours)) {
             $jsonLd['openingHours'] = array();

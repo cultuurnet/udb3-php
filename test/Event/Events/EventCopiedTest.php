@@ -40,8 +40,9 @@ class EventCopiedTest extends TestCase
         // explicitly to 0 in this test to make it pass.
         // See http://php.net/manual/en/migration71.incompatible.php#migration71.incompatible.datetime-microseconds.
         $this->calendar = new Calendar(
-            CalendarType::SINGLE(),
-            new DateTime('2017-01-24T21:47:26.000000+0000')
+            CalendarType::PERIODIC(),
+            new DateTime('2017-01-24T21:47:26.000000+0000'),
+            new DateTime('2020-01-24T21:47:26.000000+0000')
         );
 
         $this->eventCopied = new EventCopied(
@@ -124,8 +125,9 @@ class EventCopiedTest extends TestCase
         $eventId = false;
         $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
         $calendar = new Calendar(
-            CalendarType::SINGLE(),
-            new \DateTime()
+            CalendarType::PERIODIC(),
+            new DateTime('2021-01-24T21:47:26.000000+0000'),
+            new DateTime('2022-01-24T21:47:26.000000+0000')
         );
 
         $this->expectException(\InvalidArgumentException::class);
@@ -144,8 +146,9 @@ class EventCopiedTest extends TestCase
         $eventId = 'e49430ca-5729-4768-8364-02ddb385517a';
         $originalEventId = false;
         $calendar = new Calendar(
-            CalendarType::SINGLE(),
-            new \DateTime()
+            CalendarType::PERIODIC(),
+            new DateTime('2021-01-24T21:47:26.000000+0000'),
+            new DateTime('2022-01-24T21:47:26.000000+0000')
         );
 
         $this->expectException(\InvalidArgumentException::class);

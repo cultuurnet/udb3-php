@@ -7,6 +7,7 @@ use CultureFeed_Cdb_Data_Calendar_PeriodList;
 use CultureFeed_Cdb_Data_Calendar_Permanent;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarType;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Time;
 use CultuurNet\UDB3\Timestamp;
 use DateTime;
 use PHPUnit\Framework\TestCase;
@@ -349,9 +350,14 @@ class CalendarConverterTest extends TestCase
 
         $calendar = new Calendar(
             CalendarType::SINGLE(),
-            DateTime::createFromFormat(DateTime::ATOM, '2017-05-26T21:00:00+02:00'),
-            DateTime::createFromFormat(DateTime::ATOM, '2017-05-27T02:00:00+02:00'),
-            [],
+            null,
+            null,
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(DateTime::ATOM, '2017-05-26T21:00:00+02:00'),
+                    DateTime::createFromFormat(DateTime::ATOM, '2017-05-27T02:00:00+02:00')
+                ),
+            ],
             []
         );
 
@@ -384,9 +390,14 @@ class CalendarConverterTest extends TestCase
 
         $calendar = new Calendar(
             CalendarType::SINGLE(),
-            DateTime::createFromFormat(DateTime::ATOM, '2017-05-26T21:00:00+02:00'),
-            DateTime::createFromFormat(DateTime::ATOM, '2017-05-28T02:00:00+02:00'),
-            [],
+            null,
+            null,
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(DateTime::ATOM, '2017-05-26T21:00:00+02:00'),
+                    DateTime::createFromFormat(DateTime::ATOM, '2017-05-28T02:00:00+02:00')
+                ),
+            ],
             []
         );
 
@@ -436,9 +447,14 @@ class CalendarConverterTest extends TestCase
 
         $calendar = new Calendar(
             CalendarType::SINGLE(),
-            DateTime::createFromFormat(DateTime::ATOM, '2017-05-01T09:00:00+02:00'),
-            DateTime::createFromFormat(DateTime::ATOM, '2017-05-07T18:00:00+02:00'),
-            [],
+            null,
+            null,
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(DateTime::ATOM, '2017-05-01T09:00:00+02:00'),
+                    DateTime::createFromFormat(DateTime::ATOM, '2017-05-07T18:00:00+02:00')
+                ),
+            ],
             []
         );
 

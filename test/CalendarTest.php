@@ -102,43 +102,6 @@ class CalendarTest extends TestCase
 
     /**
      * @test
-     * @dataProvider calendarTypesWithStartDateProvider
-     * @param CalendarType $calendarType
-     * @param string $expectedMessage
-     * @param DateTimeInterface|null $startDate
-     */
-    public function it_should_expect_a_start_date_for_some_calendar_types(
-        CalendarType $calendarType,
-        $expectedMessage,
-        DateTimeInterface $startDate = null
-    ) {
-        $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage($expectedMessage);
-
-        new Calendar($calendarType, $startDate);
-    }
-
-    /**
-     * @return array
-     */
-    public function calendarTypesWithStartDateProvider()
-    {
-        return [
-            'for MULTIPLE calendar type' => [
-                'calendarType' => CalendarType::MULTIPLE(),
-                'expectedMessage' => 'Start date can not be empty for calendar type: multiple.',
-                'startDate' => null,
-            ],
-            'for SINGLE calendar type' => [
-                'calendarType' => CalendarType::SINGLE(),
-                'expectedMessage' => 'Start date can not be empty for calendar type: single.',
-                'startDate' => null,
-            ],
-        ];
-    }
-
-    /**
-     * @test
      */
     public function time_stamps_need_to_have_type_time_stamp()
     {
@@ -164,7 +127,7 @@ class CalendarTest extends TestCase
         $this->expectExceptionMessage('OpeningHours should have type OpeningHour.');
 
         new Calendar(
-            CalendarType::SINGLE(),
+            CalendarType::PERIODIC(),
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
             DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
             [],
@@ -210,25 +173,60 @@ class CalendarTest extends TestCase
             'single' => [
                 'calendar' => new Calendar(
                     CalendarType::SINGLE(),
-                    DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
-                    DateTime::createFromFormat(DateTime::ATOM, self::END_DATE)
+                    null,
+                    null,
+                    [
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00')
+                        ),
+                    ]
                 ),
                 'jsonld' => [
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
+                    'subEvent' => [
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2016-03-06T10:00:00+01:00',
+                            'endDate' => '2016-03-13T12:00:00+01:00',
+                        ],
+                    ],
                 ],
             ],
             'multiple' => [
                 'calendar' => new Calendar(
                     CalendarType::MULTIPLE(),
-                    DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
-                    DateTime::createFromFormat(DateTime::ATOM, self::END_DATE)
+                    null,
+                    null,
+                    [
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00')
+                        ),
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00')
+                        ),
+                    ]
                 ),
                 'jsonld' => [
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
-                    'endDate' => '2016-03-13T12:00:00+01:00',
+                    'endDate' => '2020-03-13T12:00:00+01:00',
+                    'subEvent' => [
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2016-03-06T10:00:00+01:00',
+                            'endDate' => '2016-03-13T12:00:00+01:00',
+                        ],
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2020-03-06T10:00:00+01:00',
+                            'endDate' => '2020-03-13T12:00:00+01:00',
+                        ],
+                    ],
                 ],
             ],
             'periodic' => [
@@ -260,14 +258,14 @@ class CalendarTest extends TestCase
     public function it_should_assume_the_timezone_is_Brussels_when_none_is_provided_when_deserializing()
     {
         $oldCalendarData = [
-            'type' => 'single',
+            'type' => 'periodic',
             'startDate' => '2016-03-06T10:00:00',
             'endDate' => '2016-03-13T12:00:00',
             'timestamps' => [],
         ];
 
         $expectedCalendar = new Calendar(
-            CalendarType::SINGLE(),
+            CalendarType::PERIODIC(),
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
             DateTime::createFromFormat(DateTime::ATOM, self::END_DATE)
         );
@@ -309,6 +307,122 @@ class CalendarTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         Calendar::deserialize($invalidCalendarData);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_timestamp_based_on_start_and_end_date_if_one_is_missing_for_single_calendars()
+    {
+        $invalidCalendarData = [
+            'type' => 'single',
+            'startDate' => '2016-03-06T10:00:00',
+            'endDate' => '2016-03-13T12:00:00',
+            'timestamps' => [],
+        ];
+
+        $expected = new Calendar(
+            CalendarType::SINGLE(),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00')
+                ),
+            ]
+        );
+
+        $actual = Calendar::deserialize($invalidCalendarData);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_timestamp_based_on_start_date_if_one_is_missing_for_single_calendars()
+    {
+        $invalidCalendarData = [
+            'type' => 'single',
+            'startDate' => '2016-03-06T10:00:00',
+            'endDate' => null,
+            'timestamps' => [],
+        ];
+
+        $expected = new Calendar(
+            CalendarType::SINGLE(),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+            null,
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00')
+                ),
+            ]
+        );
+
+        $actual = Calendar::deserialize($invalidCalendarData);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_timestamp_based_on_start_and_end_date_if_one_is_missing_for_multiple_calendars()
+    {
+        $invalidCalendarData = [
+            'type' => 'multiple',
+            'startDate' => '2016-03-06T10:00:00',
+            'endDate' => '2016-03-13T12:00:00',
+            'timestamps' => [],
+        ];
+
+        $expected = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00')
+                ),
+            ]
+        );
+
+        $actual = Calendar::deserialize($invalidCalendarData);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_timestamp_based_on_start_date_if_one_is_missing_for_multiple_calendars()
+    {
+        $invalidCalendarData = [
+            'type' => 'multiple',
+            'startDate' => '2016-03-06T10:00:00',
+            'endDate' => null,
+            'timestamps' => [],
+        ];
+
+        $expected = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+            null,
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                    DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00')
+                ),
+            ]
+        );
+
+        $actual = Calendar::deserialize($invalidCalendarData);
+
+        $this->assertEquals($expected, $actual);
     }
 
     /**
@@ -608,19 +722,19 @@ class CalendarTest extends TestCase
     public function it_can_determine_same_calendars()
     {
         $calendar = new Calendar(
-            CalendarType::SINGLE(),
+            CalendarType::PERIODIC(),
             \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
             \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
         );
 
         $sameCalendar = new Calendar(
-            CalendarType::SINGLE(),
+            CalendarType::PERIODIC(),
             \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-26T11:11:11+01:00'),
             \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T12:12:12+01:00')
         );
 
         $otherCalendar = new Calendar(
-            CalendarType::SINGLE(),
+            CalendarType::PERIODIC(),
             \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-27T11:11:11+01:00'),
             \DateTime::createFromFormat(\DateTime::ATOM, '2020-01-28T12:12:12+01:00')
         );

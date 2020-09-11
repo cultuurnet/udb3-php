@@ -124,35 +124,6 @@ class AggregateAwareDBALEventStoreTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function it_throws_an_exception_when_appending_an_id_that_cannot_be_converted_to_a_string()
-    {
-        $uuid = new UUID();
-
-        $domainMessage = new DomainMessage(
-            new NonCompatibleUuid($uuid),
-            0,
-            new Metadata([
-                'meta' => 'some meta',
-            ]),
-            new DummyEvent(
-                $uuid->toNative(),
-                'i am content = ik ben tevreden'
-            ),
-            BroadwayDateTime::now()
-        );
-
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Object of class CultuurNet\UDB3\EventSourcing\DBAL\NonCompatibleUuid could not be converted to string');
-
-        $this->aggregateAwareDBALEventStore->append(
-            $uuid,
-            new DomainEventStream([$domainMessage])
-        );
-    }
-
     private function createTable()
     {
         $schemaManager = $this->getConnection()->getSchemaManager();

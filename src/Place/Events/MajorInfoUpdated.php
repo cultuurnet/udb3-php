@@ -43,7 +43,7 @@ final class MajorInfoUpdated extends PlaceEvent
         EventType $eventType,
         Address $address,
         CalendarInterface $calendar,
-        Theme $theme = null
+        ?Theme $theme = null
     ) {
         parent::__construct($placeId);
 
@@ -64,7 +64,7 @@ final class MajorInfoUpdated extends PlaceEvent
         return $this->eventType;
     }
 
-    public function getTheme(): Theme
+    public function getTheme(): ?Theme
     {
         return $this->theme;
     }

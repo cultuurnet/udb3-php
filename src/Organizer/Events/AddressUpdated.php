@@ -11,43 +11,29 @@ class AddressUpdated extends OrganizerEvent
      */
     private $address;
 
-    /**
-     * @param string $organizerId
-     * @param Address $address
-     */
     public function __construct(
-        $organizerId,
+        string $organizerId,
         Address $address
     ) {
         parent::__construct($organizerId);
         $this->address = $address;
     }
 
-    /**
-     * @return Address
-     */
-    public function getAddress()
+    public function getAddress(): Address
     {
         return $this->address;
     }
 
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'address' => $this->address->serialize(),
         ];
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): self
     {
-        return new static(
+        return new self(
             $data['organizer_id'],
             Address::deserialize($data['address'])
         );

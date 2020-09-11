@@ -12,38 +12,25 @@ abstract class AbstractLabelEvent extends OrganizerEvent implements LabelEventIn
      */
     private $label;
 
-    /**
-     * @param string $organizerId
-     * @param Label $label
-     */
-    public function __construct(
-        $organizerId,
+    final public function __construct(
+        string $organizerId,
         Label $label
     ) {
         parent::__construct($organizerId);
         $this->label = $label;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getItemId()
+    public function getItemId(): string
     {
         return $this->getOrganizerId();
     }
 
-    /**
-     * @return Label
-     */
-    public function getLabel()
+    public function getLabel(): Label
     {
         return $this->label;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractLabelEvent
     {
         return new static(
             $data['organizer_id'],
@@ -54,10 +41,7 @@ abstract class AbstractLabelEvent extends OrganizerEvent implements LabelEventIn
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'label' => (string) $this->label,

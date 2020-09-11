@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Media\Properties\Description;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Web\Url;
 
-class Image implements SerializableInterface
+final class Image implements SerializableInterface
 {
     /**
      * @var UUID
@@ -58,60 +58,39 @@ class Image implements SerializableInterface
         $this->language = $language;
     }
 
-    /**
-     * @return Language
-     */
-    public function getLanguage()
+    public function getLanguage(): Language
     {
         return $this->language;
     }
 
-    /**
-     * @return UUID
-     */
-    public function getMediaObjectId()
+    public function getMediaObjectId(): UUID
     {
         return $this->mediaObjectId;
     }
 
-    /**
-     * @return MIMEType
-     */
-    public function getMimeType()
+    public function getMimeType(): MIMEType
     {
         return $this->mimeType;
     }
 
-    /**
-     * @return Description
-     */
-    public function getDescription()
+    public function getDescription(): Description
     {
         return $this->description;
     }
 
-    /**
-     * @return CopyrightHolder
-     */
-    public function getCopyrightHolder()
+    public function getCopyrightHolder(): CopyrightHolder
     {
         return $this->copyrightHolder;
     }
 
-    /**
-     * @return Url
-     */
-    public function getSourceLocation()
+    public function getSourceLocation(): Url
     {
         return $this->sourceLocation;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): Image
     {
-        return new static(
+        return new self(
             new UUID($data['media_object_id']),
             new MIMEType($data['mime_type']),
             new Description($data['description']),
@@ -121,10 +100,7 @@ class Image implements SerializableInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'media_object_id' => (string) $this->getMediaObjectId(),

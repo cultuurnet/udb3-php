@@ -7,7 +7,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\EventSourcing\AggregateCopiedEventInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
-class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
+final class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
 {
     /**
      * @var string
@@ -19,15 +19,9 @@ class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
      */
     private $calendar;
 
-    /**
-     * EventCopied constructor.
-     * @param string $eventId
-     * @param string $originalEventId
-     * @param CalendarInterface $calendar
-     */
     public function __construct(
-        $eventId,
-        $originalEventId,
+        string $eventId,
+        string $originalEventId,
         CalendarInterface $calendar
     ) {
         parent::__construct($eventId);
@@ -42,18 +36,12 @@ class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
         $this->calendar = $calendar;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getParentAggregateId()
+    public function getParentAggregateId(): string
     {
         return $this->originalEventId;
     }
 
-    /**
-     * @return string
-     */
-    public function getOriginalEventId()
+    public function getOriginalEventId(): string
     {
         return $this->originalEventId;
     }
@@ -61,28 +49,22 @@ class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
     /**
      * @return CalendarInterface|Calendar
      */
-    public function getCalendar()
+    public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
-                'original_event_id' => $this->getOriginalEventId(),
-                'calendar' => $this->calendar->serialize(),
-            ];
+            'original_event_id' => $this->getOriginalEventId(),
+            'calendar' => $this->calendar->serialize(),
+        ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): EventCopied
     {
-        return new static(
+        return new self(
             $data['item_id'],
             $data['original_event_id'],
             Calendar::deserialize($data['calendar'])

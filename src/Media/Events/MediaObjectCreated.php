@@ -9,7 +9,7 @@ use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class MediaObjectCreated implements SerializableInterface
+final class MediaObjectCreated implements SerializableInterface
 {
     /**
      * @var UUID
@@ -41,15 +41,6 @@ class MediaObjectCreated implements SerializableInterface
      */
     protected $language;
 
-    /**
-     * MediaObjectCreated constructor.
-     * @param UUID $id
-     * @param MIMEType $fileType
-     * @param \ValueObjects\StringLiteral\StringLiteral $description
-     * @param \ValueObjects\StringLiteral\StringLiteral $copyrightHolder
-     * @param Language $language
-     * @param Url $sourceLocation
-     */
     public function __construct(
         UUID $id,
         MIMEType $fileType,
@@ -66,58 +57,37 @@ class MediaObjectCreated implements SerializableInterface
         $this->language = $language;
     }
 
-    /**
-     * @return Language
-     */
-    public function getLanguage()
+    public function getLanguage(): Language
     {
         return $this->language;
     }
 
-    /**
-     * @return UUID
-     */
-    public function getMediaObjectId()
+    public function getMediaObjectId(): UUID
     {
         return $this->mediaObjectId;
     }
 
-    /**
-     * @return StringLiteral
-     */
-    public function getDescription()
+    public function getDescription(): StringLiteral
     {
         return $this->description;
     }
 
-    /**
-     * @return StringLiteral
-     */
-    public function getCopyrightHolder()
+    public function getCopyrightHolder(): StringLiteral
     {
         return $this->copyrightHolder;
     }
 
-    /**
-     * @return MIMEType
-     */
-    public function getMimeType()
+    public function getMimeType(): MIMEType
     {
         return $this->mimeType;
     }
 
-    /**
-     * @return Url
-     */
-    public function getSourceLocation()
+    public function getSourceLocation(): Url
     {
         return $this->sourceLocation;
     }
 
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return array(
             'media_object_id' => $this->getMediaObjectId()->toNative(),
@@ -129,14 +99,9 @@ class MediaObjectCreated implements SerializableInterface
         );
     }
 
-    /**
-     * @param array $data
-     *
-     * @return MediaObjectCreated The object instance
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): MediaObjectCreated
     {
-        return new static(
+        return new self(
             new UUID($data['media_object_id']),
             new MIMEType($data['mime_type']),
             new StringLiteral($data['description']),

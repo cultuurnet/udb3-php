@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 
-class TitleTranslated extends OrganizerEvent
+final class TitleTranslated extends OrganizerEvent
 {
     /**
      * @var Title
@@ -17,14 +17,8 @@ class TitleTranslated extends OrganizerEvent
      */
     private $language;
 
-    /**
-     * TitleTranslated constructor.
-     * @param string $organizerId
-     * @param Title $title
-     * @param Language $language
-     */
     public function __construct(
-        $organizerId,
+        string $organizerId,
         Title $title,
         Language $language
     ) {
@@ -34,38 +28,25 @@ class TitleTranslated extends OrganizerEvent
         $this->language = $language;
     }
 
-    /**
-     * @return Title
-     */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return Language
-     */
-    public function getLanguage()
+    public function getLanguage(): Language
     {
         return $this->language;
     }
 
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
-                'title' => $this->getTitle()->toNative(),
-                'language' => $this->getLanguage()->getCode(),
-            ];
+            'title' => $this->getTitle()->toNative(),
+            'language' => $this->getLanguage()->getCode(),
+        ];
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): TitleTranslated
     {
         return new static(
             $data['organizer_id'],

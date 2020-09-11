@@ -36,7 +36,7 @@ final class MarkedAsCanonical extends PlaceEvent
         return $this->duplicatesOfDuplicate;
     }
 
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'duplicated_by' => $this->duplicatedBy,
@@ -44,7 +44,7 @@ final class MarkedAsCanonical extends PlaceEvent
         ];
     }
 
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): MarkedAsCanonical
     {
         return new static($data['place_id'], $data['duplicated_by'], $data['duplicates_of_duplicate']);
     }

@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\PlaceEvent;
 
-class AddressTranslated extends PlaceEvent
+final class AddressTranslated extends PlaceEvent
 {
     /**
      * @var Address
@@ -18,38 +18,24 @@ class AddressTranslated extends PlaceEvent
      */
     private $language;
 
-    /**
-     * @param string $placeId
-     * @param Address $address
-     * @param Language $language
-     */
-    public function __construct($placeId, Address $address, Language $language)
+    public function __construct(string $placeId, Address $address, Language $language)
     {
         parent::__construct($placeId);
         $this->address = $address;
         $this->language = $language;
     }
 
-    /**
-     * @return Address
-     */
-    public function getAddress()
+    public function getAddress(): Address
     {
         return $this->address;
     }
 
-    /**
-     * @return Language
-     */
-    public function getLanguage()
+    public function getLanguage(): Language
     {
         return $this->language;
     }
 
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'address' => $this->address->serialize(),
@@ -57,11 +43,7 @@ class AddressTranslated extends PlaceEvent
         ];
     }
 
-    /**
-     * @param array $data
-     * @return AddressTranslated
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AddressTranslated
     {
         return new static(
             $data['place_id'],

@@ -5,18 +5,14 @@ namespace CultuurNet\UDB3\Role\Events;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 
-class ConstraintRemoved extends AbstractEvent
+final class ConstraintRemoved extends AbstractEvent
 {
     /**
      * @var SapiVersion
      */
     private $sapiVersion;
 
-    /**
-     * @param UUID $uuid
-     * @param SapiVersion $sapiVersion
-     */
-    public function __construct(
+    final public function __construct(
         UUID $uuid,
         SapiVersion $sapiVersion
     ) {
@@ -24,18 +20,12 @@ class ConstraintRemoved extends AbstractEvent
         $this->sapiVersion = $sapiVersion;
     }
 
-    /**
-     * @return SapiVersion
-     */
     public function getSapiVersion(): SapiVersion
     {
         return $this->sapiVersion;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): ConstraintRemoved
     {
         return new static(
             new UUID($data['uuid']),
@@ -43,10 +33,7 @@ class ConstraintRemoved extends AbstractEvent
         );
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
                 'sapiVersion' => $this->sapiVersion->toNative(),

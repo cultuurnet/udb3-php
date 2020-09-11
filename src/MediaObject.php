@@ -1,61 +1,42 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\MediaObject.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 
-/**
- * MediaObjects for UDB3.
- */
-class MediaObject implements SerializableInterface, JsonLdSerializableInterface
+final class MediaObject implements SerializableInterface, JsonLdSerializableInterface
 {
-
     /**
-     * Type of media object.
-     * @var string
+     * @var string|null
      */
     protected $type;
 
     /**
-     * Internal file id.
+     * @var string
      */
     protected $internalId;
 
     /**
-     * Url to the media object.
-     *
      * @var string
      */
     protected $url;
 
     /**
-     * Url to the thumbnail for the media object.
-     *
      * @var string
      */
     protected $thumbnailUrl;
 
     /**
-     * Description of the mediaobject.
-     *
      * @var string
      */
     protected $description;
 
-
     /**
-     * Copyright info.
-     *
      * @var string
      */
     protected $copyrightHolder;
 
-    public function __construct($url, $thumbnailUrl, $description, $copyrightHolder, $internalId = '', $type = null)
+    public function __construct(string $url, string $thumbnailUrl, string $description, string $copyrightHolder, string $internalId = '', ?string $type = null)
     {
         $this->type = $type;
         $this->url = $url;
@@ -65,67 +46,43 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
         $this->internalId = $internalId;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
 
-    /**
-     * @return string
-     */
-    public function getThumbnailUrl()
+    public function getThumbnailUrl(): string
     {
         return $this->thumbnailUrl;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @return string
-     */
-    public function getCopyrightHolder()
+    public function getCopyrightHolder(): string
     {
         return $this->copyrightHolder;
     }
 
-    /**
-     * @return string
-     */
-    public function getInternalId()
+    public function getInternalId(): string
     {
         return $this->internalId;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): MediaObject
     {
         $type = !empty($data['type']) ? $data['type'] : null;
-        return new static($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id'], $type);
+        return new self($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id'], $type);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'type' => $this->type,
@@ -137,10 +94,7 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function toJsonLd()
+    public function toJsonLd(): array
     {
         $jsonLd = [];
         if (!empty($this->type)) {
@@ -153,6 +107,5 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
         $jsonLd['copyrightHolder'] = $this->copyrightHolder;
 
         return $jsonLd;
-
     }
 }

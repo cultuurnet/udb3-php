@@ -10,12 +10,8 @@ namespace CultuurNet\UDB3\Organizer\Events;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Title;
 
-/**
- * Instantiates an OrganizerCreated event
- */
-class OrganizerCreated extends OrganizerEvent
+final class OrganizerCreated extends OrganizerEvent
 {
-
     /**
      * @var Title
      */
@@ -49,11 +45,11 @@ class OrganizerCreated extends OrganizerEvent
      * @param string[] $emails
      * @param string[] $urls
      */
-    public function __construct($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
+    public function __construct(string $id, Title $title, array $addresses, array $phones, array $emails, array $urls)
     {
         parent::__construct($id);
 
-        $this->guardAddressTypes($addresses);
+        $this->guardAddressTypes(...$addresses);
 
         $this->title = $title;
         $this->addresses = $addresses;
@@ -62,27 +58,11 @@ class OrganizerCreated extends OrganizerEvent
         $this->urls = $urls;
     }
 
-    /**
-     * @param Address[] $addresses
-     */
-    private function guardAddressTypes(array $addresses)
+    private function guardAddressTypes(Address ...$addresses): void
     {
-        foreach ($addresses as $address) {
-            if (!($address instanceof Address)) {
-                throw new \InvalidArgumentException(
-                    sprintf(
-                        "Argument should be of type Address, %s given.",
-                        is_object($address) ? get_class($address) : 'scalar'
-                    )
-                );
-            }
-        }
     }
 
-    /**
-     * @return Title
-     */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -90,7 +70,7 @@ class OrganizerCreated extends OrganizerEvent
     /**
      * @return Address[]
      */
-    public function getAddresses()
+    public function getAddresses(): array
     {
         return $this->addresses;
     }
@@ -98,7 +78,7 @@ class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getPhones()
+    public function getPhones(): array
     {
         return $this->phones;
     }
@@ -106,7 +86,7 @@ class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getEmails()
+    public function getEmails(): array
     {
         return $this->emails;
     }
@@ -114,17 +94,13 @@ class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getUrls()
+    public function getUrls(): array
     {
         return $this->urls;
     }
 
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
-
         $addresses = array();
         foreach ($this->getAddresses() as $address) {
             $addresses[] = $address->serialize();
@@ -139,19 +115,20 @@ class OrganizerCreated extends OrganizerEvent
         );
     }
 
-    /**
-     * @return static
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): OrganizerCreated
     {
-
         $addresses = array();
         foreach ($data['addresses'] as $address) {
             $addresses[] = Address::deserialize($address);
         }
 
-        return new static(
-            $data['organizer_id'], new Title($data['title']), $addresses, $data['phones'], $data['emails'], $data['urls']
+        return new self(
+            $data['organizer_id'],
+            new Title($data['title']),
+            $addresses,
+            $data['phones'],
+            $data['emails'],
+            $data['urls']
         );
     }
 }

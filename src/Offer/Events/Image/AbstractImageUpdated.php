@@ -6,10 +6,9 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AbstractImageUpdated extends AbstractEvent
+abstract class AbstractImageUpdated extends AbstractEvent
 {
     /**
-     * The id of the media object that the new information applies to.
      * @var UUID
      */
     protected $mediaObjectId;
@@ -24,14 +23,8 @@ class AbstractImageUpdated extends AbstractEvent
      */
     protected $copyrightHolder;
 
-    /**
-     * @param $itemId
-     * @param UUID $mediaObjectId
-     * @param StringLiteral $description
-     * @param StringLiteral $copyrightHolder
-     */
-    public function __construct(
-        $itemId,
+    final public function __construct(
+        string $itemId,
         UUID $mediaObjectId,
         StringLiteral $description,
         StringLiteral $copyrightHolder
@@ -43,41 +36,24 @@ class AbstractImageUpdated extends AbstractEvent
     }
 
     /**
-     * @return int
-     */
-    public function getItemId()
-    {
-        return $this->itemId;
-    }
-
-    /**
      * @return UUID
      */
-    public function getMediaObjectId()
+    public function getMediaObjectId(): UUID
     {
         return $this->mediaObjectId;
     }
 
-    /**
-     * @return StringLiteral
-     */
-    public function getDescription()
+    public function getDescription(): StringLiteral
     {
         return $this->description;
     }
 
-    /**
-     * @return StringLiteral
-     */
-    public function getCopyrightHolder()
+    public function getCopyrightHolder(): StringLiteral
     {
         return $this->copyrightHolder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() +  array(
             'media_object_id' => (string) $this->mediaObjectId,
@@ -86,11 +62,7 @@ class AbstractImageUpdated extends AbstractEvent
         );
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractImageUpdated
     {
         return new static(
             $data['item_id'],

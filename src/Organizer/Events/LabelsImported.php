@@ -7,45 +7,32 @@ use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 
-class LabelsImported extends OrganizerEvent implements LabelsImportedEventInterface
+final class LabelsImported extends OrganizerEvent implements LabelsImportedEventInterface
 {
     /**
      * @var Labels
      */
     private $labels;
 
-    /**
-     * @param string $organizerId
-     * @param Labels $labels
-     */
     public function __construct(
-        $organizerId,
+        string $organizerId,
         Labels $labels
     ) {
         parent::__construct($organizerId);
         $this->labels = $labels;
     }
 
-    /**
-     * @return string
-     */
-    public function getItemId()
+    public function getItemId(): string
     {
         return $this->getOrganizerId();
     }
 
-    /**
-     * @return Labels
-     */
-    public function getLabels()
+    public function getLabels(): Labels
     {
         return $this->labels;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): LabelsImported
     {
         $labels = new Labels();
         foreach ($data['labels'] as $label) {
@@ -55,16 +42,13 @@ class LabelsImported extends OrganizerEvent implements LabelsImportedEventInterf
             ));
         }
 
-        return new static(
+        return new self(
             $data['organizer_id'],
             $labels
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
         $labels = [];
         foreach ($this->getLabels() as $label) {

@@ -4,20 +4,16 @@ namespace CultuurNet\UDB3\Role\Events;
 
 use ValueObjects\Identity\UUID;
 
-class AbstractLabelEvent extends AbstractEvent
+abstract class AbstractLabelEvent extends AbstractEvent
 {
-    const LABEL_ID = 'labelId';
+    public const LABEL_ID = 'labelId';
 
     /**
      * @var UUID
      */
     private $labelId;
 
-    /**
-     * @param UUID $uuid
-     * @param UUID $labelId
-     */
-    public function __construct(
+    final public function __construct(
         UUID $uuid,
         UUID $labelId
     ) {
@@ -25,18 +21,12 @@ class AbstractLabelEvent extends AbstractEvent
         $this->labelId = $labelId;
     }
 
-    /**
-     * @return UUID
-     */
-    public function getLabelId()
+    public function getLabelId(): UUID
     {
         return $this->labelId;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractLabelEvent
     {
         return new static(
             new UUID($data[self::UUID]),
@@ -44,10 +34,7 @@ class AbstractLabelEvent extends AbstractEvent
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [self::LABEL_ID => $this->getLabelId()->toNative()];
     }

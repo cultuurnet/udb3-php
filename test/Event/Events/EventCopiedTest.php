@@ -29,7 +29,7 @@ class EventCopiedTest extends TestCase
      */
     private $eventCopied;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->eventId = 'e49430ca-5729-4768-8364-02ddb385517a';
 
@@ -55,7 +55,7 @@ class EventCopiedTest extends TestCase
     /**
      * @test
      */
-    public function it_stores_an_event_id()
+    public function it_stores_an_event_id(): void
     {
         $this->assertEquals(
             $this->eventId,
@@ -66,7 +66,7 @@ class EventCopiedTest extends TestCase
     /**
      * @test
      */
-    public function it_stores_an_original_event_id()
+    public function it_stores_an_original_event_id(): void
     {
         $this->assertEquals(
             $this->originalEventId,
@@ -77,7 +77,7 @@ class EventCopiedTest extends TestCase
     /**
      * @test
      */
-    public function it_stores_a_calendar()
+    public function it_stores_a_calendar(): void
     {
         $this->assertEquals(
             $this->calendar,
@@ -88,7 +88,7 @@ class EventCopiedTest extends TestCase
     /**
      * @test
      */
-    public function it_can_serialize_to_an_array()
+    public function it_can_serialize_to_an_array(): void
     {
         $this->assertEquals(
             [
@@ -103,7 +103,7 @@ class EventCopiedTest extends TestCase
     /**
      * @test
      */
-    public function it_can_deserialize_from_an_array()
+    public function it_can_deserialize_from_an_array(): void
     {
         $this->assertEquals(
             $this->eventCopied,
@@ -115,47 +115,5 @@ class EventCopiedTest extends TestCase
                 ]
             )
         );
-    }
-
-    /**
-     * @test
-     */
-    public function it_requires_a_string_as_event_id()
-    {
-        $eventId = false;
-        $originalEventId = '27105ae2-7e1c-425e-8266-4cb86a546159';
-        $calendar = new Calendar(
-            CalendarType::PERIODIC(),
-            new DateTime('2021-01-24T21:47:26.000000+0000'),
-            new DateTime('2022-01-24T21:47:26.000000+0000')
-        );
-
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage(
-            'Expected itemId to be a string, received boolean'
-        );
-
-        new EventCopied($eventId, $originalEventId, $calendar);
-    }
-
-    /**
-     * @test
-     */
-    public function it_requires_a_string_as_original_event_id()
-    {
-        $eventId = 'e49430ca-5729-4768-8364-02ddb385517a';
-        $originalEventId = false;
-        $calendar = new Calendar(
-            CalendarType::PERIODIC(),
-            new DateTime('2021-01-24T21:47:26.000000+0000'),
-            new DateTime('2022-01-24T21:47:26.000000+0000')
-        );
-
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage(
-            'Expected originalEventId to be a string, received boolean'
-        );
-
-        new EventCopied($eventId, $originalEventId, $calendar);
     }
 }

@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
-class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
+final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
 {
     /**
      * @var Language
@@ -23,14 +23,8 @@ class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
      */
     private $title;
 
-    /**
-     * @param string $id
-     * @param Language $mainLanguage
-     * @param Url $website
-     * @param Title $title
-     */
     public function __construct(
-        $id,
+        string $id,
         Language $mainLanguage,
         Url $website,
         Title $title
@@ -42,46 +36,31 @@ class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
         $this->title = $title;
     }
 
-    /**
-     * @return Language
-     */
-    public function getMainLanguage()
+    public function getMainLanguage(): Language
     {
         return $this->mainLanguage;
     }
 
-    /**
-     * @return Url
-     */
-    public function getWebsite()
+    public function getWebsite(): Url
     {
         return $this->website;
     }
 
-    /**
-     * @return Title
-     */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
-        return parent::serialize() + array(
+        return parent::serialize() + [
             'main_language' => $this->getMainLanguage()->getCode(),
             'website' => (string) $this->getWebsite(),
             'title' => (string) $this->getTitle(),
-        );
+        ];
     }
 
-    /**
-     * @return static
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): OrganizerCreatedWithUniqueWebsite
     {
         return new static(
             $data['organizer_id'],

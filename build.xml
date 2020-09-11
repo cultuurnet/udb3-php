@@ -9,6 +9,7 @@
         <phingcall target="composer-validate"/>
         <phingcall target="lint"/>
         <phingcall target="unit-tests" />
+        <phingcall target="phpstan" />
         <phingcall target="coding-standards"/>
     </target>
 
@@ -31,6 +32,13 @@
             command="./vendor/bin/phpunit"
             checkreturn="true"
             passthru="true"/>
+    </target>
+
+    <target name="phpstan">
+        <exec
+                command="./vendor/bin/phpstan analyse src test --level 0"
+                passthru="true"
+                checkreturn="true" />
     </target>
 
     <target name="coding-standards">

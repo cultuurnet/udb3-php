@@ -68,5 +68,8 @@
   },
   "config": {
     "sort-packages": true
+  },
+  "scripts": {
+    "phing": "./vendor/bin/phing test"
   }
 }

@@ -78,7 +78,7 @@ final class BookingInfo implements JsonLdSerializableInterface
         return $this->url;
     }
 
-    public function getUrlLabel(): ?string
+    public function getUrlLabel(): ?MultilingualString
     {
         return $this->urlLabel;
     }

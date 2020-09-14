@@ -46,16 +46,4 @@ class AbstractEventTest extends TestCase
 
         $this->assertEquals($expectedArray, $actualArray);
     }
-
-    /**
-     * @test
-     */
-    public function it_can_deserialize()
-    {
-        $data = ['uuid' => $this->uuid->toNative()];
-        $actualEvent = $this->event->deserialize($data);
-        $expectedEvent = $this->event;
-
-        $this->assertEquals($actualEvent, $expectedEvent);
-    }
 }

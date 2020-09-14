@@ -10,8 +10,12 @@ namespace CultuurNet\UDB3\Organizer\Events;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Title;
 
+/**
+ * Instantiates an OrganizerCreated event
+ */
 final class OrganizerCreated extends OrganizerEvent
 {
+
     /**
      * @var Title
      */
@@ -45,11 +49,11 @@ final class OrganizerCreated extends OrganizerEvent
      * @param string[] $emails
      * @param string[] $urls
      */
-    public function __construct(string $id, Title $title, array $addresses, array $phones, array $emails, array $urls)
+    public function __construct($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
     {
         parent::__construct($id);
 
-        $this->guardAddressTypes(...$addresses);
+        $this->guardAddressTypes($addresses);
 
         $this->title = $title;
         $this->addresses = $addresses;
@@ -58,11 +62,27 @@ final class OrganizerCreated extends OrganizerEvent
         $this->urls = $urls;
     }
 
-    private function guardAddressTypes(Address ...$addresses): void
+    /**
+     * @param Address[] $addresses
+     */
+    private function guardAddressTypes(array $addresses)
     {
+        foreach ($addresses as $address) {
+            if (!($address instanceof Address)) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        "Argument should be of type Address, %s given.",
+                        is_object($address) ? get_class($address) : 'scalar'
+                    )
+                );
+            }
+        }
     }
 
-    public function getTitle(): Title
+    /**
+     * @return Title
+     */
+    public function getTitle()
     {
         return $this->title;
     }
@@ -70,7 +90,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return Address[]
      */
-    public function getAddresses(): array
+    public function getAddresses()
     {
         return $this->addresses;
     }
@@ -78,7 +98,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getPhones(): array
+    public function getPhones()
     {
         return $this->phones;
     }
@@ -86,7 +106,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getEmails(): array
+    public function getEmails()
     {
         return $this->emails;
     }
@@ -94,13 +114,17 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getUrls(): array
+    public function getUrls()
     {
         return $this->urls;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
+
         $addresses = array();
         foreach ($this->getAddresses() as $address) {
             $addresses[] = $address->serialize();
@@ -115,8 +139,12 @@ final class OrganizerCreated extends OrganizerEvent
         );
     }
 
-    public static function deserialize(array $data): OrganizerCreated
+    /**
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
+
         $addresses = array();
         foreach ($data['addresses'] as $address) {
             $addresses[] = Address::deserialize($address);

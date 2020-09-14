@@ -15,22 +15,27 @@ use DateTimeInterface;
 use DateTimeZone;
 use InvalidArgumentException;
 
+/**
+ * Calendar for events and places.
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar.
+ */
 final class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
 {
+
     /**
      * @var CalendarType
      */
-    protected $type;
+    protected $type = null;
 
     /**
      * @var DateTimeInterface
      */
-    protected $startDate;
+    protected $startDate = null;
 
     /**
      * @var DateTimeInterface
      */
-    protected $endDate;
+    protected $endDate = null;
 
     /**
      * @var Timestamp[]
@@ -51,16 +56,16 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
      */
     public function __construct(
         CalendarType $type,
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-        array $timestamps = [],
-        array $openingHours = []
+        DateTimeInterface $startDate = null,
+        DateTimeInterface $endDate = null,
+        array $timestamps = array(),
+        array $openingHours = array()
     ) {
-        if (empty($timestamps) && ($type->is(CalendarType::SINGLE()) || $type->is(CalendarType::MULTIPLE()))) {
+        if (($type->is(CalendarType::SINGLE()) || $type->is(CalendarType::MULTIPLE())) && (empty($timestamps))) {
             throw new \UnexpectedValueException('A single or multiple calendar should have timestamps.');
         }
 
-        if (($startDate === null || $endDate === null) && $type->is(CalendarType::PERIODIC())) {
+        if ($type->is(CalendarType::PERIODIC()) && (empty($startDate) || empty($endDate))) {
             throw new \UnexpectedValueException('A period should have a start- and end-date.');
         }
 
@@ -81,7 +86,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         $this->endDate = $endDate;
         $this->openingHours = $openingHours;
 
-        usort($timestamps, static function (Timestamp $timestamp, Timestamp $otherTimestamp) {
+        usort($timestamps, function (Timestamp $timestamp, Timestamp $otherTimestamp) {
             return $timestamp->getStartDate() <=> $otherTimestamp->getStartDate();
         });
 
@@ -89,12 +94,18 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
 
     }
 
-    public function getType(): CalendarType
+    /**
+     * @inheritdoc
+     */
+    public function getType()
     {
         return CalendarType::fromNative($this->type);
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         $serializedTimestamps = array_map(
             function (Timestamp $timestamp) {
@@ -122,7 +133,10 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $calendar;
     }
 
-    public static function deserialize(array $data): Calendar
+    /**
+     * {@inheritdoc}
+     */
+    public static function deserialize(array $data)
     {
         $calendarType = CalendarType::fromNative($data['type']);
 
@@ -159,8 +173,13 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
      * This deserialization function takes into account old data that might be missing a timezone.
      * It will fall back to creating a DateTime object and assume Brussels.
      * If this still fails an error will be thrown.
+     *
+     * @param $dateTimeData
+     * @return DateTime
+     *
+     * @throws InvalidArgumentException
      */
-    private static function deserializeDateTime(string $dateTimeData): DateTime
+    private static function deserializeDateTime($dateTimeData)
     {
         $dateTime = DateTime::createFromFormat(DateTime::ATOM, $dateTimeData);
 
@@ -175,7 +194,10 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $dateTime;
     }
 
-    public function getStartDate(): ?DateTimeInterface
+    /**
+     * @inheritdoc
+     */
+    public function getStartDate()
     {
         $timestamps = $this->getTimestamps();
 
@@ -193,7 +215,10 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $startDate;
     }
 
-    public function getEndDate(): ?DateTimeInterface
+    /**
+     * @inheritdoc
+     */
+    public function getEndDate()
     {
         $timestamps = $this->getTimestamps();
 
@@ -212,22 +237,25 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     }
 
     /**
-     * @return array|OpeningHour[]
+     * @inheritdoc
      */
-    public function getOpeningHours(): array
+    public function getOpeningHours()
     {
         return $this->openingHours;
     }
 
     /**
-     * @return array|Timestamp[]
+     * @inheritdoc
      */
-    public function getTimestamps(): array
+    public function getTimestamps()
     {
         return $this->timestamps;
     }
 
-    public function toJsonLd(): array
+    /**
+     * Return the jsonLD version of a calendar.
+     */
+    public function toJsonLd()
     {
         $jsonLd = [];
 
@@ -265,12 +293,20 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $jsonLd;
     }
 
-    public function sameAs(Calendar $otherCalendar): bool
+    /**
+     * @param Calendar $otherCalendar
+     * @return bool
+     */
+    public function sameAs(Calendar $otherCalendar)
     {
-        return $this->toJsonLd() === $otherCalendar->toJsonLd();
+        return $this->toJsonLd() == $otherCalendar->toJsonLd();
     }
 
-    public static function fromUdb3ModelCalendar(Udb3ModelCalendar $calendar): Calendar
+    /**
+     * @param Udb3ModelCalendar $calendar
+     * @return self
+     */
+    public static function fromUdb3ModelCalendar(Udb3ModelCalendar $calendar)
     {
         $type = CalendarType::fromNative($calendar->getType()->toString());
 

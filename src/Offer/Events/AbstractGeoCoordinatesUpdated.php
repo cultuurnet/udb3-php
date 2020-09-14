@@ -13,28 +13,42 @@ abstract class AbstractGeoCoordinatesUpdated extends AbstractEvent
      */
     private $coordinates;
 
+    /**
+     * @param string $itemId
+     * @param Coordinates $coordinates
+     */
     final public function __construct(string $itemId, Coordinates $coordinates)
     {
         parent::__construct($itemId);
         $this->coordinates = $coordinates;
     }
 
-    public function getCoordinates(): Coordinates
+    /**
+     * @return Coordinates
+     */
+    public function getCoordinates()
     {
         return $this->coordinates;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return parent::serialize() + [
-            'coordinates' => [
-                'lat' => $this->coordinates->getLatitude()->toDouble(),
-                'long' => $this->coordinates->getLongitude()->toDouble(),
-            ],
-        ];
+                'coordinates' => [
+                    'lat' => $this->coordinates->getLatitude()->toDouble(),
+                    'long' => $this->coordinates->getLongitude()->toDouble(),
+                ],
+            ];
     }
 
-    public static function deserialize(array $data): AbstractGeoCoordinatesUpdated
+    /**
+     * @param array $data
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['item_id'],

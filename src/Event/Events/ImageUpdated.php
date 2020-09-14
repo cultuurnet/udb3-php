@@ -4,6 +4,9 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 
-final class ImageUpdated extends AbstractImageUpdated
+/**
+ * Provides an ImageUpdated event.
+ */
+class ImageUpdated extends AbstractImageUpdated
 {
 }

@@ -7,6 +7,7 @@ use CultuurNet\UDB3\ContactPoint;
 abstract class AbstractContactPointUpdated extends AbstractEvent
 {
     /**
+     * ContactPoint to be saved
      * @var ContactPoint
      */
     protected $contactPoint;
@@ -22,14 +23,20 @@ abstract class AbstractContactPointUpdated extends AbstractEvent
         return $this->contactPoint;
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'contactPoint' => $this->contactPoint->serialize(),
         );
     }
 
-    public static function deserialize(array $data): AbstractContactPointUpdated
+    /**
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
     {
         return new static($data['item_id'], ContactPoint::deserialize($data['contactPoint']));
     }

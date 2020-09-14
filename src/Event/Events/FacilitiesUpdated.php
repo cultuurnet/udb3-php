@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Offer\Events\AbstractFacilitiesUpdated;
 
-final class FacilitiesUpdated extends AbstractFacilitiesUpdated
+class FacilitiesUpdated extends AbstractFacilitiesUpdated
 {
+
 }

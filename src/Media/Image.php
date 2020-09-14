@@ -58,37 +58,58 @@ final class Image implements SerializableInterface
         $this->language = $language;
     }
 
-    public function getLanguage(): Language
+    /**
+     * @return Language
+     */
+    public function getLanguage()
     {
         return $this->language;
     }
 
-    public function getMediaObjectId(): UUID
+    /**
+     * @return UUID
+     */
+    public function getMediaObjectId()
     {
         return $this->mediaObjectId;
     }
 
-    public function getMimeType(): MIMEType
+    /**
+     * @return MIMEType
+     */
+    public function getMimeType()
     {
         return $this->mimeType;
     }
 
-    public function getDescription(): Description
+    /**
+     * @return Description
+     */
+    public function getDescription()
     {
         return $this->description;
     }
 
-    public function getCopyrightHolder(): CopyrightHolder
+    /**
+     * @return CopyrightHolder
+     */
+    public function getCopyrightHolder()
     {
         return $this->copyrightHolder;
     }
 
-    public function getSourceLocation(): Url
+    /**
+     * @return Url
+     */
+    public function getSourceLocation()
     {
         return $this->sourceLocation;
     }
 
-    public static function deserialize(array $data): Image
+    /**
+     * {@inheritdoc}
+     */
+    public static function deserialize(array $data)
     {
         return new self(
             new UUID($data['media_object_id']),
@@ -100,7 +121,10 @@ final class Image implements SerializableInterface
         );
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         return [
             'media_object_id' => (string) $this->getMediaObjectId(),

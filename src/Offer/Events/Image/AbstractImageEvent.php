@@ -5,6 +5,10 @@ namespace CultuurNet\UDB3\Offer\Events\Image;
 use CultuurNet\UDB3\Media\Image;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
+/**
+ * Abstract because it should be implemented in the namespace of each concrete
+ * offer implementation. (Place, Event, ...)
+ */
 abstract class AbstractImageEvent extends AbstractEvent
 {
     /**
@@ -12,25 +16,41 @@ abstract class AbstractImageEvent extends AbstractEvent
      */
     protected $image;
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param Image $image
+     *  The image that is involved in the event.
+     */
     final public function __construct(string $itemId, Image $image)
     {
         parent::__construct($itemId);
         $this->image = $image;
     }
 
-    public function getImage(): Image
+    /**
+     * @return Image
+     */
+    public function getImage()
     {
         return $this->image;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'image' => $this->image->serialize(),
         );
     }
 
-    public static function deserialize(array $data): AbstractImageEvent
+    /**
+     * @param array $data
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['item_id'],

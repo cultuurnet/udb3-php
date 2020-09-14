@@ -18,24 +18,38 @@ final class AddressTranslated extends PlaceEvent
      */
     private $language;
 
-    public function __construct(string $placeId, Address $address, Language $language)
+    /**
+     * @param string $placeId
+     * @param Address $address
+     * @param Language $language
+     */
+    public function __construct($placeId, Address $address, Language $language)
     {
         parent::__construct($placeId);
         $this->address = $address;
         $this->language = $language;
     }
 
-    public function getAddress(): Address
+    /**
+     * @return Address
+     */
+    public function getAddress()
     {
         return $this->address;
     }
 
-    public function getLanguage(): Language
+    /**
+     * @return Language
+     */
+    public function getLanguage()
     {
         return $this->language;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return parent::serialize() + [
             'address' => $this->address->serialize(),
@@ -43,7 +57,11 @@ final class AddressTranslated extends PlaceEvent
         ];
     }
 
-    public static function deserialize(array $data): AddressTranslated
+    /**
+     * @param array $data
+     * @return AddressTranslated
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['place_id'],

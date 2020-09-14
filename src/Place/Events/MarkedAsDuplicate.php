@@ -22,14 +22,14 @@ final class MarkedAsDuplicate extends PlaceEvent
         return $this->duplicateOf;
     }
 
-    public function serialize(): array
+    public function serialize()
     {
         return parent::serialize() + [
                 'duplicate_of' => $this->duplicateOf,
             ];
     }
 
-    public static function deserialize(array $data): MarkedAsDuplicate
+    public static function deserialize(array $data)
     {
         return new static($data['place_id'], ($data['duplicate_of']));
     }

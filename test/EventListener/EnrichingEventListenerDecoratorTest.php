@@ -2,32 +2,19 @@
 
 namespace CultuurNet\UDB3\EventListener;
 
-use Broadway\Domain\DateTime;
 use Broadway\Domain\DomainMessage;
-use Broadway\Domain\Metadata;
 use Broadway\EventHandling\EventListenerInterface;
-use CultuurNet\UDB3\Address\Address;
-use CultuurNet\UDB3\Address\Locality;
-use CultuurNet\UDB3\Address\PostalCode;
-use CultuurNet\UDB3\Address\Street;
-use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CalendarInterface;
-use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\DomainMessage\DomainMessageEnricherInterface;
 use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;
 use CultuurNet\UDB3\Event\Events\EventCreated;
-use CultuurNet\UDB3\Event\EventType;
-use CultuurNet\UDB3\Event\ValueObjects\LocationId;
-use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\Events\PlaceCreated;
-use CultuurNet\UDB3\Title;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Rhumsaa\Uuid\Uuid;
-use ValueObjects\Geography\Country;
 
 class EnrichingEventListenerDecoratorTest extends TestCase
 {
+    use DomainMessageTestDataTrait;
+
     /**
      * @var DomainMessageEnricherInterface|MockObject
      */
@@ -43,7 +30,7 @@ class EnrichingEventListenerDecoratorTest extends TestCase
      */
     private $enrichingDecorator;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->enricher = $this->createMock(DomainMessageEnricherInterface::class);
         $this->decoratee = $this->createMock(EventListenerInterface::class);
@@ -53,50 +40,19 @@ class EnrichingEventListenerDecoratorTest extends TestCase
     /**
      * @test
      */
-    public function it_enriches_supported_domain_messages_before_delegating_them_to_the_decoratee(): void
+    public function it_enriches_supported_domain_messages_before_delegating_them_to_the_decoratee()
     {
-        $supportedDomainMessage = new DomainMessage(
-            Uuid::uuid4(),
-            0,
-            new Metadata(),
-            new EventCreated(
-                '97d50997-2f60-47f2-9861-05be747038fa',
-                new Language('nl'),
-                new Title('test title'),
-                new EventType('0.0.1', 'label'),
-                new LocationId('8bec7ce3-25d0-4677-926f-ac20df8898f1'),
-                new Calendar(CalendarType::PERMANENT())
-            ),
-            DateTime::now()
-        );
-
-        $otherDomainMessage = new DomainMessage(
-            Uuid::uuid4(),
-            0,
-            new Metadata(),
-            new PlaceCreated(
-                'fd9e986d-6a23-470c-bf0c-4ad40aa4515e',
-                new Language('nl'),
-                new Title('test title'),
-                new EventType('0.0.1', 'label'),
-                new Address(
-                    new Street('street'),
-                    new PostalCode('3000'),
-                    new Locality('Leuven'),
-                    Country::fromNative('BE')
-                ),
-                new Calendar(CalendarType::PERMANENT())
-            ),
-            DateTime::now()
-        );
+        $supportedDomainMessage = $this->createDomainMessage($this, EventCreated::class);
+        $otherDomainMessage = $this->createDomainMessage($this, PlaceCreated::class);
 
         $enrichedDomainMessage = clone $supportedDomainMessage;
         $enrichedDomainMessage->extraProperty = true;
 
-        $this->enricher->method('supports')
+        $this->enricher->expects($this->any())
+            ->method('supports')
             ->willReturnCallback(
                 function (DomainMessage $domainMessage) use ($supportedDomainMessage) {
-                    return $domainMessage === $supportedDomainMessage;
+                    return $domainMessage == $supportedDomainMessage;
                 }
             );
 

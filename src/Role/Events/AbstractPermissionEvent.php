@@ -12,23 +12,37 @@ abstract class AbstractPermissionEvent extends AbstractEvent
      */
     private $permission;
 
+    /**
+     * AbstractPermissionEvent constructor.
+     * @param UUID $uuid
+     * @param Permission $permission
+     */
     final public function __construct(UUID $uuid, Permission $permission)
     {
         parent::__construct($uuid);
         $this->permission = $permission;
     }
 
-    public function getPermission(): Permission
+    /**
+     * @return Permission
+     */
+    public function getPermission()
     {
         return $this->permission;
     }
 
-    public static function deserialize(array $data): AbstractPermissionEvent
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
     {
         return new static(new UUID($data['uuid']), Permission::fromNative($data['permission']));
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'permission' => $this->permission->toNative(),

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains \Cultuurnet\UDB3\Actor\ActorImportedFromUDB2.
+ */
+
 namespace CultuurNet\UDB3\Actor;
 
 class ActorImportedFromUDB2 extends ActorEvent
@@ -14,6 +19,12 @@ class ActorImportedFromUDB2 extends ActorEvent
      */
     protected $cdbXmlNamespaceUri;
 
+    /**
+     * @param string $actorId
+     * @param string $cdbXml
+     * @param string $cdbXmlNamespaceUri
+     */
+    public function __construct($actorId, $cdbXml, $cdbXmlNamespaceUri)
     final public function __construct(string $actorId, string $cdbXml, string $cdbXmlNamespaceUri)
     {
         parent::__construct($actorId);
@@ -21,7 +32,7 @@ class ActorImportedFromUDB2 extends ActorEvent
         $this->cdbXmlNamespaceUri = $cdbXmlNamespaceUri;
     }
 
-    public function getCdbXml(): string
+    public function getCdbXml()
     {
         return $this->cdbXml;
     }
@@ -29,12 +40,15 @@ class ActorImportedFromUDB2 extends ActorEvent
     /**
      * @return string
      */
-    public function getCdbXmlNamespaceUri(): string
+    public function getCdbXmlNamespaceUri()
     {
         return $this->cdbXmlNamespaceUri;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'cdbxml' => $this->cdbXml,
@@ -42,7 +56,10 @@ class ActorImportedFromUDB2 extends ActorEvent
         );
     }
 
-    public static function deserialize(array $data): ActorImportedFromUDB2
+    /**
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
     {
         $data += array(
             'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),

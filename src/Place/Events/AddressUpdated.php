@@ -12,13 +12,20 @@ final class AddressUpdated extends PlaceEvent
      */
     private $address;
 
-    public function __construct(string $placeId, Address $address)
+    /**
+     * @param string $placeId
+     * @param Address $address
+     */
+    public function __construct($placeId, Address $address)
     {
         parent::__construct($placeId);
         $this->address = $address;
     }
 
-    public function getAddress(): Address
+    /**
+     * @return Address
+     */
+    public function getAddress()
     {
         return $this->address;
     }
@@ -26,14 +33,18 @@ final class AddressUpdated extends PlaceEvent
     /**
      * @return array
      */
-    public function serialize(): array
+    public function serialize()
     {
         return parent::serialize() + [
             'address' => $this->address->serialize(),
         ];
     }
 
-    public static function deserialize(array $data): AddressUpdated
+    /**
+     * @param array $data
+     * @return AddressUpdated
+     */
+    public static function deserialize(array $data)
     {
         return new static($data['place_id'], Address::deserialize($data['address']));
     }

@@ -5,6 +5,9 @@ namespace CultuurNet\UDB3\Calendar;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour as Udb3ModelOpeningHour;
 
+/**
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour.
+ */
 final class OpeningHour implements SerializableInterface
 {
     /**
@@ -22,6 +25,12 @@ final class OpeningHour implements SerializableInterface
      */
     private $dayOfWeekCollection;
 
+    /**
+     * OpeningHour constructor.
+     * @param OpeningTime $opens
+     * @param OpeningTime $closes
+     * @param DayOfWeekCollection $dayOfWeekCollection
+     */
     public function __construct(
         OpeningTime $opens,
         OpeningTime $closes,
@@ -32,35 +41,54 @@ final class OpeningHour implements SerializableInterface
         $this->closes = $closes;
     }
 
-    public function getOpens(): OpeningTime
+    /**
+     * @return OpeningTime
+     */
+    public function getOpens()
     {
         return $this->opens;
     }
 
-    public function getCloses(): OpeningTime
+    /**
+     * @return OpeningTime
+     */
+    public function getCloses()
     {
         return $this->closes;
     }
 
-    public function getDayOfWeekCollection(): DayOfWeekCollection
+    /**
+     * @return DayOfWeekCollection
+     */
+    public function getDayOfWeekCollection()
     {
         return $this->dayOfWeekCollection;
     }
 
-    public function addDayOfWeekCollection(DayOfWeekCollection $dayOfWeekCollection): void
+    /**
+     * @param DayOfWeekCollection $dayOfWeekCollection
+     */
+    public function addDayOfWeekCollection(DayOfWeekCollection $dayOfWeekCollection)
     {
         foreach ($dayOfWeekCollection->getDaysOfWeek() as $dayOfWeek) {
             $this->dayOfWeekCollection->addDayOfWeek($dayOfWeek);
         }
     }
 
-    public function hasEqualHours(OpeningHour $otherOpeningHour): bool
+    /**
+     * @param OpeningHour $otherOpeningHour
+     * @return bool
+     */
+    public function hasEqualHours(OpeningHour $otherOpeningHour)
     {
         return $otherOpeningHour->getOpens()->sameValueAs($this->getOpens()) &&
             $otherOpeningHour->getCloses()->sameValueAs($this->getCloses());
     }
 
-    public static function deserialize(array $data): OpeningHour
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             OpeningTime::fromNativeString($data['opens']),
@@ -69,7 +97,10 @@ final class OpeningHour implements SerializableInterface
         );
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return [
             'opens' => $this->opens->toNativeString(),
@@ -78,7 +109,11 @@ final class OpeningHour implements SerializableInterface
         ];
     }
 
-    public static function fromUdb3ModelOpeningHour(Udb3ModelOpeningHour $openingHour): OpeningHour
+    /**
+     * @param Udb3ModelOpeningHour $openingHour
+     * @return self
+     */
+    public static function fromUdb3ModelOpeningHour(Udb3ModelOpeningHour $openingHour)
     {
         return new self(
             OpeningTime::fromUdb3ModelTime($openingHour->getOpeningTime()),

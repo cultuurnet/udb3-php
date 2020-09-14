@@ -8,8 +8,13 @@ use DateTime;
 use DateTimeInterface;
 use InvalidArgumentException;
 
+/**
+ * Provices a class for a timestamp.
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange.
+ */
 final class Timestamp implements SerializableInterface
 {
+
     /**
      * @var DateTimeInterface
      */
@@ -20,6 +25,14 @@ final class Timestamp implements SerializableInterface
      */
     protected $endDate;
 
+    /**
+     * Constructor
+     *
+     * @param DateTimeInterface $startDate
+     * @param DateTimeInterface $endDate
+     *
+     * @throws InvalidArgumentException
+     */
     final public function __construct(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate
@@ -32,17 +45,26 @@ final class Timestamp implements SerializableInterface
         $this->endDate = $endDate;
     }
 
-    public function getStartDate(): DateTimeInterface
+    /**
+     * @return DateTimeInterface
+     */
+    public function getStartDate()
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): DateTimeInterface
+    /**
+     * @return DateTimeInterface
+     */
+    public function getEndDate()
     {
         return $this->endDate;
     }
 
-    public static function deserialize(array $data): Timestamp
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             DateTime::createFromFormat(DateTime::ATOM, $data['startDate']),
@@ -50,7 +72,10 @@ final class Timestamp implements SerializableInterface
         );
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return [
             'startDate' => $this->startDate->format(DateTime::ATOM),
@@ -58,7 +83,11 @@ final class Timestamp implements SerializableInterface
         ];
     }
 
-    public static function fromUdb3ModelDateRange(DateRange $dateRange): Timestamp
+    /**
+     * @param DateRange $dateRange
+     * @return self
+     */
+    public static function fromUdb3ModelDateRange(DateRange $dateRange)
     {
         return new Timestamp(
             $dateRange->getFrom(),

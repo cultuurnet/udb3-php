@@ -8,6 +8,9 @@ use CultuurNet\UDB3\Model\ValueObject\Contact\TelephoneNumber;
 use CultuurNet\UDB3\Model\ValueObject\Web\EmailAddress;
 use CultuurNet\UDB3\Model\ValueObject\Web\Url;
 
+/**
+ * ContactPoint info.
+ */
 final class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 {
     /**
@@ -25,29 +28,47 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
      */
     protected $urls = array();
 
-    public function __construct(array $phones = [], array $emails = [], array $urls = [])
+    /**
+     * Constructor.
+     * @param array $phones
+     * @param array $emails
+     * @param array $urls
+     */
+    public function __construct(array $phones = array(), array $emails = array(), array $urls = array())
     {
         $this->phones = $phones;
         $this->emails = $emails;
         $this->urls = $urls;
     }
 
-    public function getPhones(): array
+    /**
+     * @return array
+     */
+    public function getPhones()
     {
         return $this->phones;
     }
 
-    public function getEmails(): array
+    /**
+     * @return array
+     */
+    public function getEmails()
     {
         return $this->emails;
     }
 
-    public function getUrls(): array
+    /**
+     * @return array
+     */
+    public function getUrls()
     {
         return $this->urls;
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         return [
           'phone' => $this->phones,
@@ -56,23 +77,37 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
         ];
     }
 
-    public static function deserialize(array $data): ContactPoint
+    /**
+     * {@inheritdoc}
+     */
+    public static function deserialize(array $data)
     {
         return new self($data['phone'], $data['email'], $data['url']);
     }
 
-    public function toJsonLd(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function toJsonLd()
     {
         // Serialized version is the same.
         return $this->serialize();
     }
 
-    public function sameAs(ContactPoint $otherContactPoint): bool
+    /**
+     * @param ContactPoint $otherContactPoint
+     * @return bool
+     */
+    public function sameAs(ContactPoint $otherContactPoint)
     {
-        return $this->toJsonLd() === $otherContactPoint->toJsonLd();
+        return $this->toJsonLd() == $otherContactPoint->toJsonLd();
     }
 
-    public static function fromUdb3ModelContactPoint(Udb3ModelContactPoint $contactPoint): ContactPoint
+    /**
+     * @param Udb3ModelContactPoint $contactPoint
+     * @return ContactPoint
+     */
+    public static function fromUdb3ModelContactPoint(Udb3ModelContactPoint $contactPoint)
     {
         $phones = array_map(
             function (TelephoneNumber $phone) {
@@ -95,6 +130,6 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
             $contactPoint->getUrls()->toArray()
         );
 
-        return new self($phones, $emails, $urls);
+        return new ContactPoint($phones, $emails, $urls);
     }
 }

@@ -3,15 +3,17 @@
 namespace CultuurNet\UDB3\Offer\Events\Moderation;
 
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
-use DateTimeInterface;
 
 abstract class AbstractPublished extends AbstractEvent
 {
-    /**
-     * @var DateTimeInterface
-     */
+    /** @var  \DateTimeInterface */
     private $publicationDate;
 
+    /**
+     * AbstractPublish constructor.
+     * @param string $itemId
+     * @param \DateTimeInterface
+     */
     final public function __construct(string $itemId, DateTimeInterface $publicationDate)
     {
         parent::__construct($itemId);
@@ -19,23 +21,32 @@ abstract class AbstractPublished extends AbstractEvent
         $this->publicationDate = $publicationDate;
     }
 
-    public function getPublicationDate(): DateTimeInterface
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getPublicationDate()
     {
         return $this->publicationDate;
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return parent::serialize() + [
-            'publication_date' => $this->publicationDate->format(DateTimeInterface::ATOM),
+            'publication_date' => $this->publicationDate->format(\DateTime::ATOM),
         ];
     }
 
-    public static function deserialize(array $data): AbstractPublished
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['item_id'],
-            \DateTime::createFromFormat(DateTimeInterface::ATOM, $data['publication_date'])
+            \DateTime::createFromFormat(\DateTime::ATOM, $data['publication_date'])
         );
     }
 }

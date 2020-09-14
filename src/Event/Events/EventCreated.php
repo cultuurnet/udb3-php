@@ -12,7 +12,10 @@ use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
 
-final class EventCreated extends EventEvent
+/**
+ * Event when an event is created.
+ */
+class EventCreated extends EventEvent
 {
     /**
      * @var Language
@@ -27,12 +30,12 @@ final class EventCreated extends EventEvent
     /**
      * @var EventType
      */
-    private $eventType;
+    private $eventType = null;
 
     /**
-     * @var Theme|null
+     * @var Theme
      */
-    private $theme;
+    private $theme = null;
 
     /**
      * @var LocationId
@@ -47,17 +50,27 @@ final class EventCreated extends EventEvent
     /**
      * @var DateTimeImmutable|null
      */
-    private $publicationDate;
+    private $publicationDate = null;
 
+    /**
+     * @param string $eventId
+     * @param Language $mainLanguage
+     * @param Title $title
+     * @param EventType $eventType
+     * @param LocationId $location
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
+     * @param DateTimeImmutable|null $publicationDate
+     */
     public function __construct(
-        string $eventId,
+        $eventId,
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
         LocationId $location,
         CalendarInterface $calendar,
-        ?Theme $theme = null,
-        ?DateTimeImmutable $publicationDate = null
+        Theme $theme = null,
+        DateTimeImmutable $publicationDate = null
     ) {
         parent::__construct($eventId);
 
@@ -70,42 +83,66 @@ final class EventCreated extends EventEvent
         $this->publicationDate = $publicationDate;
     }
 
-    public function getMainLanguage(): Language
+    /**
+     * @return Language
+     */
+    public function getMainLanguage()
     {
         return $this->mainLanguage;
     }
 
-    public function getTitle(): Title
+    /**
+     * @return Title
+     */
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function getEventType(): EventType
+    /**
+     * @return EventType
+     */
+    public function getEventType()
     {
         return $this->eventType;
     }
 
-    public function getTheme(): ?Theme
+    /**
+     * @return Theme
+     */
+    public function getTheme()
     {
         return $this->theme;
     }
 
-    public function getCalendar(): CalendarInterface
+    /**
+     * @return CalendarInterface
+     */
+    public function getCalendar()
     {
         return $this->calendar;
     }
 
-    public function getLocation(): LocationId
+    /**
+     * @return LocationId
+     */
+    public function getLocation()
     {
         return $this->location;
     }
 
-    public function getPublicationDate(): ?DateTimeImmutable
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getPublicationDate()
     {
         return $this->publicationDate;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         $theme = null;
         if ($this->getTheme() !== null) {
@@ -126,7 +163,10 @@ final class EventCreated extends EventEvent
         );
     }
 
-    public static function deserialize(array $data): EventCreated
+    /**
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
         $theme = null;
         if (!empty($data['theme'])) {
@@ -139,7 +179,7 @@ final class EventCreated extends EventEvent
                 $data['publication_date']
             );
         }
-        return new self(
+        return new static(
             $data['event_id'],
             new Language($data['main_language']),
             new Title($data['title']),

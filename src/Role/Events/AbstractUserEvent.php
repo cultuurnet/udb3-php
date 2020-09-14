@@ -7,13 +7,18 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class AbstractUserEvent extends AbstractEvent
 {
-    public const USER_ID = 'userId';
+    const USER_ID = 'userId';
 
     /**
      * @var StringLiteral
      */
     private $userId;
 
+    /**
+     * AbstractUserEvent constructor.
+     * @param UUID $uuid
+     * @param StringLiteral $userId
+     */
     final public function __construct(UUID $uuid, StringLiteral $userId)
     {
         parent::__construct($uuid);
@@ -21,12 +26,18 @@ abstract class AbstractUserEvent extends AbstractEvent
         $this->userId = $userId;
     }
 
-    public function getUserId(): StringLiteral
+    /**
+     * @return StringLiteral
+     */
+    public function getUserId()
     {
         return $this->userId;
     }
 
-    public static function deserialize(array $data): AbstractUserEvent
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             new UUID($data[self::UUID]),
@@ -34,7 +45,10 @@ abstract class AbstractUserEvent extends AbstractEvent
         );
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return parent::serialize() + [self::USER_ID => $this->getUserId()->toNative()];
     }

@@ -17,30 +17,47 @@ final class ItemCreated implements SerializableInterface
      */
     protected $mainLanguage;
 
+    /**
+     * @param string $itemId
+     * @param Language $mainLanguage
+     */
     final public function __construct(
         string $itemId,
         Language $mainLanguage = null
     ) {
         $this->itemId = $itemId;
-        $this->mainLanguage = $mainLanguage ?: new Language('nl');
+        $this->mainLanguage = $mainLanguage ? $mainLanguage : new Language('nl');
     }
 
-    public function getItemId(): string
+    /**
+     * @return string
+     */
+    public function getItemId()
     {
         return $this->itemId;
     }
 
-    public function getMainLanguage(): Language
+    /**
+     * @return Language
+     */
+    public function getMainLanguage()
     {
         return $this->mainLanguage;
     }
 
-    public static function deserialize(array $data): ItemCreated
+    /**
+     * @param array $data
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
         return new static($data['itemId'], $data['main_language']);
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return [
             'itemId' => $this->itemId,

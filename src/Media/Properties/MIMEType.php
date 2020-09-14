@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Media\Properties;
 
 use ValueObjects\Exception\InvalidNativeArgumentException;
 use ValueObjects\StringLiteral\StringLiteral;
-use function is_string;
 
 final class MIMEType extends StringLiteral
 {
@@ -15,13 +14,22 @@ final class MIMEType extends StringLiteral
         'octet-stream'  => 'application',
     ];
 
-    public static function fromSubtype(string $subtypeString): MIMEType
+    /**
+     * @param string $subtypeString
+     *
+     * @throws UnsupportedMIMETypeException
+     *
+     * @return MIMEType
+     */
+    public static function fromSubtype($subtypeString)
     {
-        if (false === is_string($subtypeString)) {
+        if (false === \is_string($subtypeString)) {
             throw new InvalidNativeArgumentException($subtypeString, array('string'));
         }
 
-        if (!array_key_exists($subtypeString, self::$supportedSubtypes)) {
+        $typeSupported = array_key_exists($subtypeString, self::$supportedSubtypes);
+
+        if (!$typeSupported) {
             throw new UnsupportedMIMETypeException('MIME type "' . $subtypeString . '" is not supported!');
         }
 

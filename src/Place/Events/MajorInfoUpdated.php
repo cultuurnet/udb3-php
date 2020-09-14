@@ -10,8 +10,12 @@ use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
+/**
+ * Provides a majorInfoUpdated event.
+ */
 final class MajorInfoUpdated extends PlaceEvent
 {
+
     /**
      * @var Title
      */
@@ -37,8 +41,16 @@ final class MajorInfoUpdated extends PlaceEvent
      */
     private $calendar;
 
-    final public function __construct(
-        string $placeId,
+    /**
+     * @param string $placeId
+     * @param Title $title
+     * @param EventType $eventType
+     * @param Address $address
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
+     */
+    public function __construct(
+        $placeId,
         Title $title,
         EventType $eventType,
         Address $address,
@@ -54,32 +66,51 @@ final class MajorInfoUpdated extends PlaceEvent
         $this->theme = $theme;
     }
 
-    public function getTitle(): Title
+    /**
+     * @return Title
+     */
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function getEventType(): EventType
+    /**
+     * @return EventType
+     */
+    public function getEventType()
     {
         return $this->eventType;
     }
 
-    public function getTheme(): Theme
+    /**
+     * @return Theme
+     */
+    public function getTheme()
     {
         return $this->theme;
     }
 
-    public function getCalendar(): CalendarInterface
+    /**
+     * @return CalendarInterface
+     */
+    public function getCalendar()
     {
         return $this->calendar;
     }
 
-    public function getAddress(): Address
+    /**
+     * @return Address
+     */
+    public function getAddress()
     {
         return $this->address;
     }
 
-    public function serialize(): array
+
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         $theme = null;
         if ($this->getTheme() !== null) {
@@ -94,7 +125,10 @@ final class MajorInfoUpdated extends PlaceEvent
         );
     }
 
-    public static function deserialize(array $data): MajorInfoUpdated
+    /**
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['place_id'],

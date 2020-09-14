@@ -6,4 +6,5 @@ use CultuurNet\UDB3\Offer\Events\Moderation\AbstractRejected;
 
 final class Rejected extends AbstractRejected
 {
+
 }

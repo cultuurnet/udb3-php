@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Events;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Language;
 
-abstract class AbstractPropertyTranslatedEvent extends AbstractEvent
+abstract class AbstractPropertyTranslatedEvent extends AbstractEvent implements SerializableInterface
 {
     /**
      * @var Language
@@ -18,12 +18,18 @@ abstract class AbstractPropertyTranslatedEvent extends AbstractEvent
         parent::__construct($itemId);
     }
 
-    public function getLanguage(): Language
+    /**
+     * @return Language
+     */
+    public function getLanguage()
     {
         return $this->language;
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'language' => (string)$this->language->getCode(),

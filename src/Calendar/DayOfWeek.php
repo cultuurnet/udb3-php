@@ -6,6 +6,9 @@ use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Day;
 use ValueObjects\Enum\Enum;
 
 /**
+ * Created custom value object instead of using WeekDay to avoid changing
+ * casing of the first letter.
+ *
  * @method static DayOfWeek MONDAY()
  * @method static DayOfWeek TUESDAY()
  * @method static DayOfWeek WEDNESDAY()
@@ -13,6 +16,8 @@ use ValueObjects\Enum\Enum;
  * @method static DayOfWeek FRIDAY()
  * @method static DayOfWeek SATURDAY()
  * @method static DayOfWeek SUNDAY()
+ *
+ * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Day.
  */
 final class DayOfWeek extends Enum
 {
@@ -24,7 +29,11 @@ final class DayOfWeek extends Enum
     const SATURDAY = 'saturday';
     const SUNDAY = 'sunday';
 
-    public static function fromUdb3ModelDay(Day $day): DayOfWeek
+    /**
+     * @param Day $day
+     * @return DayOfWeek
+     */
+    public static function fromUdb3ModelDay(Day $day)
     {
         return self::fromNative($day->toString());
     }

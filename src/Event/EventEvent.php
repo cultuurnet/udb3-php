@@ -1,31 +1,50 @@
 <?php
+/**
+ * @file
+ */
 
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\Serializer\SerializableInterface;
-use InvalidArgumentException;
 
 abstract class EventEvent implements SerializableInterface
 {
-    /**
-     * @var string
-     */
     protected $eventId;
 
-    public function __construct(string $eventId)
+    /**
+     * @param string $eventId
+     */
+    public function __construct($eventId)
     {
+        if (!is_string($eventId)) {
+            throw new \InvalidArgumentException(
+                'Expected eventId to be a string, received ' . gettype($eventId)
+            );
+        }
+
         $this->eventId = $eventId;
     }
 
-    public function getEventId(): string
+    public function getEventId()
     {
         return $this->eventId;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
-        return [
+        return array(
             'event_id' => $this->eventId,
-        ];
+        );
+    }
+
+    /**
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
+    {
+        return new static($data['event_id']);
     }
 }

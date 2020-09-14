@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
@@ -10,7 +11,10 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
-final class MajorInfoUpdated extends AbstractEvent
+/**
+ * Provides a majorInfoUpdated event.
+ */
+class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
 {
     use BackwardsCompatibleEventTrait;
 
@@ -39,8 +43,16 @@ final class MajorInfoUpdated extends AbstractEvent
      */
     private $calendar;
 
+    /**
+     * @param string $eventId
+     * @param Title $title
+     * @param EventType $eventType
+     * @param LocationId $location
+     * @param CalendarInterface $calendar
+     * @param Theme|null $theme
+     */
     public function __construct(
-        string $eventId,
+        $eventId,
         Title $title,
         EventType $eventType,
         LocationId $location,
@@ -56,32 +68,51 @@ final class MajorInfoUpdated extends AbstractEvent
         $this->theme = $theme;
     }
 
-    public function getTitle(): Title
+    /**
+     * @return Title
+     */
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function getEventType(): EventType
+    /**
+     * @return EventType
+     */
+    public function getEventType()
     {
         return $this->eventType;
     }
 
-    public function getTheme(): ?Theme
+    /**
+     * @return Theme|null
+     */
+    public function getTheme()
     {
         return $this->theme;
     }
 
-    public function getCalendar(): CalendarInterface
+    /**
+     * @return CalendarInterface
+     */
+    public function getCalendar()
     {
         return $this->calendar;
     }
 
-    public function getLocation(): LocationId
+    /**
+     * @return LocationId
+     */
+    public function getLocation()
     {
         return $this->location;
     }
 
-    public function serialize(): array
+
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         $theme = null;
         if ($this->getTheme() !== null) {
@@ -96,9 +127,12 @@ final class MajorInfoUpdated extends AbstractEvent
         );
     }
 
-    public static function deserialize(array $data): MajorInfoUpdated
+    /**
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
-        return new self(
+        return new static(
             $data['item_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),

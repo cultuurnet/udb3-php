@@ -14,6 +14,30 @@ class OrganizerCreatedTest extends TestCase
 {
     /**
      * @test
+     */
+    public function it_throws_an_exception_if_an_address_of_an_incorrect_type_is_provided()
+    {
+        $id = '123';
+        $title = new Title('Test');
+
+        $addresses = [
+            new \stdClass(),
+        ];
+
+        $phones = ['12345678'];
+        $emails = ['foo@bar.com'];
+        $urls = ['http://bar.com'];
+
+        $this->expectException(
+            \InvalidArgumentException::class,
+            'Argument should be of type Address, stdClass given.'
+        );
+
+        new OrganizerCreated($id, $title, $addresses, $phones, $emails, $urls);
+    }
+
+    /**
+     * @test
      * @dataProvider serializationDataProvider
      * @param array $expectedSerializedValue
      * @param OrganizerCreated $organizerCreated
@@ -21,7 +45,7 @@ class OrganizerCreatedTest extends TestCase
     public function it_can_be_serialized_into_an_array(
         $expectedSerializedValue,
         OrganizerCreated $organizerCreated
-    ): void {
+    ) {
         $this->assertEquals(
             $expectedSerializedValue,
             $organizerCreated->serialize()
@@ -37,14 +61,14 @@ class OrganizerCreatedTest extends TestCase
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,
         OrganizerCreated $expectedOrganizerCreated
-    ): void {
+    ) {
         $this->assertEquals(
             $expectedOrganizerCreated,
             OrganizerCreated::deserialize($serializedValue)
         );
     }
 
-    public function serializationDataProvider(): array
+    public function serializationDataProvider()
     {
         return [
             'organizerCreated' => [

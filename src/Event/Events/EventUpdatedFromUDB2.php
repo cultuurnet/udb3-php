@@ -1,8 +1,10 @@
 <?php
+/**
+ * @file
+ */
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use CultureFeed_Cdb_Xml;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\HasCdbXmlTrait;
 
@@ -10,7 +12,7 @@ class EventUpdatedFromUDB2 extends EventEvent implements EventCdbXMLInterface
 {
     use HasCdbXmlTrait;
 
-    public function __construct(string $eventId, string $cdbXml, string $cdbXmlNamespaceUri)
+    public function __construct($eventId, $cdbXml, $cdbXmlNamespaceUri)
     {
         parent::__construct($eventId);
 
@@ -18,7 +20,10 @@ class EventUpdatedFromUDB2 extends EventEvent implements EventCdbXMLInterface
         $this->setCdbXmlNamespaceUri($cdbXmlNamespaceUri);
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'cdbxml' => $this->getCdbXml(),
@@ -26,12 +31,15 @@ class EventUpdatedFromUDB2 extends EventEvent implements EventCdbXMLInterface
         );
     }
 
-    public static function deserialize(array $data): EventUpdatedFromUDB2
+    /**
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
     {
         $data += array(
-            'cdbXmlNamespaceUri' => CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),
+            'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),
         );
-        return new self(
+        return new static(
             $data['event_id'],
             $data['cdbxml'],
             $data['cdbXmlNamespaceUri']

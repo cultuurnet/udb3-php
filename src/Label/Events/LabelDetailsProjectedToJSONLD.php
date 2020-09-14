@@ -7,31 +7,44 @@ use ValueObjects\Identity\UUID;
 
 final class LabelDetailsProjectedToJSONLD implements SerializableInterface
 {
-    private const UUID = 'uuid';
+    const UUID = 'uuid';
 
     /**
      * @var UUID
      */
     private $uuid;
 
+    /**
+     * AbstractEvent constructor.
+     * @param UUID $uuid
+     */
     public function __construct(UUID $uuid)
     {
         $this->uuid = $uuid;
     }
 
-    public function getUuid(): UUID
+    /**
+     * @return UUID
+     */
+    public function getUuid()
     {
         return $this->uuid;
     }
 
-    public static function deserialize(array $data): LabelDetailsProjectedToJSONLD
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             new UUID($data[self::UUID])
         );
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return [
             self::UUID => $this->getUuid()->toNative(),

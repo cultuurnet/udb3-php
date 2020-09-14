@@ -11,25 +11,39 @@ abstract class AbstractBookingInfoEvent extends AbstractEvent
      */
     protected $bookingInfo;
 
+    /**
+     * @param string $id
+     * @param BookingInfo $bookingInfo
+     */
     final public function __construct(string $id, BookingInfo $bookingInfo)
     {
         parent::__construct($id);
         $this->bookingInfo = $bookingInfo;
     }
 
-    public function getBookingInfo(): BookingInfo
+    /**
+     * @return BookingInfo
+     */
+    public function getBookingInfo()
     {
         return $this->bookingInfo;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'bookingInfo' => $this->bookingInfo->serialize(),
         );
     }
 
-    public static function deserialize(array $data): AbstractBookingInfoEvent
+    /**
+     * @param array $data
+     * @return AbstractBookingInfoEvent
+     */
+    public static function deserialize(array $data)
     {
         return new static($data['item_id'], BookingInfo::deserialize($data['bookingInfo']));
     }

@@ -14,25 +14,38 @@ final class LabelsImported extends OrganizerEvent implements LabelsImportedEvent
      */
     private $labels;
 
+    /**
+     * @param string $organizerId
+     * @param Labels $labels
+     */
     public function __construct(
-        string $organizerId,
+        $organizerId,
         Labels $labels
     ) {
         parent::__construct($organizerId);
         $this->labels = $labels;
     }
 
-    public function getItemId(): string
+    /**
+     * @return string
+     */
+    public function getItemId()
     {
         return $this->getOrganizerId();
     }
 
-    public function getLabels(): Labels
+    /**
+     * @return Labels
+     */
+    public function getLabels()
     {
         return $this->labels;
     }
 
-    public static function deserialize(array $data): LabelsImported
+    /**
+     * {@inheritdoc}
+     */
+    public static function deserialize(array $data)
     {
         $labels = new Labels();
         foreach ($data['labels'] as $label) {
@@ -48,7 +61,10 @@ final class LabelsImported extends OrganizerEvent implements LabelsImportedEvent
         );
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         $labels = [];
         foreach ($this->getLabels() as $label) {

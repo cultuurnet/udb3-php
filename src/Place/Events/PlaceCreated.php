@@ -12,6 +12,9 @@ use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
 
+/**
+ * Event when a place is created.
+ */
 final class PlaceCreated extends PlaceEvent
 {
     /**
@@ -32,7 +35,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @var Theme
      */
-    private $theme;
+    private $theme = null;
 
     /**
      * @var Address
@@ -47,7 +50,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @var DateTimeImmutable|null
      */
-    private $publicationDate;
+    private $publicationDate = null;
 
     /**
      * @param string $placeId
@@ -66,8 +69,8 @@ final class PlaceCreated extends PlaceEvent
         EventType $eventType,
         Address $address,
         CalendarInterface $calendar,
-        ?Theme $theme = null,
-        ?DateTimeImmutable $publicationDate = null
+        Theme $theme = null,
+        DateTimeImmutable $publicationDate = null
     ) {
         parent::__construct($placeId);
 
@@ -80,42 +83,66 @@ final class PlaceCreated extends PlaceEvent
         $this->publicationDate = $publicationDate;
     }
 
-    public function getMainLanguage(): Language
+    /**
+     * @return Language
+     */
+    public function getMainLanguage()
     {
         return $this->mainLanguage;
     }
 
-    public function getTitle(): Title
+    /**
+     * @return Title
+     */
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function getEventType(): EventType
+    /**
+     * @return EventType
+     */
+    public function getEventType()
     {
         return $this->eventType;
     }
 
-    public function getTheme(): ?Theme
+    /**
+     * @return Theme
+     */
+    public function getTheme()
     {
         return $this->theme;
     }
 
-    public function getCalendar(): CalendarInterface
+    /**
+     * @return CalendarInterface
+     */
+    public function getCalendar()
     {
         return $this->calendar;
     }
 
-    public function getAddress(): Address
+    /**
+     * @return Address
+     */
+    public function getAddress()
     {
         return $this->address;
     }
 
-    public function getPublicationDate(): ?DateTimeImmutable
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getPublicationDate()
     {
         return $this->publicationDate;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         $theme = null;
         if ($this->getTheme() !== null) {
@@ -136,7 +163,10 @@ final class PlaceCreated extends PlaceEvent
         );
     }
 
-    public static function deserialize(array $data): PlaceCreated
+    /**
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
         $theme = null;
         if (!empty($data['theme'])) {

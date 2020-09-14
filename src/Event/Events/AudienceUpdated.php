@@ -12,27 +12,42 @@ final class AudienceUpdated extends AbstractEvent
      */
     private $audience;
 
+    /**
+     * AudienceUpdated constructor.
+     * @param string $itemId
+     * @param Audience $audience
+     */
     public function __construct(
-        string $itemId,
+        $itemId,
         Audience $audience
     ) {
         parent::__construct($itemId);
+
         $this->audience = $audience;
     }
 
-    public function getAudience(): Audience
+    /**
+     * @return Audience
+     */
+    public function getAudience()
     {
         return $this->audience;
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return parent::serialize() + [
-            'audience' => $this->audience->serialize(),
-        ];
+                'audience' => $this->audience->serialize(),
+            ];
     }
 
-    public static function deserialize(array $data): AudienceUpdated
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
     {
         return new self(
             $data['item_id'],

@@ -9,6 +9,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 abstract class AbstractImageUpdated extends AbstractEvent
 {
     /**
+     * The id of the media object that the new information applies to.
      * @var UUID
      */
     protected $mediaObjectId;
@@ -23,6 +24,12 @@ abstract class AbstractImageUpdated extends AbstractEvent
      */
     protected $copyrightHolder;
 
+    /**
+     * @param $itemId
+     * @param UUID $mediaObjectId
+     * @param StringLiteral $description
+     * @param StringLiteral $copyrightHolder
+     */
     final public function __construct(
         string $itemId,
         UUID $mediaObjectId,
@@ -36,24 +43,41 @@ abstract class AbstractImageUpdated extends AbstractEvent
     }
 
     /**
+     * @return int
+     */
+    public function getItemId()
+    {
+        return $this->itemId;
+    }
+
+    /**
      * @return UUID
      */
-    public function getMediaObjectId(): UUID
+    public function getMediaObjectId()
     {
         return $this->mediaObjectId;
     }
 
-    public function getDescription(): StringLiteral
+    /**
+     * @return StringLiteral
+     */
+    public function getDescription()
     {
         return $this->description;
     }
 
-    public function getCopyrightHolder(): StringLiteral
+    /**
+     * @return StringLiteral
+     */
+    public function getCopyrightHolder()
     {
         return $this->copyrightHolder;
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         return parent::serialize() +  array(
             'media_object_id' => (string) $this->mediaObjectId,
@@ -62,7 +86,11 @@ abstract class AbstractImageUpdated extends AbstractEvent
         );
     }
 
-    public static function deserialize(array $data): AbstractImageUpdated
+    /**
+     * @param array $data
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['item_id'],

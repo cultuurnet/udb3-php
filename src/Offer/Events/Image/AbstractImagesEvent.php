@@ -13,18 +13,28 @@ abstract class AbstractImagesEvent extends AbstractEvent
      */
     protected $images;
 
+    /**
+     * @param string $eventId
+     * @param ImageCollection $images
+     */
     final public function __construct(string $eventId, ImageCollection $images)
     {
         parent::__construct($eventId);
         $this->images = $images;
     }
 
-    public function getImages(): ImageCollection
+    /**
+     * @return ImageCollection
+     */
+    public function getImages()
     {
         return $this->images;
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         $serializedData =  parent::serialize() + array(
             'images' => array_map(
@@ -43,7 +53,11 @@ abstract class AbstractImagesEvent extends AbstractEvent
         return $serializedData;
     }
 
-    public static function deserialize(array $data): AbstractImagesEvent
+    /**
+     * @param array $data
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
         $images = ImageCollection::fromArray(
             array_map(

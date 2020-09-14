@@ -7,30 +7,43 @@ use CultuurNet\UDB3\Title;
 
 abstract class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
 {
-    /**
-     * @var Title
-     */
     protected $title;
 
-    final public function __construct(string $itemId, Language $language, Title $title)
+    /**
+     * @param string $itemId
+     * @param Language $language
+     * @param Title $title
+     */
+    public function __construct($itemId, Language $language, Title $title)
     {
         parent::__construct($itemId, $language);
         $this->title = $title;
     }
 
-    public function getTitle(): Title
+    /**
+     * @return Title
+     */
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
-        return parent::serialize() + [
-            'title' => $this->title->toNative(),
-        ];
+        $value = parent::serialize() + array(
+                'title' => $this->title->toNative(),
+            );
+
+        return $value;
     }
 
-    public static function deserialize(array $data): AbstractTitleTranslated
+    /**
+     * {@inheritdoc}
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['item_id'],

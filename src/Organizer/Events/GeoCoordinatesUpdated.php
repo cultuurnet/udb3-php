@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
@@ -21,22 +19,32 @@ final class GeoCoordinatesUpdated extends OrganizerEvent
         $this->coordinates = $coordinates;
     }
 
+    /**
+     * @return Coordinates
+     */
     public function coordinates(): Coordinates
     {
         return $this->coordinates;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return parent::serialize() + [
-            'coordinates' => [
-                'lat' => $this->coordinates->getLatitude()->toDouble(),
-                'long' => $this->coordinates->getLongitude()->toDouble(),
-            ],
-        ];
+                'coordinates' => [
+                    'lat' => $this->coordinates->getLatitude()->toDouble(),
+                    'long' => $this->coordinates->getLongitude()->toDouble(),
+                ],
+            ];
     }
 
-    public static function deserialize(array $data): GeoCoordinatesUpdated
+    /**
+     * @param array $data
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['organizer_id'],

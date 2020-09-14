@@ -11,27 +11,42 @@ final class WebsiteUpdated extends OrganizerEvent
      */
     private $website;
 
+    /**
+     * WebsiteUpdated constructor.
+     * @param string $organizerId
+     * @param Url $website
+     */
     public function __construct(
-        string $organizerId,
+        $organizerId,
         Url $website
     ) {
         parent::__construct($organizerId);
         $this->website = $website;
     }
 
-    public function getWebsite(): Url
+    /**
+     * @return Url
+     */
+    public function getWebsite()
     {
         return $this->website;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return parent::serialize() + [
-            'website' => (string) $this->getWebsite(),
-        ];
+                'website' => (string) $this->getWebsite(),
+            ];
     }
 
-    public static function deserialize(array $data): WebsiteUpdated
+    /**
+     * @param array $data
+     * @return static
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['organizer_id'],

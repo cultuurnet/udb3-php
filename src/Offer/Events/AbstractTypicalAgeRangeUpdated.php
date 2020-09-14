@@ -7,29 +7,43 @@ use CultuurNet\UDB3\Offer\AgeRange;
 abstract class AbstractTypicalAgeRangeUpdated extends AbstractEvent
 {
     /**
+     * The new typical age range.
      * @var AgeRange
      */
     protected $typicalAgeRange;
 
+    /**
+     * @param string $id
+     * @param AgeRange $typicalAgeRange
+     */
     final public function __construct(string $id, AgeRange $typicalAgeRange)
     {
         parent::__construct($id);
         $this->typicalAgeRange = $typicalAgeRange;
     }
 
-    public function getTypicalAgeRange(): AgeRange
+    /**
+     * @return AgeRange
+     */
+    public function getTypicalAgeRange()
     {
         return $this->typicalAgeRange;
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'typicalAgeRange' => (string) $this->typicalAgeRange,
         );
     }
 
-    public static function deserialize(array $data): AbstractTypicalAgeRangeUpdated
+    /**
+     * @return mixed The object instance
+     */
+    public static function deserialize(array $data)
     {
         return new static($data['item_id'], AgeRange::fromString($data['typicalAgeRange']));
     }

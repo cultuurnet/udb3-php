@@ -7,29 +7,43 @@ use CultuurNet\UDB3\Title;
 abstract class AbstractTitleUpdated extends AbstractEvent
 {
     /**
+     * The new title.
      * @var Title
      */
     protected $title;
 
+    /**
+     * @param string $id
+     * @param Title $title
+     */
     final public function __construct(string $id, Title $title)
     {
         parent::__construct($id);
         $this->title = $title;
     }
 
-    public function getTitle(): Title
+    /**
+     * @return Title
+     */
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function serialize(): array
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'title' => (string) $this->title,
         );
     }
 
-    public static function deserialize(array $data): AbstractTitleUpdated
+    /**
+     * @return AbstractTitleUpdated
+     */
+    public static function deserialize(array $data)
     {
         return new static($data['item_id'], new Title($data['title']));
     }

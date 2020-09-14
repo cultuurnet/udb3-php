@@ -11,25 +11,38 @@ abstract class AbstractTypeUpdated extends AbstractEvent
      */
     protected $type;
 
+    /**
+     * @param string $itemId
+     * @param EventType $type
+     */
     final public function __construct(string $itemId, EventType $type)
     {
         parent::__construct($itemId);
         $this->type = $type;
     }
 
-    public function getType(): EventType
+    /**
+     * @return EventType
+     */
+    public function getType()
     {
         return $this->type;
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return parent::serialize() + [
             'type' => $this->type->serialize(),
         ];
     }
 
-    public static function deserialize(array $data): AbstractTypeUpdated
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
     {
         return new static($data['item_id'], EventType::deserialize($data['type']));
     }

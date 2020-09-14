@@ -21,12 +21,18 @@ abstract class AbstractThemeUpdated extends AbstractEvent
         $this->theme = $theme;
     }
 
-    public function getTheme(): Theme
+    /**
+     * @return Theme
+     */
+    public function getTheme()
     {
         return $this->theme;
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return parent::serialize() + [
             'theme' => $this->theme->serialize(),

@@ -9,8 +9,8 @@ use ValueObjects\Identity\UUID;
 
 class Created extends AbstractEvent
 {
-    public const VISIBILITY = 'visibility';
-    public const PRIVACY = 'privacy';
+    const VISIBILITY = 'visibility';
+    const PRIVACY = 'privacy';
 
     /**
      * @var Visibility
@@ -22,6 +22,13 @@ class Created extends AbstractEvent
      */
     private $privacy;
 
+    /**
+     * Created constructor.
+     * @param UUID $uuid
+     * @param LabelName $name
+     * @param Visibility $visibility
+     * @param Privacy $privacy
+     */
     public function __construct(
         UUID $uuid,
         LabelName $name,
@@ -34,19 +41,24 @@ class Created extends AbstractEvent
         $this->privacy = $privacy;
     }
 
-    public function getVisibility(): Visibility
+    /**
+     * @return Visibility
+     */
+    public function getVisibility()
     {
         return $this->visibility;
     }
 
-    public function getPrivacy(): Privacy
+    /**
+     * @return Privacy
+     */
+    public function getPrivacy()
     {
         return $this->privacy;
     }
 
     /**
-     * @param array $data
-     * @return Created
+     * @inheritdoc
      */
     public static function deserialize(array $data)
     {
@@ -58,7 +70,10 @@ class Created extends AbstractEvent
         );
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return parent::serialize() + [
             self::VISIBILITY => $this->getVisibility()->toNative(),

@@ -12,25 +12,39 @@ class AbstractDescriptionTranslated extends AbstractPropertyTranslatedEvent
      */
     protected $description;
 
+    /**
+     * @param string $itemId
+     * @param Language $language
+     * @param Description $description
+     */
     final public function __construct(string $itemId, Language $language, Description $description)
     {
         parent::__construct($itemId, $language);
         $this->description = $description;
     }
 
-    public function getDescription(): Description
+    /**
+     * @return Description
+     */
+    public function getDescription()
     {
         return $this->description;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return parent::serialize() + array(
             'description' => $this->description->toNative(),
         );
     }
 
-    public static function deserialize(array $data): AbstractDescriptionTranslated
+    /**
+     * {@inheritdoc}
+     */
+    public static function deserialize(array $data)
     {
         return new static(
             $data['item_id'],

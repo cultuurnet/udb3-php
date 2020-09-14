@@ -19,9 +19,15 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
      */
     private $calendar;
 
+    /**
+     * EventCopied constructor.
+     * @param string $eventId
+     * @param string $originalEventId
+     * @param CalendarInterface $calendar
+     */
     public function __construct(
-        string $eventId,
-        string $originalEventId,
+        $eventId,
+        $originalEventId,
         CalendarInterface $calendar
     ) {
         parent::__construct($eventId);
@@ -36,12 +42,18 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
         $this->calendar = $calendar;
     }
 
-    public function getParentAggregateId(): string
+    /**
+     * @inheritdoc
+     */
+    public function getParentAggregateId()
     {
         return $this->originalEventId;
     }
 
-    public function getOriginalEventId(): string
+    /**
+     * @return string
+     */
+    public function getOriginalEventId()
     {
         return $this->originalEventId;
     }
@@ -49,22 +61,28 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
     /**
      * @return CalendarInterface|Calendar
      */
-    public function getCalendar(): CalendarInterface
+    public function getCalendar()
     {
         return $this->calendar;
     }
 
-    public function serialize(): array
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
     {
         return parent::serialize() + [
-            'original_event_id' => $this->getOriginalEventId(),
-            'calendar' => $this->calendar->serialize(),
-        ];
+                'original_event_id' => $this->getOriginalEventId(),
+                'calendar' => $this->calendar->serialize(),
+            ];
     }
 
-    public static function deserialize(array $data): EventCopied
+    /**
+     * @inheritdoc
+     */
+    public static function deserialize(array $data)
     {
-        return new self(
+        return new static(
             $data['item_id'],
             $data['original_event_id'],
             Calendar::deserialize($data['calendar'])

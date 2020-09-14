@@ -1,4 +1,7 @@
 <?php
+/**
+ * @file
+ */
 
 namespace CultuurNet\UDB3\Organizer;
 
@@ -12,27 +15,35 @@ class OrganizerProjectedToJSONLD implements SerializableInterface
     private $id;
 
     /**
-     * @var string
+     * @param string $id
+     * @param string $iri
      */
-    private $iri;
-
-    public function __construct(string $id, string $iri)
+    public function __construct($id, $iri)
     {
-        $this->id = $id;
-        $this->iri = $iri;
+        $this->id = (string) $id;
+        $this->iri = (string) $iri;
     }
 
-    public function getId(): string
+    /**
+     * @return string
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getIri(): string
+    /**
+     * @return string
+     */
+    public function getIri()
     {
         return $this->iri;
     }
 
-    public function serialize(): array
+    /**
+     * @return array
+     */
+    public function serialize()
     {
         return [
             'id' => $this->getId(),
@@ -40,7 +51,11 @@ class OrganizerProjectedToJSONLD implements SerializableInterface
         ];
     }
 
-    public static function deserialize(array $data): OrganizerProjectedToJSONLD
+    /**
+     * @param array $data
+     * @return OrganizerProjectedToJSONLD
+     */
+    public static function deserialize(array $data)
     {
         return new self($data['id'], $data['iri']);
     }

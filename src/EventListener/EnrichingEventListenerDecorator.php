@@ -33,7 +33,7 @@ class EnrichingEventListenerDecorator implements EventListenerInterface
     /**
      * @param DomainMessage $domainMessage
      */
-    public function handle(DomainMessage $domainMessage): void
+    public function handle(DomainMessage $domainMessage)
     {
         if ($this->enricher->supports($domainMessage)) {
             $domainMessage = $this->enricher->enrich($domainMessage);

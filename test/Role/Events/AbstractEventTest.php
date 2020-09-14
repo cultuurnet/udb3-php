@@ -17,7 +17,7 @@ class AbstractEventTest extends TestCase
      */
     protected $event;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->uuid = new UUID();
 
@@ -30,7 +30,7 @@ class AbstractEventTest extends TestCase
     /**
      * @test
      */
-    public function it_stores_a_uuid(): void
+    public function it_stores_a_uuid()
     {
         $this->assertEquals($this->uuid, $this->event->getUuid());
     }
@@ -38,12 +38,24 @@ class AbstractEventTest extends TestCase
     /**
      * @test
      */
-    public function it_can_serialize(): void
+    public function it_can_serialize()
     {
         $actualArray = $this->event->serialize();
 
         $expectedArray = ['uuid' => $this->uuid->toNative()];
 
         $this->assertEquals($expectedArray, $actualArray);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_deserialize()
+    {
+        $data = ['uuid' => $this->uuid->toNative()];
+        $actualEvent = $this->event->deserialize($data);
+        $expectedEvent = $this->event;
+
+        $this->assertEquals($actualEvent, $expectedEvent);
     }
 }

@@ -21,8 +21,10 @@ final class PayloadManipulatingSerializer implements SerializerInterface
     private $manipulations;
 
     /**
-     * @param SimpleInterfaceSerializer $serializer
+     * @var SimpleInterfaceSerializer
      */
+    private $serializer;
+
     public function __construct(SimpleInterfaceSerializer $serializer)
     {
         $this->serializer = $serializer;

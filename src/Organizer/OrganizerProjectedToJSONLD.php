@@ -15,6 +15,11 @@ class OrganizerProjectedToJSONLD implements SerializableInterface
     private $id;
 
     /**
+     * @var string
+     */
+    private $iri;
+
+    /**
      * @param string $id
      * @param string $iri
      */

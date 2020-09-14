@@ -93,8 +93,7 @@ class EnrichingEventListenerDecoratorTest extends TestCase
         $enrichedDomainMessage = clone $supportedDomainMessage;
         $enrichedDomainMessage->extraProperty = true;
 
-        $this->enricher->expects($this->any())
-            ->method('supports')
+        $this->enricher->method('supports')
             ->willReturnCallback(
                 function (DomainMessage $domainMessage) use ($supportedDomainMessage) {
                     return $domainMessage === $supportedDomainMessage;

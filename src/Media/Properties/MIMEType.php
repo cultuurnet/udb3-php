@@ -21,9 +21,7 @@ final class MIMEType extends StringLiteral
             throw new InvalidNativeArgumentException($subtypeString, array('string'));
         }
 
-        $typeSupported = array_key_exists($subtypeString, self::$supportedSubtypes);
-
-        if (!$typeSupported) {
+        if (!array_key_exists($subtypeString, self::$supportedSubtypes)) {
             throw new UnsupportedMIMETypeException('MIME type "' . $subtypeString . '" is not supported!');
         }
 

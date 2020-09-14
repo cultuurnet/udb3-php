@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3;
 use CultuurNet\UDB3\Model\ValueObject\Contact\BookingInfo as Udb3ModelBookingInfo;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
 
-class BookingInfo implements JsonLdSerializableInterface
+final class BookingInfo implements JsonLdSerializableInterface
 {
     /**
      * @var string|null

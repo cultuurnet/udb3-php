@@ -36,12 +36,4 @@ abstract class OrganizerEvent implements SerializableInterface
           'organizer_id' => $this->organizerId,
         );
     }
-
-    /**
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
-    {
-        return new static($data['organizer_id']);
-    }
 }

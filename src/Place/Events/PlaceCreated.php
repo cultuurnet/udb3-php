@@ -32,7 +32,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @var Theme
      */
-    private $theme = null;
+    private $theme;
 
     /**
      * @var Address
@@ -47,7 +47,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @var DateTimeImmutable|null
      */
-    private $publicationDate = null;
+    private $publicationDate;
 
     /**
      * @param string $placeId

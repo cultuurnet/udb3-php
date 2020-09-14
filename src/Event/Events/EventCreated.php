@@ -33,7 +33,7 @@ final class EventCreated extends EventEvent
     private $eventType = null;
 
     /**
-     * @var Theme
+     * @var Theme|null
      */
     private $theme = null;
 
@@ -63,14 +63,14 @@ final class EventCreated extends EventEvent
      * @param DateTimeImmutable|null $publicationDate
      */
     public function __construct(
-        $eventId,
+        string $eventId,
         Language $mainLanguage,
         Title $title,
         EventType $eventType,
         LocationId $location,
         CalendarInterface $calendar,
-        Theme $theme = null,
-        DateTimeImmutable $publicationDate = null
+        ?Theme $theme = null,
+        ?DateTimeImmutable $publicationDate = null
     ) {
         parent::__construct($eventId);
 
@@ -86,7 +86,7 @@ final class EventCreated extends EventEvent
     /**
      * @return Language
      */
-    public function getMainLanguage()
+    public function getMainLanguage(): Language
     {
         return $this->mainLanguage;
     }
@@ -94,7 +94,7 @@ final class EventCreated extends EventEvent
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -102,7 +102,7 @@ final class EventCreated extends EventEvent
     /**
      * @return EventType
      */
-    public function getEventType()
+    public function getEventType(): EventType
     {
         return $this->eventType;
     }
@@ -110,7 +110,7 @@ final class EventCreated extends EventEvent
     /**
      * @return Theme
      */
-    public function getTheme()
+    public function getTheme(): ?Theme
     {
         return $this->theme;
     }
@@ -118,7 +118,7 @@ final class EventCreated extends EventEvent
     /**
      * @return CalendarInterface
      */
-    public function getCalendar()
+    public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
@@ -126,7 +126,7 @@ final class EventCreated extends EventEvent
     /**
      * @return LocationId
      */
-    public function getLocation()
+    public function getLocation(): LocationId
     {
         return $this->location;
     }
@@ -134,7 +134,7 @@ final class EventCreated extends EventEvent
     /**
      * @return DateTimeImmutable|null
      */
-    public function getPublicationDate()
+    public function getPublicationDate(): ?DateTimeImmutable
     {
         return $this->publicationDate;
     }
@@ -142,7 +142,7 @@ final class EventCreated extends EventEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         $theme = null;
         if ($this->getTheme() !== null) {
@@ -166,7 +166,7 @@ final class EventCreated extends EventEvent
     /**
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): EventCreated
     {
         $theme = null;
         if (!empty($data['theme'])) {

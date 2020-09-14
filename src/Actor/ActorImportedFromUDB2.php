@@ -31,7 +31,7 @@ class ActorImportedFromUDB2 extends ActorEvent
         $this->cdbXmlNamespaceUri = $cdbXmlNamespaceUri;
     }
 
-    public function getCdbXml()
+    public function getCdbXml(): string
     {
         return $this->cdbXml;
     }
@@ -39,7 +39,7 @@ class ActorImportedFromUDB2 extends ActorEvent
     /**
      * @return string
      */
-    public function getCdbXmlNamespaceUri()
+    public function getCdbXmlNamespaceUri(): string
     {
         return $this->cdbXmlNamespaceUri;
     }
@@ -47,7 +47,7 @@ class ActorImportedFromUDB2 extends ActorEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'cdbxml' => $this->cdbXml,
@@ -58,7 +58,7 @@ class ActorImportedFromUDB2 extends ActorEvent
     /**
      * @return mixed The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): ActorImportedFromUDB2
     {
         $data += array(
             'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),

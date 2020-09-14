@@ -26,7 +26,7 @@ abstract class AbstractImagesEvent extends AbstractEvent
     /**
      * @return ImageCollection
      */
-    public function getImages()
+    public function getImages(): ImageCollection
     {
         return $this->images;
     }
@@ -34,7 +34,7 @@ abstract class AbstractImagesEvent extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         $serializedData =  parent::serialize() + array(
             'images' => array_map(
@@ -57,7 +57,7 @@ abstract class AbstractImagesEvent extends AbstractEvent
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractImagesEvent
     {
         $images = ImageCollection::fromArray(
             array_map(

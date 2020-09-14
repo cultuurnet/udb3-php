@@ -8,8 +8,8 @@ use ValueObjects\Identity\UUID;
 
 abstract class AbstractEvent implements SerializableInterface
 {
-    const UUID = 'uuid';
-    const NAME = 'name';
+    public const UUID = 'uuid';
+    public const NAME = 'name';
 
     /**
      * @var UUID
@@ -35,7 +35,7 @@ abstract class AbstractEvent implements SerializableInterface
     /**
      * @return UUID
      */
-    public function getUuid()
+    public function getUuid(): UUID
     {
         return $this->uuid;
     }
@@ -43,7 +43,7 @@ abstract class AbstractEvent implements SerializableInterface
     /**
      * @return LabelName
      */
-    public function getName()
+    public function getName(): LabelName
     {
         return $this->name;
     }
@@ -51,7 +51,7 @@ abstract class AbstractEvent implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             self::UUID => $this->getUuid()->toNative(),

@@ -17,7 +17,7 @@ class EventImportedFromUDB2 extends EventEvent implements EventCdbXMLInterface
      * @param string $cdbXml
      * @param string $cdbXmlNamespaceUri
      */
-    public function __construct($eventId, $cdbXml, $cdbXmlNamespaceUri)
+    public function __construct(string $eventId, string $cdbXml, string $cdbXmlNamespaceUri)
     {
         parent::__construct($eventId);
         $this->setCdbXml($cdbXml);
@@ -27,7 +27,7 @@ class EventImportedFromUDB2 extends EventEvent implements EventCdbXMLInterface
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'cdbxml' => $this->getCdbXml(),
@@ -38,10 +38,10 @@ class EventImportedFromUDB2 extends EventEvent implements EventCdbXMLInterface
     /**
      * @return mixed The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): EventImportedFromUDB2
     {
         $data += array(
-            'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),
+            'cdbXmlNamespaceUri' => CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),
         );
         return new self(
             $data['event_id'],

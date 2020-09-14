@@ -30,7 +30,7 @@ final class GeoCoordinatesUpdated extends OrganizerEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
                 'coordinates' => [
@@ -44,7 +44,7 @@ final class GeoCoordinatesUpdated extends OrganizerEvent
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): GeoCoordinatesUpdated
     {
         return new static(
             $data['organizer_id'],

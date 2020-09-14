@@ -49,12 +49,12 @@ class BookingInfo implements JsonLdSerializableInterface
      * @param \DateTimeImmutable|null $availabilityEnds
      */
     public function __construct(
-        $url = null,
-        MultilingualString $urlLabel = null,
-        $phone = null,
-        $email = null,
-        \DateTimeImmutable $availabilityStarts = null,
-        \DateTimeImmutable $availabilityEnds = null
+        ?string $url = null,
+        ?MultilingualString $urlLabel = null,
+        ?string $phone = null,
+        ?string $email = null,
+        ?DateTimeImmutable $availabilityStarts = null,
+        ?DateTimeImmutable $availabilityEnds = null
     ) {
         // Workaround to maintain compatibility with older BookingInfo data.
         // Empty BookingInfo properties used to be stored as empty strings in the past.
@@ -73,22 +73,22 @@ class BookingInfo implements JsonLdSerializableInterface
         $this->availabilityEnds = $availabilityEnds;
     }
 
-    public function getPhone()
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
 
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    public function getUrlLabel()
+    public function getUrlLabel(): ?string
     {
         return $this->urlLabel;
     }
@@ -96,7 +96,7 @@ class BookingInfo implements JsonLdSerializableInterface
     /**
      * @return \DateTimeImmutable|null
      */
-    public function getAvailabilityStarts()
+    public function getAvailabilityStarts(): ?DateTimeImmutable
     {
         return $this->availabilityStarts;
     }
@@ -104,7 +104,7 @@ class BookingInfo implements JsonLdSerializableInterface
     /**
      * @return \DateTimeImmutable|null
      */
-    public function getAvailabilityEnds()
+    public function getAvailabilityEnds(): ?DateTimeImmutable
     {
         return $this->availabilityEnds;
     }
@@ -112,7 +112,7 @@ class BookingInfo implements JsonLdSerializableInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         $serialized = array_filter(
             [
@@ -140,7 +140,7 @@ class BookingInfo implements JsonLdSerializableInterface
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): BookingInfo
     {
         $defaults = [
             'url' => null,
@@ -181,7 +181,7 @@ class BookingInfo implements JsonLdSerializableInterface
     /**
      * {@inheritdoc}
      */
-    public function toJsonLd()
+    public function toJsonLd(): array
     {
         return $this->serialize();
     }
@@ -190,7 +190,7 @@ class BookingInfo implements JsonLdSerializableInterface
      * @param BookingInfo $otherBookingInfo
      * @return bool
      */
-    public function sameAs(BookingInfo $otherBookingInfo)
+    public function sameAs(BookingInfo $otherBookingInfo): bool
     {
         return $this->toJsonLd() === $otherBookingInfo->toJsonLd();
     }
@@ -199,7 +199,7 @@ class BookingInfo implements JsonLdSerializableInterface
      * @param Udb3ModelBookingInfo $udb3ModelBookingInfo
      * @return BookingInfo
      */
-    public static function fromUdb3ModelBookingInfo(Udb3ModelBookingInfo $udb3ModelBookingInfo)
+    public static function fromUdb3ModelBookingInfo(Udb3ModelBookingInfo $udb3ModelBookingInfo): BookingInfo
     {
         $url = null;
         $urlLabel = null;
@@ -240,7 +240,7 @@ class BookingInfo implements JsonLdSerializableInterface
      * @param $string
      * @return null|string
      */
-    private function castEmptyStringToNull($string)
+    private function castEmptyStringToNull(?string $string = null): ?string
     {
         return is_string($string) && strlen($string) === 0 ? null : $string;
     }

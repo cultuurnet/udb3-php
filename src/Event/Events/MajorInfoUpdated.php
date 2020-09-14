@@ -52,7 +52,7 @@ final class MajorInfoUpdated extends AbstractEvent
      * @param Theme|null $theme
      */
     public function __construct(
-        $eventId,
+        string $eventId,
         Title $title,
         EventType $eventType,
         LocationId $location,
@@ -71,7 +71,7 @@ final class MajorInfoUpdated extends AbstractEvent
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -79,7 +79,7 @@ final class MajorInfoUpdated extends AbstractEvent
     /**
      * @return EventType
      */
-    public function getEventType()
+    public function getEventType(): EventType
     {
         return $this->eventType;
     }
@@ -87,7 +87,7 @@ final class MajorInfoUpdated extends AbstractEvent
     /**
      * @return Theme|null
      */
-    public function getTheme()
+    public function getTheme(): ?Theme
     {
         return $this->theme;
     }
@@ -95,7 +95,7 @@ final class MajorInfoUpdated extends AbstractEvent
     /**
      * @return CalendarInterface
      */
-    public function getCalendar()
+    public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
@@ -103,7 +103,7 @@ final class MajorInfoUpdated extends AbstractEvent
     /**
      * @return LocationId
      */
-    public function getLocation()
+    public function getLocation(): LocationId
     {
         return $this->location;
     }
@@ -112,7 +112,7 @@ final class MajorInfoUpdated extends AbstractEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         $theme = null;
         if ($this->getTheme() !== null) {
@@ -130,7 +130,7 @@ final class MajorInfoUpdated extends AbstractEvent
     /**
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): MajorInfoUpdated
     {
         return new self(
             $data['item_id'],

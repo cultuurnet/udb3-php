@@ -26,8 +26,8 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
      * @param CalendarInterface $calendar
      */
     public function __construct(
-        $eventId,
-        $originalEventId,
+        string $eventId,
+        string $originalEventId,
         CalendarInterface $calendar
     ) {
         parent::__construct($eventId);
@@ -45,7 +45,7 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
     /**
      * @inheritdoc
      */
-    public function getParentAggregateId()
+    public function getParentAggregateId(): string
     {
         return $this->originalEventId;
     }
@@ -53,7 +53,7 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
     /**
      * @return string
      */
-    public function getOriginalEventId()
+    public function getOriginalEventId(): string
     {
         return $this->originalEventId;
     }
@@ -61,7 +61,7 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
     /**
      * @return CalendarInterface|Calendar
      */
-    public function getCalendar()
+    public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
@@ -69,7 +69,7 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
                 'original_event_id' => $this->getOriginalEventId(),
@@ -80,7 +80,7 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): EventCopied
     {
         return new self(
             $data['item_id'],

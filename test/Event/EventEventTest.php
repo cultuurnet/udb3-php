@@ -15,7 +15,7 @@ class EventEventTest extends TestCase
     public function it_can_be_serialized_into_an_array(
         $expectedSerializedValue,
         MockEventEvent $mockEventEvent
-    ) {
+    ): void {
         $this->assertEquals(
             $expectedSerializedValue,
             $mockEventEvent->serialize()
@@ -31,7 +31,7 @@ class EventEventTest extends TestCase
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,
         MockEventEvent $expectedMockEventEvent
-    ) {
+    ): void {
         $this->assertEquals(
             $expectedMockEventEvent,
             MockEventEvent::deserialize($serializedValue)
@@ -41,26 +41,14 @@ class EventEventTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_an_error_if_a_wrong_type_is_given()
-    {
-        $this->expectException(
-            \InvalidArgumentException::class,
-            'Expected eventId to be a string, received integer'
-        );
-        new MockEventEvent(4);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_return_its_id()
+    public function it_can_return_its_id(): void
     {
         $eventEvent = new MockEventEvent('testmefoo');
         $expectedEventEventId = 'testmefoo';
         $this->assertEquals($expectedEventEventId, $eventEvent->getEventId());
     }
 
-    public function serializationDataProvider()
+    public function serializationDataProvider(): array
     {
         return [
             'mockEventEvent' => [

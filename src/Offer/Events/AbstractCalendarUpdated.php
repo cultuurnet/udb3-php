@@ -25,7 +25,7 @@ abstract class AbstractCalendarUpdated extends AbstractEvent
     /**
      * @return Calendar
      */
-    public function getCalendar()
+    public function getCalendar(): Calendar
     {
         return $this->calendar;
     }
@@ -33,7 +33,7 @@ abstract class AbstractCalendarUpdated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
                 'calendar' => $this->calendar->serialize(),
@@ -43,7 +43,7 @@ abstract class AbstractCalendarUpdated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractCalendarUpdated
     {
         return new static(
             $data['item_id'],

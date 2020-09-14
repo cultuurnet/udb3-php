@@ -25,7 +25,7 @@ abstract class AbstractFacilitiesUpdated extends AbstractEvent
     /**
      * @return array
      */
-    public function getFacilities()
+    public function getFacilities(): array
     {
         return $this->facilities;
     }
@@ -34,7 +34,7 @@ abstract class AbstractFacilitiesUpdated extends AbstractEvent
      * @param array $data
      * @return mixed The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractFacilitiesUpdated
     {
 
         $facilities = array();
@@ -48,7 +48,7 @@ abstract class AbstractFacilitiesUpdated extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
 
         $facilities = array();

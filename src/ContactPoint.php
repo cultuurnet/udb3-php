@@ -44,7 +44,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
     /**
      * @return array
      */
-    public function getPhones()
+    public function getPhones(): array
     {
         return $this->phones;
     }
@@ -52,7 +52,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
     /**
      * @return array
      */
-    public function getEmails()
+    public function getEmails(): array
     {
         return $this->emails;
     }
@@ -60,7 +60,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
     /**
      * @return array
      */
-    public function getUrls()
+    public function getUrls(): array
     {
         return $this->urls;
     }
@@ -68,7 +68,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
           'phone' => $this->phones,
@@ -80,7 +80,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): ContactPoint
     {
         return new self($data['phone'], $data['email'], $data['url']);
     }
@@ -88,7 +88,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
     /**
      * {@inheritdoc}
      */
-    public function toJsonLd()
+    public function toJsonLd(): array
     {
         // Serialized version is the same.
         return $this->serialize();
@@ -98,7 +98,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
      * @param ContactPoint $otherContactPoint
      * @return bool
      */
-    public function sameAs(ContactPoint $otherContactPoint)
+    public function sameAs(ContactPoint $otherContactPoint): bool
     {
         return $this->toJsonLd() == $otherContactPoint->toJsonLd();
     }
@@ -107,7 +107,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
      * @param Udb3ModelContactPoint $contactPoint
      * @return ContactPoint
      */
-    public static function fromUdb3ModelContactPoint(Udb3ModelContactPoint $contactPoint)
+    public static function fromUdb3ModelContactPoint(Udb3ModelContactPoint $contactPoint): ContactPoint
     {
         $phones = array_map(
             function (TelephoneNumber $phone) {

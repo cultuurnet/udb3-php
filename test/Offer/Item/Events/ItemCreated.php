@@ -26,13 +26,13 @@ final class ItemCreated implements SerializableInterface
         Language $mainLanguage = null
     ) {
         $this->itemId = $itemId;
-        $this->mainLanguage = $mainLanguage ? $mainLanguage : new Language('nl');
+        $this->mainLanguage = $mainLanguage ?: new Language('nl');
     }
 
     /**
      * @return string
      */
-    public function getItemId()
+    public function getItemId(): string
     {
         return $this->itemId;
     }
@@ -40,7 +40,7 @@ final class ItemCreated implements SerializableInterface
     /**
      * @return Language
      */
-    public function getMainLanguage()
+    public function getMainLanguage(): Language
     {
         return $this->mainLanguage;
     }
@@ -49,7 +49,7 @@ final class ItemCreated implements SerializableInterface
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): ItemCreated
     {
         return new static($data['itemId'], $data['main_language']);
     }
@@ -57,7 +57,7 @@ final class ItemCreated implements SerializableInterface
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'itemId' => $this->itemId,

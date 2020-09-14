@@ -21,7 +21,7 @@ abstract class AbstractPropertyTranslatedEvent extends AbstractEvent implements 
     /**
      * @return Language
      */
-    public function getLanguage()
+    public function getLanguage(): Language
     {
         return $this->language;
     }
@@ -29,7 +29,7 @@ abstract class AbstractPropertyTranslatedEvent extends AbstractEvent implements 
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'language' => (string)$this->language->getCode(),

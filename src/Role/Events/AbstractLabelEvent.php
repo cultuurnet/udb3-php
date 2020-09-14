@@ -6,7 +6,7 @@ use ValueObjects\Identity\UUID;
 
 abstract class AbstractLabelEvent extends AbstractEvent
 {
-    const LABEL_ID = 'labelId';
+    public const LABEL_ID = 'labelId';
 
     /**
      * @var UUID
@@ -28,7 +28,7 @@ abstract class AbstractLabelEvent extends AbstractEvent
     /**
      * @return UUID
      */
-    public function getLabelId()
+    public function getLabelId(): UUID
     {
         return $this->labelId;
     }
@@ -36,7 +36,7 @@ abstract class AbstractLabelEvent extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractLabelEvent
     {
         return new static(
             new UUID($data[self::UUID]),
@@ -47,7 +47,7 @@ abstract class AbstractLabelEvent extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [self::LABEL_ID => $this->getLabelId()->toNative()];
     }

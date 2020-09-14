@@ -53,7 +53,7 @@ abstract class AbstractConstraintEvent extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractConstraintEvent
     {
         return new static(
             new UUID($data['uuid']),
@@ -65,7 +65,7 @@ abstract class AbstractConstraintEvent extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'sapiVersion' => $this->sapiVersion->toNative(),

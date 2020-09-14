@@ -30,7 +30,7 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
      * @param Title $title
      */
     public function __construct(
-        $id,
+        string $id,
         Language $mainLanguage,
         Url $website,
         Title $title
@@ -45,7 +45,7 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
     /**
      * @return Language
      */
-    public function getMainLanguage()
+    public function getMainLanguage(): Language
     {
         return $this->mainLanguage;
     }
@@ -53,7 +53,7 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
     /**
      * @return Url
      */
-    public function getWebsite()
+    public function getWebsite(): Url
     {
         return $this->website;
     }
@@ -61,7 +61,7 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -69,7 +69,7 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'main_language' => $this->getMainLanguage()->getCode(),
@@ -81,7 +81,7 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
     /**
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): OrganizerCreatedWithUniqueWebsite
     {
         return new static(
             $data['organizer_id'],

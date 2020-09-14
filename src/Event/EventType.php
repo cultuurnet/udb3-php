@@ -11,10 +11,9 @@ use InvalidArgumentException;
 
 final class EventType extends Category
 {
-    const DOMAIN = 'eventtype';
+    public const DOMAIN = 'eventtype';
 
-
-    public function __construct($id, $label)
+    public function __construct(string $id, string $label)
     {
         parent::__construct($id, $label, self::DOMAIN);
     }

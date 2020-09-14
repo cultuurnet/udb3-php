@@ -16,7 +16,7 @@ class AddressUpdated extends OrganizerEvent
      * @param Address $address
      */
     public function __construct(
-        $organizerId,
+        string $organizerId,
         Address $address
     ) {
         parent::__construct($organizerId);
@@ -26,7 +26,7 @@ class AddressUpdated extends OrganizerEvent
     /**
      * @return Address
      */
-    public function getAddress()
+    public function getAddress(): Address
     {
         return $this->address;
     }
@@ -34,7 +34,7 @@ class AddressUpdated extends OrganizerEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'address' => $this->address->serialize(),
@@ -45,7 +45,7 @@ class AddressUpdated extends OrganizerEvent
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): self
     {
         return new self(
             $data['organizer_id'],

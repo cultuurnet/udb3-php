@@ -48,7 +48,7 @@ final class Timestamp implements SerializableInterface
     /**
      * @return DateTimeInterface
      */
-    public function getStartDate()
+    public function getStartDate(): DateTimeInterface
     {
         return $this->startDate;
     }
@@ -56,7 +56,7 @@ final class Timestamp implements SerializableInterface
     /**
      * @return DateTimeInterface
      */
-    public function getEndDate()
+    public function getEndDate(): DateTimeInterface
     {
         return $this->endDate;
     }
@@ -64,7 +64,7 @@ final class Timestamp implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): Timestamp
     {
         return new static(
             DateTime::createFromFormat(DateTime::ATOM, $data['startDate']),
@@ -75,7 +75,7 @@ final class Timestamp implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'startDate' => $this->startDate->format(DateTime::ATOM),
@@ -87,7 +87,7 @@ final class Timestamp implements SerializableInterface
      * @param DateRange $dateRange
      * @return self
      */
-    public static function fromUdb3ModelDateRange(DateRange $dateRange)
+    public static function fromUdb3ModelDateRange(DateRange $dateRange): Timestamp
     {
         return new Timestamp(
             $dateRange->getFrom(),

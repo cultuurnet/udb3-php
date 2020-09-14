@@ -34,7 +34,7 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
      */
     protected $domain;
 
-    public function __construct($id, $label, $domain)
+    public function __construct(string $id, string $label, string $domain)
     {
 
         if (empty($id)) {
@@ -50,17 +50,17 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
         $this->domain = $domain;
     }
 
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    public function getDomain()
+    public function getDomain(): string
     {
         return $this->domain;
     }
@@ -68,7 +68,7 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
           'id' => $this->id,
@@ -78,7 +78,8 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $data
+     * @return Category
      */
     public static function deserialize(array $data)
     {
@@ -88,7 +89,7 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
     /**
      * {@inheritdoc}
      */
-    public function toJsonLd()
+    public function toJsonLd(): array
     {
         // Matches the serialized array.
         return $this->serialize();
@@ -96,7 +97,7 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
 
     /**
      * @param Udb3ModelCategory $category
-     * @return static
+     * @return Category
      */
     public static function fromUdb3ModelCategory(Udb3ModelCategory $category)
     {

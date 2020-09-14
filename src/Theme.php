@@ -17,7 +17,7 @@ final class Theme extends Category
 {
     public const DOMAIN = 'theme';
 
-    public function __construct($id, $label)
+    public function __construct(string $id, string $label)
     {
         parent::__construct($id, $label, self::DOMAIN);
     }

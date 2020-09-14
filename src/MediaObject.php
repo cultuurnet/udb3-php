@@ -17,12 +17,12 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
 
     /**
      * Type of media object.
-     * @var string
+     * @var string|null
      */
     protected $type;
 
     /**
-     * Internal file id.
+     * @var string
      */
     protected $internalId;
 
@@ -55,7 +55,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
      */
     protected $copyrightHolder;
 
-    public function __construct($url, $thumbnailUrl, $description, $copyrightHolder, $internalId = '', $type = null)
+    public function __construct(string $url, string $thumbnailUrl, string $description, string $copyrightHolder, string $internalId = '', ?string $type = null)
     {
         $this->type = $type;
         $this->url = $url;
@@ -68,7 +68,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     /**
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -76,7 +76,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     /**
      * @return string
      */
-    public function getThumbnailUrl()
+    public function getThumbnailUrl(): string
     {
         return $this->thumbnailUrl;
     }
@@ -84,7 +84,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -92,7 +92,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     /**
      * @return string
      */
-    public function getCopyrightHolder()
+    public function getCopyrightHolder(): string
     {
         return $this->copyrightHolder;
     }
@@ -100,7 +100,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     /**
      * @return string
      */
-    public function getInternalId()
+    public function getInternalId(): string
     {
         return $this->internalId;
     }
@@ -108,7 +108,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
@@ -116,7 +116,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): MediaObject
     {
         $type = !empty($data['type']) ? $data['type'] : null;
         return new self($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id'], $type);
@@ -125,7 +125,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'type' => $this->type,
@@ -140,7 +140,7 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     /**
      * {@inheritdoc}
      */
-    public function toJsonLd()
+    public function toJsonLd(): array
     {
         $jsonLd = [];
         if (!empty($this->type)) {

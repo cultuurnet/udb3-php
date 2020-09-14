@@ -28,7 +28,7 @@ abstract class AbstractRejected extends AbstractEvent
     /**
      * @return StringLiteral
      */
-    public function getReason()
+    public function getReason(): StringLiteral
     {
         return $this->reason;
     }
@@ -36,7 +36,7 @@ abstract class AbstractRejected extends AbstractEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'reason' => $this->reason->toNative(),
@@ -47,7 +47,7 @@ abstract class AbstractRejected extends AbstractEvent
      * @param array $data
      * @return AbstractRejected
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractRejected
     {
         return new static(
             $data['item_id'],

@@ -9,23 +9,17 @@ use Broadway\Serializer\SerializableInterface;
 
 abstract class EventEvent implements SerializableInterface
 {
+    /**
+     * @var string
+     */
     protected $eventId;
 
-    /**
-     * @param string $eventId
-     */
-    public function __construct($eventId)
+    public function __construct(string $eventId)
     {
-        if (!is_string($eventId)) {
-            throw new \InvalidArgumentException(
-                'Expected eventId to be a string, received ' . gettype($eventId)
-            );
-        }
-
         $this->eventId = $eventId;
     }
 
-    public function getEventId()
+    public function getEventId(): string
     {
         return $this->eventId;
     }
@@ -33,7 +27,7 @@ abstract class EventEvent implements SerializableInterface
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return array(
             'event_id' => $this->eventId,

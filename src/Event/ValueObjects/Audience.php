@@ -24,7 +24,7 @@ final class Audience implements SerializableInterface
     /**
      * @return AudienceType
      */
-    public function getAudienceType()
+    public function getAudienceType(): AudienceType
     {
         return AudienceType::fromNative($this->audienceType);
     }
@@ -32,7 +32,7 @@ final class Audience implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): Audience
     {
         return new self(
             AudienceType::fromNative($data['audienceType'])
@@ -42,7 +42,7 @@ final class Audience implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'audienceType' => $this->getAudienceType()->toNative(),
@@ -53,7 +53,7 @@ final class Audience implements SerializableInterface
      * @param Audience $otherAudience
      * @return bool
      */
-    public function equals(Audience $otherAudience)
+    public function equals(Audience $otherAudience): bool
     {
         return $this->getAudienceType() === $otherAudience->getAudienceType();
     }

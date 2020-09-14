@@ -43,7 +43,7 @@ class EnrichingEventListenerDecoratorTest extends TestCase
      */
     private $enrichingDecorator;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->enricher = $this->createMock(DomainMessageEnricherInterface::class);
         $this->decoratee = $this->createMock(EventListenerInterface::class);
@@ -53,7 +53,7 @@ class EnrichingEventListenerDecoratorTest extends TestCase
     /**
      * @test
      */
-    public function it_enriches_supported_domain_messages_before_delegating_them_to_the_decoratee()
+    public function it_enriches_supported_domain_messages_before_delegating_them_to_the_decoratee(): void
     {
         $supportedDomainMessage = new DomainMessage(
             Uuid::uuid4(),

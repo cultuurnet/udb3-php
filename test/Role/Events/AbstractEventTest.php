@@ -17,7 +17,7 @@ class AbstractEventTest extends TestCase
      */
     protected $event;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->uuid = new UUID();
 
@@ -30,7 +30,7 @@ class AbstractEventTest extends TestCase
     /**
      * @test
      */
-    public function it_stores_a_uuid()
+    public function it_stores_a_uuid(): void
     {
         $this->assertEquals($this->uuid, $this->event->getUuid());
     }
@@ -38,7 +38,7 @@ class AbstractEventTest extends TestCase
     /**
      * @test
      */
-    public function it_can_serialize()
+    public function it_can_serialize(): void
     {
         $actualArray = $this->event->serialize();
 

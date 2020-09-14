@@ -17,7 +17,7 @@ final class TitleUpdated extends OrganizerEvent
      * @param Title $title
      */
     public function __construct(
-        $organizerId,
+        string $organizerId,
         Title $title
     ) {
         parent::__construct($organizerId);
@@ -27,7 +27,7 @@ final class TitleUpdated extends OrganizerEvent
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -35,7 +35,7 @@ final class TitleUpdated extends OrganizerEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
                 'title' => $this->getTitle()->toNative(),
@@ -46,7 +46,7 @@ final class TitleUpdated extends OrganizerEvent
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): TitleUpdated
     {
         return new static(
             $data['organizer_id'],

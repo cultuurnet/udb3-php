@@ -15,7 +15,7 @@ abstract class AbstractEvent implements SerializableInterface
      * @param $itemId
      *  The id of the item that is the subject of the event.
      */
-    public function __construct($itemId)
+    public function __construct(string $itemId)
     {
         if (!is_string($itemId)) {
             throw new \InvalidArgumentException(
@@ -29,7 +29,7 @@ abstract class AbstractEvent implements SerializableInterface
     /**
      * @return string
      */
-    public function getItemId()
+    public function getItemId(): string
     {
         return $this->itemId;
     }
@@ -37,7 +37,7 @@ abstract class AbstractEvent implements SerializableInterface
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return array(
             'item_id' => $this->itemId,

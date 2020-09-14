@@ -9,7 +9,7 @@ use ValueObjects\Identity\UUID;
 
 final class CopyCreated extends Created
 {
-    const PARENT_UUID = 'parentUuid';
+    public const PARENT_UUID = 'parentUuid';
 
     /**
      * @var UUID
@@ -39,7 +39,7 @@ final class CopyCreated extends Created
     /**
      * @return UUID
      */
-    public function getParentUuid()
+    public function getParentUuid(): UUID
     {
         return $this->parentUuid;
     }
@@ -47,7 +47,7 @@ final class CopyCreated extends Created
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): CopyCreated
     {
         return new self(
             new UUID($data[self::UUID]),
@@ -61,7 +61,7 @@ final class CopyCreated extends Created
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             self::PARENT_UUID => $this->getParentUuid()->toNative(),

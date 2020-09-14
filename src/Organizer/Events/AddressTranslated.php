@@ -18,7 +18,7 @@ final class AddressTranslated extends AddressUpdated
      * @param Language $language
      */
     public function __construct(
-        $organizerId,
+        string $organizerId,
         Address $address,
         Language $language
     ) {
@@ -45,10 +45,9 @@ final class AddressTranslated extends AddressUpdated
     }
 
     /**
-     * @param array $data
-     * @return static
+     * @return AddressTranslated
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AddressUpdated
     {
         return new self(
             $data['organizer_id'],

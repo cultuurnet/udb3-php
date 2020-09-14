@@ -69,7 +69,7 @@ final class MajorInfoUpdated extends PlaceEvent
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -77,7 +77,7 @@ final class MajorInfoUpdated extends PlaceEvent
     /**
      * @return EventType
      */
-    public function getEventType()
+    public function getEventType(): EventType
     {
         return $this->eventType;
     }
@@ -85,7 +85,7 @@ final class MajorInfoUpdated extends PlaceEvent
     /**
      * @return Theme
      */
-    public function getTheme()
+    public function getTheme(): Theme
     {
         return $this->theme;
     }
@@ -93,7 +93,7 @@ final class MajorInfoUpdated extends PlaceEvent
     /**
      * @return CalendarInterface
      */
-    public function getCalendar()
+    public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
@@ -101,7 +101,7 @@ final class MajorInfoUpdated extends PlaceEvent
     /**
      * @return Address
      */
-    public function getAddress()
+    public function getAddress(): Address
     {
         return $this->address;
     }
@@ -110,7 +110,7 @@ final class MajorInfoUpdated extends PlaceEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         $theme = null;
         if ($this->getTheme() !== null) {
@@ -128,7 +128,7 @@ final class MajorInfoUpdated extends PlaceEvent
     /**
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): MajorInfoUpdated
     {
         return new static(
             $data['place_id'],

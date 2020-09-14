@@ -24,7 +24,7 @@ final class TitleTranslated extends OrganizerEvent
      * @param Language $language
      */
     public function __construct(
-        $organizerId,
+        string $organizerId,
         Title $title,
         Language $language
     ) {
@@ -37,7 +37,7 @@ final class TitleTranslated extends OrganizerEvent
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -45,7 +45,7 @@ final class TitleTranslated extends OrganizerEvent
     /**
      * @return Language
      */
-    public function getLanguage()
+    public function getLanguage(): Language
     {
         return $this->language;
     }
@@ -53,7 +53,7 @@ final class TitleTranslated extends OrganizerEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
                 'title' => $this->getTitle()->toNative(),
@@ -65,7 +65,7 @@ final class TitleTranslated extends OrganizerEvent
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): TitleTranslated
     {
         return new static(
             $data['organizer_id'],

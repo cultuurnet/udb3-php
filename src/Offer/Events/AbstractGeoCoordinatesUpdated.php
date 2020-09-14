@@ -26,7 +26,7 @@ abstract class AbstractGeoCoordinatesUpdated extends AbstractEvent
     /**
      * @return Coordinates
      */
-    public function getCoordinates()
+    public function getCoordinates(): Coordinates
     {
         return $this->coordinates;
     }
@@ -34,7 +34,7 @@ abstract class AbstractGeoCoordinatesUpdated extends AbstractEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
                 'coordinates' => [
@@ -48,7 +48,7 @@ abstract class AbstractGeoCoordinatesUpdated extends AbstractEvent
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractGeoCoordinatesUpdated
     {
         return new static(
             $data['item_id'],

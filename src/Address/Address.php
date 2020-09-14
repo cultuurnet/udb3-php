@@ -48,7 +48,7 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
     /**
      * @return Country
      */
-    public function getCountry()
+    public function getCountry(): Country
     {
         return Country::fromNative($this->countryCode);
     }
@@ -56,7 +56,7 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
     /**
      * @return Locality
      */
-    public function getLocality()
+    public function getLocality(): Locality
     {
         return $this->locality;
     }
@@ -64,7 +64,7 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
     /**
      * @return PostalCode
      */
-    public function getPostalCode()
+    public function getPostalCode(): PostalCode
     {
         return $this->postalCode;
     }
@@ -72,7 +72,7 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
     /**
      * @return Street
      */
-    public function getStreetAddress()
+    public function getStreetAddress(): Street
     {
         return $this->streetAddress;
     }
@@ -80,7 +80,7 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
           'streetAddress' => $this->streetAddress->toNative(),
@@ -93,7 +93,7 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): Address
     {
         return new self(
             new Street($data['streetAddress']),
@@ -106,7 +106,7 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
     /**
      * {@inheritdoc}
      */
-    public function toJsonLd()
+    public function toJsonLd(): array
     {
         return [
             'addressCountry' => $this->countryCode,
@@ -120,7 +120,7 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
      * @param Address $otherAddress
      * @return bool
      */
-    public function sameAs(Address $otherAddress)
+    public function sameAs(Address $otherAddress): bool
     {
         return $this->toJsonLd() === $otherAddress->toJsonLd();
     }
@@ -129,7 +129,7 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
      * @param Udb3ModelAddress $address
      * @return self
      */
-    public static function fromUdb3ModelAddress(Udb3ModelAddress $address)
+    public static function fromUdb3ModelAddress(Udb3ModelAddress $address): Address
     {
         return new self(
             new Street($address->getStreet()->toString()),

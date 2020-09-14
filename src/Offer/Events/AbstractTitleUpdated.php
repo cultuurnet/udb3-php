@@ -25,7 +25,7 @@ abstract class AbstractTitleUpdated extends AbstractEvent
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -33,7 +33,7 @@ abstract class AbstractTitleUpdated extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'title' => (string) $this->title,
@@ -43,7 +43,7 @@ abstract class AbstractTitleUpdated extends AbstractEvent
     /**
      * @return AbstractTitleUpdated
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractTitleUpdated
     {
         return new static($data['item_id'], new Title($data['title']));
     }

@@ -26,7 +26,7 @@ abstract class AbstractContactPointUpdated extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'contactPoint' => $this->contactPoint->serialize(),
@@ -36,7 +36,7 @@ abstract class AbstractContactPointUpdated extends AbstractEvent
     /**
      * @return mixed The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractContactPointUpdated
     {
         return new static($data['item_id'], ContactPoint::deserialize($data['contactPoint']));
     }

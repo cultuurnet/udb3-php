@@ -24,7 +24,7 @@ abstract class AbstractTypeUpdated extends AbstractEvent
     /**
      * @return EventType
      */
-    public function getType()
+    public function getType(): EventType
     {
         return $this->type;
     }
@@ -32,7 +32,7 @@ abstract class AbstractTypeUpdated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'type' => $this->type->serialize(),
@@ -42,7 +42,7 @@ abstract class AbstractTypeUpdated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractTypeUpdated
     {
         return new static($data['item_id'], EventType::deserialize($data['type']));
     }

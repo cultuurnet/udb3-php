@@ -69,8 +69,8 @@ final class PlaceCreated extends PlaceEvent
         EventType $eventType,
         Address $address,
         CalendarInterface $calendar,
-        Theme $theme = null,
-        DateTimeImmutable $publicationDate = null
+        ?Theme $theme = null,
+        ?DateTimeImmutable $publicationDate = null
     ) {
         parent::__construct($placeId);
 
@@ -86,7 +86,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @return Language
      */
-    public function getMainLanguage()
+    public function getMainLanguage(): Language
     {
         return $this->mainLanguage;
     }
@@ -94,7 +94,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -102,7 +102,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @return EventType
      */
-    public function getEventType()
+    public function getEventType(): EventType
     {
         return $this->eventType;
     }
@@ -110,7 +110,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @return Theme
      */
-    public function getTheme()
+    public function getTheme(): ?Theme
     {
         return $this->theme;
     }
@@ -118,7 +118,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @return CalendarInterface
      */
-    public function getCalendar()
+    public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
@@ -126,7 +126,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @return Address
      */
-    public function getAddress()
+    public function getAddress(): Address
     {
         return $this->address;
     }
@@ -134,7 +134,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @return DateTimeImmutable|null
      */
-    public function getPublicationDate()
+    public function getPublicationDate(): ?DateTimeImmutable
     {
         return $this->publicationDate;
     }
@@ -142,7 +142,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         $theme = null;
         if ($this->getTheme() !== null) {
@@ -166,7 +166,7 @@ final class PlaceCreated extends PlaceEvent
     /**
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): PlaceCreated
     {
         $theme = null;
         if (!empty($data['theme'])) {

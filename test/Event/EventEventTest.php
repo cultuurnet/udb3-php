@@ -41,18 +41,6 @@ class EventEventTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_an_error_if_a_wrong_type_is_given()
-    {
-        $this->expectException(
-            \InvalidArgumentException::class,
-            'Expected eventId to be a string, received integer'
-        );
-        new MockEventEvent(4);
-    }
-
-    /**
-     * @test
-     */
     public function it_can_return_its_id()
     {
         $eventEvent = new MockEventEvent('testmefoo');

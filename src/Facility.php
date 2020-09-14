@@ -7,11 +7,6 @@
 
 namespace CultuurNet\UDB3;
 
-/**
- * Instantiates a Facility category.
- */
-class Facility extends Category
-{
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
 use InvalidArgumentException;
 

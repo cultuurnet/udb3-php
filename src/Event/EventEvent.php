@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event;
 
 use Broadway\Serializer\SerializableInterface;
+use InvalidArgumentException;
 
 abstract class EventEvent implements SerializableInterface
 {

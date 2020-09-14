@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use CultureFeed_Cdb_Xml;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\HasCdbXmlTrait;
 

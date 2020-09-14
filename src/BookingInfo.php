@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Model\ValueObject\Contact\BookingInfo as Udb3ModelBookingInfo;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use DateTimeImmutable;
 
 final class BookingInfo implements JsonLdSerializableInterface
 {
@@ -28,12 +29,12 @@ final class BookingInfo implements JsonLdSerializableInterface
     protected $urlLabel;
 
     /**
-     * @var \DateTimeImmutable|null
+     * @var DateTimeImmutable|null
      */
     protected $availabilityStarts;
 
     /**
-     * @var \DateTimeImmutable|null
+     * @var DateTimeImmutable|null
      */
     protected $availabilityEnds;
 
@@ -132,12 +133,12 @@ final class BookingInfo implements JsonLdSerializableInterface
 
         $availabilityStarts = null;
         if ($data['availabilityStarts']) {
-            $availabilityStarts = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityStarts']);
+            $availabilityStarts = DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityStarts']);
         }
 
         $availabilityEnds = null;
         if ($data['availabilityEnds']) {
-            $availabilityEnds = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityEnds']);
+            $availabilityEnds = DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityEnds']);
         }
 
         $urlLabel = null;

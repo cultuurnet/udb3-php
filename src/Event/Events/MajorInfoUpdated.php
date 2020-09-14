@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;

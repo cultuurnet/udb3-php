@@ -2,9 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
-use Broadway\Serializer\SerializableInterface;
-
-abstract class AbstractEventWithIri extends AbstractEvent implements SerializableInterface
+abstract class AbstractEventWithIri extends AbstractEvent
 {
     /**
      * @var string

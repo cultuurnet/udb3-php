@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\EventSourcing;
 
@@ -28,18 +25,11 @@ final class PayloadManipulatingSerializer implements SerializerInterface
         $this->serializer = $serializer;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize($object): array
     {
         return $this->serializer->serialize($object);
     }
 
-    /**
-     * @param string $className
-     * @param callable $callback
-     */
     public function manipulateEventsOfClass(string $className, callable $callback): void
     {
         if (isset($this->manipulations[$className])) {
@@ -51,9 +41,6 @@ final class PayloadManipulatingSerializer implements SerializerInterface
         $this->manipulations[$className] = $callback;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function deserialize(array $serializedObject)
     {
         $manipulatedSerializedObject = $this->manipulate($serializedObject);
@@ -61,10 +48,6 @@ final class PayloadManipulatingSerializer implements SerializerInterface
         return $this->serializer->deserialize($manipulatedSerializedObject);
     }
 
-    /**
-     * @param array $serializedObject
-     * @return array
-     */
     private function manipulate(array $serializedObject): array
     {
         Assertion::keyExists(

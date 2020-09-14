@@ -19,17 +19,11 @@ abstract class AbstractPublished extends AbstractEvent
         $this->publicationDate = $publicationDate;
     }
 
-    /**
-     * @return \DateTimeInterface
-     */
     public function getPublicationDate(): DateTimeInterface
     {
         return $this->publicationDate;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return parent::serialize() + [
@@ -37,9 +31,6 @@ abstract class AbstractPublished extends AbstractEvent
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): AbstractPublished
     {
         return new static(

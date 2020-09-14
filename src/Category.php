@@ -1,35 +1,24 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Category.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
 
-/**
- * Instantiates an UDB3 category.
- */
 class Category implements SerializableInterface, JsonLdSerializableInterface
 {
 
     /**
-     * The category ID.
      * @var string
      */
     protected $id;
 
     /**
-     * The category label.
      * @var string
      */
     protected $label;
 
     /**
-     * The domain.
      * @var string
      */
     protected $domain;
@@ -65,9 +54,6 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
         return $this->domain;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         return [
@@ -86,9 +72,6 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
         return new self($data['id'], $data['label'], $data['domain']);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function toJsonLd(): array
     {
         // Matches the serialized array.

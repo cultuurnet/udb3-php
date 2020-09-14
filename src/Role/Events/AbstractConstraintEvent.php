@@ -34,25 +34,16 @@ abstract class AbstractConstraintEvent extends AbstractEvent
         $this->query = $query;
     }
 
-    /**
-     * @return SapiVersion
-     */
     public function getSapiVersion(): SapiVersion
     {
         return $this->sapiVersion;
     }
 
-    /**
-     * @return Query
-     */
     public function getQuery(): Query
     {
         return $this->query;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): AbstractConstraintEvent
     {
         return new static(
@@ -62,9 +53,6 @@ abstract class AbstractConstraintEvent extends AbstractEvent
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return parent::serialize() + array(

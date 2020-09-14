@@ -8,9 +8,6 @@ use CultuurNet\UDB3\Model\ValueObject\Geography\Address as Udb3ModelAddress;
 use ValueObjects\Geography\Country;
 use ValueObjects\Geography\CountryCode;
 
-/**
- * Value object for address information.
- */
 final class Address implements SerializableInterface, JsonLdSerializableInterface
 {
     /**
@@ -45,41 +42,26 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
         $this->countryCode = $country->getCode()->toNative();
     }
 
-    /**
-     * @return Country
-     */
     public function getCountry(): Country
     {
         return Country::fromNative($this->countryCode);
     }
 
-    /**
-     * @return Locality
-     */
     public function getLocality(): Locality
     {
         return $this->locality;
     }
 
-    /**
-     * @return PostalCode
-     */
     public function getPostalCode(): PostalCode
     {
         return $this->postalCode;
     }
 
-    /**
-     * @return Street
-     */
     public function getStreetAddress(): Street
     {
         return $this->streetAddress;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         return [
@@ -90,9 +72,6 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function deserialize(array $data): Address
     {
         return new self(
@@ -103,9 +82,6 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function toJsonLd(): array
     {
         return [
@@ -116,19 +92,11 @@ final class Address implements SerializableInterface, JsonLdSerializableInterfac
         ];
     }
 
-    /**
-     * @param Address $otherAddress
-     * @return bool
-     */
     public function sameAs(Address $otherAddress): bool
     {
         return $this->toJsonLd() === $otherAddress->toJsonLd();
     }
 
-    /**
-     * @param Udb3ModelAddress $address
-     * @return self
-     */
     public static function fromUdb3ModelAddress(Udb3ModelAddress $address): Address
     {
         return new self(

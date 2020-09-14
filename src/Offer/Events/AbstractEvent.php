@@ -11,10 +11,6 @@ abstract class AbstractEvent implements SerializableInterface
      */
     protected $itemId;
 
-    /**
-     * @param $itemId
-     *  The id of the item that is the subject of the event.
-     */
     public function __construct(string $itemId)
     {
         if (!is_string($itemId)) {
@@ -26,17 +22,11 @@ abstract class AbstractEvent implements SerializableInterface
         $this->itemId = $itemId;
     }
 
-    /**
-     * @return string
-     */
     public function getItemId(): string
     {
         return $this->itemId;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return array(

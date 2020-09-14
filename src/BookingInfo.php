@@ -5,9 +5,6 @@ namespace CultuurNet\UDB3;
 use CultuurNet\UDB3\Model\ValueObject\Contact\BookingInfo as Udb3ModelBookingInfo;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
 
-/**
- * BookingInfo info.
- */
 class BookingInfo implements JsonLdSerializableInterface
 {
     /**
@@ -40,14 +37,6 @@ class BookingInfo implements JsonLdSerializableInterface
      */
     protected $availabilityEnds;
 
-    /**
-     * @param string|null $url
-     * @param MultilingualString|null $urlLabel
-     * @param string|null $phone
-     * @param string|null $email
-     * @param \DateTimeImmutable|null $availabilityStarts
-     * @param \DateTimeImmutable|null $availabilityEnds
-     */
     public function __construct(
         ?string $url = null,
         ?MultilingualString $urlLabel = null,
@@ -93,25 +82,16 @@ class BookingInfo implements JsonLdSerializableInterface
         return $this->urlLabel;
     }
 
-    /**
-     * @return \DateTimeImmutable|null
-     */
     public function getAvailabilityStarts(): ?DateTimeImmutable
     {
         return $this->availabilityStarts;
     }
 
-    /**
-     * @return \DateTimeImmutable|null
-     */
     public function getAvailabilityEnds(): ?DateTimeImmutable
     {
         return $this->availabilityEnds;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         $serialized = array_filter(
@@ -137,9 +117,6 @@ class BookingInfo implements JsonLdSerializableInterface
         return $serialized;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function deserialize(array $data): BookingInfo
     {
         $defaults = [
@@ -178,27 +155,16 @@ class BookingInfo implements JsonLdSerializableInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function toJsonLd(): array
     {
         return $this->serialize();
     }
 
-    /**
-     * @param BookingInfo $otherBookingInfo
-     * @return bool
-     */
     public function sameAs(BookingInfo $otherBookingInfo): bool
     {
         return $this->toJsonLd() === $otherBookingInfo->toJsonLd();
     }
 
-    /**
-     * @param Udb3ModelBookingInfo $udb3ModelBookingInfo
-     * @return BookingInfo
-     */
     public static function fromUdb3ModelBookingInfo(Udb3ModelBookingInfo $udb3ModelBookingInfo): BookingInfo
     {
         $url = null;
@@ -236,10 +202,6 @@ class BookingInfo implements JsonLdSerializableInterface
         );
     }
 
-    /**
-     * @param $string
-     * @return null|string
-     */
     private function castEmptyStringToNull(?string $string = null): ?string
     {
         return is_string($string) && strlen($string) === 0 ? null : $string;

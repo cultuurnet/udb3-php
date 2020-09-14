@@ -11,10 +11,6 @@ abstract class AbstractCalendarUpdated extends AbstractEvent
      */
     private $calendar;
 
-    /**
-     * @param string $itemId
-     * @param Calendar $calendar
-     */
     final public function __construct(string $itemId, Calendar $calendar)
     {
         parent::__construct($itemId);
@@ -22,17 +18,11 @@ abstract class AbstractCalendarUpdated extends AbstractEvent
         $this->calendar = $calendar;
     }
 
-    /**
-     * @return Calendar
-     */
     public function getCalendar(): Calendar
     {
         return $this->calendar;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return parent::serialize() + [
@@ -40,9 +30,6 @@ abstract class AbstractCalendarUpdated extends AbstractEvent
             ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): AbstractCalendarUpdated
     {
         return new static(

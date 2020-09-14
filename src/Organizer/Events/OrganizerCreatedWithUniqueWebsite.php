@@ -23,12 +23,6 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
      */
     private $title;
 
-    /**
-     * @param string $id
-     * @param Language $mainLanguage
-     * @param Url $website
-     * @param Title $title
-     */
     public function __construct(
         string $id,
         Language $mainLanguage,
@@ -42,33 +36,21 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
         $this->title = $title;
     }
 
-    /**
-     * @return Language
-     */
     public function getMainLanguage(): Language
     {
         return $this->mainLanguage;
     }
 
-    /**
-     * @return Url
-     */
     public function getWebsite(): Url
     {
         return $this->website;
     }
 
-    /**
-     * @return Title
-     */
     public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + array(
@@ -78,9 +60,6 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
         );
     }
 
-    /**
-     * @return static
-     */
     public static function deserialize(array $data): OrganizerCreatedWithUniqueWebsite
     {
         return new static(

@@ -1,22 +1,12 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\MediaObject.
- */
-
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 
-/**
- * MediaObjects for UDB3.
- */
 final class MediaObject implements SerializableInterface, JsonLdSerializableInterface
 {
-
     /**
-     * Type of media object.
      * @var string|null
      */
     protected $type;
@@ -27,30 +17,21 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
     protected $internalId;
 
     /**
-     * Url to the media object.
-     *
      * @var string
      */
     protected $url;
 
     /**
-     * Url to the thumbnail for the media object.
-     *
      * @var string
      */
     protected $thumbnailUrl;
 
     /**
-     * Description of the mediaobject.
-     *
      * @var string
      */
     protected $description;
 
-
     /**
-     * Copyright info.
-     *
      * @var string
      */
     protected $copyrightHolder;
@@ -65,66 +46,42 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
         $this->internalId = $internalId;
     }
 
-    /**
-     * @return string
-     */
     public function getUrl(): string
     {
         return $this->url;
     }
 
-    /**
-     * @return string
-     */
     public function getThumbnailUrl(): string
     {
         return $this->thumbnailUrl;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @return string
-     */
     public function getCopyrightHolder(): string
     {
         return $this->copyrightHolder;
     }
 
-    /**
-     * @return string
-     */
     public function getInternalId(): string
     {
         return $this->internalId;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function deserialize(array $data): MediaObject
     {
         $type = !empty($data['type']) ? $data['type'] : null;
         return new self($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id'], $type);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         return [
@@ -137,9 +94,6 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function toJsonLd(): array
     {
         $jsonLd = [];

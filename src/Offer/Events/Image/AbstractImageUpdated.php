@@ -9,7 +9,6 @@ use ValueObjects\StringLiteral\StringLiteral;
 abstract class AbstractImageUpdated extends AbstractEvent
 {
     /**
-     * The id of the media object that the new information applies to.
      * @var UUID
      */
     protected $mediaObjectId;
@@ -24,12 +23,6 @@ abstract class AbstractImageUpdated extends AbstractEvent
      */
     protected $copyrightHolder;
 
-    /**
-     * @param $itemId
-     * @param UUID $mediaObjectId
-     * @param StringLiteral $description
-     * @param StringLiteral $copyrightHolder
-     */
     final public function __construct(
         string $itemId,
         UUID $mediaObjectId,
@@ -43,14 +36,6 @@ abstract class AbstractImageUpdated extends AbstractEvent
     }
 
     /**
-     * @return int
-     */
-    public function getItemId()
-    {
-        return $this->itemId;
-    }
-
-    /**
      * @return UUID
      */
     public function getMediaObjectId(): UUID
@@ -58,25 +43,16 @@ abstract class AbstractImageUpdated extends AbstractEvent
         return $this->mediaObjectId;
     }
 
-    /**
-     * @return StringLiteral
-     */
     public function getDescription(): StringLiteral
     {
         return $this->description;
     }
 
-    /**
-     * @return StringLiteral
-     */
     public function getCopyrightHolder(): StringLiteral
     {
         return $this->copyrightHolder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         return parent::serialize() +  array(
@@ -86,10 +62,6 @@ abstract class AbstractImageUpdated extends AbstractEvent
         );
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
     public static function deserialize(array $data): AbstractImageUpdated
     {
         return new static(

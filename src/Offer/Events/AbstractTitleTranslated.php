@@ -18,17 +18,11 @@ abstract class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
         $this->title = $title;
     }
 
-    /**
-     * @return Title
-     */
     public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         $value = parent::serialize() + array(
@@ -38,9 +32,6 @@ abstract class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
         return $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function deserialize(array $data): AbstractTitleTranslated
     {
         return new static(

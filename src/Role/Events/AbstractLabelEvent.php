@@ -13,10 +13,6 @@ abstract class AbstractLabelEvent extends AbstractEvent
      */
     private $labelId;
 
-    /**
-     * @param UUID $uuid
-     * @param UUID $labelId
-     */
     final public function __construct(
         UUID $uuid,
         UUID $labelId
@@ -25,17 +21,11 @@ abstract class AbstractLabelEvent extends AbstractEvent
         $this->labelId = $labelId;
     }
 
-    /**
-     * @return UUID
-     */
     public function getLabelId(): UUID
     {
         return $this->labelId;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function deserialize(array $data): AbstractLabelEvent
     {
         return new static(
@@ -44,9 +34,6 @@ abstract class AbstractLabelEvent extends AbstractEvent
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         return parent::serialize() + [self::LABEL_ID => $this->getLabelId()->toNative()];

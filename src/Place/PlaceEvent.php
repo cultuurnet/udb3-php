@@ -1,16 +1,9 @@
 <?php
-/**
- * @file
- * Contains CultuurNet\UDB3\Place\PlaceEvent.
- */
 
 namespace CultuurNet\UDB3\Place;
 
 use Broadway\Serializer\SerializableInterface;
 
-/**
- * Abstract class for events on places.
- */
 abstract class PlaceEvent implements SerializableInterface
 {
     /**
@@ -28,9 +21,6 @@ abstract class PlaceEvent implements SerializableInterface
         return $this->placeId;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return array(

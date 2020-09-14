@@ -12,28 +12,17 @@ final class RoleRenamed extends AbstractEvent
      */
     private $name;
 
-    /**
-     * RoleCreated constructor.
-     * @param UUID $uuid
-     * @param StringLiteral $name
-     */
     final public function __construct(UUID $uuid, StringLiteral $name)
     {
         parent::__construct($uuid);
         $this->name = $name;
     }
 
-    /**
-     * @return StringLiteral
-     */
     public function getName(): StringLiteral
     {
         return $this->name;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): RoleRenamed
     {
         return new static(
@@ -42,9 +31,6 @@ final class RoleRenamed extends AbstractEvent
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return parent::serialize() + [

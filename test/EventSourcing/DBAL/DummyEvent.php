@@ -16,19 +16,12 @@ final class DummyEvent implements SerializableInterface
      */
     protected $content;
 
-    /**
-     * @param string $id
-     * @param string $content
-     */
     final public function __construct($id, $content)
     {
         $this->id = $id;
         $this->content = $content;
     }
 
-    /**
-     * @return mixed The object instance
-     */
     public static function deserialize(array $data): DummyEvent
     {
         return new static(
@@ -37,9 +30,6 @@ final class DummyEvent implements SerializableInterface
         );
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return [

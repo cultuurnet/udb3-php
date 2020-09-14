@@ -12,9 +12,6 @@ use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
 
-/**
- * Event when a place is created.
- */
 final class PlaceCreated extends PlaceEvent
 {
     /**
@@ -83,65 +80,41 @@ final class PlaceCreated extends PlaceEvent
         $this->publicationDate = $publicationDate;
     }
 
-    /**
-     * @return Language
-     */
     public function getMainLanguage(): Language
     {
         return $this->mainLanguage;
     }
 
-    /**
-     * @return Title
-     */
     public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return EventType
-     */
     public function getEventType(): EventType
     {
         return $this->eventType;
     }
 
-    /**
-     * @return Theme
-     */
     public function getTheme(): ?Theme
     {
         return $this->theme;
     }
 
-    /**
-     * @return CalendarInterface
-     */
     public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
 
-    /**
-     * @return Address
-     */
     public function getAddress(): Address
     {
         return $this->address;
     }
 
-    /**
-     * @return DateTimeImmutable|null
-     */
     public function getPublicationDate(): ?DateTimeImmutable
     {
         return $this->publicationDate;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         $theme = null;
@@ -163,9 +136,6 @@ final class PlaceCreated extends PlaceEvent
         );
     }
 
-    /**
-     * @return static
-     */
     public static function deserialize(array $data): PlaceCreated
     {
         $theme = null;

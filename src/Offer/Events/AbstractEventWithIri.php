@@ -11,27 +11,17 @@ abstract class AbstractEventWithIri extends AbstractEvent implements Serializabl
      */
     private $iri;
 
-    /**
-     * @param string $itemId
-     * @param string $iri
-     */
     final public function __construct(string $itemId, $iri)
     {
         parent::__construct($itemId);
         $this->iri = (string) $iri;
     }
 
-    /**
-     * @return string
-     */
     public function getIri(): string
     {
         return $this->iri;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + array(
@@ -39,10 +29,6 @@ abstract class AbstractEventWithIri extends AbstractEvent implements Serializabl
         );
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
     public static function deserialize(array $data): AbstractEventWithIri
     {
         return new static($data['item_id'], $data['iri']);

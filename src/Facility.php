@@ -1,15 +1,7 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Facility.
- */
-
 namespace CultuurNet\UDB3;
 
-/**
- * Instantiates a Facility category.
- */
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
 use InvalidArgumentException;
 

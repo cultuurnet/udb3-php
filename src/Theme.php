@@ -1,15 +1,7 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Theme.
- */
-
 namespace CultuurNet\UDB3;
 
-/**
- * Instantiates a Theme category.
- */
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
 use InvalidArgumentException;
 

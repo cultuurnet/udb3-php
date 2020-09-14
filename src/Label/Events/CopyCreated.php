@@ -16,14 +16,6 @@ final class CopyCreated extends Created
      */
     private $parentUuid;
 
-    /**
-     * CopyCreated constructor.
-     * @param UUID $uuid
-     * @param LabelName $name
-     * @param Visibility $visibility
-     * @param Privacy $privacy
-     * @param UUID $parentUuid
-     */
     public function __construct(
         UUID $uuid,
         LabelName $name,
@@ -36,17 +28,11 @@ final class CopyCreated extends Created
         $this->parentUuid = $parentUuid;
     }
 
-    /**
-     * @return UUID
-     */
     public function getParentUuid(): UUID
     {
         return $this->parentUuid;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): CopyCreated
     {
         return new self(
@@ -58,9 +44,6 @@ final class CopyCreated extends Created
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return parent::serialize() + [

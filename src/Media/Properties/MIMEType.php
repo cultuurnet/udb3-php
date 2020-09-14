@@ -14,13 +14,6 @@ final class MIMEType extends StringLiteral
         'octet-stream'  => 'application',
     ];
 
-    /**
-     * @param string $subtypeString
-     *
-     * @throws UnsupportedMIMETypeException
-     *
-     * @return MIMEType
-     */
     public static function fromSubtype(string $subtypeString): MIMEType
     {
         if (false === \is_string($subtypeString)) {

@@ -11,10 +11,6 @@ class AddressUpdated extends OrganizerEvent
      */
     private $address;
 
-    /**
-     * @param string $organizerId
-     * @param Address $address
-     */
     public function __construct(
         string $organizerId,
         Address $address
@@ -23,17 +19,11 @@ class AddressUpdated extends OrganizerEvent
         $this->address = $address;
     }
 
-    /**
-     * @return Address
-     */
     public function getAddress(): Address
     {
         return $this->address;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + [
@@ -41,10 +31,6 @@ class AddressUpdated extends OrganizerEvent
         ];
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
     public static function deserialize(array $data): self
     {
         return new self(

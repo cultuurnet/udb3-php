@@ -14,10 +14,6 @@ abstract class AbstractLabelsImported extends AbstractEvent implements LabelsImp
      */
     private $labels;
 
-    /**
-     * @param string $organizerId
-     * @param Labels $labels
-     */
     final public function __construct(
         string $organizerId,
         Labels $labels
@@ -26,17 +22,11 @@ abstract class AbstractLabelsImported extends AbstractEvent implements LabelsImp
         $this->labels = $labels;
     }
 
-    /**
-     * @return Labels
-     */
     public function getLabels(): Labels
     {
         return $this->labels;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function deserialize(array $data): AbstractLabelsImported
     {
         $labels = new Labels();
@@ -53,9 +43,6 @@ abstract class AbstractLabelsImported extends AbstractEvent implements LabelsImp
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         $labels = [];

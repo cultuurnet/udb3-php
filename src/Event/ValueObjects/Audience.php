@@ -13,7 +13,6 @@ final class Audience implements SerializableInterface
     private $audienceType;
 
     /**
-     * Audience constructor.
      * @param AudienceType $audienceType
      */
     public function __construct(AudienceType $audienceType)
@@ -21,17 +20,11 @@ final class Audience implements SerializableInterface
         $this->audienceType = $audienceType->toNative();
     }
 
-    /**
-     * @return AudienceType
-     */
     public function getAudienceType(): AudienceType
     {
         return AudienceType::fromNative($this->audienceType);
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): Audience
     {
         return new self(
@@ -39,9 +32,6 @@ final class Audience implements SerializableInterface
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return [
@@ -49,10 +39,6 @@ final class Audience implements SerializableInterface
         ];
     }
 
-    /**
-     * @param Audience $otherAudience
-     * @return bool
-     */
     public function equals(Audience $otherAudience): bool
     {
         return $this->getAudienceType() === $otherAudience->getAudienceType();

@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
+use InvalidArgumentException;
 
 class Category implements SerializableInterface, JsonLdSerializableInterface
 {
@@ -25,11 +26,11 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
     public function __construct(string $id, string $label, string $domain)
     {
         if (empty($id)) {
-            throw new \InvalidArgumentException('Category ID can not be empty.');
+            throw new InvalidArgumentException('Category ID can not be empty.');
         }
 
         if (!is_string($domain)) {
-            throw new \InvalidArgumentException('Domain should be a string.');
+            throw new InvalidArgumentException('Domain should be a string.');
         }
 
         $this->id = $id;
@@ -82,18 +83,21 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
      */
     public static function fromUdb3ModelCategory(Udb3ModelCategory $category)
     {
-        if (is_null($category->getLabel())) {
-            throw new \InvalidArgumentException('Category label is required.');
+        $label = $category->getLabel();
+        $domain = $category->getDomain();
+
+        if (is_null($label)) {
+            throw new InvalidArgumentException('Category label is required.');
         }
 
-        if (is_null($category->getDomain())) {
-            throw new \InvalidArgumentException('Category domain is required.');
+        if (is_null($domain)) {
+            throw new InvalidArgumentException('Category domain is required.');
         }
 
         return new self(
             $category->getId()->toString(),
-            $category->getLabel()->toString(),
-            $category->getDomain()->toString()
+            $label->toString(),
+            $domain->toString()
         );
     }
 }

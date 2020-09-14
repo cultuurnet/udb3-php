@@ -34,14 +34,6 @@ abstract class AbstractEvent implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
-    {
-        return new static(new UUID($data['uuid']));
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function serialize()
     {
         return ['uuid' => $this->getUuid()->toNative()];

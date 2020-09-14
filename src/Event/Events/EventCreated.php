@@ -15,7 +15,7 @@ use DateTimeImmutable;
 /**
  * Event when an event is created.
  */
-class EventCreated extends EventEvent
+final class EventCreated extends EventEvent
 {
     /**
      * @var Language
@@ -179,7 +179,7 @@ class EventCreated extends EventEvent
                 $data['publication_date']
             );
         }
-        return new static(
+        return new self(
             $data['event_id'],
             new Language($data['main_language']),
             new Title($data['title']),

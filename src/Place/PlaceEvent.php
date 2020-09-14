@@ -34,12 +34,4 @@ abstract class PlaceEvent implements SerializableInterface
             'place_id' => $this->placeId,
         );
     }
-
-    /**
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
-    {
-        return new static($data['place_id']);
-    }
 }

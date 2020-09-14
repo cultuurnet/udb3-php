@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Event\Events;
 use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
-class LocationUpdated extends AbstractEvent
+final class LocationUpdated extends AbstractEvent
 {
     /**
      * @var LocationId
@@ -48,7 +48,7 @@ class LocationUpdated extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             $data['item_id'],
             new LocationId($data['location_id'])
         );

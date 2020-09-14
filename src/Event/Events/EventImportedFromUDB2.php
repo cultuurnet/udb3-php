@@ -43,7 +43,7 @@ class EventImportedFromUDB2 extends EventEvent implements EventCdbXMLInterface
         $data += array(
             'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),
         );
-        return new static(
+        return new self(
             $data['event_id'],
             $data['cdbxml'],
             $data['cdbXmlNamespaceUri']

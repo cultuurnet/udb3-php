@@ -82,7 +82,7 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             $data['item_id'],
             $data['original_event_id'],
             Calendar::deserialize($data['calendar'])

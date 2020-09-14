@@ -130,6 +130,6 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
             $contactPoint->getUrls()->toArray()
         );
 
-        return new ContactPoint($phones, $emails, $urls);
+        return new self($phones, $emails, $urls);
     }
 }

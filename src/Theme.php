@@ -18,4 +18,23 @@ final class Theme extends Category
     {
         parent::__construct($id, $label, self::DOMAIN);
     }
+
+    public static function deserialize(array $data): Theme
+    {
+        return new self($data['id'], $data['label']);
+    }
+
+    public static function fromUdb3ModelCategory(Udb3ModelCategory $category): Theme
+    {
+        $label = $category->getLabel();
+
+        if (is_null($label)) {
+            throw new InvalidArgumentException('Category label is required.');
+        }
+
+        return new self(
+            $category->getId()->toString(),
+            $label->toString()
+        );
+    }
 }

@@ -78,7 +78,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getPhones()
+    public function getPhones(): array
     {
         return $this->phones;
     }

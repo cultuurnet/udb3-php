@@ -23,8 +23,8 @@ abstract class ActorEvent implements SerializableInterface
 
     public function serialize(): array
     {
-        return array(
+        return [
             'actor_id' => $this->actorId,
-        );
+        ];
     }
 }

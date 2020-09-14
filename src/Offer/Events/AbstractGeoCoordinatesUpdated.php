@@ -27,11 +27,11 @@ abstract class AbstractGeoCoordinatesUpdated extends AbstractEvent
     public function serialize(): array
     {
         return parent::serialize() + [
-                'coordinates' => [
-                    'lat' => $this->coordinates->getLatitude()->toDouble(),
-                    'long' => $this->coordinates->getLongitude()->toDouble(),
-                ],
-            ];
+            'coordinates' => [
+                'lat' => $this->coordinates->getLatitude()->toDouble(),
+                'long' => $this->coordinates->getLongitude()->toDouble(),
+            ],
+        ];
     }
 
     public static function deserialize(array $data): AbstractGeoCoordinatesUpdated

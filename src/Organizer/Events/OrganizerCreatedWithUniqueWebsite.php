@@ -53,11 +53,11 @@ final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
 
     public function serialize(): array
     {
-        return parent::serialize() + array(
+        return parent::serialize() + [
             'main_language' => $this->getMainLanguage()->getCode(),
             'website' => (string) $this->getWebsite(),
             'title' => (string) $this->getTitle(),
-        );
+        ];
     }
 
     public static function deserialize(array $data): OrganizerCreatedWithUniqueWebsite

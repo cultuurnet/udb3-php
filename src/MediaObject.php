@@ -107,6 +107,5 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
         $jsonLd['copyrightHolder'] = $this->copyrightHolder;
 
         return $jsonLd;
-
     }
 }

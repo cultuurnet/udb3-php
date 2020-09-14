@@ -35,7 +35,6 @@ abstract class AbstractFacilitiesUpdated extends AbstractEvent
 
     public function serialize(): array
     {
-
         $facilities = array();
         foreach ($this->facilities as $facility) {
             $facilities[] = $facility->serialize();

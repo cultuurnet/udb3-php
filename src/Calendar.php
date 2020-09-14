@@ -17,7 +17,6 @@ use InvalidArgumentException;
 
 final class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
 {
-
     /**
      * @var CalendarType
      */

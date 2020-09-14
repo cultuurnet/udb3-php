@@ -12,7 +12,6 @@ use CultuurNet\UDB3\Title;
 
 final class OrganizerCreated extends OrganizerEvent
 {
-
     /**
      * @var Title
      */
@@ -102,7 +101,6 @@ final class OrganizerCreated extends OrganizerEvent
 
     public function serialize(): array
     {
-
         $addresses = array();
         foreach ($this->getAddresses() as $address) {
             $addresses[] = $address->serialize();
@@ -119,7 +117,6 @@ final class OrganizerCreated extends OrganizerEvent
 
     public static function deserialize(array $data): OrganizerCreated
     {
-
         $addresses = array();
         foreach ($data['addresses'] as $address) {
             $addresses[] = Address::deserialize($address);

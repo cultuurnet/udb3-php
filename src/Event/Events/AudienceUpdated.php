@@ -17,7 +17,6 @@ final class AudienceUpdated extends AbstractEvent
         Audience $audience
     ) {
         parent::__construct($itemId);
-
         $this->audience = $audience;
     }
 

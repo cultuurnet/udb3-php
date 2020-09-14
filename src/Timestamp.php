@@ -10,7 +10,6 @@ use InvalidArgumentException;
 
 final class Timestamp implements SerializableInterface
 {
-
     /**
      * @var DateTimeInterface
      */

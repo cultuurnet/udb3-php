@@ -12,7 +12,7 @@ use Broadway\Serializer\SerializableInterface;
 /**
  * MediaObjects for UDB3.
  */
-class MediaObject implements SerializableInterface, JsonLdSerializableInterface
+final class MediaObject implements SerializableInterface, JsonLdSerializableInterface
 {
 
     /**
@@ -119,7 +119,7 @@ class MediaObject implements SerializableInterface, JsonLdSerializableInterface
     public static function deserialize(array $data)
     {
         $type = !empty($data['type']) ? $data['type'] : null;
-        return new static($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id'], $type);
+        return new self($data['url'], $data['thumbnail_url'], $data['description'], $data['copyright_holder'], $data['internal_id'], $type);
     }
 
     /**

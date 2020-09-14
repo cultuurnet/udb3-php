@@ -15,7 +15,7 @@ abstract class AbstractPriceInfoUpdated extends AbstractEvent
      * @param string $itemId
      * @param PriceInfo $priceInfo
      */
-    public function __construct($itemId, PriceInfo $priceInfo)
+    final public function __construct(string $itemId, PriceInfo $priceInfo)
     {
         parent::__construct($itemId);
         $this->priceInfo = $priceInfo;

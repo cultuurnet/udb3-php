@@ -19,7 +19,7 @@ abstract class AbstractUserEvent extends AbstractEvent
      * @param UUID $uuid
      * @param StringLiteral $userId
      */
-    public function __construct(UUID $uuid, StringLiteral $userId)
+    final public function __construct(UUID $uuid, StringLiteral $userId)
     {
         parent::__construct($uuid);
 

@@ -14,7 +14,7 @@ abstract class AbstractPublished extends AbstractEvent
      * @param string $itemId
      * @param \DateTimeInterface
      */
-    public function __construct($itemId, \DateTimeInterface $publicationDate)
+    final public function __construct($itemId, DateTimeInterface $publicationDate)
     {
         parent::__construct($itemId);
 

@@ -17,7 +17,7 @@ abstract class AbstractGeoCoordinatesUpdated extends AbstractEvent
      * @param string $itemId
      * @param Coordinates $coordinates
      */
-    public function __construct($itemId, Coordinates $coordinates)
+    final public function __construct(string $itemId, Coordinates $coordinates)
     {
         parent::__construct($itemId);
         $this->coordinates = $coordinates;

@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Event\ValueObjects;
 
 use Broadway\Serializer\SerializableInterface;
 
-class Audience implements SerializableInterface
+final class Audience implements SerializableInterface
 {
     /**
      * Store the Audience enum internally as a string to make sure that PHP encode works.
@@ -34,7 +34,7 @@ class Audience implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             AudienceType::fromNative($data['audienceType'])
         );
     }

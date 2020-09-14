@@ -4,6 +4,6 @@ namespace CultuurNet\UDB3\Place\Events\Moderation;
 
 use CultuurNet\UDB3\Offer\Events\Moderation\AbstractPublished;
 
-class Published extends AbstractPublished
+final class Published extends AbstractPublished
 {
 }

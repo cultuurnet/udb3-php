@@ -17,7 +17,7 @@ abstract class AbstractImagesEvent extends AbstractEvent
      * @param string $eventId
      * @param ImageCollection $images
      */
-    public function __construct($eventId, ImageCollection $images)
+    final public function __construct(string $eventId, ImageCollection $images)
     {
         parent::__construct($eventId);
         $this->images = $images;

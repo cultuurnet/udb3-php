@@ -18,8 +18,8 @@ abstract class AbstractLabelsImported extends AbstractEvent implements LabelsImp
      * @param string $organizerId
      * @param Labels $labels
      */
-    public function __construct(
-        $organizerId,
+    final public function __construct(
+        string $organizerId,
         Labels $labels
     ) {
         parent::__construct($organizerId);

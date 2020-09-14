@@ -15,7 +15,7 @@ abstract class AbstractBookingInfoEvent extends AbstractEvent
      * @param string $id
      * @param BookingInfo $bookingInfo
      */
-    public function __construct($id, BookingInfo $bookingInfo)
+    final public function __construct(string $id, BookingInfo $bookingInfo)
     {
         parent::__construct($id);
         $this->bookingInfo = $bookingInfo;

@@ -19,7 +19,7 @@ abstract class AbstractRejected extends AbstractEvent
      * @param StringLiteral $reason
      *  The reason why an offer is rejected, e.g.: Image and price info is missing.
      */
-    public function __construct($itemId, StringLiteral $reason)
+    final public function __construct(string $itemId, StringLiteral $reason)
     {
         parent::__construct($itemId);
         $this->reason = $reason;

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Role\Events;
 use CultuurNet\UDB3\Role\ValueObjects\Permission;
 use ValueObjects\Identity\UUID;
 
-class AbstractPermissionEvent extends AbstractEvent
+abstract class AbstractPermissionEvent extends AbstractEvent
 {
     /**
      * @var Permission
@@ -17,7 +17,7 @@ class AbstractPermissionEvent extends AbstractEvent
      * @param UUID $uuid
      * @param Permission $permission
      */
-    public function __construct(UUID $uuid, Permission $permission)
+    final public function __construct(UUID $uuid, Permission $permission)
     {
         parent::__construct($uuid);
         $this->permission = $permission;

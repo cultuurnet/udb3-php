@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class AbstractImageUpdated extends AbstractEvent
+abstract class AbstractImageUpdated extends AbstractEvent
 {
     /**
      * The id of the media object that the new information applies to.
@@ -30,8 +30,8 @@ class AbstractImageUpdated extends AbstractEvent
      * @param StringLiteral $description
      * @param StringLiteral $copyrightHolder
      */
-    public function __construct(
-        $itemId,
+    final public function __construct(
+        string $itemId,
         UUID $mediaObjectId,
         StringLiteral $description,
         StringLiteral $copyrightHolder

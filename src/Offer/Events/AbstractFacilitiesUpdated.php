@@ -16,7 +16,7 @@ abstract class AbstractFacilitiesUpdated extends AbstractEvent
      * @param string $id
      * @param array $facilities
      */
-    public function __construct($id, array $facilities)
+    final public function __construct(string $id, array $facilities)
     {
         parent::__construct($id);
         $this->facilities = $facilities;

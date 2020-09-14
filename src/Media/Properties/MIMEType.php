@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Media\Properties;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class MIMEType extends StringLiteral
+final class MIMEType extends StringLiteral
 {
     protected static $supportedSubtypes = [
         'jpeg' => 'image',
@@ -35,6 +35,6 @@ class MIMEType extends StringLiteral
 
         $type = self::$supportedSubtypes[$subtypeString];
 
-        return new static($type . '/' . $subtypeString);
+        return new self($type . '/' . $subtypeString);
     }
 }

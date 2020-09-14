@@ -16,7 +16,7 @@ abstract class AbstractDescriptionUpdated extends AbstractEvent
      * @param string $id
      * @param Description $description
      */
-    public function __construct($id, Description $description)
+    final public function __construct(string $id, Description $description)
     {
         parent::__construct($id);
         $this->description = $description;

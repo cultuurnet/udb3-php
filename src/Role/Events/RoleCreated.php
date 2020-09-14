@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Role\Events;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class RoleCreated extends AbstractEvent
+final class RoleCreated extends AbstractEvent
 {
     /**
      * @var StringLiteral
@@ -17,7 +17,7 @@ class RoleCreated extends AbstractEvent
      * @param UUID $uuid
      * @param StringLiteral $name
      */
-    public function __construct(UUID $uuid, StringLiteral $name)
+    final public function __construct(UUID $uuid, StringLiteral $name)
     {
         parent::__construct($uuid);
         $this->name = $name;

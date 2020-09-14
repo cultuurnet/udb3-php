@@ -11,7 +11,7 @@ use ValueObjects\Geography\CountryCode;
 /**
  * Value object for address information.
  */
-class Address implements SerializableInterface, JsonLdSerializableInterface
+final class Address implements SerializableInterface, JsonLdSerializableInterface
 {
     /**
      * @var string
@@ -95,7 +95,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             new Street($data['streetAddress']),
             new PostalCode($data['postalCode']),
             new Locality($data['addressLocality']),

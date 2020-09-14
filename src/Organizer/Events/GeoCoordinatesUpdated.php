@@ -6,7 +6,7 @@ use CultuurNet\Geocoding\Coordinate\Coordinates;
 use CultuurNet\Geocoding\Coordinate\Latitude;
 use CultuurNet\Geocoding\Coordinate\Longitude;
 
-class GeoCoordinatesUpdated extends OrganizerEvent
+final class GeoCoordinatesUpdated extends OrganizerEvent
 {
     /**
      * @var Coordinates

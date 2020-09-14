@@ -47,7 +47,7 @@ class AddressUpdated extends OrganizerEvent
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             $data['organizer_id'],
             Address::deserialize($data['address'])
         );

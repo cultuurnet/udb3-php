@@ -16,7 +16,7 @@ abstract class AbstractTypicalAgeRangeUpdated extends AbstractEvent
      * @param string $id
      * @param AgeRange $typicalAgeRange
      */
-    public function __construct($id, AgeRange $typicalAgeRange)
+    final public function __construct(string $id, AgeRange $typicalAgeRange)
     {
         parent::__construct($id);
         $this->typicalAgeRange = $typicalAgeRange;

@@ -7,6 +7,6 @@ use CultuurNet\UDB3\Offer\Events\Image\AbstractImageUpdated;
 /**
  * Provides an ImageUpdated event.
  */
-class ImageUpdated extends AbstractImageUpdated
+final class ImageUpdated extends AbstractImageUpdated
 {
 }

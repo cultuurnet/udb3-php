@@ -15,7 +15,7 @@ abstract class AbstractTypeUpdated extends AbstractEvent
      * @param string $itemId
      * @param EventType $type
      */
-    public function __construct($itemId, EventType $type)
+    final public function __construct(string $itemId, EventType $type)
     {
         parent::__construct($itemId);
         $this->type = $type;

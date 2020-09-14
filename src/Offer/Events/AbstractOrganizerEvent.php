@@ -14,7 +14,7 @@ abstract class AbstractOrganizerEvent extends AbstractEvent
      * @param string $id
      * @param string $organizerId
      */
-    public function __construct($id, $organizerId)
+    final public function __construct(string $id, $organizerId)
     {
         parent::__construct($id);
         $this->organizerId = $organizerId;

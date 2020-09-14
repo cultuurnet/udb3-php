@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Role\ValueObjects\Query;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 
-class AbstractConstraintEvent extends AbstractEvent
+abstract class AbstractConstraintEvent extends AbstractEvent
 {
     /**
      * @var SapiVersion
@@ -24,7 +24,7 @@ class AbstractConstraintEvent extends AbstractEvent
      * @param SapiVersion $sapiVersion
      * @param Query $query
      */
-    public function __construct(
+    final public function __construct(
         UUID $uuid,
         SapiVersion $sapiVersion,
         Query $query

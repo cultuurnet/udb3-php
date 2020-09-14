@@ -15,7 +15,7 @@ use DateTimeImmutable;
 /**
  * Event when a place is created.
  */
-class PlaceCreated extends PlaceEvent
+final class PlaceCreated extends PlaceEvent
 {
     /**
      * @var Language

@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
 use Broadway\Serializer\SerializableInterface;
 
-class DummyEvent implements SerializableInterface
+final class DummyEvent implements SerializableInterface
 {
     /**
      * @var string
@@ -20,7 +20,7 @@ class DummyEvent implements SerializableInterface
      * @param string $id
      * @param string $content
      */
-    public function __construct($id, $content)
+    final public function __construct($id, $content)
     {
         $this->id = $id;
         $this->content = $content;

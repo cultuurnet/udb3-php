@@ -19,7 +19,7 @@ use InvalidArgumentException;
  * Calendar for events and places.
  * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar.
  */
-class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
+final class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
 {
 
     /**
@@ -150,7 +150,7 @@ class Calendar implements CalendarInterface, JsonLdSerializableInterface, Serial
             $defaultTimeStamps = $defaultTimeStamp ? [$defaultTimeStamp] : [];
         }
 
-        return new static(
+        return new self(
             $calendarType,
             !empty($data['startDate']) ? self::deserializeDateTime($data['startDate']) : null,
             !empty($data['endDate']) ? self::deserializeDateTime($data['endDate']) : null,

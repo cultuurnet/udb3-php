@@ -15,7 +15,7 @@ abstract class AbstractThemeUpdated extends AbstractEvent
      * @param string $itemId
      * @param Theme $theme
      */
-    public function __construct($itemId, Theme $theme)
+    final public function __construct($itemId, Theme $theme)
     {
         parent::__construct($itemId);
         $this->theme = $theme;

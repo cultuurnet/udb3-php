@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Event\Events;
 use CultuurNet\UDB3\Event\ValueObjects\Audience;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
-class AudienceUpdated extends AbstractEvent
+final class AudienceUpdated extends AbstractEvent
 {
     /**
      * @var Audience
@@ -49,7 +49,7 @@ class AudienceUpdated extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             $data['item_id'],
             Audience::deserialize($data['audience'])
         );

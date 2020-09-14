@@ -2,7 +2,6 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
-use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar;
 use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
@@ -14,7 +13,7 @@ use CultuurNet\UDB3\Title;
 /**
  * Provides a majorInfoUpdated event.
  */
-class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
+final class MajorInfoUpdated extends AbstractEvent
 {
     use BackwardsCompatibleEventTrait;
 
@@ -132,7 +131,7 @@ class MajorInfoUpdated extends AbstractEvent implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             $data['item_id'],
             new Title($data['title']),
             EventType::deserialize($data['event_type']),

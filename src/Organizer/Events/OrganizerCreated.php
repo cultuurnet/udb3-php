@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Title;
 /**
  * Instantiates an OrganizerCreated event
  */
-class OrganizerCreated extends OrganizerEvent
+final class OrganizerCreated extends OrganizerEvent
 {
 
     /**

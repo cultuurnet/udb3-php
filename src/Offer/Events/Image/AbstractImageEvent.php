@@ -22,7 +22,7 @@ abstract class AbstractImageEvent extends AbstractEvent
      * @param Image $image
      *  The image that is involved in the event.
      */
-    public function __construct($itemId, Image $image)
+    final public function __construct(string $itemId, Image $image)
     {
         parent::__construct($itemId);
         $this->image = $image;

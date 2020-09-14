@@ -19,7 +19,7 @@ use ValueObjects\Enum\Enum;
  *
  * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Day.
  */
-class DayOfWeek extends Enum
+final class DayOfWeek extends Enum
 {
     const MONDAY = 'monday';
     const TUESDAY = 'tuesday';

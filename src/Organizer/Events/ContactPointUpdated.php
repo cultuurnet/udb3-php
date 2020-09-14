@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\ContactPoint;
 
-class ContactPointUpdated extends OrganizerEvent
+final class ContactPointUpdated extends OrganizerEvent
 {
     /**
      * @var ContactPoint

@@ -24,7 +24,7 @@ class ActorImportedFromUDB2 extends ActorEvent
      * @param string $cdbXml
      * @param string $cdbXmlNamespaceUri
      */
-    public function __construct($actorId, $cdbXml, $cdbXmlNamespaceUri)
+    final public function __construct(string $actorId, string $cdbXml, string $cdbXmlNamespaceUri)
     {
         parent::__construct($actorId);
         $this->cdbXml = $cdbXml;

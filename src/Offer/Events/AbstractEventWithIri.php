@@ -15,7 +15,7 @@ abstract class AbstractEventWithIri extends AbstractEvent implements Serializabl
      * @param string $itemId
      * @param string $iri
      */
-    public function __construct($itemId, $iri)
+    final public function __construct(string $itemId, $iri)
     {
         parent::__construct($itemId);
         $this->iri = (string) $iri;

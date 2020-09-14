@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Label\ValueObjects\Privacy;
 use CultuurNet\UDB3\Label\ValueObjects\Visibility;
 use ValueObjects\Identity\UUID;
 
-class CopyCreated extends Created
+final class CopyCreated extends Created
 {
     const PARENT_UUID = 'parentUuid';
 
@@ -49,7 +49,7 @@ class CopyCreated extends Created
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             new UUID($data[self::UUID]),
             new LabelName($data[self::NAME]),
             Visibility::fromNative($data[self::VISIBILITY]),

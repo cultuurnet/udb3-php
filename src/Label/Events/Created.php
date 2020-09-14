@@ -62,7 +62,7 @@ class Created extends AbstractEvent
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             new UUID($data[self::UUID]),
             new LabelName($data[self::NAME]),
             Visibility::fromNative($data[self::VISIBILITY]),

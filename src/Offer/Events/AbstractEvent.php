@@ -43,13 +43,4 @@ abstract class AbstractEvent implements SerializableInterface
             'item_id' => $this->itemId,
         );
     }
-
-    /**
-     * @param array $data
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
-    {
-        return new static($data['item_id']);
-    }
 }

@@ -7,12 +7,11 @@
 
 namespace CultuurNet\UDB3;
 
-/**
- * Instantiates a Theme category.
- */
-class Theme extends Category
-{
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
+use InvalidArgumentException;
 
+final class Theme extends Category
+{
     const DOMAIN = 'theme';
 
     public function __construct($id, $label)

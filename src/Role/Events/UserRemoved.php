@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Role\Events;
 
-class UserRemoved extends AbstractUserEvent
+final class UserRemoved extends AbstractUserEvent
 {
 
 }

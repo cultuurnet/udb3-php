@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Role\Events;
 
 use ValueObjects\Identity\UUID;
 
-class AbstractLabelEvent extends AbstractEvent
+abstract class AbstractLabelEvent extends AbstractEvent
 {
     const LABEL_ID = 'labelId';
 
@@ -17,7 +17,7 @@ class AbstractLabelEvent extends AbstractEvent
      * @param UUID $uuid
      * @param UUID $labelId
      */
-    public function __construct(
+    final public function __construct(
         UUID $uuid,
         UUID $labelId
     ) {

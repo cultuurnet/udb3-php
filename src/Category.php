@@ -82,9 +82,7 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(
-                $data['id'], $data['label'], $data['domain']
-        );
+        return new self($data['id'], $data['label'], $data['domain']);
     }
 
     /**
@@ -98,7 +96,7 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
 
     /**
      * @param Udb3ModelCategory $category
-     * @return static
+     * @return Category
      */
     public static function fromUdb3ModelCategory(Udb3ModelCategory $category)
     {
@@ -110,7 +108,7 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
             throw new \InvalidArgumentException('Category domain is required.');
         }
 
-        return new static(
+        return new self(
             $category->getId()->toString(),
             $category->getLabel()->toString(),
             $category->getDomain()->toString()

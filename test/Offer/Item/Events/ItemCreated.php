@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Item\Events;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Language;
 
-class ItemCreated implements SerializableInterface
+final class ItemCreated implements SerializableInterface
 {
     /**
      * @var string
@@ -21,8 +21,8 @@ class ItemCreated implements SerializableInterface
      * @param string $itemId
      * @param Language $mainLanguage
      */
-    public function __construct(
-        $itemId,
+    final public function __construct(
+        string $itemId,
         Language $mainLanguage = null
     ) {
         $this->itemId = $itemId;

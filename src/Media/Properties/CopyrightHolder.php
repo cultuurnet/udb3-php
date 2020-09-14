@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class CopyrightHolder extends StringLiteral
+final class CopyrightHolder extends StringLiteral
 {
     public function __construct($value)
     {

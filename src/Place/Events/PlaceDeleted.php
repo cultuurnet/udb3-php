@@ -7,6 +7,6 @@ use CultuurNet\UDB3\Offer\Events\AbstractOfferDeleted;
 /**
  * Provides an PlaceDeleted event.
  */
-class PlaceDeleted extends AbstractOfferDeleted
+final class PlaceDeleted extends AbstractOfferDeleted
 {
 }

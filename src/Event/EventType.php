@@ -6,8 +6,9 @@
 namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Category;
+use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
 
-class EventType extends Category
+final class EventType extends Category
 {
     const DOMAIN = 'eventtype';
 
@@ -34,5 +35,24 @@ class EventType extends Category
             }
         }
         return null;
+    }
+
+    public static function fromUdb3ModelCategory(Udb3ModelCategory $category): EventType
+    {
+        $label = $category->getLabel();
+
+        if (is_null($label)) {
+            throw new InvalidArgumentException('Category label is required.');
+        }
+
+        return new self(
+            $category->getId()->toString(),
+            $label->toString()
+        );
+    }
+
+    public static function deserialize(array $data): EventType
+    {
+        return new self($data['id'], $data['label']);
     }
 }

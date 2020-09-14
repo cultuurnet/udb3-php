@@ -8,7 +8,7 @@ use CultuurNet\UDB3\ValueObject\MultilingualString;
 /**
  * BookingInfo info.
  */
-class BookingInfo implements JsonLdSerializableInterface
+final class BookingInfo implements JsonLdSerializableInterface
 {
     /**
      * @var string|null
@@ -168,7 +168,7 @@ class BookingInfo implements JsonLdSerializableInterface
             $urlLabel = MultilingualString::deserialize($data['urlLabel']);
         }
 
-        return new static(
+        return new self(
             $data['url'],
             $urlLabel,
             $data['phone'],
@@ -226,7 +226,7 @@ class BookingInfo implements JsonLdSerializableInterface
             $availabilityEnds = $udb3ModelAvailability->getTo();
         }
 
-        return new BookingInfo(
+        return new self(
             $url,
             $urlLabel,
             $phone,

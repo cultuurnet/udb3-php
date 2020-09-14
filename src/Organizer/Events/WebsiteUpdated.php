@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 
 use ValueObjects\Web\Url;
 
-class WebsiteUpdated extends OrganizerEvent
+final class WebsiteUpdated extends OrganizerEvent
 {
     /**
      * @var Url

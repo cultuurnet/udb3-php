@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\PlaceEvent;
 
-class AddressTranslated extends PlaceEvent
+final class AddressTranslated extends PlaceEvent
 {
     /**
      * @var Address

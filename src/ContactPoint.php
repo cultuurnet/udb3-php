@@ -11,7 +11,7 @@ use CultuurNet\UDB3\Model\ValueObject\Web\Url;
 /**
  * ContactPoint info.
  */
-class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
+final class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 {
     /**
      * @var array
@@ -82,9 +82,7 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(
-            $data['phone'], $data['email'], $data['url']
-        );
+        return new self($data['phone'], $data['email'], $data['url']);
     }
 
     /**
@@ -132,6 +130,6 @@ class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
             $contactPoint->getUrls()->toArray()
         );
 
-        return new ContactPoint($phones, $emails, $urls);
+        return new self($phones, $emails, $urls);
     }
 }

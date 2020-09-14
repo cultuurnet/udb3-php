@@ -7,7 +7,7 @@ use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Label;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\LabelName;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Label\Labels;
 
-class LabelsImported extends OrganizerEvent implements LabelsImportedEventInterface
+final class LabelsImported extends OrganizerEvent implements LabelsImportedEventInterface
 {
     /**
      * @var Labels
@@ -55,7 +55,7 @@ class LabelsImported extends OrganizerEvent implements LabelsImportedEventInterf
             ));
         }
 
-        return new static(
+        return new self(
             $data['organizer_id'],
             $labels
         );

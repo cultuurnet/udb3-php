@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Offer\Events;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 
-class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
+abstract class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
 {
     protected $title;
 
@@ -14,7 +14,7 @@ class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
      * @param Language $language
      * @param Title $title
      */
-    public function __construct($itemId, Language $language, Title $title)
+    final public function __construct(string $itemId, Language $language, Title $title)
     {
         parent::__construct($itemId, $language);
         $this->title = $title;

@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Role\Events;
 use CultuurNet\UDB3\ValueObject\SapiVersion;
 use ValueObjects\Identity\UUID;
 
-class ConstraintRemoved extends AbstractEvent
+final class ConstraintRemoved extends AbstractEvent
 {
     /**
      * @var SapiVersion
@@ -16,7 +16,7 @@ class ConstraintRemoved extends AbstractEvent
      * @param UUID $uuid
      * @param SapiVersion $sapiVersion
      */
-    public function __construct(
+    final public function __construct(
         UUID $uuid,
         SapiVersion $sapiVersion
     ) {

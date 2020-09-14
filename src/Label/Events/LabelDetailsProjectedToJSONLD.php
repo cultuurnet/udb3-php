@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Label\Events;
 use Broadway\Serializer\SerializableInterface;
 use ValueObjects\Identity\UUID;
 
-class LabelDetailsProjectedToJSONLD implements SerializableInterface
+final class LabelDetailsProjectedToJSONLD implements SerializableInterface
 {
     const UUID = 'uuid';
 

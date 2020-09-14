@@ -9,7 +9,7 @@ use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
 
-class MediaObjectCreated implements SerializableInterface
+final class MediaObjectCreated implements SerializableInterface
 {
     /**
      * @var UUID
@@ -136,7 +136,7 @@ class MediaObjectCreated implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             new UUID($data['media_object_id']),
             new MIMEType($data['mime_type']),
             new StringLiteral($data['description']),

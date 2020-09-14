@@ -8,7 +8,7 @@ use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour as Udb3M
 /**
  * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour.
  */
-class OpeningHour implements SerializableInterface
+final class OpeningHour implements SerializableInterface
 {
     /**
      * @var OpeningTime
@@ -115,7 +115,7 @@ class OpeningHour implements SerializableInterface
      */
     public static function fromUdb3ModelOpeningHour(Udb3ModelOpeningHour $openingHour)
     {
-        return new OpeningHour(
+        return new self(
             OpeningTime::fromUdb3ModelTime($openingHour->getOpeningTime()),
             OpeningTime::fromUdb3ModelTime($openingHour->getClosingTime()),
             DayOfWeekCollection::fromUdb3ModelDays($openingHour->getDays())

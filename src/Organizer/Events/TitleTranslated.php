@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 
-class TitleTranslated extends OrganizerEvent
+final class TitleTranslated extends OrganizerEvent
 {
     /**
      * @var Title

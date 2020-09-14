@@ -16,8 +16,8 @@ abstract class AbstractLabelEvent extends OrganizerEvent implements LabelEventIn
      * @param string $organizerId
      * @param Label $label
      */
-    public function __construct(
-        $organizerId,
+    final public function __construct(
+        string $organizerId,
         Label $label
     ) {
         parent::__construct($organizerId);

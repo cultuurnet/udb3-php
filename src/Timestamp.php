@@ -12,7 +12,7 @@ use InvalidArgumentException;
  * Provices a class for a timestamp.
  * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange.
  */
-class Timestamp implements SerializableInterface
+final class Timestamp implements SerializableInterface
 {
 
     /**
@@ -33,7 +33,7 @@ class Timestamp implements SerializableInterface
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(
+    final public function __construct(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate
     ) {

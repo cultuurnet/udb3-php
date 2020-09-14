@@ -15,7 +15,7 @@ abstract class AbstractCalendarUpdated extends AbstractEvent
      * @param string $itemId
      * @param Calendar $calendar
      */
-    public function __construct($itemId, Calendar $calendar)
+    final public function __construct(string $itemId, Calendar $calendar)
     {
         parent::__construct($itemId);
 

@@ -7,7 +7,7 @@ use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\EventSourcing\AggregateCopiedEventInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
-class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
+final class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
 {
     /**
      * @var string
@@ -82,7 +82,7 @@ class EventCopied extends AbstractEvent implements AggregateCopiedEventInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             $data['item_id'],
             $data['original_event_id'],
             Calendar::deserialize($data['calendar'])

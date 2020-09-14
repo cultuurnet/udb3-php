@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Language;
 
-class AddressTranslated extends AddressUpdated
+final class AddressTranslated extends AddressUpdated
 {
     /**
      * @var Language
@@ -50,7 +50,7 @@ class AddressTranslated extends AddressUpdated
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             $data['organizer_id'],
             Address::deserialize($data['address']),
             new Language($data['language'])

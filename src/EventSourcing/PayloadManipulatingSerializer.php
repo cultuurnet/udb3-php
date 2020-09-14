@@ -13,7 +13,7 @@ use Broadway\Serializer\SimpleInterfaceSerializer;
  * Decorates a SimpleInterfaceSerializer, first maps old class names to new
  * class names.
  */
-class PayloadManipulatingSerializer implements SerializerInterface
+final class PayloadManipulatingSerializer implements SerializerInterface
 {
     /**
      * @var callable[]

@@ -32,12 +32,4 @@ abstract class ActorEvent implements SerializableInterface
             'actor_id' => $this->actorId,
         );
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
-    {
-        return new static($data['actor_id']);
-    }
 }

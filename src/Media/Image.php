@@ -10,7 +10,7 @@ use CultuurNet\UDB3\Media\Properties\Description;
 use ValueObjects\Identity\UUID;
 use ValueObjects\Web\Url;
 
-class Image implements SerializableInterface
+final class Image implements SerializableInterface
 {
     /**
      * @var UUID
@@ -111,7 +111,7 @@ class Image implements SerializableInterface
      */
     public static function deserialize(array $data)
     {
-        return new static(
+        return new self(
             new UUID($data['media_object_id']),
             new MIMEType($data['mime_type']),
             new Description($data['description']),

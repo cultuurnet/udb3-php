@@ -17,7 +17,7 @@ class AbstractDescriptionTranslated extends AbstractPropertyTranslatedEvent
      * @param Language $language
      * @param Description $description
      */
-    public function __construct($itemId, Language $language, Description $description)
+    final public function __construct(string $itemId, Language $language, Description $description)
     {
         parent::__construct($itemId, $language);
         $this->description = $description;

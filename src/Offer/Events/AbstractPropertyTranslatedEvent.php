@@ -35,16 +35,4 @@ abstract class AbstractPropertyTranslatedEvent extends AbstractEvent implements 
             'language' => (string)$this->language->getCode(),
         );
     }
-
-    /**
-     * @param array $data
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
-    {
-        return new static(
-            $data['item_id'],
-            new Language($data['language'])
-        );
-    }
 }

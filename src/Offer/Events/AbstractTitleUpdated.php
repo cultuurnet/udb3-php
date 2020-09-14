@@ -16,7 +16,7 @@ abstract class AbstractTitleUpdated extends AbstractEvent
      * @param string $id
      * @param Title $title
      */
-    public function __construct($id, Title $title)
+    final public function __construct(string $id, Title $title)
     {
         parent::__construct($id);
         $this->title = $title;

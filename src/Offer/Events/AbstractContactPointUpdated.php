@@ -12,6 +12,12 @@ abstract class AbstractContactPointUpdated extends AbstractEvent
      */
     protected $contactPoint;
 
+    final public function __construct(string $id, ContactPoint $contactPoint)
+    {
+        parent::__construct($id);
+        $this->contactPoint = $contactPoint;
+    }
+
     public function getContactPoint()
     {
         return $this->contactPoint;
@@ -25,16 +31,6 @@ abstract class AbstractContactPointUpdated extends AbstractEvent
         return parent::serialize() + array(
             'contactPoint' => $this->contactPoint->serialize(),
         );
-    }
-
-    /**
-     * @param string $id
-     * @param ContactPoint $contactPoint
-     */
-    public function __construct($id, ContactPoint $contactPoint)
-    {
-        parent::__construct($id);
-        $this->contactPoint = $contactPoint;
     }
 
     /**

@@ -13,7 +13,7 @@ use CultuurNet\UDB3\Title;
 /**
  * Provides a majorInfoUpdated event.
  */
-class MajorInfoUpdated extends PlaceEvent
+final class MajorInfoUpdated extends PlaceEvent
 {
 
     /**
@@ -49,8 +49,8 @@ class MajorInfoUpdated extends PlaceEvent
      * @param CalendarInterface $calendar
      * @param Theme|null $theme
      */
-    public function __construct(
-        $placeId,
+    final public function __construct(
+        string $placeId,
         Title $title,
         EventType $eventType,
         Address $address,

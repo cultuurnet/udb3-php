@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 use ValueObjects\Web\Url;
 
-class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
+final class OrganizerCreatedWithUniqueWebsite extends OrganizerEvent
 {
     /**
      * @var Language

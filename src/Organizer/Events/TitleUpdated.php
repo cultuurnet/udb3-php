@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Organizer\Events;
 
 use CultuurNet\UDB3\Title;
 
-class TitleUpdated extends OrganizerEvent
+final class TitleUpdated extends OrganizerEvent
 {
     /**
      * @var Title

@@ -267,7 +267,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
 
     public function sameAs(Calendar $otherCalendar): bool
     {
-        return $this->toJsonLd() == $otherCalendar->toJsonLd();
+        return $this->toJsonLd() === $otherCalendar->toJsonLd();
     }
 
     public static function fromUdb3ModelCalendar(Udb3ModelCalendar $calendar): Calendar

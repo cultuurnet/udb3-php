@@ -7,6 +7,7 @@ namespace CultuurNet\UDB3\Event;
 
 use CultuurNet\UDB3\Category;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
+use InvalidArgumentException;
 
 final class EventType extends Category
 {

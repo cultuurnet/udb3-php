@@ -97,7 +97,7 @@ class EnrichingEventListenerDecoratorTest extends TestCase
             ->method('supports')
             ->willReturnCallback(
                 function (DomainMessage $domainMessage) use ($supportedDomainMessage) {
-                    return $domainMessage == $supportedDomainMessage;
+                    return $domainMessage === $supportedDomainMessage;
                 }
             );
 

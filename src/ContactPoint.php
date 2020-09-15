@@ -69,7 +69,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
 
     public function sameAs(ContactPoint $otherContactPoint): bool
     {
-        return $this->toJsonLd() == $otherContactPoint->toJsonLd();
+        return $this->toJsonLd() === $otherContactPoint->toJsonLd();
     }
 
     public static function fromUdb3ModelContactPoint(Udb3ModelContactPoint $contactPoint): ContactPoint

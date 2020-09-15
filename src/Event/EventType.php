@@ -19,7 +19,7 @@ final class EventType extends Category
     {
         $event = json_decode($eventString, false);
         foreach ($event->terms as $term) {
-            if ($term->domain == self::DOMAIN) {
+            if ($term->domain === self::DOMAIN) {
                 return new self($term->id, $term->label);
             }
         }

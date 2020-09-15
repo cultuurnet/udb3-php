@@ -205,6 +205,6 @@ final class BookingInfo implements JsonLdSerializableInterface
 
     private function castEmptyStringToNull(?string $string = null): ?string
     {
-        return is_string($string) && strlen($string) === 0 ? null : $string;
+        return is_string($string) && $string === '' ? null : $string;
     }
 }

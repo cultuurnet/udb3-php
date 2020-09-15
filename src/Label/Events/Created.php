@@ -9,8 +9,8 @@ use ValueObjects\Identity\UUID;
 
 class Created extends AbstractEvent
 {
-    const VISIBILITY = 'visibility';
-    const PRIVACY = 'privacy';
+    public const VISIBILITY = 'visibility';
+    public const PRIVACY = 'privacy';
 
     /**
      * @var Visibility

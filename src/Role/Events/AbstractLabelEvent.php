@@ -6,7 +6,7 @@ use ValueObjects\Identity\UUID;
 
 abstract class AbstractLabelEvent extends AbstractEvent
 {
-    const LABEL_ID = 'labelId';
+    public const LABEL_ID = 'labelId';
 
     /**
      * @var UUID

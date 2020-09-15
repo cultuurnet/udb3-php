@@ -7,7 +7,7 @@ use InvalidArgumentException;
 
 final class Facility extends Category
 {
-    const DOMAIN = 'facility';
+    public const DOMAIN = 'facility';
 
     public function __construct(string $id, string $label)
     {

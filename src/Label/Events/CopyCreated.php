@@ -9,7 +9,7 @@ use ValueObjects\Identity\UUID;
 
 final class CopyCreated extends Created
 {
-    const PARENT_UUID = 'parentUuid';
+    public const PARENT_UUID = 'parentUuid';
 
     /**
      * @var UUID

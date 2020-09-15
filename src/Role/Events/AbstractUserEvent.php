@@ -7,7 +7,7 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 abstract class AbstractUserEvent extends AbstractEvent
 {
-    const USER_ID = 'userId';
+    public const USER_ID = 'userId';
 
     /**
      * @var StringLiteral

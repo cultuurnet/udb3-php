@@ -7,7 +7,7 @@ use ValueObjects\Identity\UUID;
 
 final class LabelDetailsProjectedToJSONLD implements SerializableInterface
 {
-    const UUID = 'uuid';
+    public const UUID = 'uuid';
 
     /**
      * @var UUID

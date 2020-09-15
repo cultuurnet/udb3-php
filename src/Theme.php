@@ -7,7 +7,7 @@ use InvalidArgumentException;
 
 final class Theme extends Category
 {
-    const DOMAIN = 'theme';
+    public const DOMAIN = 'theme';
 
     public function __construct(string $id, string $label)
     {

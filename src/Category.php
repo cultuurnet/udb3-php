@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCategory;
+use InvalidArgumentException;
 
 class Category implements SerializableInterface, JsonLdSerializableInterface
 {
@@ -25,11 +26,11 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
     public function __construct(string $id, string $label, string $domain)
     {
         if (empty($id)) {
-            throw new \InvalidArgumentException('Category ID can not be empty.');
+            throw new InvalidArgumentException('Category ID can not be empty.');
         }
 
         if (!is_string($domain)) {
-            throw new \InvalidArgumentException('Domain should be a string.');
+            throw new InvalidArgumentException('Domain should be a string.');
         }
 
         $this->id = $id;

@@ -27,7 +27,7 @@ abstract class AbstractPublished extends AbstractEvent
     public function serialize(): array
     {
         return parent::serialize() + [
-            'publication_date' => $this->publicationDate->format(\DateTime::ATOM),
+            'publication_date' => $this->publicationDate->format(DateTimeInterface::ATOM),
         ];
     }
 
@@ -35,7 +35,7 @@ abstract class AbstractPublished extends AbstractEvent
     {
         return new static(
             $data['item_id'],
-            \DateTime::createFromFormat(\DateTime::ATOM, $data['publication_date'])
+            \DateTime::createFromFormat(DateTimeInterface::ATOM, $data['publication_date'])
         );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\Events;
 
+use CultureFeed_Cdb_Xml;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\HasCdbXmlTrait;
 
@@ -27,7 +28,7 @@ class EventImportedFromUDB2 extends EventEvent implements EventCdbXMLInterface
     public static function deserialize(array $data): EventImportedFromUDB2
     {
         $data += array(
-            'cdbXmlNamespaceUri' => \CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),
+            'cdbXmlNamespaceUri' => CultureFeed_Cdb_Xml::namespaceUriForVersion('3.2'),
         );
         return new self(
             $data['event_id'],

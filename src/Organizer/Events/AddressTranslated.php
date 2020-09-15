@@ -45,8 +45,7 @@ final class AddressTranslated extends AddressUpdated
     }
 
     /**
-     * @param array $data
-     * @return static
+     * @return AddressTranslated
      */
     public static function deserialize(array $data): AddressUpdated
     {

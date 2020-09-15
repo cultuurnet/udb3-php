@@ -78,7 +78,8 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $data
+     * @return Category
      */
     public static function deserialize(array $data)
     {

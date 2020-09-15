@@ -2,10 +2,9 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
-use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Language;
 
-abstract class AbstractPropertyTranslatedEvent extends AbstractEvent implements SerializableInterface
+abstract class AbstractPropertyTranslatedEvent extends AbstractEvent
 {
     /**
      * @var Language

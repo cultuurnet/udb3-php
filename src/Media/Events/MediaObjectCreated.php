@@ -69,7 +69,7 @@ final class MediaObjectCreated implements SerializableInterface
     /**
      * @return Language
      */
-    public function getLanguage()
+    public function getLanguage(): Language
     {
         return $this->language;
     }
@@ -77,7 +77,7 @@ final class MediaObjectCreated implements SerializableInterface
     /**
      * @return UUID
      */
-    public function getMediaObjectId()
+    public function getMediaObjectId(): UUID
     {
         return $this->mediaObjectId;
     }
@@ -85,7 +85,7 @@ final class MediaObjectCreated implements SerializableInterface
     /**
      * @return StringLiteral
      */
-    public function getDescription()
+    public function getDescription(): StringLiteral
     {
         return $this->description;
     }
@@ -93,7 +93,7 @@ final class MediaObjectCreated implements SerializableInterface
     /**
      * @return StringLiteral
      */
-    public function getCopyrightHolder()
+    public function getCopyrightHolder(): StringLiteral
     {
         return $this->copyrightHolder;
     }
@@ -101,7 +101,7 @@ final class MediaObjectCreated implements SerializableInterface
     /**
      * @return MIMEType
      */
-    public function getMimeType()
+    public function getMimeType(): MIMEType
     {
         return $this->mimeType;
     }
@@ -109,7 +109,7 @@ final class MediaObjectCreated implements SerializableInterface
     /**
      * @return Url
      */
-    public function getSourceLocation()
+    public function getSourceLocation(): Url
     {
         return $this->sourceLocation;
     }
@@ -117,7 +117,7 @@ final class MediaObjectCreated implements SerializableInterface
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return array(
             'media_object_id' => $this->getMediaObjectId()->toNative(),
@@ -134,7 +134,7 @@ final class MediaObjectCreated implements SerializableInterface
      *
      * @return MediaObjectCreated The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): MediaObjectCreated
     {
         return new self(
             new UUID($data['media_object_id']),

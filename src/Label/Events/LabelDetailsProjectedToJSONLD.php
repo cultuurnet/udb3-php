@@ -26,7 +26,7 @@ final class LabelDetailsProjectedToJSONLD implements SerializableInterface
     /**
      * @return UUID
      */
-    public function getUuid()
+    public function getUuid(): UUID
     {
         return $this->uuid;
     }
@@ -34,7 +34,7 @@ final class LabelDetailsProjectedToJSONLD implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): LabelDetailsProjectedToJSONLD
     {
         return new static(
             new UUID($data[self::UUID])
@@ -44,7 +44,7 @@ final class LabelDetailsProjectedToJSONLD implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             self::UUID => $this->getUuid()->toNative(),

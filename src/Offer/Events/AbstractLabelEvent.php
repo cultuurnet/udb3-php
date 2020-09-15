@@ -27,7 +27,7 @@ abstract class AbstractLabelEvent extends AbstractEvent implements LabelEventInt
     /**
      * @return Label
      */
-    public function getLabel()
+    public function getLabel(): Label
     {
         return $this->label;
     }
@@ -35,7 +35,7 @@ abstract class AbstractLabelEvent extends AbstractEvent implements LabelEventInt
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'label' => (string) $this->label,
@@ -47,7 +47,7 @@ abstract class AbstractLabelEvent extends AbstractEvent implements LabelEventInt
      * @param array $data
      * @return mixed The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractLabelEvent
     {
         if (!isset($data['visibility'])) {
             $data['visibility'] = true;

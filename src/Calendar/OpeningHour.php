@@ -44,7 +44,7 @@ final class OpeningHour implements SerializableInterface
     /**
      * @return OpeningTime
      */
-    public function getOpens()
+    public function getOpens(): OpeningTime
     {
         return $this->opens;
     }
@@ -52,7 +52,7 @@ final class OpeningHour implements SerializableInterface
     /**
      * @return OpeningTime
      */
-    public function getCloses()
+    public function getCloses(): OpeningTime
     {
         return $this->closes;
     }
@@ -60,7 +60,7 @@ final class OpeningHour implements SerializableInterface
     /**
      * @return DayOfWeekCollection
      */
-    public function getDayOfWeekCollection()
+    public function getDayOfWeekCollection(): DayOfWeekCollection
     {
         return $this->dayOfWeekCollection;
     }
@@ -68,7 +68,7 @@ final class OpeningHour implements SerializableInterface
     /**
      * @param DayOfWeekCollection $dayOfWeekCollection
      */
-    public function addDayOfWeekCollection(DayOfWeekCollection $dayOfWeekCollection)
+    public function addDayOfWeekCollection(DayOfWeekCollection $dayOfWeekCollection): void
     {
         foreach ($dayOfWeekCollection->getDaysOfWeek() as $dayOfWeek) {
             $this->dayOfWeekCollection->addDayOfWeek($dayOfWeek);
@@ -79,7 +79,7 @@ final class OpeningHour implements SerializableInterface
      * @param OpeningHour $otherOpeningHour
      * @return bool
      */
-    public function hasEqualHours(OpeningHour $otherOpeningHour)
+    public function hasEqualHours(OpeningHour $otherOpeningHour): bool
     {
         return $otherOpeningHour->getOpens()->sameValueAs($this->getOpens()) &&
             $otherOpeningHour->getCloses()->sameValueAs($this->getCloses());
@@ -88,7 +88,7 @@ final class OpeningHour implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): OpeningHour
     {
         return new static(
             OpeningTime::fromNativeString($data['opens']),
@@ -100,7 +100,7 @@ final class OpeningHour implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'opens' => $this->opens->toNativeString(),
@@ -113,7 +113,7 @@ final class OpeningHour implements SerializableInterface
      * @param Udb3ModelOpeningHour $openingHour
      * @return self
      */
-    public static function fromUdb3ModelOpeningHour(Udb3ModelOpeningHour $openingHour)
+    public static function fromUdb3ModelOpeningHour(Udb3ModelOpeningHour $openingHour): OpeningHour
     {
         return new self(
             OpeningTime::fromUdb3ModelTime($openingHour->getOpeningTime()),

@@ -14,7 +14,7 @@ final class EventType extends Category
     const DOMAIN = 'eventtype';
 
 
-    public function __construct($id, $label)
+    public function __construct(string $id, string $label)
     {
         parent::__construct($id, $label, self::DOMAIN);
     }
@@ -27,7 +27,7 @@ final class EventType extends Category
      *
      * @return self|null
      */
-    public static function fromJSONLDEvent($eventString)
+    public static function fromJSONLDEvent(string $eventString): ?EventType
     {
         $event = json_decode($eventString);
         foreach ($event->terms as $term) {

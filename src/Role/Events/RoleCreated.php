@@ -26,7 +26,7 @@ final class RoleCreated extends AbstractEvent
     /**
      * @return StringLiteral
      */
-    public function getName()
+    public function getName(): StringLiteral
     {
         return $this->name;
     }
@@ -34,7 +34,7 @@ final class RoleCreated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): RoleCreated
     {
         return new static(
             new UUID($data['uuid']),
@@ -45,7 +45,7 @@ final class RoleCreated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'name' => $this->name->toNative(),

@@ -7,6 +7,9 @@ use CultuurNet\UDB3\Title;
 
 abstract class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
 {
+    /**
+     * @var Title
+     */
     protected $title;
 
     /**
@@ -23,7 +26,7 @@ abstract class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -31,7 +34,7 @@ abstract class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         $value = parent::serialize() + array(
                 'title' => $this->title->toNative(),
@@ -43,7 +46,7 @@ abstract class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractTitleTranslated
     {
         return new static(
             $data['item_id'],

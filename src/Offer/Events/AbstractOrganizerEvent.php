@@ -23,7 +23,7 @@ abstract class AbstractOrganizerEvent extends AbstractEvent
     /**
      * @return string
      */
-    public function getOrganizerId()
+    public function getOrganizerId(): string
     {
         return $this->organizerId;
     }
@@ -31,7 +31,7 @@ abstract class AbstractOrganizerEvent extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'organizerId' => $this->organizerId,
@@ -42,7 +42,7 @@ abstract class AbstractOrganizerEvent extends AbstractEvent
      * @param array $data
      * @return static The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractOrganizerEvent
     {
         return new static(
             $data['item_id'],

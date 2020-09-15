@@ -24,7 +24,7 @@ abstract class AbstractEventWithIri extends AbstractEvent implements Serializabl
     /**
      * @return string
      */
-    public function getIri()
+    public function getIri(): string
     {
         return $this->iri;
     }
@@ -32,7 +32,7 @@ abstract class AbstractEventWithIri extends AbstractEvent implements Serializabl
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'iri' => $this->iri,
@@ -43,7 +43,7 @@ abstract class AbstractEventWithIri extends AbstractEvent implements Serializabl
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractEventWithIri
     {
         return new static($data['item_id'], $data['iri']);
     }

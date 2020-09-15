@@ -25,7 +25,7 @@ abstract class AbstractTypicalAgeRangeUpdated extends AbstractEvent
     /**
      * @return AgeRange
      */
-    public function getTypicalAgeRange()
+    public function getTypicalAgeRange(): AgeRange
     {
         return $this->typicalAgeRange;
     }
@@ -33,7 +33,7 @@ abstract class AbstractTypicalAgeRangeUpdated extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'typicalAgeRange' => (string) $this->typicalAgeRange,
@@ -43,7 +43,7 @@ abstract class AbstractTypicalAgeRangeUpdated extends AbstractEvent
     /**
      * @return mixed The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractTypicalAgeRangeUpdated
     {
         return new static($data['item_id'], AgeRange::fromString($data['typicalAgeRange']));
     }

@@ -13,14 +13,17 @@ use Broadway\Serializer\SerializableInterface;
  */
 abstract class PlaceEvent implements SerializableInterface
 {
+    /**
+     * @var string
+     */
     protected $placeId;
 
-    public function __construct($placeId)
+    public function __construct(string $placeId)
     {
         $this->placeId = $placeId;
     }
 
-    public function getPlaceId()
+    public function getPlaceId(): string
     {
         return $this->placeId;
     }
@@ -28,7 +31,7 @@ abstract class PlaceEvent implements SerializableInterface
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return array(
             'place_id' => $this->placeId,

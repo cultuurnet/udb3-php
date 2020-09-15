@@ -49,11 +49,11 @@ final class OrganizerCreated extends OrganizerEvent
      * @param string[] $emails
      * @param string[] $urls
      */
-    public function __construct($id, Title $title, array $addresses, array $phones, array $emails, array $urls)
+    public function __construct(string $id, Title $title, array $addresses, array $phones, array $emails, array $urls)
     {
         parent::__construct($id);
 
-        $this->guardAddressTypes($addresses);
+        $this->guardAddressTypes(...$addresses);
 
         $this->title = $title;
         $this->addresses = $addresses;
@@ -65,24 +65,14 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @param Address[] $addresses
      */
-    private function guardAddressTypes(array $addresses)
+    private function guardAddressTypes(Address ...$addresses): void
     {
-        foreach ($addresses as $address) {
-            if (!($address instanceof Address)) {
-                throw new \InvalidArgumentException(
-                    sprintf(
-                        "Argument should be of type Address, %s given.",
-                        is_object($address) ? get_class($address) : 'scalar'
-                    )
-                );
-            }
-        }
     }
 
     /**
      * @return Title
      */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
@@ -90,7 +80,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return Address[]
      */
-    public function getAddresses()
+    public function getAddresses(): array
     {
         return $this->addresses;
     }
@@ -98,7 +88,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getPhones()
+    public function getPhones(): array
     {
         return $this->phones;
     }
@@ -106,7 +96,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getEmails()
+    public function getEmails(): array
     {
         return $this->emails;
     }
@@ -114,7 +104,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return string[]
      */
-    public function getUrls()
+    public function getUrls(): array
     {
         return $this->urls;
     }
@@ -122,7 +112,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
 
         $addresses = array();
@@ -142,7 +132,7 @@ final class OrganizerCreated extends OrganizerEvent
     /**
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): OrganizerCreated
     {
 
         $addresses = array();

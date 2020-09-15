@@ -29,7 +29,7 @@ final class DummyEvent implements SerializableInterface
     /**
      * @return mixed The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): DummyEvent
     {
         return new static(
             $data['id'],
@@ -40,7 +40,7 @@ final class DummyEvent implements SerializableInterface
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'id' => $this->id,

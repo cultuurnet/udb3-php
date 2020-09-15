@@ -33,7 +33,7 @@ final class DayOfWeek extends Enum
      * @param Day $day
      * @return DayOfWeek
      */
-    public static function fromUdb3ModelDay(Day $day)
+    public static function fromUdb3ModelDay(Day $day): DayOfWeek
     {
         return self::fromNative($day->toString());
     }

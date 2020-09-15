@@ -24,7 +24,7 @@ abstract class AbstractThemeUpdated extends AbstractEvent
     /**
      * @return Theme
      */
-    public function getTheme()
+    public function getTheme(): Theme
     {
         return $this->theme;
     }
@@ -32,7 +32,7 @@ abstract class AbstractThemeUpdated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'theme' => $this->theme->serialize(),

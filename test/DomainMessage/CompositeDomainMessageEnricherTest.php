@@ -42,7 +42,7 @@ class CompositeDomainMessageEnricherTest extends TestCase
      */
     private $compositeEnricher;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->eventCreatedEnricher = $this->createMock(DomainMessageEnricherInterface::class);
         $this->eventCreatedEnricher->expects($this->any())
@@ -72,7 +72,7 @@ class CompositeDomainMessageEnricherTest extends TestCase
     /**
      * @test
      */
-    public function it_only_supports_domain_messages_supported_by_its_injected_enrichers()
+    public function it_only_supports_domain_messages_supported_by_its_injected_enrichers(): void
     {
         $eventCreatedDomainMessage = $this->createEventCreatedDomainMessage();
         $placeCreatedDomainMessage = $this->createPlaceCreatedDomainMessage();
@@ -88,7 +88,7 @@ class CompositeDomainMessageEnricherTest extends TestCase
     /**
      * @test
      */
-    public function it_delegates_enrichment_of_supported_domain_messages()
+    public function it_delegates_enrichment_of_supported_domain_messages(): void
     {
         $eventCreatedDomainMessage = $this->createEventCreatedDomainMessage();
         $placeCreatedDomainMessage = $this->createPlaceCreatedDomainMessage();

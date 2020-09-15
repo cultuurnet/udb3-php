@@ -61,7 +61,7 @@ final class Image implements SerializableInterface
     /**
      * @return Language
      */
-    public function getLanguage()
+    public function getLanguage(): Language
     {
         return $this->language;
     }
@@ -69,7 +69,7 @@ final class Image implements SerializableInterface
     /**
      * @return UUID
      */
-    public function getMediaObjectId()
+    public function getMediaObjectId(): UUID
     {
         return $this->mediaObjectId;
     }
@@ -77,7 +77,7 @@ final class Image implements SerializableInterface
     /**
      * @return MIMEType
      */
-    public function getMimeType()
+    public function getMimeType(): MIMEType
     {
         return $this->mimeType;
     }
@@ -85,7 +85,7 @@ final class Image implements SerializableInterface
     /**
      * @return Description
      */
-    public function getDescription()
+    public function getDescription(): Description
     {
         return $this->description;
     }
@@ -93,7 +93,7 @@ final class Image implements SerializableInterface
     /**
      * @return CopyrightHolder
      */
-    public function getCopyrightHolder()
+    public function getCopyrightHolder(): CopyrightHolder
     {
         return $this->copyrightHolder;
     }
@@ -101,7 +101,7 @@ final class Image implements SerializableInterface
     /**
      * @return Url
      */
-    public function getSourceLocation()
+    public function getSourceLocation(): Url
     {
         return $this->sourceLocation;
     }
@@ -109,7 +109,7 @@ final class Image implements SerializableInterface
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): Image
     {
         return new self(
             new UUID($data['media_object_id']),
@@ -124,7 +124,7 @@ final class Image implements SerializableInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'media_object_id' => (string) $this->getMediaObjectId(),

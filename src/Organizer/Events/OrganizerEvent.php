@@ -14,15 +14,17 @@ use Broadway\Serializer\SerializableInterface;
  */
 abstract class OrganizerEvent implements SerializableInterface
 {
-
+    /**
+     * @var string
+     */
     protected $organizerId;
 
-    public function __construct($organizerId)
+    public function __construct(string $organizerId)
     {
         $this->organizerId = $organizerId;
     }
 
-    public function getOrganizerId()
+    public function getOrganizerId(): string
     {
         return $this->organizerId;
     }
@@ -30,7 +32,7 @@ abstract class OrganizerEvent implements SerializableInterface
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return array(
           'organizer_id' => $this->organizerId,

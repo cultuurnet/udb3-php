@@ -17,7 +17,7 @@ final class LocationUpdated extends AbstractEvent
      * @param LocationId $locationId
      */
     public function __construct(
-        $eventId,
+        string $eventId,
         LocationId $locationId
     ) {
         parent::__construct($eventId);
@@ -28,7 +28,7 @@ final class LocationUpdated extends AbstractEvent
     /**
      * @return LocationId
      */
-    public function getLocationId()
+    public function getLocationId(): LocationId
     {
         return $this->locationId;
     }
@@ -36,7 +36,7 @@ final class LocationUpdated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
                 'location_id' => $this->locationId->toNative(),
@@ -46,7 +46,7 @@ final class LocationUpdated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): LocationUpdated
     {
         return new self(
             $data['item_id'],

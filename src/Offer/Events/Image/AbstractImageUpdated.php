@@ -53,7 +53,7 @@ abstract class AbstractImageUpdated extends AbstractEvent
     /**
      * @return UUID
      */
-    public function getMediaObjectId()
+    public function getMediaObjectId(): UUID
     {
         return $this->mediaObjectId;
     }
@@ -61,7 +61,7 @@ abstract class AbstractImageUpdated extends AbstractEvent
     /**
      * @return StringLiteral
      */
-    public function getDescription()
+    public function getDescription(): StringLiteral
     {
         return $this->description;
     }
@@ -69,7 +69,7 @@ abstract class AbstractImageUpdated extends AbstractEvent
     /**
      * @return StringLiteral
      */
-    public function getCopyrightHolder()
+    public function getCopyrightHolder(): StringLiteral
     {
         return $this->copyrightHolder;
     }
@@ -77,7 +77,7 @@ abstract class AbstractImageUpdated extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() +  array(
             'media_object_id' => (string) $this->mediaObjectId,
@@ -90,7 +90,7 @@ abstract class AbstractImageUpdated extends AbstractEvent
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractImageUpdated
     {
         return new static(
             $data['item_id'],

@@ -26,7 +26,7 @@ abstract class AbstractEvent implements SerializableInterface
     /**
      * @return UUID
      */
-    public function getUuid()
+    public function getUuid(): UUID
     {
         return $this->uuid;
     }
@@ -34,7 +34,7 @@ abstract class AbstractEvent implements SerializableInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return ['uuid' => $this->getUuid()->toNative()];
     }

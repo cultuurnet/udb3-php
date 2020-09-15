@@ -25,7 +25,7 @@ abstract class AbstractDescriptionUpdated extends AbstractEvent
     /**
      * @return Description
      */
-    public function getDescription()
+    public function getDescription(): Description
     {
         return $this->description;
     }
@@ -33,7 +33,7 @@ abstract class AbstractDescriptionUpdated extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'description' => $this->description->toNative(),
@@ -44,7 +44,7 @@ abstract class AbstractDescriptionUpdated extends AbstractEvent
      * @param array $data
      * @return AbstractDescriptionUpdated
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractDescriptionUpdated
     {
         return new static($data['item_id'], new Description($data['description']));
     }

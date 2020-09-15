@@ -31,7 +31,7 @@ abstract class AbstractImageEvent extends AbstractEvent
     /**
      * @return Image
      */
-    public function getImage()
+    public function getImage(): Image
     {
         return $this->image;
     }
@@ -39,7 +39,7 @@ abstract class AbstractImageEvent extends AbstractEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'image' => $this->image->serialize(),
@@ -50,7 +50,7 @@ abstract class AbstractImageEvent extends AbstractEvent
      * @param array $data
      * @return mixed The object instance
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractImageEvent
     {
         return new static(
             $data['item_id'],

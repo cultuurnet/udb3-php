@@ -16,7 +16,7 @@ final class ContactPointUpdated extends OrganizerEvent
      * @param ContactPoint $contactPoint
      */
     public function __construct(
-        $organizerId,
+        string $organizerId,
         ContactPoint $contactPoint
     ) {
         parent::__construct($organizerId);
@@ -26,7 +26,7 @@ final class ContactPointUpdated extends OrganizerEvent
     /**
      * @return ContactPoint
      */
-    public function getContactPoint()
+    public function getContactPoint(): ContactPoint
     {
         return $this->contactPoint;
     }
@@ -35,7 +35,7 @@ final class ContactPointUpdated extends OrganizerEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'contactPoint' => $this->contactPoint->serialize(),
@@ -46,7 +46,7 @@ final class ContactPointUpdated extends OrganizerEvent
      * @param array $data
      * @return static
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): ContactPointUpdated
     {
         return new static(
             $data['organizer_id'],

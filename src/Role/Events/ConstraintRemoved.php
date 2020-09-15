@@ -35,7 +35,7 @@ final class ConstraintRemoved extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): ConstraintRemoved
     {
         return new static(
             new UUID($data['uuid']),
@@ -46,7 +46,7 @@ final class ConstraintRemoved extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
                 'sapiVersion' => $this->sapiVersion->toNative(),

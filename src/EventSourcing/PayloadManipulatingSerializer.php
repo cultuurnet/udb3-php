@@ -33,7 +33,7 @@ final class PayloadManipulatingSerializer implements SerializerInterface
     /**
      * @inheritdoc
      */
-    public function serialize($object)
+    public function serialize($object): array
     {
         return $this->serializer->serialize($object);
     }
@@ -42,7 +42,7 @@ final class PayloadManipulatingSerializer implements SerializerInterface
      * @param string $className
      * @param callable $callback
      */
-    public function manipulateEventsOfClass($className, callable $callback)
+    public function manipulateEventsOfClass(string $className, callable $callback): void
     {
         if (isset($this->manipulations[$className])) {
             throw new \RuntimeException(
@@ -67,7 +67,7 @@ final class PayloadManipulatingSerializer implements SerializerInterface
      * @param array $serializedObject
      * @return array
      */
-    private function manipulate($serializedObject)
+    private function manipulate(array $serializedObject): array
     {
         Assertion::keyExists(
             $serializedObject,

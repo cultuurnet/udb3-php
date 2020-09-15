@@ -18,7 +18,7 @@ final class AudienceUpdated extends AbstractEvent
      * @param Audience $audience
      */
     public function __construct(
-        $itemId,
+        string $itemId,
         Audience $audience
     ) {
         parent::__construct($itemId);
@@ -29,7 +29,7 @@ final class AudienceUpdated extends AbstractEvent
     /**
      * @return Audience
      */
-    public function getAudience()
+    public function getAudience(): Audience
     {
         return $this->audience;
     }
@@ -37,7 +37,7 @@ final class AudienceUpdated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
                 'audience' => $this->audience->serialize(),
@@ -47,7 +47,7 @@ final class AudienceUpdated extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AudienceUpdated
     {
         return new self(
             $data['item_id'],

@@ -7,7 +7,9 @@ use DateTimeInterface;
 
 abstract class AbstractPublished extends AbstractEvent
 {
-    /** @var  \DateTimeInterface */
+    /**
+     * @var DateTimeInterface
+     */
     private $publicationDate;
 
     /**
@@ -15,7 +17,7 @@ abstract class AbstractPublished extends AbstractEvent
      * @param string $itemId
      * @param \DateTimeInterface
      */
-    final public function __construct($itemId, DateTimeInterface $publicationDate)
+    final public function __construct(string $itemId, DateTimeInterface $publicationDate)
     {
         parent::__construct($itemId);
 
@@ -25,7 +27,7 @@ abstract class AbstractPublished extends AbstractEvent
     /**
      * @return \DateTimeInterface
      */
-    public function getPublicationDate()
+    public function getPublicationDate(): DateTimeInterface
     {
         return $this->publicationDate;
     }
@@ -33,7 +35,7 @@ abstract class AbstractPublished extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'publication_date' => $this->publicationDate->format(\DateTime::ATOM),
@@ -43,7 +45,7 @@ abstract class AbstractPublished extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractPublished
     {
         return new static(
             $data['item_id'],

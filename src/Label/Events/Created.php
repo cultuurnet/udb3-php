@@ -44,7 +44,7 @@ class Created extends AbstractEvent
     /**
      * @return Visibility
      */
-    public function getVisibility()
+    public function getVisibility(): Visibility
     {
         return $this->visibility;
     }
@@ -52,7 +52,7 @@ class Created extends AbstractEvent
     /**
      * @return Privacy
      */
-    public function getPrivacy()
+    public function getPrivacy(): Privacy
     {
         return $this->privacy;
     }
@@ -73,7 +73,7 @@ class Created extends AbstractEvent
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             self::VISIBILITY => $this->getVisibility()->toNative(),

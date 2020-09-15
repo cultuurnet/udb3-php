@@ -56,10 +56,10 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
      */
     public function __construct(
         CalendarType $type,
-        DateTimeInterface $startDate = null,
-        DateTimeInterface $endDate = null,
-        array $timestamps = array(),
-        array $openingHours = array()
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+        array $timestamps = [],
+        array $openingHours = []
     ) {
         if (($type->is(CalendarType::SINGLE()) || $type->is(CalendarType::MULTIPLE())) && (empty($timestamps))) {
             throw new \UnexpectedValueException('A single or multiple calendar should have timestamps.');
@@ -97,7 +97,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * @inheritdoc
      */
-    public function getType()
+    public function getType(): CalendarType
     {
         return CalendarType::fromNative($this->type);
     }
@@ -105,7 +105,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function serialize(): array
     {
         $serializedTimestamps = array_map(
             function (Timestamp $timestamp) {
@@ -136,7 +136,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): Calendar
     {
         $calendarType = CalendarType::fromNative($data['type']);
 
@@ -179,7 +179,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
      *
      * @throws InvalidArgumentException
      */
-    private static function deserializeDateTime($dateTimeData)
+    private static function deserializeDateTime(string $dateTimeData): DateTime
     {
         $dateTime = DateTime::createFromFormat(DateTime::ATOM, $dateTimeData);
 
@@ -197,7 +197,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * @inheritdoc
      */
-    public function getStartDate()
+    public function getStartDate(): ?DateTimeInterface
     {
         $timestamps = $this->getTimestamps();
 
@@ -218,7 +218,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * @inheritdoc
      */
-    public function getEndDate()
+    public function getEndDate(): ?DateTimeInterface
     {
         $timestamps = $this->getTimestamps();
 
@@ -237,17 +237,17 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     }
 
     /**
-     * @inheritdoc
+     * @return array|OpeningHour[]
      */
-    public function getOpeningHours()
+    public function getOpeningHours(): array
     {
         return $this->openingHours;
     }
 
     /**
-     * @inheritdoc
+     * @return array|Timestamp[]
      */
-    public function getTimestamps()
+    public function getTimestamps(): array
     {
         return $this->timestamps;
     }
@@ -255,7 +255,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * Return the jsonLD version of a calendar.
      */
-    public function toJsonLd()
+    public function toJsonLd(): array
     {
         $jsonLd = [];
 
@@ -297,7 +297,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
      * @param Calendar $otherCalendar
      * @return bool
      */
-    public function sameAs(Calendar $otherCalendar)
+    public function sameAs(Calendar $otherCalendar): bool
     {
         return $this->toJsonLd() == $otherCalendar->toJsonLd();
     }
@@ -306,7 +306,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
      * @param Udb3ModelCalendar $calendar
      * @return self
      */
-    public static function fromUdb3ModelCalendar(Udb3ModelCalendar $calendar)
+    public static function fromUdb3ModelCalendar(Udb3ModelCalendar $calendar): Calendar
     {
         $type = CalendarType::fromNative($calendar->getType()->toString());
 

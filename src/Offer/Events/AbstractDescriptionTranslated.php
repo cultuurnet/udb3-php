@@ -26,7 +26,7 @@ class AbstractDescriptionTranslated extends AbstractPropertyTranslatedEvent
     /**
      * @return Description
      */
-    public function getDescription()
+    public function getDescription(): Description
     {
         return $this->description;
     }
@@ -34,7 +34,7 @@ class AbstractDescriptionTranslated extends AbstractPropertyTranslatedEvent
     /**
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'description' => $this->description->toNative(),
@@ -44,7 +44,7 @@ class AbstractDescriptionTranslated extends AbstractPropertyTranslatedEvent
     /**
      * {@inheritdoc}
      */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractDescriptionTranslated
     {
         return new static(
             $data['item_id'],

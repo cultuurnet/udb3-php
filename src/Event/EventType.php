@@ -17,7 +17,7 @@ final class EventType extends Category
 
     public static function fromJSONLDEvent(string $eventString): ?EventType
     {
-        $event = json_decode($eventString);
+        $event = json_decode($eventString, false);
         foreach ($event->terms as $term) {
             if ($term->domain == self::DOMAIN) {
                 return new self($term->id, $term->label);

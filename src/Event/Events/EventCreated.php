@@ -27,12 +27,12 @@ final class EventCreated extends EventEvent
     /**
      * @var EventType
      */
-    private $eventType = null;
+    private $eventType;
 
     /**
      * @var Theme|null
      */
-    private $theme = null;
+    private $theme;
 
     /**
      * @var LocationId
@@ -47,7 +47,7 @@ final class EventCreated extends EventEvent
     /**
      * @var DateTimeImmutable|null
      */
-    private $publicationDate = null;
+    private $publicationDate;
 
     public function __construct(
         string $eventId,

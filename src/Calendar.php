@@ -20,17 +20,17 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * @var CalendarType
      */
-    protected $type = null;
+    protected $type;
 
     /**
      * @var DateTimeInterface
      */
-    protected $startDate = null;
+    protected $startDate;
 
     /**
      * @var DateTimeInterface
      */
-    protected $endDate = null;
+    protected $endDate;
 
     /**
      * @var Timestamp[]

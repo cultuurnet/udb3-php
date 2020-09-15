@@ -11,11 +11,6 @@ final class WebsiteUpdated extends OrganizerEvent
      */
     private $website;
 
-    /**
-     * WebsiteUpdated constructor.
-     * @param string $organizerId
-     * @param Url $website
-     */
     public function __construct(
         string $organizerId,
         Url $website
@@ -24,17 +19,11 @@ final class WebsiteUpdated extends OrganizerEvent
         $this->website = $website;
     }
 
-    /**
-     * @return Url
-     */
     public function getWebsite(): Url
     {
         return $this->website;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + [
@@ -42,10 +31,6 @@ final class WebsiteUpdated extends OrganizerEvent
             ];
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
     public static function deserialize(array $data): WebsiteUpdated
     {
         return new static(

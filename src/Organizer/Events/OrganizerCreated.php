@@ -10,9 +10,6 @@ namespace CultuurNet\UDB3\Organizer\Events;
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Title;
 
-/**
- * Instantiates an OrganizerCreated event
- */
 final class OrganizerCreated extends OrganizerEvent
 {
 
@@ -62,16 +59,10 @@ final class OrganizerCreated extends OrganizerEvent
         $this->urls = $urls;
     }
 
-    /**
-     * @param Address[] $addresses
-     */
     private function guardAddressTypes(Address ...$addresses): void
     {
     }
 
-    /**
-     * @return Title
-     */
     public function getTitle(): Title
     {
         return $this->title;
@@ -109,9 +100,6 @@ final class OrganizerCreated extends OrganizerEvent
         return $this->urls;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
 
@@ -129,9 +117,6 @@ final class OrganizerCreated extends OrganizerEvent
         );
     }
 
-    /**
-     * @return static
-     */
     public static function deserialize(array $data): OrganizerCreated
     {
 

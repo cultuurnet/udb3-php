@@ -12,28 +12,17 @@ class AbstractDescriptionTranslated extends AbstractPropertyTranslatedEvent
      */
     protected $description;
 
-    /**
-     * @param string $itemId
-     * @param Language $language
-     * @param Description $description
-     */
     final public function __construct(string $itemId, Language $language, Description $description)
     {
         parent::__construct($itemId, $language);
         $this->description = $description;
     }
 
-    /**
-     * @return Description
-     */
     public function getDescription(): Description
     {
         return $this->description;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + array(
@@ -41,9 +30,6 @@ class AbstractDescriptionTranslated extends AbstractPropertyTranslatedEvent
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function deserialize(array $data): AbstractDescriptionTranslated
     {
         return new static(

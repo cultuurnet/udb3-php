@@ -41,15 +41,6 @@ final class MediaObjectCreated implements SerializableInterface
      */
     protected $language;
 
-    /**
-     * MediaObjectCreated constructor.
-     * @param UUID $id
-     * @param MIMEType $fileType
-     * @param \ValueObjects\StringLiteral\StringLiteral $description
-     * @param \ValueObjects\StringLiteral\StringLiteral $copyrightHolder
-     * @param Language $language
-     * @param Url $sourceLocation
-     */
     public function __construct(
         UUID $id,
         MIMEType $fileType,
@@ -66,57 +57,36 @@ final class MediaObjectCreated implements SerializableInterface
         $this->language = $language;
     }
 
-    /**
-     * @return Language
-     */
     public function getLanguage(): Language
     {
         return $this->language;
     }
 
-    /**
-     * @return UUID
-     */
     public function getMediaObjectId(): UUID
     {
         return $this->mediaObjectId;
     }
 
-    /**
-     * @return StringLiteral
-     */
     public function getDescription(): StringLiteral
     {
         return $this->description;
     }
 
-    /**
-     * @return StringLiteral
-     */
     public function getCopyrightHolder(): StringLiteral
     {
         return $this->copyrightHolder;
     }
 
-    /**
-     * @return MIMEType
-     */
     public function getMimeType(): MIMEType
     {
         return $this->mimeType;
     }
 
-    /**
-     * @return Url
-     */
     public function getSourceLocation(): Url
     {
         return $this->sourceLocation;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return array(
@@ -129,11 +99,6 @@ final class MediaObjectCreated implements SerializableInterface
         );
     }
 
-    /**
-     * @param array $data
-     *
-     * @return MediaObjectCreated The object instance
-     */
     public static function deserialize(array $data): MediaObjectCreated
     {
         return new self(

@@ -10,9 +10,6 @@ use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
-/**
- * Provides a majorInfoUpdated event.
- */
 final class MajorInfoUpdated extends AbstractEvent
 {
     use BackwardsCompatibleEventTrait;
@@ -42,14 +39,6 @@ final class MajorInfoUpdated extends AbstractEvent
      */
     private $calendar;
 
-    /**
-     * @param string $eventId
-     * @param Title $title
-     * @param EventType $eventType
-     * @param LocationId $location
-     * @param CalendarInterface $calendar
-     * @param Theme|null $theme
-     */
     public function __construct(
         string $eventId,
         Title $title,
@@ -67,50 +56,31 @@ final class MajorInfoUpdated extends AbstractEvent
         $this->theme = $theme;
     }
 
-    /**
-     * @return Title
-     */
     public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return EventType
-     */
     public function getEventType(): EventType
     {
         return $this->eventType;
     }
 
-    /**
-     * @return Theme|null
-     */
     public function getTheme(): ?Theme
     {
         return $this->theme;
     }
 
-    /**
-     * @return CalendarInterface
-     */
     public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
 
-    /**
-     * @return LocationId
-     */
     public function getLocation(): LocationId
     {
         return $this->location;
     }
 
-
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         $theme = null;
@@ -126,9 +96,6 @@ final class MajorInfoUpdated extends AbstractEvent
         );
     }
 
-    /**
-     * @return static
-     */
     public static function deserialize(array $data): MajorInfoUpdated
     {
         return new self(

@@ -8,9 +8,6 @@ use CultuurNet\UDB3\Model\ValueObject\Contact\TelephoneNumber;
 use CultuurNet\UDB3\Model\ValueObject\Web\EmailAddress;
 use CultuurNet\UDB3\Model\ValueObject\Web\Url;
 
-/**
- * ContactPoint info.
- */
 final class ContactPoint implements SerializableInterface, JsonLdSerializableInterface
 {
     /**
@@ -28,12 +25,6 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
      */
     protected $urls = array();
 
-    /**
-     * Constructor.
-     * @param array $phones
-     * @param array $emails
-     * @param array $urls
-     */
     public function __construct(array $phones = array(), array $emails = array(), array $urls = array())
     {
         $this->phones = $phones;
@@ -41,33 +32,21 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
         $this->urls = $urls;
     }
 
-    /**
-     * @return array
-     */
     public function getPhones(): array
     {
         return $this->phones;
     }
 
-    /**
-     * @return array
-     */
     public function getEmails(): array
     {
         return $this->emails;
     }
 
-    /**
-     * @return array
-     */
     public function getUrls(): array
     {
         return $this->urls;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         return [
@@ -77,36 +56,22 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function deserialize(array $data): ContactPoint
     {
         return new self($data['phone'], $data['email'], $data['url']);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function toJsonLd(): array
     {
         // Serialized version is the same.
         return $this->serialize();
     }
 
-    /**
-     * @param ContactPoint $otherContactPoint
-     * @return bool
-     */
     public function sameAs(ContactPoint $otherContactPoint): bool
     {
         return $this->toJsonLd() == $otherContactPoint->toJsonLd();
     }
 
-    /**
-     * @param Udb3ModelContactPoint $contactPoint
-     * @return ContactPoint
-     */
     public static function fromUdb3ModelContactPoint(Udb3ModelContactPoint $contactPoint): ContactPoint
     {
         $phones = array_map(

@@ -18,17 +18,11 @@ abstract class AbstractPropertyTranslatedEvent extends AbstractEvent implements 
         parent::__construct($itemId);
     }
 
-    /**
-     * @return Language
-     */
     public function getLanguage(): Language
     {
         return $this->language;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         return parent::serialize() + array(

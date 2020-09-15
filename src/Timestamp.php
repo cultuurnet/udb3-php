@@ -8,10 +8,6 @@ use DateTime;
 use DateTimeInterface;
 use InvalidArgumentException;
 
-/**
- * Provices a class for a timestamp.
- * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange.
- */
 final class Timestamp implements SerializableInterface
 {
 
@@ -25,14 +21,6 @@ final class Timestamp implements SerializableInterface
      */
     protected $endDate;
 
-    /**
-     * Constructor
-     *
-     * @param DateTimeInterface $startDate
-     * @param DateTimeInterface $endDate
-     *
-     * @throws InvalidArgumentException
-     */
     final public function __construct(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate
@@ -45,25 +33,16 @@ final class Timestamp implements SerializableInterface
         $this->endDate = $endDate;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getStartDate(): DateTimeInterface
     {
         return $this->startDate;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getEndDate(): DateTimeInterface
     {
         return $this->endDate;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): Timestamp
     {
         return new static(
@@ -72,9 +51,6 @@ final class Timestamp implements SerializableInterface
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return [
@@ -83,10 +59,6 @@ final class Timestamp implements SerializableInterface
         ];
     }
 
-    /**
-     * @param DateRange $dateRange
-     * @return self
-     */
     public static function fromUdb3ModelDateRange(DateRange $dateRange): Timestamp
     {
         return new Timestamp(

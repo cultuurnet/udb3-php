@@ -9,33 +9,20 @@ abstract class AbstractRejected extends AbstractEvent
 {
     /**
      * @var StringLiteral
-     *  The reason why an offer is rejected, e.g.: Image and price info is missing.
      */
     private $reason;
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param StringLiteral $reason
-     *  The reason why an offer is rejected, e.g.: Image and price info is missing.
-     */
     final public function __construct(string $itemId, StringLiteral $reason)
     {
         parent::__construct($itemId);
         $this->reason = $reason;
     }
 
-    /**
-     * @return StringLiteral
-     */
     public function getReason(): StringLiteral
     {
         return $this->reason;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + array(
@@ -43,10 +30,6 @@ abstract class AbstractRejected extends AbstractEvent
         );
     }
 
-    /**
-     * @param array $data
-     * @return AbstractRejected
-     */
     public static function deserialize(array $data): AbstractRejected
     {
         return new static(

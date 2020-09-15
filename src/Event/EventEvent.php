@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event;
 
@@ -24,9 +21,6 @@ abstract class EventEvent implements SerializableInterface
         return $this->eventId;
     }
 
-    /**
-     * @return array
-     */
     public function serialize()
     {
         return array(

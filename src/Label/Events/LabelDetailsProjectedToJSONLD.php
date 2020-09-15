@@ -14,26 +14,16 @@ final class LabelDetailsProjectedToJSONLD implements SerializableInterface
      */
     private $uuid;
 
-    /**
-     * AbstractEvent constructor.
-     * @param UUID $uuid
-     */
     public function __construct(UUID $uuid)
     {
         $this->uuid = $uuid;
     }
 
-    /**
-     * @return UUID
-     */
     public function getUuid(): UUID
     {
         return $this->uuid;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): LabelDetailsProjectedToJSONLD
     {
         return new static(
@@ -41,9 +31,6 @@ final class LabelDetailsProjectedToJSONLD implements SerializableInterface
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return [

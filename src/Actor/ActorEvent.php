@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Cultuurnet\UDB3\Actor\ActorEvent.
- */
-
 namespace CultuurNet\UDB3\Actor;
 
 use Broadway\Serializer\SerializableInterface;
@@ -26,9 +21,6 @@ abstract class ActorEvent implements SerializableInterface
         return $this->actorId;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         return array(

@@ -10,9 +10,6 @@ use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
-/**
- * Provides a majorInfoUpdated event.
- */
 final class MajorInfoUpdated extends PlaceEvent
 {
 
@@ -41,14 +38,6 @@ final class MajorInfoUpdated extends PlaceEvent
      */
     private $calendar;
 
-    /**
-     * @param string $placeId
-     * @param Title $title
-     * @param EventType $eventType
-     * @param Address $address
-     * @param CalendarInterface $calendar
-     * @param Theme|null $theme
-     */
     final public function __construct(
         string $placeId,
         Title $title,
@@ -66,50 +55,31 @@ final class MajorInfoUpdated extends PlaceEvent
         $this->theme = $theme;
     }
 
-    /**
-     * @return Title
-     */
     public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return EventType
-     */
     public function getEventType(): EventType
     {
         return $this->eventType;
     }
 
-    /**
-     * @return Theme
-     */
     public function getTheme(): ?Theme
     {
         return $this->theme;
     }
 
-    /**
-     * @return CalendarInterface
-     */
     public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
 
-    /**
-     * @return Address
-     */
     public function getAddress(): Address
     {
         return $this->address;
     }
 
-
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         $theme = null;
@@ -125,9 +95,6 @@ final class MajorInfoUpdated extends PlaceEvent
         );
     }
 
-    /**
-     * @return static
-     */
     public static function deserialize(array $data): MajorInfoUpdated
     {
         return new static(

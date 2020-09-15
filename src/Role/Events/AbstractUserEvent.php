@@ -14,11 +14,6 @@ abstract class AbstractUserEvent extends AbstractEvent
      */
     private $userId;
 
-    /**
-     * AbstractUserEvent constructor.
-     * @param UUID $uuid
-     * @param StringLiteral $userId
-     */
     final public function __construct(UUID $uuid, StringLiteral $userId)
     {
         parent::__construct($uuid);
@@ -26,17 +21,11 @@ abstract class AbstractUserEvent extends AbstractEvent
         $this->userId = $userId;
     }
 
-    /**
-     * @return StringLiteral
-     */
     public function getUserId(): StringLiteral
     {
         return $this->userId;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): AbstractUserEvent
     {
         return new static(
@@ -45,9 +34,6 @@ abstract class AbstractUserEvent extends AbstractEvent
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return parent::serialize() + [self::USER_ID => $this->getUserId()->toNative()];

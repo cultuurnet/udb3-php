@@ -1,17 +1,9 @@
 <?php
 
-/**
- * @file
- * Contains CultuurNet\UDB3\Organizer\Events\OrganizerEvent.
- */
-
 namespace CultuurNet\UDB3\Organizer\Events;
 
 use Broadway\Serializer\SerializableInterface;
 
-/**
- * Abstract class for events on organizers.
- */
 abstract class OrganizerEvent implements SerializableInterface
 {
     /**
@@ -29,9 +21,6 @@ abstract class OrganizerEvent implements SerializableInterface
         return $this->organizerId;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return array(

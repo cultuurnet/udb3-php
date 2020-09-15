@@ -15,10 +15,6 @@ use DateTimeInterface;
 use DateTimeZone;
 use InvalidArgumentException;
 
-/**
- * Calendar for events and places.
- * @todo Replace by CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar.
- */
 final class Calendar implements CalendarInterface, JsonLdSerializableInterface, SerializableInterface
 {
 
@@ -94,17 +90,11 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
 
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getType(): CalendarType
     {
         return CalendarType::fromNative($this->type);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         $serializedTimestamps = array_map(
@@ -133,9 +123,6 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $calendar;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function deserialize(array $data): Calendar
     {
         $calendarType = CalendarType::fromNative($data['type']);
@@ -173,11 +160,6 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
      * This deserialization function takes into account old data that might be missing a timezone.
      * It will fall back to creating a DateTime object and assume Brussels.
      * If this still fails an error will be thrown.
-     *
-     * @param $dateTimeData
-     * @return DateTime
-     *
-     * @throws InvalidArgumentException
      */
     private static function deserializeDateTime(string $dateTimeData): DateTime
     {
@@ -194,9 +176,6 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $dateTime;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getStartDate(): ?DateTimeInterface
     {
         $timestamps = $this->getTimestamps();
@@ -215,9 +194,6 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $startDate;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getEndDate(): ?DateTimeInterface
     {
         $timestamps = $this->getTimestamps();
@@ -252,9 +228,6 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $this->timestamps;
     }
 
-    /**
-     * Return the jsonLD version of a calendar.
-     */
     public function toJsonLd(): array
     {
         $jsonLd = [];
@@ -293,19 +266,11 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $jsonLd;
     }
 
-    /**
-     * @param Calendar $otherCalendar
-     * @return bool
-     */
     public function sameAs(Calendar $otherCalendar): bool
     {
         return $this->toJsonLd() == $otherCalendar->toJsonLd();
     }
 
-    /**
-     * @param Udb3ModelCalendar $calendar
-     * @return self
-     */
     public static function fromUdb3ModelCalendar(Udb3ModelCalendar $calendar): Calendar
     {
         $type = CalendarType::fromNative($calendar->getType()->toString());

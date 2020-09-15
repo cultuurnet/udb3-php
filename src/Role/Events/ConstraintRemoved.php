@@ -12,10 +12,6 @@ final class ConstraintRemoved extends AbstractEvent
      */
     private $sapiVersion;
 
-    /**
-     * @param UUID $uuid
-     * @param SapiVersion $sapiVersion
-     */
     final public function __construct(
         UUID $uuid,
         SapiVersion $sapiVersion
@@ -24,17 +20,11 @@ final class ConstraintRemoved extends AbstractEvent
         $this->sapiVersion = $sapiVersion;
     }
 
-    /**
-     * @return SapiVersion
-     */
     public function getSapiVersion(): SapiVersion
     {
         return $this->sapiVersion;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function deserialize(array $data): ConstraintRemoved
     {
         return new static(
@@ -43,9 +33,6 @@ final class ConstraintRemoved extends AbstractEvent
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return parent::serialize() + array(

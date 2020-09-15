@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event\Events;
 
@@ -20,9 +17,6 @@ class EventUpdatedFromUDB2 extends EventEvent implements EventCdbXMLInterface
         $this->setCdbXmlNamespaceUri($cdbXmlNamespaceUri);
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + array(
@@ -31,9 +25,6 @@ class EventUpdatedFromUDB2 extends EventEvent implements EventCdbXMLInterface
         );
     }
 
-    /**
-     * @return mixed The object instance
-     */
     public static function deserialize(array $data): EventUpdatedFromUDB2
     {
         $data += array(

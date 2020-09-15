@@ -12,9 +12,6 @@ use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 use DateTimeImmutable;
 
-/**
- * Event when an event is created.
- */
 final class EventCreated extends EventEvent
 {
     /**
@@ -52,16 +49,6 @@ final class EventCreated extends EventEvent
      */
     private $publicationDate = null;
 
-    /**
-     * @param string $eventId
-     * @param Language $mainLanguage
-     * @param Title $title
-     * @param EventType $eventType
-     * @param LocationId $location
-     * @param CalendarInterface $calendar
-     * @param Theme|null $theme
-     * @param DateTimeImmutable|null $publicationDate
-     */
     public function __construct(
         string $eventId,
         Language $mainLanguage,
@@ -83,65 +70,41 @@ final class EventCreated extends EventEvent
         $this->publicationDate = $publicationDate;
     }
 
-    /**
-     * @return Language
-     */
     public function getMainLanguage(): Language
     {
         return $this->mainLanguage;
     }
 
-    /**
-     * @return Title
-     */
     public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return EventType
-     */
     public function getEventType(): EventType
     {
         return $this->eventType;
     }
 
-    /**
-     * @return Theme
-     */
     public function getTheme(): ?Theme
     {
         return $this->theme;
     }
 
-    /**
-     * @return CalendarInterface
-     */
     public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
 
-    /**
-     * @return LocationId
-     */
     public function getLocation(): LocationId
     {
         return $this->location;
     }
 
-    /**
-     * @return DateTimeImmutable|null
-     */
     public function getPublicationDate(): ?DateTimeImmutable
     {
         return $this->publicationDate;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         $theme = null;
@@ -163,9 +126,6 @@ final class EventCreated extends EventEvent
         );
     }
 
-    /**
-     * @return static
-     */
     public static function deserialize(array $data): EventCreated
     {
         $theme = null;

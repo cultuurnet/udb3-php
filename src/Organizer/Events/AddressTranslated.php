@@ -12,11 +12,6 @@ final class AddressTranslated extends AddressUpdated
      */
     private $language;
 
-    /**
-     * @param string $organizerId
-     * @param Address $address
-     * @param Language $language
-     */
     public function __construct(
         string $organizerId,
         Address $address,
@@ -26,17 +21,11 @@ final class AddressTranslated extends AddressUpdated
         $this->language = $language;
     }
 
-    /**
-     * @return Language
-     */
     public function getLanguage(): Language
     {
         return $this->language;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + [

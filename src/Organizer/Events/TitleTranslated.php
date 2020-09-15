@@ -17,12 +17,6 @@ final class TitleTranslated extends OrganizerEvent
      */
     private $language;
 
-    /**
-     * TitleTranslated constructor.
-     * @param string $organizerId
-     * @param Title $title
-     * @param Language $language
-     */
     public function __construct(
         string $organizerId,
         Title $title,
@@ -34,25 +28,16 @@ final class TitleTranslated extends OrganizerEvent
         $this->language = $language;
     }
 
-    /**
-     * @return Title
-     */
     public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return Language
-     */
     public function getLanguage(): Language
     {
         return $this->language;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + [
@@ -61,10 +46,6 @@ final class TitleTranslated extends OrganizerEvent
             ];
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
     public static function deserialize(array $data): TitleTranslated
     {
         return new static(

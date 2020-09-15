@@ -19,17 +19,11 @@ final class GeoCoordinatesUpdated extends OrganizerEvent
         $this->coordinates = $coordinates;
     }
 
-    /**
-     * @return Coordinates
-     */
     public function coordinates(): Coordinates
     {
         return $this->coordinates;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + [
@@ -40,10 +34,6 @@ final class GeoCoordinatesUpdated extends OrganizerEvent
             ];
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
     public static function deserialize(array $data): GeoCoordinatesUpdated
     {
         return new static(

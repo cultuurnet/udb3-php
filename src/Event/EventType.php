@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\Event;
 
@@ -19,14 +16,6 @@ final class EventType extends Category
         parent::__construct($id, $label, self::DOMAIN);
     }
 
-    /**
-     * Creates a new EventType object from a JSON-LD encoded event.
-     *
-     * @param string $eventString
-     *   The cultural event encoded as JSON-LD
-     *
-     * @return self|null
-     */
     public static function fromJSONLDEvent(string $eventString): ?EventType
     {
         $event = json_decode($eventString);

@@ -22,13 +22,6 @@ class Created extends AbstractEvent
      */
     private $privacy;
 
-    /**
-     * Created constructor.
-     * @param UUID $uuid
-     * @param LabelName $name
-     * @param Visibility $visibility
-     * @param Privacy $privacy
-     */
     public function __construct(
         UUID $uuid,
         LabelName $name,
@@ -41,17 +34,11 @@ class Created extends AbstractEvent
         $this->privacy = $privacy;
     }
 
-    /**
-     * @return Visibility
-     */
     public function getVisibility(): Visibility
     {
         return $this->visibility;
     }
 
-    /**
-     * @return Privacy
-     */
     public function getPrivacy(): Privacy
     {
         return $this->privacy;
@@ -71,9 +58,6 @@ class Created extends AbstractEvent
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return parent::serialize() + [

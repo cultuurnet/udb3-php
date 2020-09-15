@@ -21,36 +21,22 @@ abstract class AbstractEvent implements SerializableInterface
      */
     private $name;
 
-    /**
-     * AbstractEvent constructor.
-     * @param UUID $uuid
-     * @param LabelName $name
-     */
     public function __construct(UUID $uuid, LabelName $name)
     {
         $this->uuid = $uuid;
         $this->name = $name;
     }
 
-    /**
-     * @return UUID
-     */
     public function getUuid(): UUID
     {
         return $this->uuid;
     }
 
-    /**
-     * @return LabelName
-     */
     public function getName(): LabelName
     {
         return $this->name;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function serialize(): array
     {
         return [

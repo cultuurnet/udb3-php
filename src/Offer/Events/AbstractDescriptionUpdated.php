@@ -7,32 +7,21 @@ use CultuurNet\UDB3\Description;
 abstract class AbstractDescriptionUpdated extends AbstractEvent
 {
     /**
-     * The new description.
      * @var Description
      */
     protected $description;
 
-    /**
-     * @param string $id
-     * @param Description $description
-     */
     final public function __construct(string $id, Description $description)
     {
         parent::__construct($id);
         $this->description = $description;
     }
 
-    /**
-     * @return Description
-     */
     public function getDescription(): Description
     {
         return $this->description;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): array
     {
         return parent::serialize() + array(
@@ -40,10 +29,6 @@ abstract class AbstractDescriptionUpdated extends AbstractEvent
         );
     }
 
-    /**
-     * @param array $data
-     * @return AbstractDescriptionUpdated
-     */
     public static function deserialize(array $data): AbstractDescriptionUpdated
     {
         return new static($data['item_id'], new Description($data['description']));

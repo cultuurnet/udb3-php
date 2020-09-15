@@ -11,11 +11,6 @@ final class TitleUpdated extends OrganizerEvent
      */
     private $title;
 
-    /**
-     * TitleUpdated constructor.
-     * @param string $organizerId
-     * @param Title $title
-     */
     public function __construct(
         string $organizerId,
         Title $title
@@ -24,17 +19,11 @@ final class TitleUpdated extends OrganizerEvent
         $this->title = $title;
     }
 
-    /**
-     * @return Title
-     */
     public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return array
-     */
     public function serialize(): array
     {
         return parent::serialize() + [
@@ -42,10 +31,6 @@ final class TitleUpdated extends OrganizerEvent
             ];
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
     public static function deserialize(array $data): TitleUpdated
     {
         return new static(

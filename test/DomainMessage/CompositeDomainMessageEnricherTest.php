@@ -45,8 +45,7 @@ class CompositeDomainMessageEnricherTest extends TestCase
     public function setUp(): void
     {
         $this->eventCreatedEnricher = $this->createMock(DomainMessageEnricherInterface::class);
-        $this->eventCreatedEnricher->expects($this->any())
-            ->method('supports')
+        $this->eventCreatedEnricher->method('supports')
             ->willReturnCallback(
                 function (DomainMessage $domainMessage) {
                     $payload = $domainMessage->getPayload();
@@ -55,8 +54,7 @@ class CompositeDomainMessageEnricherTest extends TestCase
             );
 
         $this->placeCreatedEnricher = $this->createMock(DomainMessageEnricherInterface::class);
-        $this->placeCreatedEnricher->expects($this->any())
-            ->method('supports')
+        $this->placeCreatedEnricher->method('supports')
             ->willReturnCallback(
                 function (DomainMessage $domainMessage) {
                     $payload = $domainMessage->getPayload();

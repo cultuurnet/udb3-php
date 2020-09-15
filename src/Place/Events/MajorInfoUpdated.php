@@ -12,7 +12,6 @@ use CultuurNet\UDB3\Title;
 
 final class MajorInfoUpdated extends PlaceEvent
 {
-
     /**
      * @var Title
      */

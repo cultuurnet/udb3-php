@@ -7,7 +7,6 @@ use CultuurNet\UDB3\Model\ValueObject\Taxonomy\Category\Category as Udb3ModelCat
 
 class Category implements SerializableInterface, JsonLdSerializableInterface
 {
-
     /**
      * @var string
      */
@@ -25,7 +24,6 @@ class Category implements SerializableInterface, JsonLdSerializableInterface
 
     public function __construct(string $id, string $label, string $domain)
     {
-
         if (empty($id)) {
             throw new \InvalidArgumentException('Category ID can not be empty.');
         }

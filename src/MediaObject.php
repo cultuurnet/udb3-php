@@ -6,7 +6,6 @@ use Broadway\Serializer\SerializableInterface;
 
 final class MediaObject implements SerializableInterface, JsonLdSerializableInterface
 {
-
     /**
      * @var string|null
      */
@@ -31,7 +30,6 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
      * @var string
      */
     protected $description;
-
 
     /**
      * @var string
@@ -109,6 +107,5 @@ final class MediaObject implements SerializableInterface, JsonLdSerializableInte
         $jsonLd['copyrightHolder'] = $this->copyrightHolder;
 
         return $jsonLd;
-
     }
 }

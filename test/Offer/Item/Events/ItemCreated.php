@@ -22,7 +22,7 @@ final class ItemCreated implements SerializableInterface
         Language $mainLanguage = null
     ) {
         $this->itemId = $itemId;
-        $this->mainLanguage = $mainLanguage ? $mainLanguage : new Language('nl');
+        $this->mainLanguage = $mainLanguage ?: new Language('nl');
     }
 
     public function getItemId(): string

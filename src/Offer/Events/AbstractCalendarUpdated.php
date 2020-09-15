@@ -26,8 +26,8 @@ abstract class AbstractCalendarUpdated extends AbstractEvent
     public function serialize(): array
     {
         return parent::serialize() + [
-                'calendar' => $this->calendar->serialize(),
-            ];
+            'calendar' => $this->calendar->serialize(),
+        ];
     }
 
     public static function deserialize(array $data): AbstractCalendarUpdated

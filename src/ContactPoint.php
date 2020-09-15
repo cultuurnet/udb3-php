@@ -25,7 +25,7 @@ final class ContactPoint implements SerializableInterface, JsonLdSerializableInt
      */
     protected $urls = array();
 
-    public function __construct(array $phones = array(), array $emails = array(), array $urls = array())
+    public function __construct(array $phones = [], array $emails = [], array $urls = [])
     {
         $this->phones = $phones;
         $this->emails = $emails;

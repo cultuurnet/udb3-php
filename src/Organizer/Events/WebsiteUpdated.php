@@ -27,8 +27,8 @@ final class WebsiteUpdated extends OrganizerEvent
     public function serialize(): array
     {
         return parent::serialize() + [
-                'website' => (string) $this->getWebsite(),
-            ];
+            'website' => (string) $this->getWebsite(),
+        ];
     }
 
     public static function deserialize(array $data): WebsiteUpdated

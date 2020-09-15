@@ -21,10 +21,10 @@ abstract class EventEvent implements SerializableInterface
         return $this->eventId;
     }
 
-    public function serialize()
+    public function serialize(): array
     {
-        return array(
+        return [
             'event_id' => $this->eventId,
-        );
+        ];
     }
 }

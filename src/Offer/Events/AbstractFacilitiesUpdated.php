@@ -40,8 +40,8 @@ abstract class AbstractFacilitiesUpdated extends AbstractEvent
             $facilities[] = $facility->serialize();
         }
 
-        return parent::serialize() + array(
-                'facilities' => $facilities,
-            );
+        return parent::serialize() + [
+            'facilities' => $facilities,
+        ];
     }
 }

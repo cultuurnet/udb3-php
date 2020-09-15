@@ -41,9 +41,9 @@ final class TitleTranslated extends OrganizerEvent
     public function serialize(): array
     {
         return parent::serialize() + [
-                'title' => $this->getTitle()->toNative(),
-                'language' => $this->getLanguage()->getCode(),
-            ];
+            'title' => $this->getTitle()->toNative(),
+            'language' => $this->getLanguage()->getCode(),
+        ];
     }
 
     public static function deserialize(array $data): TitleTranslated

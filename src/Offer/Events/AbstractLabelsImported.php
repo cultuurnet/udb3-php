@@ -55,7 +55,7 @@ abstract class AbstractLabelsImported extends AbstractEvent implements LabelsImp
         }
 
         return parent::serialize() + [
-                'labels' => $labels,
-            ];
+            'labels' => $labels,
+        ];
     }
 }

@@ -23,8 +23,8 @@ abstract class OrganizerEvent implements SerializableInterface
 
     public function serialize(): array
     {
-        return array(
+        return [
           'organizer_id' => $this->organizerId,
-        );
+        ];
     }
 }

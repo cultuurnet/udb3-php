@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Offer\Events\AbstractCalendarUpdated;
 
-class CalendarUpdated extends AbstractCalendarUpdated
+final class CalendarUpdated extends AbstractCalendarUpdated
 {
-
 }

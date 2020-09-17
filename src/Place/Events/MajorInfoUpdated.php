@@ -10,12 +10,8 @@ use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Theme;
 use CultuurNet\UDB3\Title;
 
-/**
- * Provides a majorInfoUpdated event.
- */
-class MajorInfoUpdated extends PlaceEvent
+final class MajorInfoUpdated extends PlaceEvent
 {
-
     /**
      * @var Title
      */
@@ -41,21 +37,13 @@ class MajorInfoUpdated extends PlaceEvent
      */
     private $calendar;
 
-    /**
-     * @param string $placeId
-     * @param Title $title
-     * @param EventType $eventType
-     * @param Address $address
-     * @param CalendarInterface $calendar
-     * @param Theme|null $theme
-     */
-    public function __construct(
-        $placeId,
+    final public function __construct(
+        string $placeId,
         Title $title,
         EventType $eventType,
         Address $address,
         CalendarInterface $calendar,
-        Theme $theme = null
+        ?Theme $theme = null
     ) {
         parent::__construct($placeId);
 
@@ -66,51 +54,32 @@ class MajorInfoUpdated extends PlaceEvent
         $this->theme = $theme;
     }
 
-    /**
-     * @return Title
-     */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return EventType
-     */
-    public function getEventType()
+    public function getEventType(): EventType
     {
         return $this->eventType;
     }
 
-    /**
-     * @return Theme
-     */
-    public function getTheme()
+    public function getTheme(): ?Theme
     {
         return $this->theme;
     }
 
-    /**
-     * @return CalendarInterface
-     */
-    public function getCalendar()
+    public function getCalendar(): CalendarInterface
     {
         return $this->calendar;
     }
 
-    /**
-     * @return Address
-     */
-    public function getAddress()
+    public function getAddress(): Address
     {
         return $this->address;
     }
 
-
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
         $theme = null;
         if ($this->getTheme() !== null) {
@@ -125,10 +94,7 @@ class MajorInfoUpdated extends PlaceEvent
         );
     }
 
-    /**
-     * @return static
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): MajorInfoUpdated
     {
         return new static(
             $data['place_id'],

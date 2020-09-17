@@ -2,7 +2,10 @@
 
 namespace CultuurNet\UDB3\Actor;
 
-class MockActorEvent extends ActorEvent
+final class MockActorEvent extends ActorEvent
 {
-
+    public static function deserialize(array $data): MockActorEvent
+    {
+        return new static($data['actor_id']);
+    }
 }

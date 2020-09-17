@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 namespace CultuurNet\UDB3\EventSourcing;
 
@@ -13,7 +10,7 @@ use Broadway\Serializer\SimpleInterfaceSerializer;
  * Decorates a SimpleInterfaceSerializer, first maps old class names to new
  * class names.
  */
-class PayloadManipulatingSerializer implements SerializerInterface
+final class PayloadManipulatingSerializer implements SerializerInterface
 {
     /**
      * @var callable[]
@@ -21,26 +18,21 @@ class PayloadManipulatingSerializer implements SerializerInterface
     private $manipulations;
 
     /**
-     * @param SimpleInterfaceSerializer $serializer
+     * @var SimpleInterfaceSerializer
      */
+    private $serializer;
+
     public function __construct(SimpleInterfaceSerializer $serializer)
     {
         $this->serializer = $serializer;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function serialize($object)
+    public function serialize($object): array
     {
         return $this->serializer->serialize($object);
     }
 
-    /**
-     * @param string $className
-     * @param callable $callback
-     */
-    public function manipulateEventsOfClass($className, callable $callback)
+    public function manipulateEventsOfClass(string $className, callable $callback): void
     {
         if (isset($this->manipulations[$className])) {
             throw new \RuntimeException(
@@ -51,9 +43,6 @@ class PayloadManipulatingSerializer implements SerializerInterface
         $this->manipulations[$className] = $callback;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function deserialize(array $serializedObject)
     {
         $manipulatedSerializedObject = $this->manipulate($serializedObject);
@@ -61,11 +50,7 @@ class PayloadManipulatingSerializer implements SerializerInterface
         return $this->serializer->deserialize($manipulatedSerializedObject);
     }
 
-    /**
-     * @param array $serializedObject
-     * @return array
-     */
-    private function manipulate($serializedObject)
+    private function manipulate(array $serializedObject): array
     {
         Assertion::keyExists(
             $serializedObject,

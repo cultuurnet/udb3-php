@@ -15,7 +15,7 @@ class EventDeletedTest extends TestCase
     public function it_can_be_serialized_into_an_array(
         $expectedSerializedValue,
         EventDeleted $eventDeleted
-    ) {
+    ): void {
         $this->assertEquals(
             $expectedSerializedValue,
             $eventDeleted->serialize()
@@ -31,7 +31,7 @@ class EventDeletedTest extends TestCase
     public function it_can_be_deserialized_from_an_array(
         $serializedValue,
         EventDeleted $expectedEventDeleted
-    ) {
+    ): void {
         $this->assertEquals(
             $expectedEventDeleted,
             EventDeleted::deserialize($serializedValue)
@@ -41,26 +41,14 @@ class EventDeletedTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_an_error_if_a_wrong_type_is_given()
-    {
-        $this->expectException(
-            \InvalidArgumentException::class,
-            'Expected itemId to be a string, received integer'
-        );
-        new EventDeleted(4);
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_return_its_id()
+    public function it_can_return_its_id(): void
     {
         $domainEvent = new EventDeleted('testmefoo');
         $expectedEventId = 'testmefoo';
         $this->assertEquals($expectedEventId, $domainEvent->getItemId());
     }
 
-    public function serializationDataProvider()
+    public function serializationDataProvider(): array
     {
         return [
             'eventDeleted' => [

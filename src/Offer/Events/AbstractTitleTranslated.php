@@ -5,45 +5,32 @@ namespace CultuurNet\UDB3\Offer\Events;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Title;
 
-class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
+abstract class AbstractTitleTranslated extends AbstractPropertyTranslatedEvent
 {
+    /**
+     * @var Title
+     */
     protected $title;
 
-    /**
-     * @param string $itemId
-     * @param Language $language
-     * @param Title $title
-     */
-    public function __construct($itemId, Language $language, Title $title)
+    final public function __construct(string $itemId, Language $language, Title $title)
     {
         parent::__construct($itemId, $language);
         $this->title = $title;
     }
 
-    /**
-     * @return Title
-     */
-    public function getTitle()
+    public function getTitle(): Title
     {
         return $this->title;
     }
 
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
-        $value = parent::serialize() + array(
-                'title' => $this->title->toNative(),
-            );
-
-        return $value;
+        return parent::serialize() + [
+            'title' => $this->title->toNative(),
+        ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractTitleTranslated
     {
         return new static(
             $data['item_id'],

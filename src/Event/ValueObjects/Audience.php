@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\Event\ValueObjects;
 
 use Broadway\Serializer\SerializableInterface;
 
-class Audience implements SerializableInterface
+final class Audience implements SerializableInterface
 {
     /**
      * Store the Audience enum internally as a string to make sure that PHP encode works.
@@ -13,7 +13,6 @@ class Audience implements SerializableInterface
     private $audienceType;
 
     /**
-     * Audience constructor.
      * @param AudienceType $audienceType
      */
     public function __construct(AudienceType $audienceType)
@@ -21,39 +20,26 @@ class Audience implements SerializableInterface
         $this->audienceType = $audienceType->toNative();
     }
 
-    /**
-     * @return AudienceType
-     */
-    public function getAudienceType()
+    public function getAudienceType(): AudienceType
     {
         return AudienceType::fromNative($this->audienceType);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): Audience
     {
-        return new static(
+        return new self(
             AudienceType::fromNative($data['audienceType'])
         );
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'audienceType' => $this->getAudienceType()->toNative(),
         ];
     }
 
-    /**
-     * @param Audience $otherAudience
-     * @return bool
-     */
-    public function equals(Audience $otherAudience)
+    public function equals(Audience $otherAudience): bool
     {
         return $this->getAudienceType() === $otherAudience->getAudienceType();
     }

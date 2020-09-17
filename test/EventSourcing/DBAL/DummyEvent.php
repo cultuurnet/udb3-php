@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3\EventSourcing\DBAL;
 
 use Broadway\Serializer\SerializableInterface;
 
-class DummyEvent implements SerializableInterface
+final class DummyEvent implements SerializableInterface
 {
     /**
      * @var string
@@ -16,20 +16,13 @@ class DummyEvent implements SerializableInterface
      */
     protected $content;
 
-    /**
-     * @param string $id
-     * @param string $content
-     */
-    public function __construct($id, $content)
+    final public function __construct($id, $content)
     {
         $this->id = $id;
         $this->content = $content;
     }
 
-    /**
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): DummyEvent
     {
         return new static(
             $data['id'],
@@ -37,10 +30,7 @@ class DummyEvent implements SerializableInterface
         );
     }
 
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'id' => $this->id,

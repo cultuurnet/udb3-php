@@ -2,7 +2,10 @@
 
 namespace CultuurNet\UDB3\Organizer\Events;
 
-class AddressRemoved extends OrganizerEvent
+final class AddressRemoved extends OrganizerEvent
 {
-
+    public static function deserialize(array $data): AddressRemoved
+    {
+        return new static($data['organizer_id']);
+    }
 }

@@ -7,40 +7,29 @@ use CultuurNet\UDB3\ContactPoint;
 abstract class AbstractContactPointUpdated extends AbstractEvent
 {
     /**
-     * ContactPoint to be saved
      * @var ContactPoint
      */
     protected $contactPoint;
 
-    public function getContactPoint()
+    final public function __construct(string $id, ContactPoint $contactPoint)
+    {
+        parent::__construct($id);
+        $this->contactPoint = $contactPoint;
+    }
+
+    public function getContactPoint(): ContactPoint
     {
         return $this->contactPoint;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + array(
             'contactPoint' => $this->contactPoint->serialize(),
         );
     }
 
-    /**
-     * @param string $id
-     * @param ContactPoint $contactPoint
-     */
-    public function __construct($id, ContactPoint $contactPoint)
-    {
-        parent::__construct($id);
-        $this->contactPoint = $contactPoint;
-    }
-
-    /**
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractContactPointUpdated
     {
         return new static($data['item_id'], ContactPoint::deserialize($data['contactPoint']));
     }

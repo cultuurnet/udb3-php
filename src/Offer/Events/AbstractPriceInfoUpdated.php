@@ -11,28 +11,18 @@ abstract class AbstractPriceInfoUpdated extends AbstractEvent
      */
     protected $priceInfo;
 
-    /**
-     * @param string $itemId
-     * @param PriceInfo $priceInfo
-     */
-    public function __construct($itemId, PriceInfo $priceInfo)
+    final public function __construct(string $itemId, PriceInfo $priceInfo)
     {
         parent::__construct($itemId);
         $this->priceInfo = $priceInfo;
     }
 
-    /**
-     * @return PriceInfo
-     */
-    public function getPriceInfo()
+    public function getPriceInfo(): PriceInfo
     {
         return $this->priceInfo;
     }
 
-    /**
-     * @return array
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'item_id' => $this->itemId,
@@ -40,11 +30,7 @@ abstract class AbstractPriceInfoUpdated extends AbstractEvent
         ];
     }
 
-    /**
-     * @param array $data
-     * @return static
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractPriceInfoUpdated
     {
         return new static(
             $data['item_id'],

@@ -15,24 +15,18 @@ abstract class AbstractThemeUpdated extends AbstractEvent
      * @param string $itemId
      * @param Theme $theme
      */
-    public function __construct($itemId, Theme $theme)
+    final public function __construct($itemId, Theme $theme)
     {
         parent::__construct($itemId);
         $this->theme = $theme;
     }
 
-    /**
-     * @return Theme
-     */
-    public function getTheme()
+    public function getTheme(): Theme
     {
         return $this->theme;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'theme' => $this->theme->serialize(),

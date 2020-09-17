@@ -2,6 +2,10 @@
 
 namespace CultuurNet\UDB3\Offer\Events;
 
-class MockAbstractEvent extends AbstractEvent
+final class MockAbstractEvent extends AbstractEvent
 {
+    public static function deserialize(array $data): MockAbstractEvent
+    {
+        return new self($data['item_id']);
+    }
 }

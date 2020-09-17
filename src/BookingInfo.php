@@ -4,11 +4,9 @@ namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Model\ValueObject\Contact\BookingInfo as Udb3ModelBookingInfo;
 use CultuurNet\UDB3\ValueObject\MultilingualString;
+use DateTimeImmutable;
 
-/**
- * BookingInfo info.
- */
-class BookingInfo implements JsonLdSerializableInterface
+final class BookingInfo implements JsonLdSerializableInterface
 {
     /**
      * @var string|null
@@ -31,30 +29,22 @@ class BookingInfo implements JsonLdSerializableInterface
     protected $urlLabel;
 
     /**
-     * @var \DateTimeImmutable|null
+     * @var DateTimeImmutable|null
      */
     protected $availabilityStarts;
 
     /**
-     * @var \DateTimeImmutable|null
+     * @var DateTimeImmutable|null
      */
     protected $availabilityEnds;
 
-    /**
-     * @param string|null $url
-     * @param MultilingualString|null $urlLabel
-     * @param string|null $phone
-     * @param string|null $email
-     * @param \DateTimeImmutable|null $availabilityStarts
-     * @param \DateTimeImmutable|null $availabilityEnds
-     */
     public function __construct(
-        $url = null,
-        MultilingualString $urlLabel = null,
-        $phone = null,
-        $email = null,
-        \DateTimeImmutable $availabilityStarts = null,
-        \DateTimeImmutable $availabilityEnds = null
+        ?string $url = null,
+        ?MultilingualString $urlLabel = null,
+        ?string $phone = null,
+        ?string $email = null,
+        ?DateTimeImmutable $availabilityStarts = null,
+        ?DateTimeImmutable $availabilityEnds = null
     ) {
         // Workaround to maintain compatibility with older BookingInfo data.
         // Empty BookingInfo properties used to be stored as empty strings in the past.
@@ -73,46 +63,37 @@ class BookingInfo implements JsonLdSerializableInterface
         $this->availabilityEnds = $availabilityEnds;
     }
 
-    public function getPhone()
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
 
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    public function getUrlLabel()
+    public function getUrlLabel(): ?MultilingualString
     {
         return $this->urlLabel;
     }
 
-    /**
-     * @return \DateTimeImmutable|null
-     */
-    public function getAvailabilityStarts()
+    public function getAvailabilityStarts(): ?DateTimeImmutable
     {
         return $this->availabilityStarts;
     }
 
-    /**
-     * @return \DateTimeImmutable|null
-     */
-    public function getAvailabilityEnds()
+    public function getAvailabilityEnds(): ?DateTimeImmutable
     {
         return $this->availabilityEnds;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
         $serialized = array_filter(
             [
@@ -137,10 +118,7 @@ class BookingInfo implements JsonLdSerializableInterface
         return $serialized;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): BookingInfo
     {
         $defaults = [
             'url' => null,
@@ -155,12 +133,12 @@ class BookingInfo implements JsonLdSerializableInterface
 
         $availabilityStarts = null;
         if ($data['availabilityStarts']) {
-            $availabilityStarts = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityStarts']);
+            $availabilityStarts = DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityStarts']);
         }
 
         $availabilityEnds = null;
         if ($data['availabilityEnds']) {
-            $availabilityEnds = \DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityEnds']);
+            $availabilityEnds = DateTimeImmutable::createFromFormat(\DATE_ATOM, $data['availabilityEnds']);
         }
 
         $urlLabel = null;
@@ -168,7 +146,7 @@ class BookingInfo implements JsonLdSerializableInterface
             $urlLabel = MultilingualString::deserialize($data['urlLabel']);
         }
 
-        return new static(
+        return new self(
             $data['url'],
             $urlLabel,
             $data['phone'],
@@ -178,28 +156,17 @@ class BookingInfo implements JsonLdSerializableInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function toJsonLd()
+    public function toJsonLd(): array
     {
         return $this->serialize();
     }
 
-    /**
-     * @param BookingInfo $otherBookingInfo
-     * @return bool
-     */
-    public function sameAs(BookingInfo $otherBookingInfo)
+    public function sameAs(BookingInfo $otherBookingInfo): bool
     {
         return $this->toJsonLd() === $otherBookingInfo->toJsonLd();
     }
 
-    /**
-     * @param Udb3ModelBookingInfo $udb3ModelBookingInfo
-     * @return BookingInfo
-     */
-    public static function fromUdb3ModelBookingInfo(Udb3ModelBookingInfo $udb3ModelBookingInfo)
+    public static function fromUdb3ModelBookingInfo(Udb3ModelBookingInfo $udb3ModelBookingInfo): BookingInfo
     {
         $url = null;
         $urlLabel = null;
@@ -226,7 +193,7 @@ class BookingInfo implements JsonLdSerializableInterface
             $availabilityEnds = $udb3ModelAvailability->getTo();
         }
 
-        return new BookingInfo(
+        return new self(
             $url,
             $urlLabel,
             $phone,
@@ -236,12 +203,8 @@ class BookingInfo implements JsonLdSerializableInterface
         );
     }
 
-    /**
-     * @param $string
-     * @return null|string
-     */
-    private function castEmptyStringToNull($string)
+    private function castEmptyStringToNull(?string $string = null): ?string
     {
-        return is_string($string) && strlen($string) === 0 ? null : $string;
+        return is_string($string) && $string === '' ? null : $string;
     }
 }

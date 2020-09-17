@@ -4,8 +4,9 @@ namespace CultuurNet\UDB3\Media\Properties;
 
 use ValueObjects\Exception\InvalidNativeArgumentException;
 use ValueObjects\StringLiteral\StringLiteral;
+use function is_string;
 
-class MIMEType extends StringLiteral
+final class MIMEType extends StringLiteral
 {
     protected static $supportedSubtypes = [
         'jpeg' => 'image',
@@ -14,16 +15,9 @@ class MIMEType extends StringLiteral
         'octet-stream'  => 'application',
     ];
 
-    /**
-     * @param string $subtypeString
-     *
-     * @throws UnsupportedMIMETypeException
-     *
-     * @return MIMEType
-     */
-    public static function fromSubtype($subtypeString)
+    public static function fromSubtype(string $subtypeString): MIMEType
     {
-        if (false === \is_string($subtypeString)) {
+        if (false === is_string($subtypeString)) {
             throw new InvalidNativeArgumentException($subtypeString, array('string'));
         }
 
@@ -35,6 +29,6 @@ class MIMEType extends StringLiteral
 
         $type = self::$supportedSubtypes[$subtypeString];
 
-        return new static($type . '/' . $subtypeString);
+        return new self($type . '/' . $subtypeString);
     }
 }

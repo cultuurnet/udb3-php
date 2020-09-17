@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class CopyrightHolder extends StringLiteral
+final class CopyrightHolder extends StringLiteral
 {
     public function __construct($value)
     {
@@ -18,6 +18,6 @@ class CopyrightHolder extends StringLiteral
             throw new InvalidArgumentException('The name of a copyright holder should be at least 2 characters');
         }
 
-        return parent::__construct(substr($value, 0, 250));
+        parent::__construct(substr($value, 0, 250));
     }
 }

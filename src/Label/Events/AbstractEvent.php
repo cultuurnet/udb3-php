@@ -8,8 +8,8 @@ use ValueObjects\Identity\UUID;
 
 abstract class AbstractEvent implements SerializableInterface
 {
-    const UUID = 'uuid';
-    const NAME = 'name';
+    public const UUID = 'uuid';
+    public const NAME = 'name';
 
     /**
      * @var UUID
@@ -21,48 +21,23 @@ abstract class AbstractEvent implements SerializableInterface
      */
     private $name;
 
-    /**
-     * AbstractEvent constructor.
-     * @param UUID $uuid
-     * @param LabelName $name
-     */
     public function __construct(UUID $uuid, LabelName $name)
     {
         $this->uuid = $uuid;
         $this->name = $name;
     }
 
-    /**
-     * @return UUID
-     */
-    public function getUuid()
+    public function getUuid(): UUID
     {
         return $this->uuid;
     }
 
-    /**
-     * @return LabelName
-     */
-    public function getName()
+    public function getName(): LabelName
     {
         return $this->name;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public static function deserialize(array $data)
-    {
-        return new static(
-            new UUID($data[self::UUID]),
-            new LabelName($data[self::NAME])
-        );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             self::UUID => $this->getUuid()->toNative(),

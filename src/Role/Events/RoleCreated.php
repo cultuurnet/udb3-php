@@ -5,36 +5,25 @@ namespace CultuurNet\UDB3\Role\Events;
 use ValueObjects\Identity\UUID;
 use ValueObjects\StringLiteral\StringLiteral;
 
-class RoleCreated extends AbstractEvent
+final class RoleCreated extends AbstractEvent
 {
     /**
      * @var StringLiteral
      */
     private $name;
 
-    /**
-     * RoleCreated constructor.
-     * @param UUID $uuid
-     * @param StringLiteral $name
-     */
-    public function __construct(UUID $uuid, StringLiteral $name)
+    final public function __construct(UUID $uuid, StringLiteral $name)
     {
         parent::__construct($uuid);
         $this->name = $name;
     }
 
-    /**
-     * @return StringLiteral
-     */
-    public function getName()
+    public function getName(): StringLiteral
     {
         return $this->name;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): RoleCreated
     {
         return new static(
             new UUID($data['uuid']),
@@ -42,10 +31,7 @@ class RoleCreated extends AbstractEvent
         );
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return parent::serialize() + [
             'name' => $this->name->toNative(),

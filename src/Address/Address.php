@@ -8,10 +8,7 @@ use CultuurNet\UDB3\Model\ValueObject\Geography\Address as Udb3ModelAddress;
 use ValueObjects\Geography\Country;
 use ValueObjects\Geography\CountryCode;
 
-/**
- * Value object for address information.
- */
-class Address implements SerializableInterface, JsonLdSerializableInterface
+final class Address implements SerializableInterface, JsonLdSerializableInterface
 {
     /**
      * @var string
@@ -45,42 +42,27 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
         $this->countryCode = $country->getCode()->toNative();
     }
 
-    /**
-     * @return Country
-     */
-    public function getCountry()
+    public function getCountry(): Country
     {
         return Country::fromNative($this->countryCode);
     }
 
-    /**
-     * @return Locality
-     */
-    public function getLocality()
+    public function getLocality(): Locality
     {
         return $this->locality;
     }
 
-    /**
-     * @return PostalCode
-     */
-    public function getPostalCode()
+    public function getPostalCode(): PostalCode
     {
         return $this->postalCode;
     }
 
-    /**
-     * @return Street
-     */
-    public function getStreetAddress()
+    public function getStreetAddress(): Street
     {
         return $this->streetAddress;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
         return [
           'streetAddress' => $this->streetAddress->toNative(),
@@ -90,12 +72,9 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): Address
     {
-        return new static(
+        return new self(
             new Street($data['streetAddress']),
             new PostalCode($data['postalCode']),
             new Locality($data['addressLocality']),
@@ -103,10 +82,7 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function toJsonLd()
+    public function toJsonLd(): array
     {
         return [
             'addressCountry' => $this->countryCode,
@@ -116,20 +92,12 @@ class Address implements SerializableInterface, JsonLdSerializableInterface
         ];
     }
 
-    /**
-     * @param Address $otherAddress
-     * @return bool
-     */
-    public function sameAs(Address $otherAddress)
+    public function sameAs(Address $otherAddress): bool
     {
         return $this->toJsonLd() === $otherAddress->toJsonLd();
     }
 
-    /**
-     * @param Udb3ModelAddress $address
-     * @return self
-     */
-    public static function fromUdb3ModelAddress(Udb3ModelAddress $address)
+    public static function fromUdb3ModelAddress(Udb3ModelAddress $address): Address
     {
         return new self(
             new Street($address->getStreet()->toString()),

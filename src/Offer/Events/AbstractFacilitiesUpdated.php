@@ -7,34 +7,22 @@ use CultuurNet\UDB3\Facility;
 abstract class AbstractFacilitiesUpdated extends AbstractEvent
 {
     /**
-     * The new facilities.
      * @var array
      */
     protected $facilities;
 
-    /**
-     * @param string $id
-     * @param array $facilities
-     */
-    public function __construct($id, array $facilities)
+    final public function __construct(string $id, array $facilities)
     {
         parent::__construct($id);
         $this->facilities = $facilities;
     }
 
-    /**
-     * @return array
-     */
-    public function getFacilities()
+    public function getFacilities(): array
     {
         return $this->facilities;
     }
 
-    /**
-     * @param array $data
-     * @return mixed The object instance
-     */
-    public static function deserialize(array $data)
+    public static function deserialize(array $data): AbstractFacilitiesUpdated
     {
 
         $facilities = array();
@@ -45,19 +33,15 @@ abstract class AbstractFacilitiesUpdated extends AbstractEvent
         return new static($data['item_id'], $facilities);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function serialize()
+    public function serialize(): array
     {
-
         $facilities = array();
         foreach ($this->facilities as $facility) {
             $facilities[] = $facility->serialize();
         }
 
-        return parent::serialize() + array(
-                'facilities' => $facilities,
-            );
+        return parent::serialize() + [
+            'facilities' => $facilities,
+        ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Offer;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use ValueObjects\Web\Url;
@@ -59,10 +60,8 @@ class IriOfferIdentifierFactoryTest extends TestCase
             'https?://foo\.bar/(?<offer>[event|place]+)/(?<offerid>[a-zA-Z0-9\-]+)'
         );
 
-        $this->expectException(
-            \InvalidArgumentException::class,
-            'Regular expression pattern should capture group named "offertype"'
-        );
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Regular expression pattern should capture group named "offertype"');
 
         $iriOfferIdentifierFactory->fromIri(
             Url::fromNative('https://foo.bar/place/foo-bar')
@@ -78,10 +77,8 @@ class IriOfferIdentifierFactoryTest extends TestCase
             'https?://foo\.bar/(?<offertype>[event|place]+)/(?<id>[a-zA-Z0-9\-]+)'
         );
 
-        $this->expectException(
-            \InvalidArgumentException::class,
-            'Regular expression pattern should capture group named "offerid"'
-        );
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Regular expression pattern should capture group named "offerid"');
 
         $iriOfferIdentifierFactory->fromIri(
             Url::fromNative('https://foo.bar/place/foo-bar')

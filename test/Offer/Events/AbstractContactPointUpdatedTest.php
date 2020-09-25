@@ -27,10 +27,9 @@ class AbstractContactPointUpdatedTest extends TestCase
     {
         $this->itemId = 'Foo';
         $this->contactPoint = new ContactPoint(
-            array('0123456789'),
-            array('foo@bar.com'),
-            array('http://foo.bar'),
-            'type'
+            ['0123456789'],
+            ['foo@bar.com'],
+            ['http://foo.bar']
         );
         $this->contactPointUpdated = new ContactPointUpdated($this->itemId, $this->contactPoint);
     }
@@ -42,10 +41,9 @@ class AbstractContactPointUpdatedTest extends TestCase
     {
         $expectedItemId = 'Foo';
         $expectedContactPoint = new ContactPoint(
-            array('0123456789'),
-            array('foo@bar.com'),
-            array('http://foo.bar'),
-            'type'
+            ['0123456789'],
+            ['foo@bar.com'],
+            ['http://foo.bar']
         );
         $expectedContactPointUpdated = new ContactPointUpdated(
             $expectedItemId,
@@ -62,10 +60,9 @@ class AbstractContactPointUpdatedTest extends TestCase
     {
         $expectedItemId = 'Foo';
         $expectedContactPoint = new ContactPoint(
-            array('0123456789'),
-            array('foo@bar.com'),
-            array('http://foo.bar'),
-            'type'
+            ['0123456789'],
+            ['foo@bar.com'],
+            ['http://foo.bar']
         );
 
         $itemId = $this->contactPointUpdated->getItemId();

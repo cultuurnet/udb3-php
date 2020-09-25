@@ -64,7 +64,8 @@ class TimestampTest extends TestCase
     {
         $pastDate = '2016-01-03T00:01:01+01:00';
 
-        $this->expectException(InvalidArgumentException::class, 'End date can not be earlier than start date.');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('End date can not be earlier than start date.');
 
         new Timestamp(
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),

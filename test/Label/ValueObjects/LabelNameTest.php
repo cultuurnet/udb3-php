@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Label\ValueObjects;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\Exception\InvalidNativeArgumentException;
 
@@ -26,10 +27,8 @@ class LabelNameTest extends TestCase
     {
         $value = ';';
 
-        $this->expectException(
-            \InvalidArgumentException::class,
-            "Value for argument $value should not contain semicolons."
-        );
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Value for argument $value should not contain semicolons.");
 
         new LabelName($value);
     }
@@ -41,10 +40,8 @@ class LabelNameTest extends TestCase
     {
         $value = 'k';
 
-        $this->expectException(
-            \InvalidArgumentException::class,
-            "Value for argument $value should not be shorter than 2 chars."
-        );
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Value for argument $value should not be shorter than 2 chars.");
 
         new LabelName($value);
     }
@@ -56,14 +53,10 @@ class LabelNameTest extends TestCase
     {
         $value = 'turnip greens yarrow ricebean rutabaga endive cauliflower sea lettuce kohlrabi amaranth water spinach avocado daikon napa cabbage asparagus winter purslane kale celery potato scallion desert raisin horseradish spinach carrot soko Lotus root water spinach fennel';
 
-        $this->expectException(
-            \InvalidArgumentException::class,
-            "Value for argument $value should not be longer than 255 chars."
-        );
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Value for argument $value should not be longer than 255 chars.");
 
-        new LabelName(
-            $value
-        );
+        new LabelName($value);
     }
 
     /**

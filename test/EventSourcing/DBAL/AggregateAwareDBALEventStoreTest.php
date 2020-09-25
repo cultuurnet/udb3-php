@@ -91,13 +91,11 @@ class AggregateAwareDBALEventStoreTest extends TestCase
     {
         $uuid = new UUID();
 
-        $this->expectException(
-            EventStreamNotFoundException::class,
-            sprintf(
-                'EventStream not found for aggregate with id %s',
-                $uuid->toNative()
-            )
-        );
+        $this->expectException(EventStreamNotFoundException::class);
+        $this->expectExceptionMessage(sprintf(
+            'EventStream not found for aggregate with id %s',
+            $uuid->toNative()
+        ));
 
         $this->aggregateAwareDBALEventStore->load($uuid->toNative());
     }

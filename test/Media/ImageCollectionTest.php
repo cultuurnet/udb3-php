@@ -34,24 +34,6 @@ class ImageCollectionTest extends TestCase
     /**
      * @test
      */
-    public function it_should_not_contain_items_that_are_not_images()
-    {
-        $notImages = [
-            'please, add me to your collection',
-            new UUID(),
-            MIMEType::fromSubtype('jpeg'),
-            new StringLiteral('my best selfie'),
-            Url::fromNative('http://du.de/images/henk_032.jpg'),
-        ];
-
-        $images = new ImageCollection($notImages);
-
-        $this->assertEquals(0, $images->length());
-    }
-
-    /**
-     * @test
-     */
     public function it_should_return_the_first_image_as_main_when_set_explicitly()
     {
         $image = new Image(

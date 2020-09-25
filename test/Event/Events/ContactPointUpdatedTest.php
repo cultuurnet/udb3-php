@@ -60,10 +60,9 @@ class ContactPointUpdatedTest extends TestCase
                 new ContactPointUpdated(
                     'foo',
                     new ContactPoint(
-                        array('0123456789'),
-                        array('foo@bar.com'),
-                        array('http://foo.bar'),
-                        'type'
+                        ['0123456789'],
+                        ['foo@bar.com'],
+                        ['http://foo.bar']
                     )
                 ),
             ],

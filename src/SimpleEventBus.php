@@ -19,7 +19,7 @@ class SimpleEventBus extends \Broadway\EventHandling\SimpleEventBus
     private $first = true;
 
     /**
-     * @var nul|callable
+     * @var null|callable
      */
     private $beforeFirstPublicationCallback;
 

@@ -20,9 +20,7 @@ use CultuurNet\UDB3\Model\ValueObject\Calendar\PeriodicCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\PermanentCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\SingleDateRangeCalendar;
 use DateTime;
-use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
-use UnexpectedValueException;
 use ValueObjects\DateTime\Hour;
 use ValueObjects\DateTime\Minute;
 
@@ -154,12 +152,10 @@ class CalendarTest extends TestCase
     /**
      * @test
      * @dataProvider jsonldCalendarProvider
-     * @param Calendar $calendar
-     * @param $jsonld
      */
     public function it_should_generate_the_expected_json_for_a_calendar_of_each_type(
         Calendar $calendar,
-        $jsonld
+        array $jsonld
     ) {
         $this->assertEquals($jsonld, $calendar->toJsonLd());
     }
@@ -428,9 +424,8 @@ class CalendarTest extends TestCase
     /**
      * @test
      * @dataProvider periodicCalendarWithMissingDatesDataProvider
-     * @param $calendarData
      */
-    public function it_should_not_create_a_periodic_calendar_with_missing_dates($calendarData)
+    public function it_should_not_create_a_periodic_calendar_with_missing_dates(array $calendarData)
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('A period should have a start- and end-date.');

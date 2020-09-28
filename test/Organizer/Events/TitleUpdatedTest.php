@@ -13,7 +13,7 @@ class TitleUpdatedTest extends TestCase
     private $organizerId;
 
     /**
-     * @var $title
+     * @var Title
      */
     private $title;
 

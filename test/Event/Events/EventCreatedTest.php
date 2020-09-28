@@ -108,11 +108,9 @@ class EventCreatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param EventCreated $eventCreated
      */
     public function it_can_be_serialized_into_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         EventCreated $eventCreated
     ) {
         $this->assertEquals(
@@ -124,11 +122,9 @@ class EventCreatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param EventCreated $expectedEventCreated
      */
     public function it_can_be_deserialized_from_an_array(
-        $serializedValue,
+        array $serializedValue,
         EventCreated $expectedEventCreated
     ) {
         $this->assertEquals(

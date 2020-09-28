@@ -89,6 +89,7 @@ class EnrichingEventListenerDecoratorTest extends TestCase
         );
 
         $enrichedDomainMessage = clone $supportedDomainMessage;
+        /** @phpstan-ignore-next-line */
         $enrichedDomainMessage->extraProperty = true;
 
         $this->enricher->method('supports')

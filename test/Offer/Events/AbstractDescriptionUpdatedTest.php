@@ -63,11 +63,9 @@ class AbstractDescriptionUpdatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param DescriptionUpdated $descriptionUpdated
      */
     public function it_can_be_serialized_to_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         DescriptionUpdated $descriptionUpdated
     ) {
         $this->assertEquals(
@@ -79,11 +77,9 @@ class AbstractDescriptionUpdatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param DescriptionUpdated $expectedDescriptionUpdated
      */
     public function it_can_deserialize_an_array(
-        $serializedValue,
+        array $serializedValue,
         DescriptionUpdated $expectedDescriptionUpdated
     ) {
         $this->assertEquals(

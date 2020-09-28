@@ -89,11 +89,9 @@ class AbstractBookingInfoEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param MockAbstractBookingInfoEvent $bookingInfoEvent
      */
     public function it_can_be_serialized_to_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         MockAbstractBookingInfoEvent $bookingInfoEvent
     ) {
         $this->assertEquals(
@@ -105,11 +103,9 @@ class AbstractBookingInfoEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param MockAbstractBookingInfoEvent $expectedBookingInfoEvent
      */
     public function it_can_deserialize_an_array(
-        $serializedValue,
+        array $serializedValue,
         MockAbstractBookingInfoEvent $expectedBookingInfoEvent
     ) {
         $this->assertEquals(

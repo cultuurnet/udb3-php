@@ -64,11 +64,9 @@ class AbstractTypicalAgeRangeUpdatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param TypicalAgeRangeUpdated $typicalAgeRangeUpdated
      */
     public function it_can_be_serialized_to_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         TypicalAgeRangeUpdated $typicalAgeRangeUpdated
     ) {
         $this->assertEquals(
@@ -80,11 +78,9 @@ class AbstractTypicalAgeRangeUpdatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param TypicalAgeRangeUpdated $expectedTypicalAgeRangeUpdated
      */
     public function it_can_deserialize_an_array(
-        $serializedValue,
+        array $serializedValue,
         TypicalAgeRangeUpdated $expectedTypicalAgeRangeUpdated
     ) {
         $this->assertEquals(

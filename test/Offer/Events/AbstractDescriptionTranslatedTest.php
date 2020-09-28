@@ -75,11 +75,9 @@ class AbstractDescriptionTranslatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param DescriptionTranslated $descriptionTranslated
      */
     public function it_can_be_serialized_to_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         DescriptionTranslated $descriptionTranslated
     ) {
         $this->assertEquals(
@@ -91,11 +89,9 @@ class AbstractDescriptionTranslatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param DescriptionTranslated $expectedDescriptionTranslated
      */
     public function it_can_deserialize_an_array(
-        $serializedValue,
+        array $serializedValue,
         DescriptionTranslated $expectedDescriptionTranslated
     ) {
         $this->assertEquals(

@@ -105,7 +105,7 @@ class DelegateEventHandlingToSpecificMethodTraitTest extends TestCase
     }
 
     /**
-     * @param $payload
+     * @param mixed $payload
      * @return DomainMessage
      */
     private function createDomainMessage($payload)

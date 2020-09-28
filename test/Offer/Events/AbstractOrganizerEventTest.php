@@ -65,11 +65,9 @@ class AbstractOrganizerEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param MockAbstractOrganizerEvent $organizerEvent
      */
     public function it_can_be_serialized_to_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         MockAbstractOrganizerEvent $organizerEvent
     ) {
         $this->assertEquals(
@@ -81,11 +79,9 @@ class AbstractOrganizerEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param MockAbstractOrganizerEvent $expectedOrganizerEvent
      */
     public function it_can_deserialize_an_array(
-        $serializedValue,
+        array $serializedValue,
         MockAbstractOrganizerEvent $expectedOrganizerEvent
     ) {
         $this->assertEquals(

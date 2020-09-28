@@ -75,11 +75,9 @@ class AbstractContactPointUpdatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param ContactPointUpdated $contactPointUpdated
      */
     public function it_can_be_serialized_to_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         ContactPointUpdated $contactPointUpdated
     ) {
         $this->assertEquals(
@@ -91,11 +89,9 @@ class AbstractContactPointUpdatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param ContactPointUpdated $expectedContactPointUpdated
      */
     public function it_can_deserialize_an_array(
-        $serializedValue,
+        array $serializedValue,
         ContactPointUpdated $expectedContactPointUpdated
     ) {
         $this->assertEquals(

@@ -68,11 +68,9 @@ class AbstractPropertyTranslatedEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param MockAbstractPropertyTranslatedEvent $propertyTranslatedEvent
      */
     public function it_can_be_serialized_to_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         MockAbstractPropertyTranslatedEvent $propertyTranslatedEvent
     ) {
         $this->assertEquals(
@@ -84,11 +82,9 @@ class AbstractPropertyTranslatedEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param MockAbstractPropertyTranslatedEvent $expectedPropertyTranslatedEvent
      */
     public function it_can_deserialize_an_array(
-        $serializedValue,
+        array $serializedValue,
         MockAbstractPropertyTranslatedEvent $expectedPropertyTranslatedEvent
     ) {
         $this->assertEquals(

@@ -61,11 +61,9 @@ class AbstractLabelEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param LabelAdded $abstractLabelEvent
      */
     public function it_can_be_serialized_to_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         LabelAdded $abstractLabelEvent
     ) {
         $this->assertEquals(
@@ -77,11 +75,9 @@ class AbstractLabelEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param LabelAdded $expectedAbstractLabelEvent
      */
     public function it_can_deserialize_an_array(
-        $serializedValue,
+        array $serializedValue,
         LabelAdded $expectedAbstractLabelEvent
     ) {
         $this->assertEquals(

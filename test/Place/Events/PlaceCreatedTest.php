@@ -120,11 +120,9 @@ class PlaceCreatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param PlaceCreated $placeCreated
      */
     public function it_can_be_serialized_into_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         PlaceCreated $placeCreated
     ) {
         $this->assertEquals(
@@ -136,11 +134,9 @@ class PlaceCreatedTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param PlaceCreated $expectedPlaceCreated
      */
     public function it_can_be_deserialized_from_an_array(
-        $serializedValue,
+        array $serializedValue,
         PlaceCreated $expectedPlaceCreated
     ) {
         $this->assertEquals(

@@ -77,15 +77,7 @@ class CulturefeedSlugger implements SluggerInterface
         return $string;
     }
 
-    /**
-     * Transliterate a given string.
-     *
-     * @param $string
-     *   The string you want to transliterate.
-     * @return string
-     *   A string representing the transliterated version of the input string.
-     */
-    private function transliterate($string)
+    private function transliterate(string $string): string
     {
         static $charMap;
         if (!$charMap) {

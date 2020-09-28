@@ -8,10 +8,6 @@ class ClassNameEventSpecification implements EventSpecification
 {
     private $classNames;
 
-    /**
-     * ClassNameCommandFilter constructor.
-     * @param StringLiteral[] $classNames
-     */
     public function __construct(StringLiteral ...$classNames)
     {
         $this->classNames = $classNames;

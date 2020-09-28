@@ -11,10 +11,8 @@ use CultuurNet\UDB3\Address\Locality;
 use CultuurNet\UDB3\Address\PostalCode;
 use CultuurNet\UDB3\Address\Street;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\CalendarType;
 use CultuurNet\UDB3\DomainMessage\DomainMessageEnricherInterface;
-use CultuurNet\UDB3\DomainMessage\DomainMessageTestDataTrait;
 use CultuurNet\UDB3\Event\Events\EventCreated;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ValueObjects\LocationId;
@@ -91,6 +89,7 @@ class EnrichingEventListenerDecoratorTest extends TestCase
         );
 
         $enrichedDomainMessage = clone $supportedDomainMessage;
+        /** @phpstan-ignore-next-line */
         $enrichedDomainMessage->extraProperty = true;
 
         $this->enricher->method('supports')

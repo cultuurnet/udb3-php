@@ -49,11 +49,9 @@ class AbstractEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $expectedSerializedValue
-     * @param MockAbstractEvent $abstractEvent
      */
     public function it_can_be_serialized_to_an_array(
-        $expectedSerializedValue,
+        array $expectedSerializedValue,
         MockAbstractEvent $abstractEvent
     ) {
         $this->assertEquals(
@@ -65,11 +63,9 @@ class AbstractEventTest extends TestCase
     /**
      * @test
      * @dataProvider serializationDataProvider
-     * @param $serializedValue
-     * @param MockAbstractEvent $expectedAbstractEvent
      */
     public function it_can_deserialize_an_array(
-        $serializedValue,
+        array $serializedValue,
         MockAbstractEvent $expectedAbstractEvent
     ) {
         $this->assertEquals(

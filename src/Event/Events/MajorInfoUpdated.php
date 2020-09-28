@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Event\ValueObjects\LocationId;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
@@ -35,7 +34,7 @@ final class MajorInfoUpdated extends AbstractEvent
     private $location;
 
     /**
-     * @var CalendarInterface
+     * @var Calendar
      */
     private $calendar;
 
@@ -44,7 +43,7 @@ final class MajorInfoUpdated extends AbstractEvent
         Title $title,
         EventType $eventType,
         LocationId $location,
-        CalendarInterface $calendar,
+        Calendar $calendar,
         Theme $theme = null
     ) {
         parent::__construct($eventId);
@@ -71,7 +70,7 @@ final class MajorInfoUpdated extends AbstractEvent
         return $this->theme;
     }
 
-    public function getCalendar(): CalendarInterface
+    public function getCalendar(): Calendar
     {
         return $this->calendar;
     }

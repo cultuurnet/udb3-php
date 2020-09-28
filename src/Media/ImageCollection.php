@@ -2,6 +2,7 @@
 
 namespace CultuurNet\UDB3\Media;
 
+use ArrayIterator;
 use TwoDotsTwice\Collection\AbstractCollection;
 use TwoDotsTwice\Collection\CollectionInterface;
 use ValueObjects\Identity\UUID;
@@ -43,6 +44,7 @@ class ImageCollection extends AbstractCollection implements CollectionInterface
         if ($this->mainImage) {
             return $this->mainImage;
         } else {
+            /** @var ArrayIterator $iterator */
             $iterator = $this->getIterator();
             $iterator->rewind();
 

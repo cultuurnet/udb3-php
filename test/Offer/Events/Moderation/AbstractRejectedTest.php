@@ -19,7 +19,7 @@ class AbstractRejectedTest extends TestCase
     private $reason;
 
     /**
-     * @var AbstractReject
+     * @var AbstractRejected
      */
     private $abstractRejected;
 

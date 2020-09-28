@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Place\Events;
 
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Place\PlaceEvent;
@@ -40,7 +39,7 @@ final class PlaceCreated extends PlaceEvent
     private $address;
 
     /**
-     * @var CalendarInterface
+     * @var Calendar
      */
     private $calendar;
 
@@ -55,7 +54,7 @@ final class PlaceCreated extends PlaceEvent
      * @param Title $title
      * @param EventType $eventType
      * @param Address $address
-     * @param CalendarInterface $calendar
+     * @param Calendar $calendar
      * @param Theme|null $theme
      * @param DateTimeImmutable|null $publicationDate
      */
@@ -65,7 +64,7 @@ final class PlaceCreated extends PlaceEvent
         Title $title,
         EventType $eventType,
         Address $address,
-        CalendarInterface $calendar,
+        Calendar $calendar,
         ?Theme $theme = null,
         ?DateTimeImmutable $publicationDate = null
     ) {
@@ -100,7 +99,7 @@ final class PlaceCreated extends PlaceEvent
         return $this->theme;
     }
 
-    public function getCalendar(): CalendarInterface
+    public function getCalendar(): Calendar
     {
         return $this->calendar;
     }

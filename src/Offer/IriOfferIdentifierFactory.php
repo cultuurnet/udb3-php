@@ -12,11 +12,7 @@ class IriOfferIdentifierFactory implements IriOfferIdentifierFactoryInterface
      */
     private $regex;
 
-    /**
-     * IriOfferIdentifierFactory constructor.
-     * @param $regex
-     */
-    public function __construct($regex)
+    public function __construct(string $regex)
     {
         $this->regex = $regex;
 

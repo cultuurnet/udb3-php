@@ -217,11 +217,7 @@ class EventStream
         return $queryBuilder->execute();
     }
 
-    /**
-     * @param $row
-     * @return DomainMessage
-     */
-    private function deserializeEvent($row)
+    private function deserializeEvent(array $row): DomainMessage
     {
         return new DomainMessage(
             $row['uuid'],

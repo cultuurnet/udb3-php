@@ -203,11 +203,7 @@ class AggregateAwareDBALEventStore implements EventStoreInterface
         return $this->loadStatement;
     }
 
-    /**
-     * @param $row
-     * @return DomainMessage
-     */
-    private function deserializeEvent($row)
+    private function deserializeEvent(array $row): DomainMessage
     {
         return new DomainMessage(
             $row['uuid'],

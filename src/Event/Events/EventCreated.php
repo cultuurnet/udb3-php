@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventEvent;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Language;
@@ -40,7 +39,7 @@ final class EventCreated extends EventEvent
     private $location;
 
     /**
-     * @var CalendarInterface
+     * @var Calendar
      */
     private $calendar;
 
@@ -55,7 +54,7 @@ final class EventCreated extends EventEvent
         Title $title,
         EventType $eventType,
         LocationId $location,
-        CalendarInterface $calendar,
+        Calendar $calendar,
         ?Theme $theme = null,
         ?DateTimeImmutable $publicationDate = null
     ) {
@@ -90,7 +89,7 @@ final class EventCreated extends EventEvent
         return $this->theme;
     }
 
-    public function getCalendar(): CalendarInterface
+    public function getCalendar(): Calendar
     {
         return $this->calendar;
     }

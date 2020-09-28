@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Event\Events;
 
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\EventSourcing\AggregateCopiedEventInterface;
 use CultuurNet\UDB3\Offer\Events\AbstractEvent;
 
@@ -15,14 +14,14 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
     private $originalEventId;
 
     /**
-     * @var CalendarInterface|Calendar
+     * @var Calendar
      */
     private $calendar;
 
     public function __construct(
         string $eventId,
         string $originalEventId,
-        CalendarInterface $calendar
+        Calendar $calendar
     ) {
         parent::__construct($eventId);
 
@@ -47,9 +46,9 @@ final class EventCopied extends AbstractEvent implements AggregateCopiedEventInt
     }
 
     /**
-     * @return CalendarInterface|Calendar
+     * @return Calendar
      */
-    public function getCalendar(): CalendarInterface
+    public function getCalendar(): Calendar
     {
         return $this->calendar;
     }

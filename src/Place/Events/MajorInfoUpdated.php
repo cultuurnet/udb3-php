@@ -4,7 +4,6 @@ namespace CultuurNet\UDB3\Place\Events;
 
 use CultuurNet\UDB3\Address\Address;
 use CultuurNet\UDB3\Calendar;
-use CultuurNet\UDB3\CalendarInterface;
 use CultuurNet\UDB3\Event\EventType;
 use CultuurNet\UDB3\Place\PlaceEvent;
 use CultuurNet\UDB3\Theme;
@@ -33,7 +32,7 @@ final class MajorInfoUpdated extends PlaceEvent
     private $address;
 
     /**
-     * @var CalendarInterface
+     * @var Calendar
      */
     private $calendar;
 
@@ -42,7 +41,7 @@ final class MajorInfoUpdated extends PlaceEvent
         Title $title,
         EventType $eventType,
         Address $address,
-        CalendarInterface $calendar,
+        Calendar $calendar,
         ?Theme $theme = null
     ) {
         parent::__construct($placeId);
@@ -69,7 +68,7 @@ final class MajorInfoUpdated extends PlaceEvent
         return $this->theme;
     }
 
-    public function getCalendar(): CalendarInterface
+    public function getCalendar(): Calendar
     {
         return $this->calendar;
     }

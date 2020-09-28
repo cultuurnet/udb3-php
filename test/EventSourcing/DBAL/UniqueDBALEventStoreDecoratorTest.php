@@ -28,11 +28,6 @@ class UniqueDBALEventStoreDecoratorTest extends TestCase
     private $uniqueDBALEventStoreDecorator;
 
     /**
-     * @var DBALEventStore|MockObject
-     */
-    private $dbalEventStore;
-
-    /**
      * @var UniqueConstraintServiceInterface|MockObject
      */
     private $uniqueConstraintService;
@@ -46,7 +41,8 @@ class UniqueDBALEventStoreDecoratorTest extends TestCase
     {
         $serializer = $this->createMock(SerializerInterface::class);
 
-        $this->dbalEventStore = $this
+        /** @var DbalEventStore|MockObject $dbalEventStore */
+        $dbalEventStore = $this
             ->getMockBuilder(DBALEventStore::class)
             ->setConstructorArgs([$this->getConnection(), $serializer, $serializer, 'labelsEventStore'])
             ->enableProxyingToOriginalMethods()
@@ -65,7 +61,7 @@ class UniqueDBALEventStoreDecoratorTest extends TestCase
             ->willReturn(new StringLiteral(self::UNIQUE_VALUE));
 
         $this->uniqueDBALEventStoreDecorator = new UniqueDBALEventStoreDecorator(
-            $this->dbalEventStore,
+            $dbalEventStore,
             $this->connection,
             $this->uniqueTableName,
             $this->uniqueConstraintService
@@ -74,7 +70,7 @@ class UniqueDBALEventStoreDecoratorTest extends TestCase
         $schemaManager = $this->getConnection()->getSchemaManager();
         $schema = $schemaManager->createSchema();
 
-        $table = $this->dbalEventStore->configureSchema($schema);
+        $table = $dbalEventStore->configureSchema($schema);
         $schemaManager->createTable($table);
 
         $uniqueTable = $this->uniqueDBALEventStoreDecorator->configureSchema($schema);

@@ -791,4 +791,62 @@ class CalendarTest extends TestCase
             $calendar->getTimestamps()
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_can_verify_if_it_has_a_certain_timestamp(): void
+    {
+        $calendar = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-03T12:12:12+01:00'),
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-02T12:12:12+01:00')
+                ),
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-02T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-03T12:12:12+01:00')
+                ),
+            ]
+        );
+
+        $this->assertTrue(
+            $calendar->hasTimestamp(
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-02T12:12:12+01:00')
+                )
+            )
+        );
+
+        $this->assertTrue(
+            $calendar->hasTimestamp(
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-02T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-03T12:12:12+01:00')
+                )
+            )
+        );
+
+        $this->assertFalse(
+            $calendar->hasTimestamp(
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-03T12:12:12+01:00')
+                )
+            )
+        );
+
+        $this->assertFalse(
+            $calendar->hasTimestamp(
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-06T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-06T12:12:12+01:00')
+                )
+            )
+        );
+    }
 }

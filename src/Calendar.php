@@ -227,6 +227,17 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $this->timestamps;
     }
 
+    public function hasTimestamp(Timestamp $timestampToSearch): bool
+    {
+        foreach ($this->timestamps as $timestamp) {
+            if ($timestamp->equals($timestampToSearch)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function toJsonLd(): array
     {
         $jsonLd = [];

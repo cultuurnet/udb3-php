@@ -72,4 +72,55 @@ class TimestampTest extends TestCase
             DateTime::createFromFormat(DateTime::ATOM, $pastDate)
         );
     }
+
+    /**
+     * @test
+     * @dataProvider timestampProvider
+     */
+    public function it_can_check_for_equality(Timestamp $otherTimestamp, bool $equal): void
+    {
+        $timestamp = new Timestamp(
+            new DateTime('2016-01-03T01:01:01+01:00'),
+            new DateTime('2016-01-07T01:01:01+01:00')
+        );
+
+        $this->assertEquals(
+            $equal,
+            $timestamp->equals($otherTimestamp)
+        );
+    }
+
+    public function timestampProvider(): array
+    {
+        return [
+            'equal timestamp' => [
+                new Timestamp(
+                    new DateTime('2016-01-03T01:01:01+01:00'),
+                    new DateTime('2016-01-07T01:01:01+01:00')
+                ),
+                true,
+            ],
+            'timestamp with different start date'=> [
+                new Timestamp(
+                    new DateTime('2016-01-05T01:01:01+01:00'),
+                    new DateTime('2016-01-07T01:01:01+01:00')
+                ),
+                false,
+            ],
+            'timestamp with different end date' => [
+                new Timestamp(
+                    new DateTime('2016-01-03T01:01:01+01:00'),
+                    new DateTime('2016-01-08T01:01:01+01:00')
+                ),
+                false,
+            ],
+            'timestamp with different start and end date' => [
+                new Timestamp(
+                    new DateTime('2016-01-05T01:01:01+01:00'),
+                    new DateTime('2016-01-09T01:01:01+01:00')
+                ),
+                false,
+            ],
+        ];
+    }
 }

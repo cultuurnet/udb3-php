@@ -65,4 +65,9 @@ final class Timestamp implements SerializableInterface
             $dateRange->getTo()
         );
     }
+
+    public function equals(Timestamp $otherTimestamp): bool
+    {
+        return $this->serialize() === $otherTimestamp->serialize();
+    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CultuurNet\UDB3\Event\ValueObjects;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class StatusTest extends TestCase
@@ -38,5 +39,16 @@ class StatusTest extends TestCase
                 false,
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function ith_throws_on_unsupported_values(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Status does not support the value "unsupported"');
+
+        Status::fromNative('unsupported');
     }
 }

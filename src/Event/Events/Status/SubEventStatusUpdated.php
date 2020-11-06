@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace CultuurNet\UDB3\Event\Events\Status;
 
+use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Timestamp;
 
-abstract class SubEventStatusUpdated
+abstract class SubEventStatusUpdated implements SerializableInterface
 {
     /**
      * @var string

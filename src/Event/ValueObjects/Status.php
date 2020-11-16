@@ -17,21 +17,21 @@ class Status
      */
     private $value;
 
+    /**
+     * @var string[]
+     */
+    private const ALLOWED_VALUES = [
+        self::SCHEDULED,
+        self::POSTPONED,
+        self::CANCELLED,
+    ];
+
     private function __construct(string $value)
     {
-        if (!\in_array($value, $this->getAllowedValues())) {
+        if (!\in_array($value, self::ALLOWED_VALUES, true)) {
             throw new InvalidArgumentException('Status does not support the value "' . $value . '"');
         }
         $this->value = $value;
-    }
-
-    private function getAllowedValues(): array
-    {
-        return [
-            self::SCHEDULED,
-            self::POSTPONED,
-            self::CANCELLED,
-        ];
     }
 
     public static function scheduled(): Status

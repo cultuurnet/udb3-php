@@ -3,6 +3,8 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
+use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use DateTime;
 use DateTimeInterface;
@@ -13,16 +15,22 @@ final class Timestamp implements SerializableInterface
     /**
      * @var DateTimeInterface
      */
-    protected $startDate;
+    private $startDate;
 
     /**
      * @var DateTimeInterface
      */
-    protected $endDate;
+    private $endDate;
+
+    /**
+     * @var EventStatus|null
+     */
+    private $eventStatus;
 
     final public function __construct(
         DateTimeInterface $startDate,
-        DateTimeInterface $endDate
+        DateTimeInterface $endDate,
+        EventStatus $eventStatus = null
     ) {
         if ($endDate < $startDate) {
             throw new InvalidArgumentException('End date can not be earlier than start date.');
@@ -42,20 +50,35 @@ final class Timestamp implements SerializableInterface
         return $this->endDate;
     }
 
+    public function getEventStatus(): ?EventStatus
+    {
+        return $this->eventStatus;
+    }
+
     public static function deserialize(array $data): Timestamp
     {
         return new static(
             DateTime::createFromFormat(DateTime::ATOM, $data['startDate']),
-            DateTime::createFromFormat(DateTime::ATOM, $data['endDate'])
+            DateTime::createFromFormat(DateTime::ATOM, $data['endDate']),
         );
     }
 
     public function serialize(): array
     {
-        return [
+        $serialized = [
             'startDate' => $this->startDate->format(DateTime::ATOM),
             'endDate' => $this->endDate->format(DateTime::ATOM),
+            'eventStatus' => EventStatusType::scheduled()->toNative()
         ];
+
+        if ($this->eventStatus === null) {
+            return $serialized;
+        }
+
+        return \array_merge(
+            $serialized,
+            $this->eventStatus->serialize()
+        );
     }
 
     public static function fromUdb3ModelDateRange(DateRange $dateRange): Timestamp

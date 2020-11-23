@@ -58,4 +58,19 @@ class EventStatusTest extends TestCase
             $actualEventStatus
         );
     }
+
+    /**
+     * @test
+     */
+    public function itCanOnlyHoldOneTranslationPerLanguage(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new EventStatus(
+            EventStatusType::cancelled(),
+            [
+                new EventStatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
+                new EventStatusReason(new Language('nl'), 'Het concert van 10/11 is stiekem toch niet afgelast'),
+            ]
+        );
+    }
 }

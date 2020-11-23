@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3\Event\ValueObjects;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
+use InvalidArgumentException;
 
 final class EventStatus implements SerializableInterface
 {
@@ -19,7 +20,7 @@ final class EventStatus implements SerializableInterface
 
     public function __construct(EventStatusType $eventStatusType, array $eventStatusReasons)
     {
-        // TODO: Make sure language key is unique.
+        $this->ensureTranslationsAreUnique($eventStatusReasons);
         $this->eventStatusType = $eventStatusType;
         $this->eventStatusReasons = $eventStatusReasons;
     }
@@ -61,5 +62,22 @@ final class EventStatus implements SerializableInterface
             'eventStatus' => $this->eventStatusType->toNative(),
             'eventStatusReason' => $eventStatusReasons,
         ];
+    }
+
+    /**
+     * @param EventStatusReason[] $eventStatusReasons
+     */
+    private function ensureTranslationsAreUnique(array $eventStatusReasons): void
+    {
+        $languageCodes = \array_map(
+            static function (EventStatusReason $reason) {
+                return $reason->getLanguage()->getCode();
+            },
+            $eventStatusReasons
+        );
+
+        if (count($languageCodes) !== count(array_unique($languageCodes))) {
+            throw new InvalidArgumentException('Duplicate translations are not allowed for EventStatusReason');
+        }
     }
 }

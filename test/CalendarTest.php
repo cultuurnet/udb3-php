@@ -6,6 +6,7 @@ use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
+use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRanges;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\MultipleDateRangesCalendar;
@@ -138,15 +139,122 @@ class CalendarTest extends TestCase
     /**
      * @test
      */
-    public function it_has_the_exact_original_state_after_serialization_and_deserialization()
+    public function it_can_serialize()
     {
-        $serialized = $this->calendar->serialize();
-        $jsonEncoded = json_encode($serialized);
+        $this->assertEquals(
+            [
+                'type' => 'multiple',
+                'startDate' => '2016-03-06T10:00:00+01:00',
+                'endDate' => '2016-03-13T12:00:00+01:00',
+                'timestamps' => [
+                    [
+                        'startDate' => self::TIMESTAMP_1_START_DATE,
+                        'endDate' => self::TIMESTAMP_1_END_DATE,
+                        'eventStatus' => 'EventScheduled',
+                        'eventStatusReason' => [],
+                    ],
+                    [
+                        'startDate' => self::TIMESTAMP_2_START_DATE,
+                        'endDate' => self::TIMESTAMP_2_END_DATE,
+                        'eventStatus' => 'EventScheduled',
+                        'eventStatusReason' => [],
+                    ],
+                ],
+                'openingHours' => [
+                    [
+                        'opens' => '09:00',
+                        'closes' => '12:00',
+                        'dayOfWeek' => [
+                            'monday',
+                            'tuesday',
+                            'wednesday',
+                            'thursday',
+                            'friday',
+                        ],
+                    ],
+                    [
+                        'opens' => '13:00',
+                        'closes' => '17:00',
+                        'dayOfWeek' => [
+                            'monday',
+                            'tuesday',
+                            'wednesday',
+                            'thursday',
+                            'friday',
+                        ],
+                    ],
+                    [
+                        'opens' => '10:00',
+                        'closes' => '16:00',
+                        'dayOfWeek' => [
+                            'saturday',
+                            'sunday',
+                        ]
+                    ],
+                ],
+            ],
+            $this->calendar->serialize()
+        );
+    }
 
-        $jsonDecoded = json_decode($jsonEncoded, true);
-        $deserialized = Calendar::deserialize($jsonDecoded);
+    /**
+     * @test
+     */
+    public function it_can_deserialize()
+    {
+        $actualCalendar = Calendar::deserialize([
+            'type' => 'multiple',
+            'startDate' => '2016-03-06T10:00:00+01:00',
+            'endDate' => '2016-03-13T12:00:00+01:00',
+            'timestamps' => [
+                [
+                    'startDate' => self::TIMESTAMP_1_START_DATE,
+                    'endDate' => self::TIMESTAMP_1_END_DATE,
+                    'eventStatus' => 'EventScheduled',
+                    'eventStatusReason' => [],
+                ],
+                [
+                    'startDate' => self::TIMESTAMP_2_START_DATE,
+                    'endDate' => self::TIMESTAMP_2_END_DATE,
+                    'eventStatus' => 'EventScheduled',
+                    'eventStatusReason' => [],
+                ],
+            ],
+            'openingHours' => [
+                [
+                    'opens' => '09:00',
+                    'closes' => '12:00',
+                    'dayOfWeek' => [
+                        'monday',
+                        'tuesday',
+                        'wednesday',
+                        'thursday',
+                        'friday',
+                    ],
+                ],
+                [
+                    'opens' => '13:00',
+                    'closes' => '17:00',
+                    'dayOfWeek' => [
+                        'monday',
+                        'tuesday',
+                        'wednesday',
+                        'thursday',
+                        'friday',
+                    ],
+                ],
+                [
+                    'opens' => '10:00',
+                    'closes' => '16:00',
+                    'dayOfWeek' => [
+                        'saturday',
+                        'sunday',
+                    ]
+                ],
+            ],
+        ]);
 
-        $this->assertEquals($this->calendar, $deserialized);
+        $this->assertEquals($this->calendar, $actualCalendar);
     }
 
     /**

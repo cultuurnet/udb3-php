@@ -35,12 +35,12 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * @var Timestamp[]
      */
-    protected $timestamps = array();
+    protected $timestamps = [];
 
     /**
      * @var OpeningHour[]
      */
-    protected $openingHours = array();
+    protected $openingHours = [];
 
     /**
      * @param CalendarType $type
@@ -244,19 +244,15 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
 
         $timestamps = $this->getTimestamps();
         if (!empty($timestamps)) {
-            $jsonLd['subEvent'] = array();
+            $jsonLd['subEvent'] = [];
             foreach ($timestamps as $timestamp) {
-                $jsonLd['subEvent'][] = array(
-                    '@type' => 'Event',
-                    'startDate' => $timestamp->getStartDate()->format(DateTime::ATOM),
-                    'endDate' => $timestamp->getEndDate()->format(DateTime::ATOM),
-                );
+                $jsonLd['subEvent'][] = $timestamp->toJsonLd();
             }
         }
 
         $openingHours = $this->getOpeningHours();
         if (!empty($openingHours)) {
-            $jsonLd['openingHours'] = array();
+            $jsonLd['openingHours'] = [];
             foreach ($openingHours as $openingHour) {
                 $jsonLd['openingHours'][] = $openingHour->serialize();
             }
@@ -289,7 +285,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
                 function (DateRange $dateRange) {
                     return Timestamp::fromUdb3ModelDateRange($dateRange);
                 },
-                $calendar->getSubEvents()->toArray()
+                $calendar->getSubEvents()->to[]
             );
         }
 
@@ -298,7 +294,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
                 function (Udb3ModelOpeningHour $openingHour) {
                     return OpeningHour::fromUdb3ModelOpeningHour($openingHour);
                 },
-                $calendar->getOpeningHours()->toArray()
+                $calendar->getOpeningHours()->to[]
             );
         }
 

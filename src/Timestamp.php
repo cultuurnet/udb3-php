@@ -83,6 +83,14 @@ final class Timestamp implements SerializableInterface
         );
     }
 
+    public function toJsonLd(): array
+    {
+        $jsonLd = $this->serialize();
+        $jsonLd['@type'] = 'Event';
+
+        return $jsonLd;
+    }
+
     public static function fromUdb3ModelDateRange(DateRange $dateRange): Timestamp
     {
         return new Timestamp(

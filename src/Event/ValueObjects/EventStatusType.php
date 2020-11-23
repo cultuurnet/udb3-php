@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace CultuurNet\UDB3\Event\ValueObjects;
 
-use Broadway\Serializer\SerializableInterface;
 use InvalidArgumentException;
 
-class Status implements SerializableInterface
+//Taken from schema.org: https://schema.org/EventStatusType
+class EventStatusType
 {
     private const SCHEDULED = 'EventScheduled';
     private const POSTPONED = 'EventPostponed';
@@ -35,19 +35,19 @@ class Status implements SerializableInterface
         $this->value = $value;
     }
 
-    public static function scheduled(): Status
+    public static function scheduled(): EventStatusType
     {
-        return new Status(self::SCHEDULED);
+        return new EventStatusType(self::SCHEDULED);
     }
 
-    public static function postponed(): Status
+    public static function postponed(): EventStatusType
     {
-        return new Status(self::POSTPONED);
+        return new EventStatusType(self::POSTPONED);
     }
 
-    public static function cancelled(): Status
+    public static function cancelled(): EventStatusType
     {
-        return new Status(self::CANCELLED);
+        return new EventStatusType(self::CANCELLED);
     }
 
     public function toNative(): string
@@ -55,25 +55,13 @@ class Status implements SerializableInterface
         return $this->value;
     }
 
-    public static function fromNative(string $value): Status
+    public static function fromNative(string $value): EventStatusType
     {
-        return new Status($value);
+        return new EventStatusType($value);
     }
 
-    public function equals(Status $status): bool
+    public function equals(EventStatusType $status): bool
     {
         return $this->value === $status->toNative();
-    }
-
-    public static function deserialize(array $data): Status
-    {
-        return new Status($data['eventStatus']);
-    }
-
-    public function serialize(): array
-    {
-        return [
-            'eventStatus' => $this->value,
-        ];
     }
 }

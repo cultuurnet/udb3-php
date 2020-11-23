@@ -3,7 +3,9 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
+use CultuurNet\UDB3\Event\ValueObjects\EventStatusReason;
 use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
+use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use DateTime;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -88,6 +90,35 @@ class TimestampTest extends TestCase
         $this->assertEquals(
             new EventStatus(EventStatusType::scheduled(), []),
             $timestamp->getEventStatus()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_serialize_event_status(): void
+    {
+        $timestamp = new Timestamp(
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            new EventStatus(
+                EventStatusType::cancelled(),
+                [
+                    new EventStatusReason(new Language('nl'), 'Vanavond niet, schat'),
+                ]
+            )
+        );
+
+        $this->assertEquals(
+            [
+                'startDate' => self::START_DATE,
+                'endDate' => self::END_DATE,
+                'eventStatus' => 'EventCancelled',
+                'eventStatusReason' => [
+                    'nl' => 'Vanavond niet, schat',
+                ],
+            ],
+            $timestamp->serialize()
         );
     }
 }

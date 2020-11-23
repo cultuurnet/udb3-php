@@ -69,7 +69,7 @@ final class Timestamp implements SerializableInterface
         $serialized = [
             'startDate' => $this->startDate->format(DateTime::ATOM),
             'endDate' => $this->endDate->format(DateTime::ATOM),
-            'eventStatus' => EventStatusType::scheduled()->toNative()
+            'eventStatus' => EventStatusType::scheduled()->toNative(),
         ];
 
         if ($this->eventStatus === null) {

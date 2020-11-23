@@ -6,7 +6,6 @@ use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRanges;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\MultipleDateRangesCalendar;

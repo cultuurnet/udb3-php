@@ -67,7 +67,7 @@ class Status implements SerializableInterface
 
     public static function deserialize(array $data): Status
     {
-        new Status($data['eventStatus']);
+        return new Status($data['eventStatus']);
     }
 
     public function serialize(): array

@@ -38,7 +38,10 @@ final class Timestamp implements SerializableInterface
 
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        $this->eventStatus = $eventStatus;
+        $this->eventStatus = new EventStatus(EventStatusType::scheduled(), []);
+        if ($eventStatus) {
+            $this->eventStatus = $eventStatus;
+        }
     }
 
     public function getStartDate(): DateTimeInterface
@@ -51,7 +54,7 @@ final class Timestamp implements SerializableInterface
         return $this->endDate;
     }
 
-    public function getEventStatus(): ?EventStatus
+    public function getEventStatus(): EventStatus
     {
         return $this->eventStatus;
     }
@@ -69,12 +72,7 @@ final class Timestamp implements SerializableInterface
         $serialized = [
             'startDate' => $this->startDate->format(DateTime::ATOM),
             'endDate' => $this->endDate->format(DateTime::ATOM),
-            'eventStatus' => EventStatusType::scheduled()->toNative(),
         ];
-
-        if ($this->eventStatus === null) {
-            return $serialized;
-        }
 
         return \array_merge(
             $serialized,

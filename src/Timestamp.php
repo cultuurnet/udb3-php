@@ -23,7 +23,7 @@ final class Timestamp implements SerializableInterface
     private $endDate;
 
     /**
-     * @var EventStatus|null
+     * @var EventStatus
      */
     private $eventStatus;
 

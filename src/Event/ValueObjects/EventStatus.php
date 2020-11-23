@@ -69,12 +69,9 @@ final class EventStatus implements SerializableInterface
      */
     private function ensureTranslationsAreUnique(array $eventStatusReasons): void
     {
-        $languageCodes = \array_map(
-            static function (EventStatusReason $reason) {
-                return $reason->getLanguage()->getCode();
-            },
-            $eventStatusReasons
-        );
+        $languageCodes = \array_map(static function (EventStatusReason $reason) {
+            return $reason->getLanguage()->getCode();
+        }, $eventStatusReasons);
 
         if (count($languageCodes) !== count(array_unique($languageCodes))) {
             throw new InvalidArgumentException('Duplicate translations are not allowed for EventStatusReason');

@@ -18,6 +18,7 @@ jobs:
               with:
                   php-version: ${{ matrix.php-versions }}
                   extensions: intl
+                  tools: composer:v1
 
             - name: Check PHP Version
               run: php -v
@@ -25,17 +26,7 @@ jobs:
             - name: Validate composer.json and composer.lock
               run: composer validate
 
-            - name: Cache Composer packages
-              id: composer-cache
-              uses: actions/cache@v2
-              with:
-                  path: vendor
-                  key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-php-
-
             - name: Install dependencies
-              if: steps.composer-cache.outputs.cache-hit != 'true'
               run: composer install --no-progress --no-suggest
 
             - name: Run Phing

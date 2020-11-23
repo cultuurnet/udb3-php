@@ -59,7 +59,7 @@ final class Timestamp implements SerializableInterface
     {
         return new static(
             DateTime::createFromFormat(DateTime::ATOM, $data['startDate']),
-            DateTime::createFromFormat(DateTime::ATOM, $data['endDate']),
+            DateTime::createFromFormat(DateTime::ATOM, $data['endDate'])
         );
     }
 

@@ -189,7 +189,7 @@ class CalendarTest extends TestCase
                         'dayOfWeek' => [
                             'saturday',
                             'sunday',
-                        ]
+                        ],
                     ],
                 ],
             ],
@@ -249,7 +249,7 @@ class CalendarTest extends TestCase
                     'dayOfWeek' => [
                         'saturday',
                         'sunday',
-                    ]
+                    ],
                 ],
             ],
         ]);

@@ -50,20 +50,6 @@ class TimestampTest extends TestCase
     /**
      * @test
      */
-    public function it_has_the_exact_original_state_after_serialization_and_deserialization(): void
-    {
-        $serialized = $this->timestamp->serialize();
-        $jsonEncoded = json_encode($serialized);
-
-        $jsonDecoded = json_decode($jsonEncoded, true);
-        $deserialized = Timestamp::deserialize($jsonDecoded);
-
-        $this->assertEquals($this->timestamp, $deserialized);
-    }
-
-    /**
-     * @test
-     */
     public function its_end_date_can_not_be_earlier_than_start_date(): void
     {
         $pastDate = '2016-01-03T00:01:01+01:00';
@@ -96,7 +82,7 @@ class TimestampTest extends TestCase
     /**
      * @test
      */
-    public function it_can_serialize_event_status(): void
+    public function it_can_serialize_and_deserialize(): void
     {
         $timestamp = new Timestamp(
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),

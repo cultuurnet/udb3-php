@@ -285,7 +285,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
                 function (DateRange $dateRange) {
                     return Timestamp::fromUdb3ModelDateRange($dateRange);
                 },
-                $calendar->getSubEvents()->to[]
+                $calendar->getSubEvents()->toArray()
             );
         }
 
@@ -294,7 +294,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
                 function (Udb3ModelOpeningHour $openingHour) {
                     return OpeningHour::fromUdb3ModelOpeningHour($openingHour);
                 },
-                $calendar->getOpeningHours()->to[]
+                $calendar->getOpeningHours()->toArray()
             );
         }
 

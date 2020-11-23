@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Event\ValueObjects;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 
-class EventStatus implements SerializableInterface
+final class EventStatus implements SerializableInterface
 {
     /**
      * @var EventStatusType

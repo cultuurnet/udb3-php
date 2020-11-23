@@ -7,7 +7,7 @@ namespace CultuurNet\UDB3\Event\ValueObjects;
 use InvalidArgumentException;
 
 //Taken from schema.org: https://schema.org/EventStatusType
-class EventStatusType
+final class EventStatusType
 {
     private const SCHEDULED = 'EventScheduled';
     private const POSTPONED = 'EventPostponed';

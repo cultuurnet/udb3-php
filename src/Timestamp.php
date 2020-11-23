@@ -61,9 +61,15 @@ final class Timestamp implements SerializableInterface
 
     public static function deserialize(array $data): Timestamp
     {
+        $status = null;
+        if (isset($data['eventStatus']) && isset($data['eventStatusReason'])) {
+            $status = EventStatus::deserialize($data);
+        }
+
         return new static(
             DateTime::createFromFormat(DateTime::ATOM, $data['startDate']),
-            DateTime::createFromFormat(DateTime::ATOM, $data['endDate'])
+            DateTime::createFromFormat(DateTime::ATOM, $data['endDate']),
+            $status
         );
     }
 

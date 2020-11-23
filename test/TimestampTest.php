@@ -109,16 +109,16 @@ class TimestampTest extends TestCase
             )
         );
 
-        $this->assertEquals(
-            [
-                'startDate' => self::START_DATE,
-                'endDate' => self::END_DATE,
-                'eventStatus' => 'EventCancelled',
-                'eventStatusReason' => [
-                    'nl' => 'Vanavond niet, schat',
-                ],
+        $serialized = [
+            'startDate' => self::START_DATE,
+            'endDate' => self::END_DATE,
+            'eventStatus' => 'EventCancelled',
+            'eventStatusReason' => [
+                'nl' => 'Vanavond niet, schat',
             ],
-            $timestamp->serialize()
-        );
+        ];
+
+        $this->assertEquals($serialized, $timestamp->serialize());
+        $this->assertEquals($timestamp, Timestamp::deserialize($serialized));
     }
 }

@@ -87,8 +87,7 @@ final class EventStatus implements SerializableInterface
         $udb3ModelReason = $udb3ModelEventStatus->getReason();
 
         $languages = $udb3ModelReason ? $udb3ModelReason->getLanguages()->toArray() : [];
-        foreach ($languages as $language)
-        {
+        foreach ($languages as $language) {
             $translation = $udb3ModelReason->getTranslation($language);
             $reasons[$language->getCode()] = $translation->toString();
         }

@@ -93,9 +93,16 @@ final class Timestamp implements SerializableInterface
 
     public static function fromUdb3ModelDateRange(DateRange $dateRange): Timestamp
     {
+        $eventStatus = null;
+        $udb3ModelEventStatus = $dateRange->getEventStatus();
+        if (!is_null($udb3ModelEventStatus)) {
+            $eventStatus = EventStatus::fromUdb3ModelEventStatus($udb3ModelEventStatus);
+        }
+
         return new Timestamp(
             $dateRange->getFrom(),
-            $dateRange->getTo()
+            $dateRange->getTo(),
+            $eventStatus
         );
     }
 }

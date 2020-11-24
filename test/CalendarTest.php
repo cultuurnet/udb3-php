@@ -293,7 +293,7 @@ class CalendarTest extends TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventScheduled',
+                    'eventStatus' => 'https://schema.org/EventScheduled',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -328,7 +328,7 @@ class CalendarTest extends TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventPostponed',
+                    'eventStatus' => 'https://schema.org/EventPostponed',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -363,7 +363,7 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventScheduled',
+                    'eventStatus' => 'https://schema.org/EventScheduled',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -416,7 +416,7 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventScheduled',
+                    'eventStatus' => 'https://schema.org/EventScheduled',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -475,7 +475,7 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventPostponed',
+                    'eventStatus' => 'https://schema.org/EventPostponed',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -534,7 +534,7 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventCancelled',
+                    'eventStatus' => 'https://schema.org/EventCancelled',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -569,7 +569,7 @@ class CalendarTest extends TestCase
                     'calendarType' => 'periodic',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventScheduled',
+                    'eventStatus' => 'https://schema.org/EventScheduled',
                 ],
             ],
             'permanent' => [
@@ -578,7 +578,7 @@ class CalendarTest extends TestCase
                 ),
                 'jsonld' => [
                     'calendarType' => 'permanent',
-                    'eventStatus' => 'EventScheduled',
+                    'eventStatus' => 'https://schema.org/EventScheduled',
                 ],
             ],
         ];

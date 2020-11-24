@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event\ValueObjects;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\EventStatus as Udb3ModelEventStatus;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use InvalidArgumentException;
 
@@ -76,5 +77,22 @@ final class EventStatus implements SerializableInterface
         if (count($languageCodes) !== count(array_unique($languageCodes))) {
             throw new InvalidArgumentException('Duplicate translations are not allowed for EventStatusReason');
         }
+    }
+
+    public static function fromUdb3ModelEventStatus(Udb3ModelEventStatus $udb3ModelEventStatus): EventStatus
+    {
+        $type = EventStatusType::fromNative($udb3ModelEventStatus->getType()->toString());
+        $reasons = [];
+
+        $udb3ModelReason = $udb3ModelEventStatus->getReason();
+
+        $languages = $udb3ModelReason ? $udb3ModelReason->getLanguages()->toArray() : [];
+        foreach ($languages as $language)
+        {
+            $translation = $udb3ModelReason->getTranslation($language);
+            $reasons[$language->getCode()] = $translation->toString();
+        }
+
+        return new EventStatus($type, $reasons);
     }
 }

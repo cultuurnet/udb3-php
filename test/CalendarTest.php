@@ -6,6 +6,9 @@ use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
+use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
+use CultuurNet\UDB3\Event\ValueObjects\EventStatusReason;
+use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRanges;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\MultipleDateRangesCalendar;
@@ -19,6 +22,7 @@ use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Time;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\PeriodicCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\PermanentCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\SingleDateRangeCalendar;
+use CultuurNet\UDB3\Model\ValueObject\Translation\Language as Udb3Language;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\DateTime\Hour;
@@ -138,15 +142,122 @@ class CalendarTest extends TestCase
     /**
      * @test
      */
-    public function it_has_the_exact_original_state_after_serialization_and_deserialization()
+    public function it_can_serialize()
     {
-        $serialized = $this->calendar->serialize();
-        $jsonEncoded = json_encode($serialized);
+        $this->assertEquals(
+            [
+                'type' => 'multiple',
+                'startDate' => '2016-03-06T10:00:00+01:00',
+                'endDate' => '2016-03-13T12:00:00+01:00',
+                'timestamps' => [
+                    [
+                        'startDate' => self::TIMESTAMP_1_START_DATE,
+                        'endDate' => self::TIMESTAMP_1_END_DATE,
+                        'eventStatus' => 'EventScheduled',
+                        'eventStatusReason' => [],
+                    ],
+                    [
+                        'startDate' => self::TIMESTAMP_2_START_DATE,
+                        'endDate' => self::TIMESTAMP_2_END_DATE,
+                        'eventStatus' => 'EventScheduled',
+                        'eventStatusReason' => [],
+                    ],
+                ],
+                'openingHours' => [
+                    [
+                        'opens' => '09:00',
+                        'closes' => '12:00',
+                        'dayOfWeek' => [
+                            'monday',
+                            'tuesday',
+                            'wednesday',
+                            'thursday',
+                            'friday',
+                        ],
+                    ],
+                    [
+                        'opens' => '13:00',
+                        'closes' => '17:00',
+                        'dayOfWeek' => [
+                            'monday',
+                            'tuesday',
+                            'wednesday',
+                            'thursday',
+                            'friday',
+                        ],
+                    ],
+                    [
+                        'opens' => '10:00',
+                        'closes' => '16:00',
+                        'dayOfWeek' => [
+                            'saturday',
+                            'sunday',
+                        ],
+                    ],
+                ],
+            ],
+            $this->calendar->serialize()
+        );
+    }
 
-        $jsonDecoded = json_decode($jsonEncoded, true);
-        $deserialized = Calendar::deserialize($jsonDecoded);
+    /**
+     * @test
+     */
+    public function it_can_deserialize()
+    {
+        $actualCalendar = Calendar::deserialize([
+            'type' => 'multiple',
+            'startDate' => '2016-03-06T10:00:00+01:00',
+            'endDate' => '2016-03-13T12:00:00+01:00',
+            'timestamps' => [
+                [
+                    'startDate' => self::TIMESTAMP_1_START_DATE,
+                    'endDate' => self::TIMESTAMP_1_END_DATE,
+                    'eventStatus' => 'EventScheduled',
+                    'eventStatusReason' => [],
+                ],
+                [
+                    'startDate' => self::TIMESTAMP_2_START_DATE,
+                    'endDate' => self::TIMESTAMP_2_END_DATE,
+                    'eventStatus' => 'EventScheduled',
+                    'eventStatusReason' => [],
+                ],
+            ],
+            'openingHours' => [
+                [
+                    'opens' => '09:00',
+                    'closes' => '12:00',
+                    'dayOfWeek' => [
+                        'monday',
+                        'tuesday',
+                        'wednesday',
+                        'thursday',
+                        'friday',
+                    ],
+                ],
+                [
+                    'opens' => '13:00',
+                    'closes' => '17:00',
+                    'dayOfWeek' => [
+                        'monday',
+                        'tuesday',
+                        'wednesday',
+                        'thursday',
+                        'friday',
+                    ],
+                ],
+                [
+                    'opens' => '10:00',
+                    'closes' => '16:00',
+                    'dayOfWeek' => [
+                        'saturday',
+                        'sunday',
+                    ],
+                ],
+            ],
+        ]);
 
-        $this->assertEquals($this->calendar, $deserialized);
+        $this->assertEquals($this->calendar, $actualCalendar);
     }
 
     /**
@@ -166,7 +277,7 @@ class CalendarTest extends TestCase
     public function jsonldCalendarProvider()
     {
         return [
-            'single' => [
+            'single no sub event status' => [
                 'calendar' => new Calendar(
                     CalendarType::SINGLE(),
                     null,
@@ -182,16 +293,57 @@ class CalendarTest extends TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
+                    'eventStatus' => 'EventScheduled',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventScheduled',
+                            'eventStatusReason' => [],
                         ],
                     ],
                 ],
             ],
-            'multiple' => [
+            'single with sub event status postponed' => [
+                'calendar' => new Calendar(
+                    CalendarType::SINGLE(),
+                    null,
+                    null,
+                    [
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
+                            new EventStatus(
+                                EventStatusType::postponed(),
+                                [
+                                    new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new EventStatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                ]
+                            )
+                        ),
+                    ]
+                ),
+                'jsonld' => [
+                    'calendarType' => 'single',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2016-03-13T12:00:00+01:00',
+                    'eventStatus' => 'EventPostponed',
+                    'subEvent' => [
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2016-03-06T10:00:00+01:00',
+                            'endDate' => '2016-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventPostponed',
+                            'eventStatusReason' => [
+                                'nl' => 'Jammer genoeg uitgesteld.',
+                                'fr' => 'Malheureusement reporté.',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'multiple no sub event status' => [
                 'calendar' => new Calendar(
                     CalendarType::MULTIPLE(),
                     null,
@@ -211,16 +363,198 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
+                    'eventStatus' => 'EventScheduled',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventScheduled',
+                            'eventStatusReason' => [],
                         ],
                         [
                             '@type' => 'Event',
                             'startDate' => '2020-03-06T10:00:00+01:00',
                             'endDate' => '2020-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventScheduled',
+                            'eventStatusReason' => [],
+                        ],
+                    ],
+                ],
+            ],
+            'multiple with single sub event scheduled' => [
+                'calendar' => new Calendar(
+                    CalendarType::MULTIPLE(),
+                    null,
+                    null,
+                    [
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
+                            new EventStatus(
+                                EventStatusType::postponed(),
+                                [
+                                    new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new EventStatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                ]
+                            )
+                        ),
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
+                            new EventStatus(
+                                EventStatusType::scheduled(),
+                                [
+                                    new EventStatusReason(new Udb3Language('nl'), 'Gelukkig gaat het door.'),
+                                    new EventStatusReason(new Udb3Language('fr'), 'Heureusement, ça continue.'),
+                                ]
+                            )
+                        ),
+                    ]
+                ),
+                'jsonld' => [
+                    'calendarType' => 'multiple',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2020-03-13T12:00:00+01:00',
+                    'eventStatus' => 'EventScheduled',
+                    'subEvent' => [
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2016-03-06T10:00:00+01:00',
+                            'endDate' => '2016-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventPostponed',
+                            'eventStatusReason' => [
+                                'nl' => 'Jammer genoeg uitgesteld.',
+                                'fr' => 'Malheureusement reporté.',
+                            ],
+                        ],
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2020-03-06T10:00:00+01:00',
+                            'endDate' => '2020-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventScheduled',
+                            'eventStatusReason' => [
+                                'nl' => 'Gelukkig gaat het door.',
+                                'fr' => 'Heureusement, ça continue.',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'multiple with single sub event postponed' => [
+                'calendar' => new Calendar(
+                    CalendarType::MULTIPLE(),
+                    null,
+                    null,
+                    [
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
+                            new EventStatus(
+                                EventStatusType::postponed(),
+                                [
+                                    new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new EventStatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                ]
+                            )
+                        ),
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
+                            new EventStatus(
+                                EventStatusType::cancelled(),
+                                [
+                                    new EventStatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new EventStatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
+                                ]
+                            )
+                        ),
+                    ]
+                ),
+                'jsonld' => [
+                    'calendarType' => 'multiple',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2020-03-13T12:00:00+01:00',
+                    'eventStatus' => 'EventPostponed',
+                    'subEvent' => [
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2016-03-06T10:00:00+01:00',
+                            'endDate' => '2016-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventPostponed',
+                            'eventStatusReason' => [
+                                'nl' => 'Jammer genoeg uitgesteld.',
+                                'fr' => 'Malheureusement reporté.',
+                            ],
+                        ],
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2020-03-06T10:00:00+01:00',
+                            'endDate' => '2020-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventCancelled',
+                            'eventStatusReason' => [
+                                'nl' => 'Nog erger, het is afgelast.',
+                                'fr' => 'Pire encore, il a été annulé.',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'multiple with all sub events cancelled' => [
+                'calendar' => new Calendar(
+                    CalendarType::MULTIPLE(),
+                    null,
+                    null,
+                    [
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
+                            new EventStatus(
+                                EventStatusType::cancelled(),
+                                [
+                                    new EventStatusReason(new Udb3Language('nl'), 'Het is afgelast.'),
+                                    new EventStatusReason(new Udb3Language('fr'), 'Il a été annulé.'),
+                                ]
+                            )
+                        ),
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
+                            new EventStatus(
+                                EventStatusType::cancelled(),
+                                [
+                                    new EventStatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new EventStatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
+                                ]
+                            )
+                        ),
+                    ]
+                ),
+                'jsonld' => [
+                    'calendarType' => 'multiple',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2020-03-13T12:00:00+01:00',
+                    'eventStatus' => 'EventCancelled',
+                    'subEvent' => [
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2016-03-06T10:00:00+01:00',
+                            'endDate' => '2016-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventCancelled',
+                            'eventStatusReason' => [
+                                'nl' => 'Het is afgelast.',
+                                'fr' => 'Il a été annulé.',
+                            ],
+                        ],
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2020-03-06T10:00:00+01:00',
+                            'endDate' => '2020-03-13T12:00:00+01:00',
+                            'eventStatus' => 'EventCancelled',
+                            'eventStatusReason' => [
+                                'nl' => 'Nog erger, het is afgelast.',
+                                'fr' => 'Pire encore, il a été annulé.',
+                            ],
                         ],
                     ],
                 ],
@@ -235,6 +569,7 @@ class CalendarTest extends TestCase
                     'calendarType' => 'periodic',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
+                    'eventStatus' => 'EventScheduled',
                 ],
             ],
             'permanent' => [
@@ -243,6 +578,7 @@ class CalendarTest extends TestCase
                 ),
                 'jsonld' => [
                     'calendarType' => 'permanent',
+                    'eventStatus' => 'EventScheduled',
                 ],
             ],
         ];

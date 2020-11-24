@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar\OpeningHour;
+use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar as Udb3ModelCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithDateRange;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithOpeningHours;
@@ -35,12 +36,12 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * @var Timestamp[]
      */
-    protected $timestamps = array();
+    protected $timestamps = [];
 
     /**
      * @var OpeningHour[]
      */
-    protected $openingHours = array();
+    protected $openingHours = [];
 
     /**
      * @param CalendarType $type
@@ -227,6 +228,33 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $this->timestamps;
     }
 
+    public function getEventStatusType(): EventStatusType
+    {
+        $eventStatusTypeCounts = [];
+        $eventStatusTypeCounts[EventStatusType::scheduled()->toNative()] = 0;
+        $eventStatusTypeCounts[EventStatusType::postponed()->toNative()] = 0;
+        $eventStatusTypeCounts[EventStatusType::cancelled()->toNative()] = 0;
+
+        foreach ($this->timestamps as $timestamp) {
+            ++$eventStatusTypeCounts[$timestamp->getEventStatus()->getEventStatusType()->toNative()];
+        }
+
+        if ($eventStatusTypeCounts[EventStatusType::scheduled()->toNative()] > 0) {
+            return EventStatusType::scheduled();
+        }
+
+        if ($eventStatusTypeCounts[EventStatusType::postponed()->toNative()] > 0) {
+            return EventStatusType::postponed();
+        }
+
+        if ($eventStatusTypeCounts[EventStatusType::cancelled()->toNative()] > 0) {
+            return EventStatusType::cancelled();
+        }
+
+        // This extra return is needed for events with calendar type of permanent or periodic.
+        return EventStatusType::scheduled();
+    }
+
     public function toJsonLd(): array
     {
         $jsonLd = [];
@@ -242,21 +270,19 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
             $jsonLd['endDate'] = $endDate->format(DateTime::ATOM);
         }
 
+        $jsonLd['eventStatus'] = $this->getEventStatusType()->toNative();
+
         $timestamps = $this->getTimestamps();
         if (!empty($timestamps)) {
-            $jsonLd['subEvent'] = array();
+            $jsonLd['subEvent'] = [];
             foreach ($timestamps as $timestamp) {
-                $jsonLd['subEvent'][] = array(
-                    '@type' => 'Event',
-                    'startDate' => $timestamp->getStartDate()->format(DateTime::ATOM),
-                    'endDate' => $timestamp->getEndDate()->format(DateTime::ATOM),
-                );
+                $jsonLd['subEvent'][] = $timestamp->toJsonLd();
             }
         }
 
         $openingHours = $this->getOpeningHours();
         if (!empty($openingHours)) {
-            $jsonLd['openingHours'] = array();
+            $jsonLd['openingHours'] = [];
             foreach ($openingHours as $openingHour) {
                 $jsonLd['openingHours'][] = $openingHour->serialize();
             }

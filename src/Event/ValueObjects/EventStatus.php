@@ -64,6 +64,19 @@ final class EventStatus implements SerializableInterface
         ];
     }
 
+    public function toJsonLd(): array
+    {
+        $eventStatusReasons = [];
+        foreach ($this->eventStatusReasons as $statusReason) {
+            $eventStatusReasons[$statusReason->getLanguage()->getCode()] = $statusReason->getReason();
+        }
+
+        return array_filter([
+            'eventStatus' => 'https://schema.org/' . $this->eventStatusType->toNative(),
+            'eventStatusReason' => $eventStatusReasons ?? null,
+        ]);
+    }
+
     /**
      * @param EventStatusReason[] $eventStatusReasons
      */

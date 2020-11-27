@@ -59,8 +59,8 @@ final class Timestamp implements SerializableInterface
     public static function deserialize(array $data): Timestamp
     {
         $status = null;
-        if (isset($data['status']) && isset($data['statusReason'])) {
-            $status = Status::deserialize($data);
+        if (isset($data['status'])) {
+            $status = Status::deserialize($data['status']);
         }
 
         return new static(
@@ -72,15 +72,11 @@ final class Timestamp implements SerializableInterface
 
     public function serialize(): array
     {
-        $serialized = [
+        return [
             'startDate' => $this->startDate->format(DateTime::ATOM),
             'endDate' => $this->endDate->format(DateTime::ATOM),
+            'status' => $this->status->serialize()
         ];
-
-        return \array_merge(
-            $serialized,
-            $this->status->serialize()
-        );
     }
 
     public function toJsonLd(): array

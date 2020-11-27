@@ -2,9 +2,9 @@
 
 namespace CultuurNet\UDB3;
 
-use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatusReason;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
+use CultuurNet\UDB3\Event\ValueObjects\Status;
+use CultuurNet\UDB3\Event\ValueObjects\StatusReason;
+use CultuurNet\UDB3\Event\ValueObjects\StatusType;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use DateTime;
 use InvalidArgumentException;
@@ -74,8 +74,8 @@ class TimestampTest extends TestCase
         );
 
         $this->assertEquals(
-            new EventStatus(EventStatusType::scheduled(), []),
-            $timestamp->getEventStatus()
+            new Status(StatusType::available(), []),
+            $timestamp->getStatus()
         );
     }
 
@@ -87,10 +87,10 @@ class TimestampTest extends TestCase
         $timestamp = new Timestamp(
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
             DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
-            new EventStatus(
-                EventStatusType::cancelled(),
+            new Status(
+                StatusType::unavailable(),
                 [
-                    new EventStatusReason(new Language('nl'), 'Vanavond niet, schat'),
+                    new StatusReason(new Language('nl'), 'Vanavond niet, schat'),
                 ]
             )
         );
@@ -98,9 +98,11 @@ class TimestampTest extends TestCase
         $serialized = [
             'startDate' => self::START_DATE,
             'endDate' => self::END_DATE,
-            'eventStatus' => 'EventCancelled',
-            'eventStatusReason' => [
-                'nl' => 'Vanavond niet, schat',
+            'status' => [
+                'type' => StatusType::unavailable()->toNative(),
+                'reason' => [
+                    'nl' => 'Vanavond niet, schat',
+                ],
             ],
         ];
 

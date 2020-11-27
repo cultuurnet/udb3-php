@@ -38,7 +38,7 @@ final class Status implements SerializableInterface
     public static function deserialize(array $data): Status
     {
         $eventStatusReasons = [];
-        foreach ($data['eventStatusReason'] as $language => $eventStatusReason) {
+        foreach ($data['statusReason'] as $language => $eventStatusReason) {
             $eventStatusReasons[] = new StatusReason(
                 new Language($language),
                 $eventStatusReason
@@ -46,7 +46,7 @@ final class Status implements SerializableInterface
         }
 
         return new Status(
-            StatusType::fromNative($data['eventStatus']),
+            StatusType::fromNative($data['status']),
             $eventStatusReasons
         );
     }
@@ -59,8 +59,8 @@ final class Status implements SerializableInterface
         }
 
         return [
-            'eventStatus' => $this->statusType->toNative(),
-            'eventStatusReason' => $eventStatusReasons,
+            'status' => $this->statusType->toNative(),
+            'statusReason' => $eventStatusReasons,
         ];
     }
 

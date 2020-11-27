@@ -59,7 +59,7 @@ final class Timestamp implements SerializableInterface
     public static function deserialize(array $data): Timestamp
     {
         $status = null;
-        if (isset($data['eventStatus']) && isset($data['eventStatusReason'])) {
+        if (isset($data['status']) && isset($data['statusReason'])) {
             $status = Status::deserialize($data);
         }
 

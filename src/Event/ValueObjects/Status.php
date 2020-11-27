@@ -11,28 +11,28 @@ final class Status implements SerializableInterface
     /**
      * @var StatusType
      */
-    private $statusType;
+    private $type;
 
     /**
      * @var StatusReason[]
      */
-    private $statusReason;
+    private $reason;
 
-    public function __construct(StatusType $statusType, array $statusReason)
+    public function __construct(StatusType $type, array $reason)
     {
-        $this->ensureTranslationsAreUnique($statusReason);
-        $this->statusType = $statusType;
-        $this->statusReason = $statusReason;
+        $this->ensureTranslationsAreUnique($reason);
+        $this->type = $type;
+        $this->reason = $reason;
     }
 
-    public function getStatusType(): StatusType
+    public function getType(): StatusType
     {
-        return $this->statusType;
+        return $this->type;
     }
 
-    public function getStatusReason(): array
+    public function getReason(): array
     {
-        return $this->statusReason;
+        return $this->reason;
     }
 
     public static function deserialize(array $data): Status
@@ -54,12 +54,12 @@ final class Status implements SerializableInterface
     public function serialize(): array
     {
         $statusReasons = [];
-        foreach ($this->statusReason as $statusReason) {
+        foreach ($this->reason as $statusReason) {
             $statusReasons[$statusReason->getLanguage()->getCode()] = $statusReason->getReason();
         }
 
         return [
-            'status' => $this->statusType->toNative(),
+            'status' => $this->type->toNative(),
             'statusReason' => $statusReasons,
         ];
     }

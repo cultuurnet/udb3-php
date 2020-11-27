@@ -74,7 +74,7 @@ final class Status implements SerializableInterface
         }, $eventStatusReasons);
 
         if (count($languageCodes) !== count(array_unique($languageCodes))) {
-            throw new InvalidArgumentException('Duplicate translations are not allowed for EventStatusReason');
+            throw new InvalidArgumentException('Duplicate translations are not allowed for StatusReason');
         }
     }
 }

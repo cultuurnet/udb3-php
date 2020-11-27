@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar\OpeningHour;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
+use CultuurNet\UDB3\Event\ValueObjects\StatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar as Udb3ModelCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithDateRange;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithOpeningHours;
@@ -228,31 +228,31 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $this->timestamps;
     }
 
-    public function getEventStatusType(): EventStatusType
+    public function getStatusType(): StatusType
     {
-        $eventStatusTypeCounts = [];
-        $eventStatusTypeCounts[EventStatusType::scheduled()->toNative()] = 0;
-        $eventStatusTypeCounts[EventStatusType::postponed()->toNative()] = 0;
-        $eventStatusTypeCounts[EventStatusType::cancelled()->toNative()] = 0;
+        $statusTypeCounts = [];
+        $statusTypeCounts[StatusType::available()->toNative()] = 0;
+        $statusTypeCounts[StatusType::temporarilyUnavailable()->toNative()] = 0;
+        $statusTypeCounts[StatusType::unavailable()->toNative()] = 0;
 
         foreach ($this->timestamps as $timestamp) {
-            ++$eventStatusTypeCounts[$timestamp->getEventStatus()->getEventStatusType()->toNative()];
+            ++$statusTypeCounts[$timestamp->getStatus()->getStatusType()->toNative()];
         }
 
-        if ($eventStatusTypeCounts[EventStatusType::scheduled()->toNative()] > 0) {
-            return EventStatusType::scheduled();
+        if ($statusTypeCounts[StatusType::available()->toNative()] > 0) {
+            return StatusType::available();
         }
 
-        if ($eventStatusTypeCounts[EventStatusType::postponed()->toNative()] > 0) {
-            return EventStatusType::postponed();
+        if ($statusTypeCounts[StatusType::temporarilyUnavailable()->toNative()] > 0) {
+            return StatusType::temporarilyUnavailable();
         }
 
-        if ($eventStatusTypeCounts[EventStatusType::cancelled()->toNative()] > 0) {
-            return EventStatusType::cancelled();
+        if ($statusTypeCounts[StatusType::unavailable()->toNative()] > 0) {
+            return StatusType::unavailable();
         }
 
         // This extra return is needed for events with calendar type of permanent or periodic.
-        return EventStatusType::scheduled();
+        return StatusType::available();
     }
 
     public function toJsonLd(): array
@@ -270,7 +270,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
             $jsonLd['endDate'] = $endDate->format(DateTime::ATOM);
         }
 
-        $jsonLd['eventStatus'] = $this->getEventStatusType()->toNative();
+        $jsonLd['status'] = $this->getStatusType()->toNative();
 
         $timestamps = $this->getTimestamps();
         if (!empty($timestamps)) {

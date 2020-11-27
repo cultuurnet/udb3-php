@@ -3,8 +3,8 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
+use CultuurNet\UDB3\Event\ValueObjects\Status;
+use CultuurNet\UDB3\Event\ValueObjects\StatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use DateTime;
 use DateTimeInterface;
@@ -23,14 +23,14 @@ final class Timestamp implements SerializableInterface
     private $endDate;
 
     /**
-     * @var EventStatus
+     * @var Status
      */
-    private $eventStatus;
+    private $status;
 
     final public function __construct(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
-        EventStatus $eventStatus = null
+        Status $status = null
     ) {
         if ($endDate < $startDate) {
             throw new InvalidArgumentException('End date can not be earlier than start date.');
@@ -38,7 +38,7 @@ final class Timestamp implements SerializableInterface
 
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        $this->eventStatus = $eventStatus ?? new EventStatus(EventStatusType::scheduled(), []);
+        $this->status = $status ?? new Status(StatusType::available(), []);
     }
 
     public function getStartDate(): DateTimeInterface
@@ -51,16 +51,16 @@ final class Timestamp implements SerializableInterface
         return $this->endDate;
     }
 
-    public function getEventStatus(): EventStatus
+    public function getStatus(): Status
     {
-        return $this->eventStatus;
+        return $this->status;
     }
 
     public static function deserialize(array $data): Timestamp
     {
         $status = null;
-        if (isset($data['eventStatus']) && isset($data['eventStatusReason'])) {
-            $status = EventStatus::deserialize($data);
+        if (isset($data['status']) && isset($data['statusReason'])) {
+            $status = Status::deserialize($data);
         }
 
         return new static(
@@ -79,7 +79,7 @@ final class Timestamp implements SerializableInterface
 
         return \array_merge(
             $serialized,
-            $this->eventStatus->serialize()
+            $this->status->serialize()
         );
     }
 
@@ -93,16 +93,16 @@ final class Timestamp implements SerializableInterface
 
     public static function fromUdb3ModelDateRange(DateRange $dateRange): Timestamp
     {
-        $eventStatus = null;
+        $status = null;
         $udb3ModelEventStatus = $dateRange->getEventStatus();
         if (!is_null($udb3ModelEventStatus)) {
-            $eventStatus = EventStatus::fromUdb3ModelEventStatus($udb3ModelEventStatus);
+            $status = Status::fromUdb3ModelStatus($udb3ModelEventStatus);
         }
 
         return new Timestamp(
             $dateRange->getFrom(),
             $dateRange->getTo(),
-            $eventStatus
+            $status
         );
     }
 }

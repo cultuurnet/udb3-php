@@ -6,9 +6,9 @@ use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatusReason;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
+use CultuurNet\UDB3\Event\ValueObjects\Status;
+use CultuurNet\UDB3\Event\ValueObjects\StatusReason;
+use CultuurNet\UDB3\Event\ValueObjects\StatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRanges;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\MultipleDateRangesCalendar;
@@ -153,14 +153,14 @@ class CalendarTest extends TestCase
                     [
                         'startDate' => self::TIMESTAMP_1_START_DATE,
                         'endDate' => self::TIMESTAMP_1_END_DATE,
-                        'eventStatus' => 'EventScheduled',
-                        'eventStatusReason' => [],
+                        'status' => StatusType::available()->toNative(),
+                        'statusReason' => [],
                     ],
                     [
                         'startDate' => self::TIMESTAMP_2_START_DATE,
                         'endDate' => self::TIMESTAMP_2_END_DATE,
-                        'eventStatus' => 'EventScheduled',
-                        'eventStatusReason' => [],
+                        'status' => StatusType::available()->toNative(),
+                        'statusReason' => [],
                     ],
                 ],
                 'openingHours' => [
@@ -213,14 +213,14 @@ class CalendarTest extends TestCase
                 [
                     'startDate' => self::TIMESTAMP_1_START_DATE,
                     'endDate' => self::TIMESTAMP_1_END_DATE,
-                    'eventStatus' => 'EventScheduled',
-                    'eventStatusReason' => [],
+                    'status' => StatusType::available()->toNative(),
+                    'statusReason' => [],
                 ],
                 [
                     'startDate' => self::TIMESTAMP_2_START_DATE,
                     'endDate' => self::TIMESTAMP_2_END_DATE,
-                    'eventStatus' => 'EventScheduled',
-                    'eventStatusReason' => [],
+                    'status' => StatusType::available()->toNative(),
+                    'statusReason' => [],
                 ],
             ],
             'openingHours' => [
@@ -293,14 +293,14 @@ class CalendarTest extends TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventScheduled',
+                    'status' => StatusType::available()->toNative(),
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventScheduled',
-                            'eventStatusReason' => [],
+                            'status' => StatusType::available()->toNative(),
+                            'statusReason' => [],
                         ],
                     ],
                 ],
@@ -314,11 +314,11 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
-                            new EventStatus(
-                                EventStatusType::postponed(),
+                            new Status(
+                                StatusType::temporarilyUnavailable(),
                                 [
-                                    new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
-                                    new EventStatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                    new StatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new StatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
                                 ]
                             )
                         ),
@@ -328,14 +328,14 @@ class CalendarTest extends TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventPostponed',
+                    'status' => 'TemporarilyUnavailable',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventPostponed',
-                            'eventStatusReason' => [
+                            'status' => 'TemporarilyUnavailable',
+                            'statusReason' => [
                                 'nl' => 'Jammer genoeg uitgesteld.',
                                 'fr' => 'Malheureusement reporté.',
                             ],
@@ -363,21 +363,21 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventScheduled',
+                    'status' => StatusType::available()->toNative(),
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventScheduled',
-                            'eventStatusReason' => [],
+                            'status' => StatusType::available()->toNative(),
+                            'statusReason' => [],
                         ],
                         [
                             '@type' => 'Event',
                             'startDate' => '2020-03-06T10:00:00+01:00',
                             'endDate' => '2020-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventScheduled',
-                            'eventStatusReason' => [],
+                            'status' => StatusType::available()->toNative(),
+                            'statusReason' => [],
                         ],
                     ],
                 ],
@@ -391,22 +391,22 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
-                            new EventStatus(
-                                EventStatusType::postponed(),
+                            new Status(
+                                StatusType::temporarilyUnavailable(),
                                 [
-                                    new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
-                                    new EventStatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                    new StatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new StatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
                                 ]
                             )
                         ),
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
-                            new EventStatus(
-                                EventStatusType::scheduled(),
+                            new Status(
+                                StatusType::available(),
                                 [
-                                    new EventStatusReason(new Udb3Language('nl'), 'Gelukkig gaat het door.'),
-                                    new EventStatusReason(new Udb3Language('fr'), 'Heureusement, ça continue.'),
+                                    new StatusReason(new Udb3Language('nl'), 'Gelukkig gaat het door.'),
+                                    new StatusReason(new Udb3Language('fr'), 'Heureusement, ça continue.'),
                                 ]
                             )
                         ),
@@ -416,14 +416,14 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventScheduled',
+                    'status' => StatusType::available()->toNative(),
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventPostponed',
-                            'eventStatusReason' => [
+                            'status' => 'TemporarilyUnavailable',
+                            'statusReason' => [
                                 'nl' => 'Jammer genoeg uitgesteld.',
                                 'fr' => 'Malheureusement reporté.',
                             ],
@@ -432,8 +432,8 @@ class CalendarTest extends TestCase
                             '@type' => 'Event',
                             'startDate' => '2020-03-06T10:00:00+01:00',
                             'endDate' => '2020-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventScheduled',
-                            'eventStatusReason' => [
+                            'status' => StatusType::available()->toNative(),
+                            'statusReason' => [
                                 'nl' => 'Gelukkig gaat het door.',
                                 'fr' => 'Heureusement, ça continue.',
                             ],
@@ -450,22 +450,22 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
-                            new EventStatus(
-                                EventStatusType::postponed(),
+                            new Status(
+                                StatusType::temporarilyUnavailable(),
                                 [
-                                    new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
-                                    new EventStatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                    new StatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new StatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
                                 ]
                             )
                         ),
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
-                            new EventStatus(
-                                EventStatusType::cancelled(),
+                            new Status(
+                                StatusType::unavailable(),
                                 [
-                                    new EventStatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
-                                    new EventStatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
+                                    new StatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new StatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
                                 ]
                             )
                         ),
@@ -475,14 +475,14 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventPostponed',
+                    'status' => 'TemporarilyUnavailable',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventPostponed',
-                            'eventStatusReason' => [
+                            'status' => 'TemporarilyUnavailable',
+                            'statusReason' => [
                                 'nl' => 'Jammer genoeg uitgesteld.',
                                 'fr' => 'Malheureusement reporté.',
                             ],
@@ -491,8 +491,8 @@ class CalendarTest extends TestCase
                             '@type' => 'Event',
                             'startDate' => '2020-03-06T10:00:00+01:00',
                             'endDate' => '2020-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventCancelled',
-                            'eventStatusReason' => [
+                            'status' => StatusType::unavailable()->toNative(),
+                            'statusReason' => [
                                 'nl' => 'Nog erger, het is afgelast.',
                                 'fr' => 'Pire encore, il a été annulé.',
                             ],
@@ -509,22 +509,22 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
-                            new EventStatus(
-                                EventStatusType::cancelled(),
+                            new Status(
+                                StatusType::unavailable(),
                                 [
-                                    new EventStatusReason(new Udb3Language('nl'), 'Het is afgelast.'),
-                                    new EventStatusReason(new Udb3Language('fr'), 'Il a été annulé.'),
+                                    new StatusReason(new Udb3Language('nl'), 'Het is afgelast.'),
+                                    new StatusReason(new Udb3Language('fr'), 'Il a été annulé.'),
                                 ]
                             )
                         ),
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
-                            new EventStatus(
-                                EventStatusType::cancelled(),
+                            new Status(
+                                StatusType::unavailable(),
                                 [
-                                    new EventStatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
-                                    new EventStatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
+                                    new StatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new StatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
                                 ]
                             )
                         ),
@@ -534,14 +534,14 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventCancelled',
+                    'status' => 'Unavailable',
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventCancelled',
-                            'eventStatusReason' => [
+                            'status' => StatusType::unavailable()->toNative(),
+                            'statusReason' => [
                                 'nl' => 'Het is afgelast.',
                                 'fr' => 'Il a été annulé.',
                             ],
@@ -550,8 +550,8 @@ class CalendarTest extends TestCase
                             '@type' => 'Event',
                             'startDate' => '2020-03-06T10:00:00+01:00',
                             'endDate' => '2020-03-13T12:00:00+01:00',
-                            'eventStatus' => 'EventCancelled',
-                            'eventStatusReason' => [
+                            'status' => StatusType::unavailable()->toNative(),
+                            'statusReason' => [
                                 'nl' => 'Nog erger, het is afgelast.',
                                 'fr' => 'Pire encore, il a été annulé.',
                             ],
@@ -569,7 +569,7 @@ class CalendarTest extends TestCase
                     'calendarType' => 'periodic',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'eventStatus' => 'EventScheduled',
+                    'status' => StatusType::available()->toNative(),
                 ],
             ],
             'permanent' => [
@@ -578,7 +578,7 @@ class CalendarTest extends TestCase
                 ),
                 'jsonld' => [
                     'calendarType' => 'permanent',
-                    'eventStatus' => 'EventScheduled',
+                    'status' => StatusType::available()->toNative(),
                 ],
             ],
         ];

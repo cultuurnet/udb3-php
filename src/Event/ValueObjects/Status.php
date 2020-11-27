@@ -65,13 +65,13 @@ final class Status implements SerializableInterface
     }
 
     /**
-     * @param StatusReason[] $eventStatusReasons
+     * @param StatusReason[] $statusReason
      */
-    private function ensureTranslationsAreUnique(array $eventStatusReasons): void
+    private function ensureTranslationsAreUnique(array $statusReason): void
     {
         $languageCodes = \array_map(static function (StatusReason $reason) {
             return $reason->getLanguage()->getCode();
-        }, $eventStatusReasons);
+        }, $statusReason);
 
         if (count($languageCodes) !== count(array_unique($languageCodes))) {
             throw new InvalidArgumentException('Duplicate translations are not allowed for StatusReason');

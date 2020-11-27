@@ -231,28 +231,28 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     public function getEventStatusType(): StatusType
     {
         $eventStatusTypeCounts = [];
-        $eventStatusTypeCounts[StatusType::scheduled()->toNative()] = 0;
-        $eventStatusTypeCounts[StatusType::postponed()->toNative()] = 0;
-        $eventStatusTypeCounts[StatusType::cancelled()->toNative()] = 0;
+        $eventStatusTypeCounts[StatusType::available()->toNative()] = 0;
+        $eventStatusTypeCounts[StatusType::temporarilyUnavailable()->toNative()] = 0;
+        $eventStatusTypeCounts[StatusType::unavailable()->toNative()] = 0;
 
         foreach ($this->timestamps as $timestamp) {
             ++$eventStatusTypeCounts[$timestamp->getStatus()->getStatusType()->toNative()];
         }
 
-        if ($eventStatusTypeCounts[StatusType::scheduled()->toNative()] > 0) {
-            return StatusType::scheduled();
+        if ($eventStatusTypeCounts[StatusType::available()->toNative()] > 0) {
+            return StatusType::available();
         }
 
-        if ($eventStatusTypeCounts[StatusType::postponed()->toNative()] > 0) {
-            return StatusType::postponed();
+        if ($eventStatusTypeCounts[StatusType::temporarilyUnavailable()->toNative()] > 0) {
+            return StatusType::temporarilyUnavailable();
         }
 
-        if ($eventStatusTypeCounts[StatusType::cancelled()->toNative()] > 0) {
-            return StatusType::cancelled();
+        if ($eventStatusTypeCounts[StatusType::unavailable()->toNative()] > 0) {
+            return StatusType::unavailable();
         }
 
         // This extra return is needed for events with calendar type of permanent or periodic.
-        return StatusType::scheduled();
+        return StatusType::available();
     }
 
     public function toJsonLd(): array

@@ -315,7 +315,7 @@ class CalendarTest extends TestCase
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
                             new Status(
-                                StatusType::postponed(),
+                                StatusType::temporarilyUnavailable(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
                                     new EventStatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
@@ -392,7 +392,7 @@ class CalendarTest extends TestCase
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
                             new Status(
-                                StatusType::postponed(),
+                                StatusType::temporarilyUnavailable(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
                                     new EventStatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
@@ -403,7 +403,7 @@ class CalendarTest extends TestCase
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
                             new Status(
-                                StatusType::scheduled(),
+                                StatusType::available(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Gelukkig gaat het door.'),
                                     new EventStatusReason(new Udb3Language('fr'), 'Heureusement, ça continue.'),
@@ -451,7 +451,7 @@ class CalendarTest extends TestCase
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
                             new Status(
-                                StatusType::postponed(),
+                                StatusType::temporarilyUnavailable(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
                                     new EventStatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
@@ -462,7 +462,7 @@ class CalendarTest extends TestCase
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
                             new Status(
-                                StatusType::cancelled(),
+                                StatusType::unavailable(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
                                     new EventStatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
@@ -510,7 +510,7 @@ class CalendarTest extends TestCase
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
                             new Status(
-                                StatusType::cancelled(),
+                                StatusType::unavailable(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Het is afgelast.'),
                                     new EventStatusReason(new Udb3Language('fr'), 'Il a été annulé.'),
@@ -521,7 +521,7 @@ class CalendarTest extends TestCase
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
                             new Status(
-                                StatusType::cancelled(),
+                                StatusType::unavailable(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
                                     new EventStatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),

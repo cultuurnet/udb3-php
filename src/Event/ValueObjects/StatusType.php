@@ -34,17 +34,17 @@ final class StatusType
         $this->value = $value;
     }
 
-    public static function scheduled(): StatusType
+    public static function available(): StatusType
     {
         return new StatusType(self::AVAILABLE);
     }
 
-    public static function postponed(): StatusType
+    public static function temporarilyUnavailable(): StatusType
     {
         return new StatusType(self::TEMPORARILY_UNAVAILABLE);
     }
 
-    public static function cancelled(): StatusType
+    public static function unavailable(): StatusType
     {
         return new StatusType(self::UNAVAILABLE);
     }

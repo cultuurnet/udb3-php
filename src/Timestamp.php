@@ -38,7 +38,7 @@ final class Timestamp implements SerializableInterface
 
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        $this->status = $status ?? new Status(StatusType::scheduled(), []);
+        $this->status = $status ?? new Status(StatusType::available(), []);
     }
 
     public function getStartDate(): DateTimeInterface

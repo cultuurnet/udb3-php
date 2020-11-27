@@ -74,7 +74,7 @@ class TimestampTest extends TestCase
         );
 
         $this->assertEquals(
-            new Status(StatusType::scheduled(), []),
+            new Status(StatusType::available(), []),
             $timestamp->getStatus()
         );
     }
@@ -88,7 +88,7 @@ class TimestampTest extends TestCase
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
             DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
             new Status(
-                StatusType::cancelled(),
+                StatusType::unavailable(),
                 [
                     new EventStatusReason(new Language('nl'), 'Vanavond niet, schat'),
                 ]

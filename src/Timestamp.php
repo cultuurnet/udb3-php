@@ -75,7 +75,7 @@ final class Timestamp implements SerializableInterface
         return [
             'startDate' => $this->startDate->format(DateTime::ATOM),
             'endDate' => $this->endDate->format(DateTime::ATOM),
-            'status' => $this->status->serialize()
+            'status' => $this->status->serialize(),
         ];
     }
 

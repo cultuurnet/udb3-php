@@ -6,7 +6,7 @@ use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use InvalidArgumentException;
 
-final class EventStatus implements SerializableInterface
+final class Status implements SerializableInterface
 {
     /**
      * @var EventStatusType
@@ -35,7 +35,7 @@ final class EventStatus implements SerializableInterface
         return $this->eventStatusReasons;
     }
 
-    public static function deserialize(array $data): EventStatus
+    public static function deserialize(array $data): Status
     {
         $eventStatusReasons = [];
         foreach ($data['eventStatusReason'] as $language => $eventStatusReason) {
@@ -45,7 +45,7 @@ final class EventStatus implements SerializableInterface
             );
         }
 
-        return new EventStatus(
+        return new Status(
             EventStatusType::fromNative($data['eventStatus']),
             $eventStatusReasons
         );

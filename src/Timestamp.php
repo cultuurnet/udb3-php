@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
+use CultuurNet\UDB3\Event\ValueObjects\Status;
 use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use DateTime;
@@ -23,14 +23,14 @@ final class Timestamp implements SerializableInterface
     private $endDate;
 
     /**
-     * @var EventStatus
+     * @var Status
      */
     private $eventStatus;
 
     final public function __construct(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
-        EventStatus $eventStatus = null
+        Status $eventStatus = null
     ) {
         if ($endDate < $startDate) {
             throw new InvalidArgumentException('End date can not be earlier than start date.');
@@ -38,7 +38,7 @@ final class Timestamp implements SerializableInterface
 
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        $this->eventStatus = $eventStatus ?? new EventStatus(EventStatusType::scheduled(), []);
+        $this->eventStatus = $eventStatus ?? new Status(EventStatusType::scheduled(), []);
     }
 
     public function getStartDate(): DateTimeInterface
@@ -51,7 +51,7 @@ final class Timestamp implements SerializableInterface
         return $this->endDate;
     }
 
-    public function getEventStatus(): EventStatus
+    public function getEventStatus(): Status
     {
         return $this->eventStatus;
     }
@@ -60,7 +60,7 @@ final class Timestamp implements SerializableInterface
     {
         $status = null;
         if (isset($data['eventStatus']) && isset($data['eventStatusReason'])) {
-            $status = EventStatus::deserialize($data);
+            $status = Status::deserialize($data);
         }
 
         return new static(

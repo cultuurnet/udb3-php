@@ -6,7 +6,7 @@ use CultuurNet\UDB3\Calendar\DayOfWeek;
 use CultuurNet\UDB3\Calendar\DayOfWeekCollection;
 use CultuurNet\UDB3\Calendar\OpeningHour;
 use CultuurNet\UDB3\Calendar\OpeningTime;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatus;
+use CultuurNet\UDB3\Event\ValueObjects\Status;
 use CultuurNet\UDB3\Event\ValueObjects\EventStatusReason;
 use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
@@ -314,7 +314,7 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
-                            new EventStatus(
+                            new Status(
                                 EventStatusType::postponed(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
@@ -391,7 +391,7 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
-                            new EventStatus(
+                            new Status(
                                 EventStatusType::postponed(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
@@ -402,7 +402,7 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
-                            new EventStatus(
+                            new Status(
                                 EventStatusType::scheduled(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Gelukkig gaat het door.'),
@@ -450,7 +450,7 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
-                            new EventStatus(
+                            new Status(
                                 EventStatusType::postponed(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
@@ -461,7 +461,7 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
-                            new EventStatus(
+                            new Status(
                                 EventStatusType::cancelled(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
@@ -509,7 +509,7 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
-                            new EventStatus(
+                            new Status(
                                 EventStatusType::cancelled(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Het is afgelast.'),
@@ -520,7 +520,7 @@ class CalendarTest extends TestCase
                         new Timestamp(
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
                             DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
-                            new EventStatus(
+                            new Status(
                                 EventStatusType::cancelled(),
                                 [
                                     new EventStatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),

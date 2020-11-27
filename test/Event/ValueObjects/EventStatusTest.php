@@ -12,7 +12,7 @@ class EventStatusTest extends TestCase
      */
     public function itCanSerialize(): void
     {
-        $eventStatus = new EventStatus(
+        $eventStatus = new Status(
             EventStatusType::cancelled(),
             [
                 new EventStatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
@@ -37,7 +37,7 @@ class EventStatusTest extends TestCase
      */
     public function itCanDeserialize(): void
     {
-        $actualEventStatus = EventStatus::deserialize(
+        $actualEventStatus = Status::deserialize(
             [
                 'eventStatus' => 'EventCancelled',
                 'eventStatusReason' => [
@@ -48,7 +48,7 @@ class EventStatusTest extends TestCase
         );
 
         $this->assertEquals(
-            new EventStatus(
+            new Status(
                 EventStatusType::cancelled(),
                 [
                     new EventStatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
@@ -65,7 +65,7 @@ class EventStatusTest extends TestCase
     public function itCanOnlyHoldOneTranslationPerLanguage(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        new EventStatus(
+        new Status(
             EventStatusType::cancelled(),
             [
                 new EventStatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),

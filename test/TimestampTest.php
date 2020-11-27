@@ -75,7 +75,7 @@ class TimestampTest extends TestCase
 
         $this->assertEquals(
             new Status(EventStatusType::scheduled(), []),
-            $timestamp->getEventStatus()
+            $timestamp->getStatus()
         );
     }
 

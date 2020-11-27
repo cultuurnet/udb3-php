@@ -25,12 +25,12 @@ final class Timestamp implements SerializableInterface
     /**
      * @var Status
      */
-    private $eventStatus;
+    private $status;
 
     final public function __construct(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
-        Status $eventStatus = null
+        Status $status = null
     ) {
         if ($endDate < $startDate) {
             throw new InvalidArgumentException('End date can not be earlier than start date.');
@@ -38,7 +38,7 @@ final class Timestamp implements SerializableInterface
 
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        $this->eventStatus = $eventStatus ?? new Status(EventStatusType::scheduled(), []);
+        $this->status = $status ?? new Status(EventStatusType::scheduled(), []);
     }
 
     public function getStartDate(): DateTimeInterface
@@ -51,9 +51,9 @@ final class Timestamp implements SerializableInterface
         return $this->endDate;
     }
 
-    public function getEventStatus(): Status
+    public function getStatus(): Status
     {
-        return $this->eventStatus;
+        return $this->status;
     }
 
     public static function deserialize(array $data): Timestamp
@@ -79,7 +79,7 @@ final class Timestamp implements SerializableInterface
 
         return \array_merge(
             $serialized,
-            $this->eventStatus->serialize()
+            $this->status->serialize()
         );
     }
 

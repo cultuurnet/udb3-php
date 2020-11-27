@@ -3,7 +3,7 @@
 namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Event\ValueObjects\Status;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatusReason;
+use CultuurNet\UDB3\Event\ValueObjects\StatusReason;
 use CultuurNet\UDB3\Event\ValueObjects\StatusType;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use DateTime;
@@ -90,7 +90,7 @@ class TimestampTest extends TestCase
             new Status(
                 StatusType::unavailable(),
                 [
-                    new EventStatusReason(new Language('nl'), 'Vanavond niet, schat'),
+                    new StatusReason(new Language('nl'), 'Vanavond niet, schat'),
                 ]
             )
         );

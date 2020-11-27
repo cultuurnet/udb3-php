@@ -15,8 +15,8 @@ class EventStatusTest extends TestCase
         $eventStatus = new Status(
             StatusType::unavailable(),
             [
-                new EventStatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
-                new EventStatusReason(new Language('fr'), 'Le concert de 10/11 a été annulé'),
+                new StatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
+                new StatusReason(new Language('fr'), 'Le concert de 10/11 a été annulé'),
             ]
         );
 
@@ -51,8 +51,8 @@ class EventStatusTest extends TestCase
             new Status(
                 StatusType::unavailable(),
                 [
-                    new EventStatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
-                    new EventStatusReason(new Language('fr'), 'Le concert de 10/11 a été annulé'),
+                    new StatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
+                    new StatusReason(new Language('fr'), 'Le concert de 10/11 a été annulé'),
                 ]
             ),
             $actualEventStatus
@@ -68,8 +68,8 @@ class EventStatusTest extends TestCase
         new Status(
             StatusType::unavailable(),
             [
-                new EventStatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
-                new EventStatusReason(new Language('nl'), 'Het concert van 10/11 is stiekem toch niet afgelast'),
+                new StatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
+                new StatusReason(new Language('nl'), 'Het concert van 10/11 is stiekem toch niet afgelast'),
             ]
         );
     }

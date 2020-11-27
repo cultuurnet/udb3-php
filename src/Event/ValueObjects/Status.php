@@ -14,15 +14,15 @@ final class Status implements SerializableInterface
     private $statusType;
 
     /**
-     * @var EventStatusReason[]
+     * @var StatusReason[]
      */
-    private $eventStatusReasons;
+    private $statusReason;
 
-    public function __construct(StatusType $statusType, array $eventStatusReasons)
+    public function __construct(StatusType $statusType, array $statusReason)
     {
-        $this->ensureTranslationsAreUnique($eventStatusReasons);
+        $this->ensureTranslationsAreUnique($statusReason);
         $this->statusType = $statusType;
-        $this->eventStatusReasons = $eventStatusReasons;
+        $this->statusReason = $statusReason;
     }
 
     public function getStatusType(): StatusType
@@ -30,16 +30,16 @@ final class Status implements SerializableInterface
         return $this->statusType;
     }
 
-    public function getEventStatusReasons(): array
+    public function getStatusReason(): array
     {
-        return $this->eventStatusReasons;
+        return $this->statusReason;
     }
 
     public static function deserialize(array $data): Status
     {
         $eventStatusReasons = [];
         foreach ($data['eventStatusReason'] as $language => $eventStatusReason) {
-            $eventStatusReasons[] = new EventStatusReason(
+            $eventStatusReasons[] = new StatusReason(
                 new Language($language),
                 $eventStatusReason
             );
@@ -54,7 +54,7 @@ final class Status implements SerializableInterface
     public function serialize(): array
     {
         $eventStatusReasons = [];
-        foreach ($this->eventStatusReasons as $statusReason) {
+        foreach ($this->statusReason as $statusReason) {
             $eventStatusReasons[$statusReason->getLanguage()->getCode()] = $statusReason->getReason();
         }
 
@@ -65,11 +65,11 @@ final class Status implements SerializableInterface
     }
 
     /**
-     * @param EventStatusReason[] $eventStatusReasons
+     * @param StatusReason[] $eventStatusReasons
      */
     private function ensureTranslationsAreUnique(array $eventStatusReasons): void
     {
-        $languageCodes = \array_map(static function (EventStatusReason $reason) {
+        $languageCodes = \array_map(static function (StatusReason $reason) {
             return $reason->getLanguage()->getCode();
         }, $eventStatusReasons);
 

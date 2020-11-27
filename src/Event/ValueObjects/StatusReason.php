@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Event\ValueObjects;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use InvalidArgumentException;
 
-final class EventStatusReason
+final class StatusReason
 {
     /**
      * @var Language

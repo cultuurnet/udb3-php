@@ -236,7 +236,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         $statusTypeCounts[StatusType::unavailable()->toNative()] = 0;
 
         foreach ($this->timestamps as $timestamp) {
-            ++$statusTypeCounts[$timestamp->getStatus()->getStatusType()->toNative()];
+            ++$statusTypeCounts[$timestamp->getStatus()->getType()->toNative()];
         }
 
         if ($statusTypeCounts[StatusType::available()->toNative()] > 0) {

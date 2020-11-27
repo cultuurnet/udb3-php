@@ -98,9 +98,11 @@ class TimestampTest extends TestCase
         $serialized = [
             'startDate' => self::START_DATE,
             'endDate' => self::END_DATE,
-            'status' => StatusType::unavailable()->toNative(),
-            'statusReason' => [
-                'nl' => 'Vanavond niet, schat',
+            'status' => [
+                'type' => StatusType::unavailable()->toNative(),
+                'reason' => [
+                    'nl' => 'Vanavond niet, schat',
+                ],
             ],
         ];
 

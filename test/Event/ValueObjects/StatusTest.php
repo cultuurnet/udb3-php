@@ -22,8 +22,8 @@ class StatusTest extends TestCase
 
         $this->assertEquals(
             [
-                'status' => 'Unavailable',
-                'statusReason' => [
+                'type' => 'Unavailable',
+                'reason' => [
                     'nl' => 'Het concert van 10/11 is afgelast',
                     'fr' => 'Le concert de 10/11 a été annulé',
                 ],
@@ -39,8 +39,8 @@ class StatusTest extends TestCase
     {
         $actualStatus = Status::deserialize(
             [
-                'status' => 'Unavailable',
-                'statusReason' => [
+                'type' => 'Unavailable',
+                'reason' => [
                     'nl' => 'Het concert van 10/11 is afgelast',
                     'fr' => 'Le concert de 10/11 a été annulé',
                 ],

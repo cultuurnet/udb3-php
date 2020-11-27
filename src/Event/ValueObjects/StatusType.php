@@ -7,7 +7,7 @@ namespace CultuurNet\UDB3\Event\ValueObjects;
 use InvalidArgumentException;
 
 //Taken from schema.org: https://schema.org/EventStatusType
-final class EventStatusType
+final class StatusType
 {
     private const SCHEDULED = 'EventScheduled';
     private const POSTPONED = 'EventPostponed';
@@ -35,19 +35,19 @@ final class EventStatusType
         $this->value = $value;
     }
 
-    public static function scheduled(): EventStatusType
+    public static function scheduled(): StatusType
     {
-        return new EventStatusType(self::SCHEDULED);
+        return new StatusType(self::SCHEDULED);
     }
 
-    public static function postponed(): EventStatusType
+    public static function postponed(): StatusType
     {
-        return new EventStatusType(self::POSTPONED);
+        return new StatusType(self::POSTPONED);
     }
 
-    public static function cancelled(): EventStatusType
+    public static function cancelled(): StatusType
     {
-        return new EventStatusType(self::CANCELLED);
+        return new StatusType(self::CANCELLED);
     }
 
     public function toNative(): string
@@ -55,12 +55,12 @@ final class EventStatusType
         return $this->value;
     }
 
-    public static function fromNative(string $value): EventStatusType
+    public static function fromNative(string $value): StatusType
     {
-        return new EventStatusType($value);
+        return new StatusType($value);
     }
 
-    public function equals(EventStatusType $status): bool
+    public function equals(StatusType $status): bool
     {
         return $this->value === $status->toNative();
     }

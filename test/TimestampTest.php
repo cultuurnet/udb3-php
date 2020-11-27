@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3;
 
 use CultuurNet\UDB3\Event\ValueObjects\Status;
 use CultuurNet\UDB3\Event\ValueObjects\EventStatusReason;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
+use CultuurNet\UDB3\Event\ValueObjects\StatusType;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use DateTime;
 use InvalidArgumentException;
@@ -74,7 +74,7 @@ class TimestampTest extends TestCase
         );
 
         $this->assertEquals(
-            new Status(EventStatusType::scheduled(), []),
+            new Status(StatusType::scheduled(), []),
             $timestamp->getStatus()
         );
     }
@@ -88,7 +88,7 @@ class TimestampTest extends TestCase
             DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
             DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
             new Status(
-                EventStatusType::cancelled(),
+                StatusType::cancelled(),
                 [
                     new EventStatusReason(new Language('nl'), 'Vanavond niet, schat'),
                 ]

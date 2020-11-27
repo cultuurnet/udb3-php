@@ -4,7 +4,7 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Status;
-use CultuurNet\UDB3\Event\ValueObjects\EventStatusType;
+use CultuurNet\UDB3\Event\ValueObjects\StatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use DateTime;
 use DateTimeInterface;
@@ -38,7 +38,7 @@ final class Timestamp implements SerializableInterface
 
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        $this->status = $status ?? new Status(EventStatusType::scheduled(), []);
+        $this->status = $status ?? new Status(StatusType::scheduled(), []);
     }
 
     public function getStartDate(): DateTimeInterface

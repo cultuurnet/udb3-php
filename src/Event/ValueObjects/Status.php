@@ -9,25 +9,25 @@ use InvalidArgumentException;
 final class Status implements SerializableInterface
 {
     /**
-     * @var EventStatusType
+     * @var StatusType
      */
-    private $eventStatusType;
+    private $statusType;
 
     /**
      * @var EventStatusReason[]
      */
     private $eventStatusReasons;
 
-    public function __construct(EventStatusType $eventStatusType, array $eventStatusReasons)
+    public function __construct(StatusType $statusType, array $eventStatusReasons)
     {
         $this->ensureTranslationsAreUnique($eventStatusReasons);
-        $this->eventStatusType = $eventStatusType;
+        $this->statusType = $statusType;
         $this->eventStatusReasons = $eventStatusReasons;
     }
 
-    public function getEventStatusType(): EventStatusType
+    public function getStatusType(): StatusType
     {
-        return $this->eventStatusType;
+        return $this->statusType;
     }
 
     public function getEventStatusReasons(): array
@@ -46,7 +46,7 @@ final class Status implements SerializableInterface
         }
 
         return new Status(
-            EventStatusType::fromNative($data['eventStatus']),
+            StatusType::fromNative($data['eventStatus']),
             $eventStatusReasons
         );
     }
@@ -59,7 +59,7 @@ final class Status implements SerializableInterface
         }
 
         return [
-            'eventStatus' => $this->eventStatusType->toNative(),
+            'eventStatus' => $this->statusType->toNative(),
             'eventStatusReason' => $eventStatusReasons,
         ];
     }

@@ -38,11 +38,13 @@ final class Status implements SerializableInterface
     public static function deserialize(array $data): Status
     {
         $statusReasons = [];
-        foreach ($data['reason'] as $language => $statusReason) {
-            $statusReasons[] = new StatusReason(
-                new Language($language),
-                $statusReason
-            );
+        if (isset($data['reason'])) {
+            foreach ($data['reason'] as $language => $statusReason) {
+                $statusReasons[] = new StatusReason(
+                    new Language($language),
+                    $statusReason
+                );
+            }
         }
 
         return new Status(
@@ -53,15 +55,20 @@ final class Status implements SerializableInterface
 
     public function serialize(): array
     {
+        $serialized = [
+            'type' => $this->type->toNative(),
+        ];
+
         $statusReasons = [];
         foreach ($this->reason as $statusReason) {
             $statusReasons[$statusReason->getLanguage()->getCode()] = $statusReason->getReason();
         }
 
-        return [
-            'type' => $this->type->toNative(),
-            'reason' => $statusReasons,
-        ];
+        if (!empty($statusReasons)) {
+            $serialized['reason'] = $statusReasons;
+        }
+
+        return $serialized;
     }
 
     /**

@@ -155,7 +155,6 @@ class CalendarTest extends TestCase
                         'endDate' => self::TIMESTAMP_1_END_DATE,
                         'status' => [
                             'type' => StatusType::available()->toNative(),
-                            'reason' => [],
                         ],
                     ],
                     [
@@ -163,7 +162,6 @@ class CalendarTest extends TestCase
                         'endDate' => self::TIMESTAMP_2_END_DATE,
                         'status' => [
                             'type' => StatusType::available()->toNative(),
-                            'reason' => [],
                         ],
                     ],
                 ],
@@ -219,7 +217,6 @@ class CalendarTest extends TestCase
                     'endDate' => self::TIMESTAMP_1_END_DATE,
                     'status' => [
                         'type' => StatusType::available()->toNative(),
-                        'reason' => [],
                     ],
                 ],
                 [
@@ -227,7 +224,6 @@ class CalendarTest extends TestCase
                     'endDate' => self::TIMESTAMP_2_END_DATE,
                     'status' => [
                         'type' => StatusType::available()->toNative(),
-                        'reason' => [],
                     ],
                 ],
             ],
@@ -309,7 +305,6 @@ class CalendarTest extends TestCase
                             'endDate' => '2016-03-13T12:00:00+01:00',
                             'status' => [
                                 'type' => StatusType::available()->toNative(),
-                                'reason' => [],
                             ],
                         ],
                     ],
@@ -383,7 +378,6 @@ class CalendarTest extends TestCase
                             'endDate' => '2016-03-13T12:00:00+01:00',
                             'status' => [
                                 'type' => StatusType::available()->toNative(),
-                                'reason' => [],
                             ],
                         ],
                         [
@@ -392,7 +386,6 @@ class CalendarTest extends TestCase
                             'endDate' => '2020-03-13T12:00:00+01:00',
                             'status' => [
                                 'type' => StatusType::available()->toNative(),
-                                'reason' => [],
                             ],
                         ],
                     ],

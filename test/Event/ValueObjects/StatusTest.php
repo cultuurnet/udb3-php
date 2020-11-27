@@ -12,7 +12,7 @@ class StatusTest extends TestCase
      */
     public function itCanSerialize(): void
     {
-        $eventStatus = new Status(
+        $status = new Status(
             StatusType::unavailable(),
             [
                 new StatusReason(new Language('nl'), 'Het concert van 10/11 is afgelast'),
@@ -28,7 +28,7 @@ class StatusTest extends TestCase
                     'fr' => 'Le concert de 10/11 a été annulé',
                 ],
             ],
-            $eventStatus->serialize()
+            $status->serialize()
         );
     }
 
@@ -37,7 +37,7 @@ class StatusTest extends TestCase
      */
     public function itCanDeserialize(): void
     {
-        $actualEventStatus = Status::deserialize(
+        $actualStatus = Status::deserialize(
             [
                 'eventStatus' => 'EventCancelled',
                 'eventStatusReason' => [
@@ -55,7 +55,7 @@ class StatusTest extends TestCase
                     new StatusReason(new Language('fr'), 'Le concert de 10/11 a été annulé'),
                 ]
             ),
-            $actualEventStatus
+            $actualStatus
         );
     }
 

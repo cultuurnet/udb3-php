@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3\Event\ValueObjects;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use PHPUnit\Framework\TestCase;
 
-class EventStatusTest extends TestCase
+class StatusTest extends TestCase
 {
     /**
      * @test

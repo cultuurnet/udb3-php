@@ -8,9 +8,9 @@ use InvalidArgumentException;
 
 final class StatusType
 {
-    private const SCHEDULED = 'EventScheduled';
-    private const POSTPONED = 'EventPostponed';
-    private const CANCELLED = 'EventCancelled';
+    private const AVAILABLE = 'Available';
+    private const TEMPORARILY_UNAVAILABLE = 'TemporarilyUnavailable';
+    private const UNAVAILABLE = 'Unavailable';
 
     /**
      * @var string
@@ -21,9 +21,9 @@ final class StatusType
      * @var string[]
      */
     private const ALLOWED_VALUES = [
-        self::SCHEDULED,
-        self::POSTPONED,
-        self::CANCELLED,
+        self::AVAILABLE,
+        self::TEMPORARILY_UNAVAILABLE,
+        self::UNAVAILABLE,
     ];
 
     private function __construct(string $value)
@@ -36,17 +36,17 @@ final class StatusType
 
     public static function scheduled(): StatusType
     {
-        return new StatusType(self::SCHEDULED);
+        return new StatusType(self::AVAILABLE);
     }
 
     public static function postponed(): StatusType
     {
-        return new StatusType(self::POSTPONED);
+        return new StatusType(self::TEMPORARILY_UNAVAILABLE);
     }
 
     public static function cancelled(): StatusType
     {
-        return new StatusType(self::CANCELLED);
+        return new StatusType(self::UNAVAILABLE);
     }
 
     public function toNative(): string

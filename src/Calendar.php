@@ -228,26 +228,26 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $this->timestamps;
     }
 
-    public function getEventStatusType(): StatusType
+    public function getStatusType(): StatusType
     {
-        $eventStatusTypeCounts = [];
-        $eventStatusTypeCounts[StatusType::available()->toNative()] = 0;
-        $eventStatusTypeCounts[StatusType::temporarilyUnavailable()->toNative()] = 0;
-        $eventStatusTypeCounts[StatusType::unavailable()->toNative()] = 0;
+        $statusTypeCounts = [];
+        $statusTypeCounts[StatusType::available()->toNative()] = 0;
+        $statusTypeCounts[StatusType::temporarilyUnavailable()->toNative()] = 0;
+        $statusTypeCounts[StatusType::unavailable()->toNative()] = 0;
 
         foreach ($this->timestamps as $timestamp) {
-            ++$eventStatusTypeCounts[$timestamp->getStatus()->getStatusType()->toNative()];
+            ++$statusTypeCounts[$timestamp->getStatus()->getStatusType()->toNative()];
         }
 
-        if ($eventStatusTypeCounts[StatusType::available()->toNative()] > 0) {
+        if ($statusTypeCounts[StatusType::available()->toNative()] > 0) {
             return StatusType::available();
         }
 
-        if ($eventStatusTypeCounts[StatusType::temporarilyUnavailable()->toNative()] > 0) {
+        if ($statusTypeCounts[StatusType::temporarilyUnavailable()->toNative()] > 0) {
             return StatusType::temporarilyUnavailable();
         }
 
-        if ($eventStatusTypeCounts[StatusType::unavailable()->toNative()] > 0) {
+        if ($statusTypeCounts[StatusType::unavailable()->toNative()] > 0) {
             return StatusType::unavailable();
         }
 
@@ -270,7 +270,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
             $jsonLd['endDate'] = $endDate->format(DateTime::ATOM);
         }
 
-        $jsonLd['eventStatus'] = $this->getEventStatusType()->toNative();
+        $jsonLd['status'] = $this->getStatusType()->toNative();
 
         $timestamps = $this->getTimestamps();
         if (!empty($timestamps)) {

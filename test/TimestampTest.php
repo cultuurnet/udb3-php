@@ -98,8 +98,8 @@ class TimestampTest extends TestCase
         $serialized = [
             'startDate' => self::START_DATE,
             'endDate' => self::END_DATE,
-            'eventStatus' => 'EventCancelled',
-            'eventStatusReason' => [
+            'status' => StatusType::unavailable()->toNative(),
+            'statusReason' => [
                 'nl' => 'Vanavond niet, schat',
             ],
         ];

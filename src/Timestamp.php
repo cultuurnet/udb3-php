@@ -5,7 +5,7 @@ namespace CultuurNet\UDB3;
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Event\ValueObjects\Status;
 use CultuurNet\UDB3\Event\ValueObjects\StatusType;
-use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\SubEvent;
 use DateTime;
 use DateTimeInterface;
 use InvalidArgumentException;
@@ -87,18 +87,12 @@ final class Timestamp implements SerializableInterface
         return $jsonLd;
     }
 
-    public static function fromUdb3ModelDateRange(DateRange $dateRange): Timestamp
+    public static function fromUdb3ModelSubEvent(SubEvent $subEvent): Timestamp
     {
-        $status = null;
-        $udb3ModelStatus = $dateRange->getEventStatus();
-        if (!is_null($udb3ModelStatus)) {
-            $status = Status::fromUdb3ModelStatus($udb3ModelStatus);
-        }
-
         return new Timestamp(
-            $dateRange->getFrom(),
-            $dateRange->getTo(),
-            $status
+            $subEvent->getDateRange()->getFrom(),
+            $subEvent->getDateRange()->getTo(),
+            Status::fromUdb3ModelStatus($subEvent->getStatus())
         );
     }
 }

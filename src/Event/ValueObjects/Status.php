@@ -3,7 +3,6 @@
 namespace CultuurNet\UDB3\Event\ValueObjects;
 
 use Broadway\Serializer\SerializableInterface;
-use CultuurNet\UDB3\Model\ValueObject\Calendar\EventStatus;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use InvalidArgumentException;
 
@@ -86,7 +85,7 @@ final class Status implements SerializableInterface
         }
     }
 
-    public static function fromUdb3ModelStatus(EventStatus $udb3ModelStatus): self
+    public static function fromUdb3ModelStatus(Udb3ModelStatus $udb3ModelStatus): self
     {
         $type = StatusType::fromNative($udb3ModelStatus->getType()->toString());
         $reasons = [];

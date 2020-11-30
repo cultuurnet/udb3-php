@@ -9,8 +9,8 @@ use CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar as Udb3ModelCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithDateRange;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithOpeningHours;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithSubEvents;
-use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHour as Udb3ModelOpeningHour;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\SubEvent;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
@@ -312,8 +312,8 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
 
         if ($calendar instanceof CalendarWithSubEvents) {
             $timestamps = array_map(
-                function (DateRange $dateRange) {
-                    return Timestamp::fromUdb3ModelDateRange($dateRange);
+                function (SubEvent $subEvent) {
+                    return Timestamp::fromUdb3ModelSubEvent($subEvent);
                 },
                 $calendar->getSubEvents()->toArray()
             );

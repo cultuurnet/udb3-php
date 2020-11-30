@@ -3,6 +3,7 @@
 namespace CultuurNet\UDB3\Event\ValueObjects;
 
 use Broadway\Serializer\SerializableInterface;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\Status as Udb3ModelStatus;
 use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use InvalidArgumentException;
 

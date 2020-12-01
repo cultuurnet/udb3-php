@@ -2,11 +2,12 @@
 
 namespace CultuurNet\UDB3\Event\ValueObjects;
 
+use CultuurNet\UDB3\Language;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\Status as Udb3ModelStatus;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\StatusReason as Udb3ModelStatusReason;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\StatusType as Udb3ModelStatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\TranslatedStatusReason;
-use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
+use CultuurNet\UDB3\Model\ValueObject\Translation\Language as Udb3ModelLanguage;
 use PHPUnit\Framework\TestCase;
 
 class StatusTest extends TestCase
@@ -86,7 +87,7 @@ class StatusTest extends TestCase
         $udb3ModelStatus = new Udb3ModelStatus(
             Udb3ModelStatusType::Unavailable(),
             new TranslatedStatusReason(
-                new Language('nl'),
+                new Udb3ModelLanguage('nl'),
                 new Udb3ModelStatusReason('Nederlandse reden')
             )
         );

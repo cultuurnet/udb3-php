@@ -2,7 +2,7 @@
 
 namespace CultuurNet\UDB3\Event\ValueObjects;
 
-use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
+use CultuurNet\UDB3\Language;
 use InvalidArgumentException;
 
 final class StatusReason

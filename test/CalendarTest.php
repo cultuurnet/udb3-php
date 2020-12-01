@@ -25,7 +25,6 @@ use CultuurNet\UDB3\Model\ValueObject\Calendar\Status as Udb3ModelStatus;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\StatusType as Udb3ModelStatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\SubEvent;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\SubEvents;
-use CultuurNet\UDB3\Model\ValueObject\Translation\Language as Udb3Language;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\DateTime\Hour;
@@ -325,8 +324,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::temporarilyUnavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                    new StatusReason(new Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new StatusReason(new Language('fr'), 'Malheureusement reporté.'),
                                 ]
                             )
                         ),
@@ -406,8 +405,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::temporarilyUnavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                    new StatusReason(new Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new StatusReason(new Language('fr'), 'Malheureusement reporté.'),
                                 ]
                             )
                         ),
@@ -417,8 +416,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::available(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Gelukkig gaat het door.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Heureusement, ça continue.'),
+                                    new StatusReason(new Language('nl'), 'Gelukkig gaat het door.'),
+                                    new StatusReason(new Language('fr'), 'Heureusement, ça continue.'),
                                 ]
                             )
                         ),
@@ -469,8 +468,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::temporarilyUnavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                    new StatusReason(new Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new StatusReason(new Language('fr'), 'Malheureusement reporté.'),
                                 ]
                             )
                         ),
@@ -480,8 +479,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::unavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
+                                    new StatusReason(new Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Pire encore, il a été annulé.'),
                                 ]
                             )
                         ),
@@ -532,8 +531,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::unavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Het is afgelast.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Il a été annulé.'),
+                                    new StatusReason(new Language('nl'), 'Het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Il a été annulé.'),
                                 ]
                             )
                         ),
@@ -543,8 +542,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::unavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
+                                    new StatusReason(new Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Pire encore, il a été annulé.'),
                                 ]
                             )
                         ),

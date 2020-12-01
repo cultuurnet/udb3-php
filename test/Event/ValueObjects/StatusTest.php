@@ -14,7 +14,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function itCanSerialize(): void
+    public function it_can_be_serialized(): void
     {
         $status = new Status(
             StatusType::unavailable(),
@@ -39,7 +39,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function itCanDeserialize(): void
+    public function it_can_be_deserialized(): void
     {
         $actualStatus = Status::deserialize(
             [
@@ -66,7 +66,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function itCanOnlyHoldOneTranslationPerLanguage(): void
+    public function it_can_only_hold_one_translation_per_language(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new Status(

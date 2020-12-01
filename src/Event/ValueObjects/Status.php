@@ -96,7 +96,7 @@ final class Status implements SerializableInterface
         $languages = $udb3ModelReason ? $udb3ModelReason->getLanguages()->toArray() : [];
         foreach ($languages as $language) {
             $translation = $udb3ModelReason->getTranslation($language);
-            $reasons[$language->getCode()] = $translation->toString();
+            $reasons[] = new StatusReason(new Language($language->getCode()), $translation->toString());
         }
 
         return new self($type, $reasons);

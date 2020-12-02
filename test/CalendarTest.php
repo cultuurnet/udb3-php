@@ -10,8 +10,7 @@ use CultuurNet\UDB3\Event\ValueObjects\Status;
 use CultuurNet\UDB3\Event\ValueObjects\StatusReason;
 use CultuurNet\UDB3\Event\ValueObjects\StatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRange;
-use CultuurNet\UDB3\Model\ValueObject\Calendar\DateRanges;
-use CultuurNet\UDB3\Model\ValueObject\Calendar\MultipleDateRangesCalendar;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\MultipleSubEventsCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Day;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Days;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Hour as Udb3ModelHour;
@@ -21,8 +20,11 @@ use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\OpeningHours;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\OpeningHours\Time;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\PeriodicCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\PermanentCalendar;
-use CultuurNet\UDB3\Model\ValueObject\Calendar\SingleDateRangeCalendar;
-use CultuurNet\UDB3\Model\ValueObject\Translation\Language as Udb3Language;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\SingleSubEventCalendar;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\Status as Udb3ModelStatus;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\StatusType as Udb3ModelStatusType;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\SubEvent;
+use CultuurNet\UDB3\Model\ValueObject\Calendar\SubEvents;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use ValueObjects\DateTime\Hour;
@@ -322,8 +324,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::temporarilyUnavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                    new StatusReason(new Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new StatusReason(new Language('fr'), 'Malheureusement reporté.'),
                                 ]
                             )
                         ),
@@ -403,8 +405,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::temporarilyUnavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                    new StatusReason(new Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new StatusReason(new Language('fr'), 'Malheureusement reporté.'),
                                 ]
                             )
                         ),
@@ -414,8 +416,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::available(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Gelukkig gaat het door.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Heureusement, ça continue.'),
+                                    new StatusReason(new Language('nl'), 'Gelukkig gaat het door.'),
+                                    new StatusReason(new Language('fr'), 'Heureusement, ça continue.'),
                                 ]
                             )
                         ),
@@ -466,8 +468,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::temporarilyUnavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Jammer genoeg uitgesteld.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Malheureusement reporté.'),
+                                    new StatusReason(new Language('nl'), 'Jammer genoeg uitgesteld.'),
+                                    new StatusReason(new Language('fr'), 'Malheureusement reporté.'),
                                 ]
                             )
                         ),
@@ -477,8 +479,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::unavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
+                                    new StatusReason(new Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Pire encore, il a été annulé.'),
                                 ]
                             )
                         ),
@@ -529,8 +531,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::unavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Het is afgelast.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Il a été annulé.'),
+                                    new StatusReason(new Language('nl'), 'Het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Il a été annulé.'),
                                 ]
                             )
                         ),
@@ -540,8 +542,8 @@ class CalendarTest extends TestCase
                             new Status(
                                 StatusType::unavailable(),
                                 [
-                                    new StatusReason(new Udb3Language('nl'), 'Nog erger, het is afgelast.'),
-                                    new StatusReason(new Udb3Language('fr'), 'Pire encore, il a été annulé.'),
+                                    new StatusReason(new Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Pire encore, il a été annulé.'),
                                 ]
                             )
                         ),
@@ -818,12 +820,15 @@ class CalendarTest extends TestCase
      */
     public function it_should_be_creatable_from_an_udb3_model_single_date_range_calendar()
     {
-        $dateRange = new DateRange(
-            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
-            \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+        $subEvent = new SubEvent(
+            new DateRange(
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+            ),
+            new Udb3ModelStatus(Udb3ModelStatusType::Available())
         );
 
-        $udb3ModelCalendar = new SingleDateRangeCalendar($dateRange);
+        $udb3ModelCalendar = new SingleSubEventCalendar($subEvent);
 
         $expected = new Calendar(
             CalendarType::SINGLE(),
@@ -848,18 +853,24 @@ class CalendarTest extends TestCase
      */
     public function it_should_be_creatable_from_an_udb3_model_multiple_date_range_calendar()
     {
-        $dateRanges = new DateRanges(
-            new DateRange(
-                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
-                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+        $subEvents = new SubEvents(
+            new SubEvent(
+                new DateRange(
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-06T10:00:00+01:00'),
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-07T10:00:00+01:00')
+                ),
+                new Udb3ModelStatus(Udb3ModelStatusType::Available())
             ),
-            new DateRange(
-                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-09T10:00:00+01:00'),
-                \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-10T10:00:00+01:00')
+            new SubEvent(
+                new DateRange(
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-09T10:00:00+01:00'),
+                    \DateTimeImmutable::createFromFormat(\DATE_ATOM, '2016-03-10T10:00:00+01:00')
+                ),
+                new Udb3ModelStatus(Udb3ModelStatusType::Available())
             )
         );
 
-        $udb3ModelCalendar = new MultipleDateRangesCalendar($dateRanges);
+        $udb3ModelCalendar = new MultipleSubEventsCalendar($subEvents);
 
         $expected = new Calendar(
             CalendarType::MULTIPLE(),

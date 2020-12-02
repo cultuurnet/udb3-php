@@ -5,7 +5,6 @@ namespace CultuurNet\UDB3;
 use CultuurNet\UDB3\Event\ValueObjects\Status;
 use CultuurNet\UDB3\Event\ValueObjects\StatusReason;
 use CultuurNet\UDB3\Event\ValueObjects\StatusType;
-use CultuurNet\UDB3\Model\ValueObject\Translation\Language;
 use DateTime;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;

@@ -1159,4 +1159,54 @@ class CalendarTest extends TestCase
             $calendar->getTimestamps()
         );
     }
+
+    /**
+     * @test
+     */
+    public function itCanChangeStatus(): void
+    {
+        $calendar = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-30T12:12:12+01:00'),
+            [
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-05T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-10T12:12:12+01:00')
+                ),
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-07T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-09T12:12:12+01:00')
+                ),
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-15T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-25T12:12:12+01:00')
+                ),
+                new Timestamp(
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+                    DateTime::createFromFormat(\DateTime::ATOM, '2020-04-20T12:12:12+01:00')
+                ),
+            ]
+        );
+
+        $this->assertEquals(
+            new Status(StatusType::available(), []),
+            $calendar->getStatus()
+        );
+
+        $newStatus = new Status(
+            StatusType::unavailable(),
+            [
+                new StatusReason(new Language('nl'), 'Het mag niet van de afgevaardigde van de eerste minister'),
+            ]
+        );
+
+        $updatedCalendar = $calendar->withStatus($newStatus);
+
+        $this->assertEquals($newStatus, $updatedCalendar->getStatus());
+
+        foreach ($updatedCalendar->getTimestamps() as $timestamp) {
+            $this->assertEquals($newStatus, $timestamp->getStatus());
+        }
+    }
 }

@@ -299,7 +299,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => StatusType::available()->toNative(),
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -335,7 +337,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'status' => 'TemporarilyUnavailable',
+                    'status' => [
+                        'type' => 'TemporarilyUnavailable',
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -372,7 +376,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => StatusType::available()->toNative(),
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -427,7 +433,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => StatusType::available()->toNative(),
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -490,7 +498,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'status' => 'TemporarilyUnavailable',
+                    'status' => [
+                        'type' => 'TemporarilyUnavailable',
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -553,7 +563,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'status' => 'Unavailable',
+                    'status' => [
+                        'type' => 'Unavailable',
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -592,7 +604,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'periodic',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => StatusType::available()->toNative(),
+                    ],
                 ],
             ],
             'permanent' => [
@@ -601,7 +615,9 @@ class CalendarTest extends TestCase
                 ),
                 'jsonld' => [
                     'calendarType' => 'permanent',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => StatusType::available()->toNative(),
+                    ],
                 ],
             ],
         ];

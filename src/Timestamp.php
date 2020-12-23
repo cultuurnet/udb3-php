@@ -41,6 +41,13 @@ final class Timestamp implements SerializableInterface
         $this->status = $status ?? new Status(StatusType::available(), []);
     }
 
+    public function withStatus(Status $status): self
+    {
+        $clone = clone $this;
+        $clone->status = $status;
+        return $clone;
+    }
+
     public function getStartDate(): DateTimeInterface
     {
         return $this->startDate;

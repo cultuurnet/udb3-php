@@ -4,6 +4,7 @@ namespace CultuurNet\UDB3;
 
 use Broadway\Serializer\SerializableInterface;
 use CultuurNet\UDB3\Calendar\OpeningHour;
+use CultuurNet\UDB3\Event\ValueObjects\Status;
 use CultuurNet\UDB3\Event\ValueObjects\StatusType;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\Calendar as Udb3ModelCalendar;
 use CultuurNet\UDB3\Model\ValueObject\Calendar\CalendarWithDateRange;
@@ -42,6 +43,11 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
      * @var OpeningHour[]
      */
     protected $openingHours = [];
+
+    /**
+     * @var Status
+     */
+    protected $status;
 
     /**
      * @param CalendarType $type
@@ -88,6 +94,27 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
 
         $this->timestamps = $timestamps;
 
+        $this->status = new Status($this->deriveStatusTypeFromSubEvents(), []);
+    }
+
+    public function withStatus(Status $status): self
+    {
+        $clone = clone $this;
+
+        $clone->status = $status;
+        \array_map(
+            function (Timestamp $timestamp) use ($status): Timestamp {
+                return $timestamp->withStatus($status);
+            },
+            $clone->getTimestamps()
+        );
+
+        return $clone;
+    }
+
+    public function getStatus(): Status
+    {
+        return $this->status;
     }
 
     public function getType(): CalendarType
@@ -228,7 +255,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $this->timestamps;
     }
 
-    public function getStatusType(): StatusType
+    private function deriveStatusTypeFromSubEvents(): StatusType
     {
         $statusTypeCounts = [];
         $statusTypeCounts[StatusType::available()->toNative()] = 0;
@@ -270,9 +297,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
             $jsonLd['endDate'] = $endDate->format(DateTime::ATOM);
         }
 
-        $jsonLd['status'] = [
-            'type' => $this->getStatusType()->toNative(),
-        ];
+        $jsonLd['status'] = $this->getStatus()->serialize();
 
         $timestamps = $this->getTimestamps();
         if (!empty($timestamps)) {

@@ -299,14 +299,16 @@ class CalendarTest extends TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => 'Available',
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
                             'status' => [
-                                'type' => StatusType::available()->toNative(),
+                                'type' => 'Available',
                             ],
                         ],
                     ],
@@ -335,7 +337,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'single',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'status' => 'TemporarilyUnavailable',
+                    'status' => [
+                        'type' => 'TemporarilyUnavailable',
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -372,14 +376,16 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => 'Available',
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
                             'status' => [
-                                'type' => StatusType::available()->toNative(),
+                                'type' => 'Available',
                             ],
                         ],
                         [
@@ -387,7 +393,7 @@ class CalendarTest extends TestCase
                             'startDate' => '2020-03-06T10:00:00+01:00',
                             'endDate' => '2020-03-13T12:00:00+01:00',
                             'status' => [
-                                'type' => StatusType::available()->toNative(),
+                                'type' => 'Available',
                             ],
                         ],
                     ],
@@ -427,7 +433,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => 'Available',
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -446,7 +454,7 @@ class CalendarTest extends TestCase
                             'startDate' => '2020-03-06T10:00:00+01:00',
                             'endDate' => '2020-03-13T12:00:00+01:00',
                             'status' => [
-                                'type' => StatusType::available()->toNative(),
+                                'type' => 'Available',
                                 'reason' => [
                                     'nl' => 'Gelukkig gaat het door.',
                                     'fr' => 'Heureusement, ça continue.',
@@ -490,7 +498,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'status' => 'TemporarilyUnavailable',
+                    'status' => [
+                        'type' => 'TemporarilyUnavailable',
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
@@ -509,7 +519,7 @@ class CalendarTest extends TestCase
                             'startDate' => '2020-03-06T10:00:00+01:00',
                             'endDate' => '2020-03-13T12:00:00+01:00',
                             'status' => [
-                                'type' => StatusType::unavailable()->toNative(),
+                                'type' => 'Unavailable',
                                 'reason' => [
                                     'nl' => 'Nog erger, het is afgelast.',
                                     'fr' => 'Pire encore, il a été annulé.',
@@ -553,14 +563,16 @@ class CalendarTest extends TestCase
                     'calendarType' => 'multiple',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2020-03-13T12:00:00+01:00',
-                    'status' => 'Unavailable',
+                    'status' => [
+                        'type' => 'Unavailable',
+                    ],
                     'subEvent' => [
                         [
                             '@type' => 'Event',
                             'startDate' => '2016-03-06T10:00:00+01:00',
                             'endDate' => '2016-03-13T12:00:00+01:00',
                             'status' => [
-                                'type' => StatusType::unavailable()->toNative(),
+                                'type' => 'Unavailable',
                                 'reason' => [
                                     'nl' => 'Het is afgelast.',
                                     'fr' => 'Il a été annulé.',
@@ -572,7 +584,7 @@ class CalendarTest extends TestCase
                             'startDate' => '2020-03-06T10:00:00+01:00',
                             'endDate' => '2020-03-13T12:00:00+01:00',
                             'status' => [
-                                'type' => StatusType::unavailable()->toNative(),
+                                'type' => 'Unavailable',
                                 'reason' => [
                                     'nl' => 'Nog erger, het is afgelast.',
                                     'fr' => 'Pire encore, il a été annulé.',
@@ -592,7 +604,9 @@ class CalendarTest extends TestCase
                     'calendarType' => 'periodic',
                     'startDate' => '2016-03-06T10:00:00+01:00',
                     'endDate' => '2016-03-13T12:00:00+01:00',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => 'Available',
+                    ],
                 ],
             ],
             'permanent' => [
@@ -601,7 +615,9 @@ class CalendarTest extends TestCase
                 ),
                 'jsonld' => [
                     'calendarType' => 'permanent',
-                    'status' => StatusType::available()->toNative(),
+                    'status' => [
+                        'type' => 'Available',
+                    ],
                 ],
             ],
         ];

@@ -27,7 +27,7 @@ final class Timestamp implements SerializableInterface
      */
     private $status;
 
-    final public function __construct(
+    public function __construct(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
         Status $status = null

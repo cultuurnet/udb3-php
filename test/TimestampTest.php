@@ -108,4 +108,34 @@ class TimestampTest extends TestCase
         $this->assertEquals($serialized, $timestamp->serialize());
         $this->assertEquals($timestamp, Timestamp::deserialize($serialized));
     }
+
+    /**
+     * @test
+     */
+    public function itCanChangeStatus(): void
+    {
+        $timestamp = new Timestamp(
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            new Status(StatusType::available(), [])
+        );
+
+        $newStatus = new Status(
+            StatusType::unavailable(),
+            [
+                new StatusReason(new Language('nl'), 'Het mag niet van de afgevaardigde van de eerste minister'),
+            ]
+        );
+
+        $expected = new Timestamp(
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            $newStatus
+        );
+
+        $this->assertEquals(
+            $expected,
+            $timestamp->withStatus($newStatus)
+        );
+    }
 }

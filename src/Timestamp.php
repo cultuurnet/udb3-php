@@ -27,7 +27,7 @@ final class Timestamp implements SerializableInterface
      */
     private $status;
 
-    final public function __construct(
+    public function __construct(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
         Status $status = null
@@ -39,6 +39,13 @@ final class Timestamp implements SerializableInterface
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->status = $status ?? new Status(StatusType::available(), []);
+    }
+
+    public function withStatus(Status $status): self
+    {
+        $clone = clone $this;
+        $clone->status = $status;
+        return $clone;
     }
 
     public function getStartDate(): DateTimeInterface

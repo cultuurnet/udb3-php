@@ -103,7 +103,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
 
         $clone->status = $status;
         $clone->timestamps = \array_map(
-            function (Timestamp $timestamp) use ($status): Timestamp {
+            function (Timestamp $timestamp) use ($status) : Timestamp {
                 return $timestamp->withStatus($status);
             },
             $clone->getTimestamps()

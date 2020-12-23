@@ -620,6 +620,27 @@ class CalendarTest extends TestCase
                     ],
                 ],
             ],
+            'permanent_with_changed_status_and_reason' => [
+                'calendar' => (new Calendar(
+                    CalendarType::PERMANENT()
+                ))->withStatus(
+                    new Status(
+                        StatusType::temporarilyUnavailable(),
+                        [
+                            new StatusReason(new Language('nl'), 'We zijn in volle verbouwing'),
+                        ]
+                    )
+                ),
+                'jsonld' => [
+                    'calendarType' => 'permanent',
+                    'status' => [
+                        'type' => StatusType::temporarilyUnavailable()->toNative(),
+                        'reason' => [
+                            'nl' => 'We zijn in volle verbouwing',
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 

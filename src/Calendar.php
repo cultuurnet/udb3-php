@@ -270,9 +270,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
             $jsonLd['endDate'] = $endDate->format(DateTime::ATOM);
         }
 
-        $jsonLd['status'] = [
-            'type' => $this->getStatusType()->toNative(),
-        ];
+        $jsonLd['status'] = $this->getStatusType()->toNative();
 
         $timestamps = $this->getTimestamps();
         if (!empty($timestamps)) {

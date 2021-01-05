@@ -271,6 +271,44 @@ class CalendarTest extends TestCase
 
     /**
      * @test
+     */
+    public function it_can_deserialize_with_explicit_status()
+    {
+        $status = new Status(
+            StatusType::temporarilyUnavailable(),
+            [
+                new StatusReason(new Language('nl'), 'Jammer genoeg uitgesteld.'),
+                new StatusReason(new Language('fr'), 'Malheureusement reporté.'),
+            ]
+        );
+
+        $calendar = new Calendar(
+            CalendarType::PERMANENT(),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00')
+        );
+
+        $this->assertEquals(
+            $calendar->withStatus($status),
+            Calendar::deserialize(
+                [
+                    'type' => 'permanent',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2016-03-13T12:00:00+01:00',
+                    'status' => [
+                        'type' => 'TemporarilyUnavailable',
+                        'reason' => [
+                            'nl' => 'Jammer genoeg uitgesteld.',
+                            'fr' => 'Malheureusement reporté.',
+                        ],
+                    ],
+                ]
+            )
+        );
+    }
+
+    /**
+     * @test
      * @dataProvider jsonldCalendarProvider
      */
     public function it_should_generate_the_expected_json_for_a_calendar_of_each_type(

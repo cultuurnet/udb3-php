@@ -165,7 +165,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
             $defaultTimeStamps = $defaultTimeStamp ? [$defaultTimeStamp] : [];
         }
 
-        return new self(
+        $calendar = new self(
             $calendarType,
             !empty($data['startDate']) ? self::deserializeDateTime($data['startDate']) : null,
             !empty($data['endDate']) ? self::deserializeDateTime($data['endDate']) : null,
@@ -182,6 +182,12 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
                 $data['openingHours']
             ) : []
         );
+
+        if (!empty($data['status'])) {
+            $calendar = $calendar->withStatus(Status::deserialize($data['status']));
+        }
+
+        return $calendar;
     }
 
     /**

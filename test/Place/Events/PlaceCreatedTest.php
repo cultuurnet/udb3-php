@@ -208,7 +208,7 @@ class PlaceCreatedTest extends TestCase
                     'calendar' => [
                         'type' => 'permanent',
                         'status' => [
-                            'type' => 'Available'
+                            'type' => 'Available',
                         ],
                     ],
                     'event_type' => [
@@ -250,7 +250,7 @@ class PlaceCreatedTest extends TestCase
                     'calendar' => [
                         'type' => 'permanent',
                         'status' => [
-                            'type' => 'Available'
+                            'type' => 'Available',
                         ],
                     ],
                     'event_type' => [

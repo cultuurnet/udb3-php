@@ -143,14 +143,17 @@ class EventCreatedTest extends TestCase
                     'title' => 'title',
                     'theme' => null,
                     'location' => 'd379187b-7f71-4403-8fff-645a28be8fd0',
-                    'calendar' => array(
+                    'calendar' => [
+                        'status' => [
+                            'type' => 'Available',
+                        ],
                         'type' => 'permanent',
-                    ),
-                    'event_type' => array(
+                    ],
+                    'event_type' => [
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype',
-                    ),
+                    ],
                     'publication_date' => null,
                 ],
                 new EventCreated(
@@ -175,14 +178,17 @@ class EventCreatedTest extends TestCase
                         'domain' => 'theme',
                     ],
                     'location' => 'd379187b-7f71-4403-8fff-645a28be8fd0',
-                    'calendar' => array(
+                    'calendar' => [
+                        'status' => [
+                            'type' => 'Available',
+                        ],
                         'type' => 'permanent',
-                    ),
-                    'event_type' => array(
+                    ],
+                    'event_type' => [
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype',
-                    ),
+                    ],
                     'publication_date' => null,
                 ],
                 new EventCreated(
@@ -204,14 +210,17 @@ class EventCreatedTest extends TestCase
                     'title' => 'title',
                     'theme' => null,
                     'location' => 'd379187b-7f71-4403-8fff-645a28be8fd0',
-                    'calendar' => array(
+                    'calendar' => [
+                        'status' => [
+                            'type' => 'Available',
+                        ],
                         'type' => 'permanent',
-                    ),
-                    'event_type' => array(
+                    ],
+                    'event_type' => [
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype',
-                    ),
+                    ],
                     'publication_date' => '2016-08-01T00:00:00+02:00',
                 ],
                 new EventCreated(

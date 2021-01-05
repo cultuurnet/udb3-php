@@ -48,20 +48,23 @@ class MajorInfoUpdatedTest extends TestCase
                 [
                     'item_id' => 'test 456',
                     'title' => 'title',
-                    'theme' => array(
+                    'theme' => [
                         'id' => 'themeid',
                         'label' => 'theme_label',
                         'domain' => 'theme',
-                    ),
+                    ],
                     'location' => '395fe7eb-9bac-4647-acae-316b6446a85e',
-                    'calendar' => array(
+                    'calendar' => [
+                        'status' => [
+                            'type' => 'Available',
+                        ],
                         'type' => 'permanent',
-                    ),
-                    'event_type' => array(
+                    ],
+                    'event_type' => [
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype',
-                    ),
+                    ],
                 ],
                 new MajorInfoUpdated(
                     'test 456',

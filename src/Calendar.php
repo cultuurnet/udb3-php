@@ -140,6 +140,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
 
         $calendar = [
             'type' => $this->type,
+            'status' => $this->status->serialize(),
         ];
 
         empty($this->startDate) ?: $calendar['startDate'] = $this->startDate->format(DateTime::ATOM);

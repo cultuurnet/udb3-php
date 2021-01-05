@@ -154,20 +154,23 @@ class PlaceCreatedTest extends TestCase
                     'main_language' => 'es',
                     'title' => 'title',
                     'theme' => null,
-                    'address' => array(
+                    'address' => [
                         'streetAddress' => 'De straat',
                         'postalCode' => '9620',
                         'addressLocality' => 'Zottegem',
                         'addressCountry' => 'BE',
-                    ),
-                    'calendar' => array(
+                    ],
+                    'calendar' => [
                         'type' => 'permanent',
-                    ),
-                    'event_type' => array(
+                        'status' => [
+                            'type' => 'Available',
+                        ],
+                    ],
+                    'event_type' => [
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype',
-                    ),
+                    ],
                     'publication_date' => null,
                 ],
                 new PlaceCreated(
@@ -196,20 +199,23 @@ class PlaceCreatedTest extends TestCase
                         'label' => 'foo',
                         'domain' => 'theme',
                     ],
-                    'address' => array(
+                    'address' => [
                         'streetAddress' => 'De straat',
                         'postalCode' => '9620',
                         'addressLocality' => 'Zottegem',
                         'addressCountry' => 'BE',
-                    ),
-                    'calendar' => array(
+                    ],
+                    'calendar' => [
                         'type' => 'permanent',
-                    ),
-                    'event_type' => array(
+                        'status' => [
+                            'type' => 'Available'
+                        ],
+                    ],
+                    'event_type' => [
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype',
-                    ),
+                    ],
                     'publication_date' => null,
                 ],
                 new PlaceCreated(
@@ -235,20 +241,23 @@ class PlaceCreatedTest extends TestCase
                     'main_language' => 'es',
                     'title' => 'title',
                     'theme' => null,
-                    'address' => array(
+                    'address' => [
                         'streetAddress' => 'De straat',
                         'postalCode' => '9620',
                         'addressLocality' => 'Zottegem',
                         'addressCountry' => 'BE',
-                    ),
-                    'calendar' => array(
+                    ],
+                    'calendar' => [
                         'type' => 'permanent',
-                    ),
-                    'event_type' => array(
+                        'status' => [
+                            'type' => 'Available'
+                        ],
+                    ],
+                    'event_type' => [
                         'id' => 'bar_id',
                         'label' => 'bar',
                         'domain' => 'eventtype',
-                    ),
+                    ],
                     'publication_date' => '2016-08-01T00:00:00+02:00',
                 ],
                 new PlaceCreated(

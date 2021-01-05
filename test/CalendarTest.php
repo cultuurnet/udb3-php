@@ -151,6 +151,9 @@ class CalendarTest extends TestCase
                 'type' => 'multiple',
                 'startDate' => '2016-03-06T10:00:00+01:00',
                 'endDate' => '2016-03-13T12:00:00+01:00',
+                'status' => [
+                    'type' => StatusType::available()->toNative(),
+                ],
                 'timestamps' => [
                     [
                         'startDate' => self::TIMESTAMP_1_START_DATE,

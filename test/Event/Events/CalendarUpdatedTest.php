@@ -44,6 +44,9 @@ class CalendarUpdatedTest extends TestCase
                 'type' => 'periodic',
                 'startDate' => '2020-01-26T11:11:11+01:00',
                 'endDate' => '2021-01-27T12:12:12+01:00',
+                'status' => [
+                    'type' => 'Available',
+                ],
             ],
         ];
 

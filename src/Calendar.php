@@ -304,7 +304,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
             $jsonLd['endDate'] = $endDate->format(DateTime::ATOM);
         }
 
-        $jsonLd['status'] = $this->getStatus()->serialize();
+        $jsonLd['status'] = $this->determineCorrectTopStatusForProjection()->serialize();
 
         $timestamps = $this->getTimestamps();
         if (!empty($timestamps)) {
@@ -363,5 +363,34 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         }
 
         return new self($type, $startDate, $endDate, $timestamps, $openingHours);
+    }
+
+    /**
+     * If the calendar has subEvents (timestamps), and a status manually set through an import or full calendar update
+     * through the API, the top status might be incorrect.
+     * For example the top status can not be Available if one of the subEvents is Unavailable.
+     * However we want to be flexible in what we accept from API clients since otherwise they will have to implement a
+     * lot of (new) logic to make sure the top status they're sending is correct.
+     * So we accept the top status as-is, and correct it during projection.
+     * That way if the correction is bugged, we can always fix it and replay it with the original data.
+     */
+    private function determineCorrectTopStatusForProjection(): Status
+    {
+        // If the calendar has no subEvents, the top level status is always valid.
+        if (empty($this->timestamps)) {
+            return $this->status;
+        }
+
+        // If the calendar has subEvents, the top level status is valid if it is the same type as the type derived from
+        // the subEvents. In that case return $this->status so we include the top-level reason (if it has one).
+        $expectedStatusType = $this->deriveStatusTypeFromSubEvents();
+        if ($this->status->getType()->equals($expectedStatusType)) {
+            return $this->status;
+        }
+
+        // If the top-level status is invalid compared to the status type derived from the subEvents, return the
+        // expected status type without any reason. (If the top level status had a reason it's probably not applicable
+        // for the new status type.)
+        return new Status($expectedStatusType, []);
     }
 }

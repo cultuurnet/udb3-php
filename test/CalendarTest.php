@@ -680,6 +680,79 @@ class CalendarTest extends TestCase
                     ],
                 ],
             ],
+            'multiple with all sub events cancelled but an incorrect top status which should get corrected' => [
+                'calendar' => (new Calendar(
+                    CalendarType::MULTIPLE(),
+                    null,
+                    null,
+                    [
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
+                            new Status(
+                                StatusType::unavailable(),
+                                [
+                                    new StatusReason(new Language('nl'), 'Het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Il a été annulé.'),
+                                ]
+                            )
+                        ),
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
+                            new Status(
+                                StatusType::unavailable(),
+                                [
+                                    new StatusReason(new Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Pire encore, il a été annulé.'),
+                                ]
+                            )
+                        ),
+                    ]
+                ))->withStatus(
+                    new Status(
+                        StatusType::available(),
+                        [
+                            new StatusReason(new Language('nl'), 'Alles goed'),
+                            new StatusReason(new Language('en'), 'All good'),
+                        ]
+                    )
+                ),
+                'jsonld' => [
+                    'calendarType' => 'multiple',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2020-03-13T12:00:00+01:00',
+                    'status' => [
+                        'type' => 'Unavailable',
+                    ],
+                    'subEvent' => [
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2016-03-06T10:00:00+01:00',
+                            'endDate' => '2016-03-13T12:00:00+01:00',
+                            'status' => [
+                                'type' => StatusType::unavailable()->toNative(),
+                                'reason' => [
+                                    'nl' => 'Het is afgelast.',
+                                    'fr' => 'Il a été annulé.',
+                                ],
+                            ],
+                        ],
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2020-03-06T10:00:00+01:00',
+                            'endDate' => '2020-03-13T12:00:00+01:00',
+                            'status' => [
+                                'type' => StatusType::unavailable()->toNative(),
+                                'reason' => [
+                                    'nl' => 'Nog erger, het is afgelast.',
+                                    'fr' => 'Pire encore, il a été annulé.',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
             'periodic' => [
                 'calendar' => new Calendar(
                     CalendarType::PERIODIC(),

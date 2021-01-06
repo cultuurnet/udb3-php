@@ -309,6 +309,51 @@ class CalendarTest extends TestCase
 
     /**
      * @test
+     */
+    public function it_can_deserialize_without_overwriting_the_status_of_subEvents()
+    {
+        $timestamp1 = new Timestamp(
+            DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_1_START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_1_END_DATE),
+            new Status(
+                StatusType::unavailable(),
+                [
+                    new StatusReason(new Language('nl'), 'Jammer genoeg geannuleerd.'),
+                ]
+            )
+        );
+
+        $timestamp2 = new Timestamp(
+            DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_2_START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_2_END_DATE),
+            new Status(
+                StatusType::temporarilyUnavailable(),
+                [
+                    new StatusReason(new Language('nl'), 'Jammer genoeg uitgesteld.'),
+                ]
+            )
+        );
+
+        $expected = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            [
+                self::TIMESTAMP_1 => $timestamp1,
+                self::TIMESTAMP_2 => $timestamp2,
+            ]
+        );
+
+        $actual = Calendar::deserialize($expected->serialize());
+
+        $this->assertEquals($expected, $actual);
+        $this->assertEquals(StatusType::temporarilyUnavailable(), $actual->getStatus()->getType());
+        $this->assertEquals(StatusType::unavailable(), $actual->getTimestamps()[0]->getStatus()->getType());
+        $this->assertEquals(StatusType::temporarilyUnavailable(), $actual->getTimestamps()[1]->getStatus()->getType());
+    }
+
+    /**
+     * @test
      * @dataProvider jsonldCalendarProvider
      */
     public function it_should_generate_the_expected_json_for_a_calendar_of_each_type(

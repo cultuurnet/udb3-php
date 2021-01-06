@@ -184,7 +184,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         );
 
         if (!empty($data['status'])) {
-            $calendar = $calendar->withStatus(Status::deserialize($data['status']));
+            $calendar->status = Status::deserialize($data['status']);
         }
 
         return $calendar;

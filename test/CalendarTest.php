@@ -716,7 +716,8 @@ class CalendarTest extends TestCase
                             new StatusReason(new Language('nl'), 'Alles goed'),
                             new StatusReason(new Language('en'), 'All good'),
                         ]
-                    )
+                    ),
+                    false
                 ),
                 'jsonld' => [
                     'calendarType' => 'multiple',

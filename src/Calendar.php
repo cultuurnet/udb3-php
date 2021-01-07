@@ -330,38 +330,40 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         return $this->toJsonLd() === $otherCalendar->toJsonLd();
     }
 
-    public static function fromUdb3ModelCalendar(Udb3ModelCalendar $calendar): Calendar
+    public static function fromUdb3ModelCalendar(Udb3ModelCalendar $udb3Calendar): Calendar
     {
-        $type = CalendarType::fromNative($calendar->getType()->toString());
+        $type = CalendarType::fromNative($udb3Calendar->getType()->toString());
 
         $startDate = null;
         $endDate = null;
         $timestamps = [];
         $openingHours = [];
 
-        if ($calendar instanceof CalendarWithDateRange) {
-            $startDate = $calendar->getStartDate();
-            $endDate = $calendar->getEndDate();
+        if ($udb3Calendar instanceof CalendarWithDateRange) {
+            $startDate = $udb3Calendar->getStartDate();
+            $endDate = $udb3Calendar->getEndDate();
         }
 
-        if ($calendar instanceof CalendarWithSubEvents) {
+        if ($udb3Calendar instanceof CalendarWithSubEvents) {
             $timestamps = array_map(
                 function (SubEvent $subEvent) {
                     return Timestamp::fromUdb3ModelSubEvent($subEvent);
                 },
-                $calendar->getSubEvents()->toArray()
+                $udb3Calendar->getSubEvents()->toArray()
             );
         }
 
-        if ($calendar instanceof CalendarWithOpeningHours) {
+        if ($udb3Calendar instanceof CalendarWithOpeningHours) {
             $openingHours = array_map(
                 function (Udb3ModelOpeningHour $openingHour) {
                     return OpeningHour::fromUdb3ModelOpeningHour($openingHour);
                 },
-                $calendar->getOpeningHours()->toArray()
+                $udb3Calendar->getOpeningHours()->toArray()
             );
         }
 
-        return new self($type, $startDate, $endDate, $timestamps, $openingHours);
+        $calendar =new self($type, $startDate, $endDate, $timestamps, $openingHours);
+        $calendar->status = Status::fromUdb3ModelStatus($udb3Calendar->getStatus());
+        return $calendar;
     }
 }

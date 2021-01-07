@@ -1278,6 +1278,22 @@ class CalendarTest extends TestCase
     /**
      * @test
      */
+    public function it_takes_into_account_udb3_model_calendar_status()
+    {
+        $udb3ModelCalendar = (new PermanentCalendar(new OpeningHours()))
+            ->withStatus(new Udb3ModelStatus(Udb3ModelStatusType::TemporarilyUnavailable()));
+
+        $expected = (new Calendar(CalendarType::PERMANENT()))
+            ->withStatus(new Status(StatusType::temporarilyUnavailable(), []));
+
+        $actual = Calendar::fromUdb3ModelCalendar($udb3ModelCalendar);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
     public function it_can_determine_same_calendars()
     {
         $calendar = new Calendar(

@@ -716,8 +716,7 @@ class CalendarTest extends TestCase
                             new StatusReason(new Language('nl'), 'Alles goed'),
                             new StatusReason(new Language('en'), 'All good'),
                         ]
-                    ),
-                    false
+                    )
                 ),
                 'jsonld' => [
                     'calendarType' => 'multiple',
@@ -1360,7 +1359,56 @@ class CalendarTest extends TestCase
     /**
      * @test
      */
-    public function itCanChangeStatus(): void
+    public function it_can_change_top_status(): void
+    {
+        $timestamps = [
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-20T12:12:12+01:00')
+            ),
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-05T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-10T12:12:12+01:00')
+            ),
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-07T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-09T12:12:12+01:00')
+            ),
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-15T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-25T12:12:12+01:00')
+            ),
+        ];
+
+        $calendar = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-30T12:12:12+01:00'),
+            $timestamps
+        );
+
+        $this->assertEquals(
+            new Status(StatusType::available(), []),
+            $calendar->getStatus()
+        );
+
+        $newStatus = new Status(
+            StatusType::unavailable(),
+            [
+                new StatusReason(new Language('nl'), 'Het mag niet van de afgevaardigde van de eerste minister'),
+            ]
+        );
+
+        $updatedCalendar = $calendar->withStatus($newStatus);
+
+        $this->assertEquals($newStatus, $updatedCalendar->getStatus());
+        $this->assertEquals($timestamps, $updatedCalendar->getTimestamps());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_change_top_status_and_subEvents_statuses(): void
     {
         $calendar = new Calendar(
             CalendarType::MULTIPLE(),
@@ -1398,7 +1446,9 @@ class CalendarTest extends TestCase
             ]
         );
 
-        $updatedCalendar = $calendar->withStatus($newStatus);
+        $updatedCalendar = $calendar
+            ->withStatus($newStatus)
+            ->withStatusOnTimestamps($newStatus);
 
         $this->assertEquals($newStatus, $updatedCalendar->getStatus());
 

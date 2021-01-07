@@ -97,26 +97,22 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
         $this->status = new Status($this->deriveStatusTypeFromSubEvents(), []);
     }
 
-    /**
-     * Set $updateStatusInTimestamps to true when setting a new top status that should also be applied to all subEvents.
-     * Set it to false when constructing a Calendar object that's deserialized from JSON and you want to set the raw
-     * status without affecting the status in the subEvents.
-     */
-    public function withStatus(Status $status, bool $updateStatusInTimestamps = true): self
+    public function withStatus(Status $status): self
     {
         $clone = clone $this;
-
         $clone->status = $status;
+        return $clone;
+    }
 
-        if ($updateStatusInTimestamps) {
-            $clone->timestamps = \array_map(
-                function (Timestamp $timestamp) use ($status) : Timestamp {
-                    return $timestamp->withStatus($status);
-                },
-                $clone->getTimestamps()
-            );
-        }
-
+    public function withStatusOnTimestamps(Status $status): self
+    {
+        $clone = clone $this;
+        $clone->timestamps = \array_map(
+            function (Timestamp $timestamp) use ($status) : Timestamp {
+                return $timestamp->withStatus($status);
+            },
+            $clone->getTimestamps()
+        );
         return $clone;
     }
 

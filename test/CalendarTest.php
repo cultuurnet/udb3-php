@@ -1408,7 +1408,7 @@ class CalendarTest extends TestCase
     /**
      * @test
      */
-    public function it_can_change_top_status_and_subEvents_statuses(): void
+    public function it_can_change_top_status_and_timestamp_statuses(): void
     {
         $calendar = new Calendar(
             CalendarType::MULTIPLE(),

@@ -376,7 +376,7 @@ final class Calendar implements CalendarInterface, JsonLdSerializableInterface, 
     /**
      * If the calendar has subEvents (timestamps), and a status manually set through an import or full calendar update
      * through the API, the top status might be incorrect.
-     * For example the top status can not be Available if one of the subEvents is Unavailable.
+     * For example the top status can not be Available if all the subEvents are Unavailable or TemporarilyUnavailable.
      * However we want to be flexible in what we accept from API clients since otherwise they will have to implement a
      * lot of (new) logic to make sure the top status they're sending is correct.
      * So we accept the top status as-is, and correct it during projection.

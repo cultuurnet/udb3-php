@@ -309,6 +309,51 @@ class CalendarTest extends TestCase
 
     /**
      * @test
+     */
+    public function it_can_deserialize_without_overwriting_the_status_of_subEvents()
+    {
+        $timestamp1 = new Timestamp(
+            DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_1_START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_1_END_DATE),
+            new Status(
+                StatusType::unavailable(),
+                [
+                    new StatusReason(new Language('nl'), 'Jammer genoeg geannuleerd.'),
+                ]
+            )
+        );
+
+        $timestamp2 = new Timestamp(
+            DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_2_START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::TIMESTAMP_2_END_DATE),
+            new Status(
+                StatusType::temporarilyUnavailable(),
+                [
+                    new StatusReason(new Language('nl'), 'Jammer genoeg uitgesteld.'),
+                ]
+            )
+        );
+
+        $expected = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(DateTime::ATOM, self::START_DATE),
+            DateTime::createFromFormat(DateTime::ATOM, self::END_DATE),
+            [
+                self::TIMESTAMP_1 => $timestamp1,
+                self::TIMESTAMP_2 => $timestamp2,
+            ]
+        );
+
+        $actual = Calendar::deserialize($expected->serialize());
+
+        $this->assertEquals($expected, $actual);
+        $this->assertEquals(StatusType::temporarilyUnavailable(), $actual->getStatus()->getType());
+        $this->assertEquals(StatusType::unavailable(), $actual->getTimestamps()[0]->getStatus()->getType());
+        $this->assertEquals(StatusType::temporarilyUnavailable(), $actual->getTimestamps()[1]->getStatus()->getType());
+    }
+
+    /**
+     * @test
      * @dataProvider jsonldCalendarProvider
      */
     public function it_should_generate_the_expected_json_for_a_calendar_of_each_type(
@@ -599,6 +644,79 @@ class CalendarTest extends TestCase
                             )
                         ),
                     ]
+                ),
+                'jsonld' => [
+                    'calendarType' => 'multiple',
+                    'startDate' => '2016-03-06T10:00:00+01:00',
+                    'endDate' => '2020-03-13T12:00:00+01:00',
+                    'status' => [
+                        'type' => 'Unavailable',
+                    ],
+                    'subEvent' => [
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2016-03-06T10:00:00+01:00',
+                            'endDate' => '2016-03-13T12:00:00+01:00',
+                            'status' => [
+                                'type' => StatusType::unavailable()->toNative(),
+                                'reason' => [
+                                    'nl' => 'Het is afgelast.',
+                                    'fr' => 'Il a été annulé.',
+                                ],
+                            ],
+                        ],
+                        [
+                            '@type' => 'Event',
+                            'startDate' => '2020-03-06T10:00:00+01:00',
+                            'endDate' => '2020-03-13T12:00:00+01:00',
+                            'status' => [
+                                'type' => StatusType::unavailable()->toNative(),
+                                'reason' => [
+                                    'nl' => 'Nog erger, het is afgelast.',
+                                    'fr' => 'Pire encore, il a été annulé.',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'multiple with all sub events cancelled but an incorrect top status which should get corrected' => [
+                'calendar' => (new Calendar(
+                    CalendarType::MULTIPLE(),
+                    null,
+                    null,
+                    [
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2016-03-13T12:00:00+01:00'),
+                            new Status(
+                                StatusType::unavailable(),
+                                [
+                                    new StatusReason(new Language('nl'), 'Het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Il a été annulé.'),
+                                ]
+                            )
+                        ),
+                        new Timestamp(
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-06T10:00:00+01:00'),
+                            DateTime::createFromFormat(DateTime::ATOM, '2020-03-13T12:00:00+01:00'),
+                            new Status(
+                                StatusType::unavailable(),
+                                [
+                                    new StatusReason(new Language('nl'), 'Nog erger, het is afgelast.'),
+                                    new StatusReason(new Language('fr'), 'Pire encore, il a été annulé.'),
+                                ]
+                            )
+                        ),
+                    ]
+                ))->withStatus(
+                    new Status(
+                        StatusType::available(),
+                        [
+                            new StatusReason(new Language('nl'), 'Alles goed'),
+                            new StatusReason(new Language('en'), 'All good'),
+                        ]
+                    )
                 ),
                 'jsonld' => [
                     'calendarType' => 'multiple',
@@ -1241,7 +1359,56 @@ class CalendarTest extends TestCase
     /**
      * @test
      */
-    public function itCanChangeStatus(): void
+    public function it_can_change_top_status(): void
+    {
+        $timestamps = [
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-20T12:12:12+01:00')
+            ),
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-05T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-10T12:12:12+01:00')
+            ),
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-07T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-09T12:12:12+01:00')
+            ),
+            new Timestamp(
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-15T11:11:11+01:00'),
+                DateTime::createFromFormat(\DateTime::ATOM, '2020-04-25T12:12:12+01:00')
+            ),
+        ];
+
+        $calendar = new Calendar(
+            CalendarType::MULTIPLE(),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-01T11:11:11+01:00'),
+            DateTime::createFromFormat(\DateTime::ATOM, '2020-04-30T12:12:12+01:00'),
+            $timestamps
+        );
+
+        $this->assertEquals(
+            new Status(StatusType::available(), []),
+            $calendar->getStatus()
+        );
+
+        $newStatus = new Status(
+            StatusType::unavailable(),
+            [
+                new StatusReason(new Language('nl'), 'Het mag niet van de afgevaardigde van de eerste minister'),
+            ]
+        );
+
+        $updatedCalendar = $calendar->withStatus($newStatus);
+
+        $this->assertEquals($newStatus, $updatedCalendar->getStatus());
+        $this->assertEquals($timestamps, $updatedCalendar->getTimestamps());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_change_top_status_and_timestamp_statuses(): void
     {
         $calendar = new Calendar(
             CalendarType::MULTIPLE(),
@@ -1279,7 +1446,9 @@ class CalendarTest extends TestCase
             ]
         );
 
-        $updatedCalendar = $calendar->withStatus($newStatus);
+        $updatedCalendar = $calendar
+            ->withStatus($newStatus)
+            ->withStatusOnTimestamps($newStatus);
 
         $this->assertEquals($newStatus, $updatedCalendar->getStatus());
 
